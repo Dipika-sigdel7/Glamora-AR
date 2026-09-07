@@ -11,32 +11,41 @@
 
 :root {
 
-    --bg: #fffaf8;
+    /* Main backgrounds */
+    --bg: #fff5f7;
+    --bg-soft: #fdecef;
 
-    --bg-soft: #f8efec;
+    /* Dark sections */
+    --bg-dark: #26191d;
 
-    --bg-dark: #21191a;
+    /* Text */
+    --text: #2b1b20;
+    --text-soft: #806b72;
 
-    --text: #241b1d;
+    /* Main pink */
+    --accent: #c85f7a;
+    --accent-dark: #a74360;
+    --accent-light: #f3b8c6;
 
-    --text-soft: #75696b;
+    /* Extra pink shades */
+    --pink-soft: #fce4ea;
+    --pink-light: #fff0f3;
+    --rose: #e9a8b8;
 
-    --accent: #b85c70;
-
-    --accent-dark: #8f3e52;
-
+    /* White */
     --white: #ffffff;
 
-    --border: rgba(36, 27, 29, 0.10);
+    /* Borders */
+    --border: rgba(200, 95, 122, 0.14);
 
+    /* Shadows */
     --shadow:
-        0 25px 70px rgba(55, 30, 35, 0.12);
+        0 25px 70px rgba(164, 73, 98, 0.13);
 
+    /* Animation */
     --transition:
         0.35s cubic-bezier(0.22, 1, 0.36, 1);
-
 }
-
 
 /* =========================================================
    RESET

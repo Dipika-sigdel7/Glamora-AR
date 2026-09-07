@@ -1,3 +1,4 @@
+
 /* =========================================================
    GLAMORA AR
    INTERACTIVE UI
@@ -26,9 +27,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initializeCartDemo();
 
+    /*
+     * Initial random beauty look
+     */
     randomizeLipstick();
 
     randomizeEyeliner();
+
+    /*
+     * Change lipstick automatically
+     * every 5 seconds.
+     */
+    setInterval(() => {
+
+        randomizeLipstick();
+
+    }, 5000);
 
 });
 
@@ -49,11 +63,11 @@ function initializeLoader() {
             if (loader) {
 
                 /*
-                 * Your CSS uses:
+                 * CSS uses:
+                 *
                  * .loader.hidden
                  *
-                 * Therefore we must add "hidden",
-                 * not "hide".
+                 * Therefore use "hidden".
                  */
 
                 loader.classList.add("hidden");
@@ -78,9 +92,13 @@ function initializeRevealAnimations() {
     const revealElements =
         document.querySelectorAll(".reveal");
 
+
     if (!revealElements.length) {
+
         return;
+
     }
+
 
     const revealObserver =
         new IntersectionObserver(
@@ -120,20 +138,6 @@ function initializeRevealAnimations() {
 
 /* =========================================================
    ACTIVE NAVIGATION
-   =========================================================
-   
-   IMPORTANT:
-   
-   Your navbar uses Flask routes:
-
-       /
-       /beauty
-       /about
-       /contact
-
-   So we should NOT compare links with "#section".
-
-   Instead, detect the current page.
    ========================================================= */
 
 function initializeActiveNavigation() {
@@ -143,8 +147,11 @@ function initializeActiveNavigation() {
             ".nav-links a"
         );
 
+
     if (!navLinks.length) {
+
         return;
+
     }
 
 
@@ -153,14 +160,10 @@ function initializeActiveNavigation() {
 
 
     /*
-     * Normalize trailing slash.
-     *
-     * Example:
+     * Remove trailing slash.
      *
      * /about/
-     *
-     * becomes:
-     *
+     * becomes
      * /about
      */
 
@@ -179,17 +182,28 @@ function initializeActiveNavigation() {
 
         link.classList.remove("active");
 
+
         const href =
             link.getAttribute("href");
 
+
         if (!href) {
+
             return;
+
         }
 
 
         /*
-         * Ignore links containing anchors
-         * such as /beauty#tryon
+         * Ignore URL hash.
+         *
+         * Example:
+         *
+         * /beauty#tryon
+         *
+         * becomes:
+         *
+         * /beauty
          */
 
         const linkPath =
@@ -226,7 +240,9 @@ function initializeMakeupOptions() {
 
 
     if (!makeupOptions.length) {
+
         return;
+
     }
 
 
@@ -270,12 +286,14 @@ function initializeHeroParallax() {
 
 
     if (!heroVisual) {
+
         return;
+
     }
 
 
     /*
-     * Disable the effect on touch devices.
+     * Disable parallax on touch devices.
      */
 
     if (
@@ -316,7 +334,7 @@ function initializeHeroParallax() {
 
 
     /*
-     * Reset when mouse leaves the window.
+     * Reset when mouse leaves window.
      */
 
     document.addEventListener(
@@ -351,7 +369,9 @@ function initializeMobileMenu() {
 
 
     if (!menuBtn || !nav) {
+
         return;
+
     }
 
 
@@ -380,7 +400,7 @@ function initializeMobileMenu() {
 
 
             /*
-             * Change hamburger icon.
+             * Change menu icon.
              */
 
             menuBtn.textContent =
@@ -391,8 +411,8 @@ function initializeMobileMenu() {
 
 
     /*
-     * Close menu when a navigation
-     * link is clicked.
+     * Close mobile menu
+     * after clicking a link.
      */
 
     const links =
@@ -409,17 +429,21 @@ function initializeMobileMenu() {
                     "open"
                 );
 
+
                 menuBtn.setAttribute(
                     "aria-expanded",
                     "false"
                 );
+
 
                 menuBtn.setAttribute(
                     "aria-label",
                     "Open navigation menu"
                 );
 
-                menuBtn.textContent = "☰";
+
+                menuBtn.textContent =
+                    "☰";
 
             }
         );
@@ -442,7 +466,9 @@ function initializeProductHover() {
 
 
     if (!productCards.length) {
+
         return;
+
     }
 
 
@@ -543,33 +569,23 @@ function initializeCartDemo() {
         );
 
 
-    if (!quickTryButtons.length) {
-        return;
-    }
-
+    /*
+     * Quick Try buttons
+     *
+     * These remain normal navigation links.
+     */
 
     quickTryButtons.forEach((button) => {
 
         button.addEventListener(
             "click",
-            (event) => {
+            () => {
 
                 /*
-                 * The button is actually a
-                 * navigation link to AR try-on.
+                 * Do not use preventDefault().
                  *
-                 * DO NOT increment cart here.
-                 *
-                 * Let the user go to:
-                 *
-                 * /beauty#tryon
-                 */
-
-                /*
-                 * Keep navigation working.
-                 *
-                 * Therefore we intentionally
-                 * do not use preventDefault().
+                 * The original link navigation
+                 * should continue working.
                  */
 
             }
@@ -579,7 +595,7 @@ function initializeCartDemo() {
 
 
     /*
-     * Make the cart button work visually.
+     * Cart button
      */
 
     const cartButton =
@@ -596,6 +612,7 @@ function initializeCartDemo() {
 
                 cartCount++;
 
+
                 if (cartCounter) {
 
                     cartCounter.textContent =
@@ -609,15 +626,6 @@ function initializeCartDemo() {
     }
 
 }
-
-
-/* =========================================================
-   RANDOM BEAUTY LOOK
-   =========================================================
-   
-   A different lipstick and eyeliner style
-   will be selected every time the page loads.
-   ========================================================= */
 
 
 /* =========================================================
@@ -666,13 +674,33 @@ function randomizeLipstick() {
         {
             name: "Plum",
             color: "#71364f"
+        },
+
+        {
+            name: "Mauve",
+            color: "#9c536c"
+        },
+
+        {
+            name: "Dusty Rose",
+            color: "#b9687d"
+        },
+
+        {
+            name: "Hot Pink",
+            color: "#d93670"
+        },
+
+        {
+            name: "Soft Pink",
+            color: "#e58aa0"
         }
 
     ];
 
 
     /*
-     * Select random color.
+     * Select random lipstick.
      */
 
     const randomIndex =
@@ -707,7 +735,7 @@ function randomizeLipstick() {
 
 
     /*
-     * Apply color.
+     * Apply lipstick color.
      */
 
     if (lipstick) {
@@ -718,11 +746,6 @@ function randomizeLipstick() {
         );
 
 
-        /*
-         * Also update the lipstick
-         * elements if they exist.
-         */
-
         const lipstickTop =
             lipstick.querySelector(
                 ".lipstick-top"
@@ -730,6 +753,14 @@ function randomizeLipstick() {
 
 
         if (lipstickTop) {
+
+            /*
+             * Smooth color transition.
+             */
+
+            lipstickTop.style.transition =
+                "background 0.7s ease";
+
 
             lipstickTop.style.background =
                 `linear-gradient(
@@ -744,7 +775,7 @@ function randomizeLipstick() {
 
 
     /*
-     * Update displayed name.
+     * Update lipstick name.
      */
 
     if (lipstickName) {
@@ -811,7 +842,7 @@ function randomizeEyeliner() {
 
 
     /*
-     * Select random eyeliner.
+     * Select random eyeliner style.
      */
 
     const randomIndex =
@@ -836,7 +867,7 @@ function randomizeEyeliner() {
 
 
     /*
-     * Find name.
+     * Find eyeliner name.
      */
 
     const eyelinerName =
@@ -862,10 +893,7 @@ function randomizeEyeliner() {
 
 
     /*
-     * Remove old style classes first.
-     *
-     * This prevents multiple styles
-     * from being applied at once.
+     * Remove all previous eyeliner styles.
      */
 
     if (eye) {
@@ -880,10 +908,18 @@ function randomizeEyeliner() {
         );
 
 
+        /*
+         * Apply new style.
+         */
+
         eye.classList.add(
             selected.className
         );
 
+
+        /*
+         * Store eyeliner color.
+         */
 
         eye.style.setProperty(
             "--eyeliner-color",
@@ -894,7 +930,7 @@ function randomizeEyeliner() {
 
 
     /*
-     * Reset lash classes.
+     * Remove previous lash styles.
      */
 
     if (lashesTop) {
@@ -943,28 +979,4 @@ function randomizeEyeliner() {
 }
 
 
-/* =========================================================
-   RANDOMIZE AGAIN WHEN PAGE BECOMES VISIBLE
-   ========================================================= */
 
-document.addEventListener(
-    "visibilitychange",
-    () => {
-
-        if (
-            document.visibilityState ===
-            "visible"
-        ) {
-
-            /*
-             * Only randomize when returning
-             * to the page.
-             *
-             * This gives the experience
-             * a dynamic feeling.
-             */
-
-        }
-
-    }
-);
