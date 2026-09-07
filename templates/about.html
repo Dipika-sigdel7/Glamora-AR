@@ -1,1010 +1,914 @@
-
 <!doctype html>
+
 <html lang="en">
+
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>
-        About Glamora AR — Beauty & Virtual Try-On
-    </title>
-
-
-    <!-- ================= FONTS ================= -->
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+<title>
+    About Glamora AR — Beauty & Virtual Try-On
+</title>
 
 
-    <!-- ================= CSS ================= -->
+<!-- =====================================================
+     FONTS
+     ===================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
+<link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+
+<!-- =====================================================
+     CSS
+     ===================================================== -->
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}"
+>
+```
 
 </head>
 
-
 <body>
 
-    <!-- =====================================================
-         PRELOADER
-         ===================================================== -->
+```
+<!-- =====================================================
+     PRELOADER
+     ===================================================== -->
 
-    <div
-        class="loader"
-        id="loader"
+<div
+    class="loader"
+    id="loader"
+>
+
+    <div class="loader-logo">
+        GLAMORA <span>AR</span>
+    </div>
+
+    <div class="loader-line">
+        <div></div>
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     NAVBAR
+     SAME STRUCTURE AS HOME PAGE
+     ===================================================== -->
+
+<header class="navbar">
+
+    <!-- LOGO -->
+
+    <a
+        href="/"
+        class="logo"
+        aria-label="Glamora AR Home"
+    >
+        GLAMORA <span>AR</span>
+    </a>
+
+
+    <!-- NAVIGATION -->
+
+    <nav
+        class="nav-links"
+        id="navLinks"
     >
 
-        <div class="loader-logo">
-            GLAMORA <span>AR</span>
-        </div>
+        <a href="/">
+            Home
+        </a>
 
-        <div class="loader-line">
-            <div></div>
-        </div>
+        <a href="/beauty">
+            Beauty
+        </a>
+
+        <a
+            href="/about"
+            class="active"
+        >
+            About
+        </a>
+
+        <a href="/contact">
+            Contact
+        </a>
+
+    </nav>
+
+
+    <!-- NAVIGATION ACTIONS -->
+
+    <div class="nav-actions">
+
+        <!-- SEARCH -->
+
+        <button
+            class="icon-btn"
+            type="button"
+            aria-label="Search"
+        >
+            ⌕
+        </button>
+
+
+        <!-- WISHLIST -->
+
+        <button
+            class="icon-btn"
+            type="button"
+            aria-label="Wishlist"
+        >
+            ♡
+        </button>
+
+
+        <!-- BAG -->
+
+        <button
+            class="cart-btn"
+            type="button"
+            aria-label="Shopping bag"
+        >
+
+            <span>
+                Bag
+            </span>
+
+            <span class="cart-count">
+                0
+            </span>
+
+        </button>
+
+
+        <!-- MOBILE MENU -->
+
+        <button
+            class="menu-btn"
+            id="menuBtn"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+        >
+            ☰
+        </button>
 
     </div>
 
-
-    <!-- =====================================================
-         NAVBAR
-         ===================================================== -->
-
-    <header class="navbar">
-
-        <a
-            href="{{ url_for('home') }}"
-            class="logo"
-        >
-            GLAMORA <span>AR</span>
-        </a>
+</header>
 
 
-        <nav class="nav-links">
+<!-- =====================================================
+     MAIN CONTENT
+     ===================================================== -->
 
-            <a href="{{ url_for('home') }}">
-                Home
-            </a>
+<main>
 
-            <a
-                href="{{ url_for('about') }}"
-                class="active"
-            >
+
+    <!-- =================================================
+         ABOUT HERO
+         ================================================= -->
+
+    <section class="inner-hero">
+
+        <div class="inner-hero-content reveal">
+
+            <span class="section-label">
+                ABOUT GLAMORA AR
+            </span>
+
+            <h1>
                 Beauty
-            </a>
+                <em>without limits.</em>
+            </h1>
 
-            <a href="#tryon">
-                Virtual Try-On
-            </a>
-
-        </nav>
-
-
-        <div class="nav-actions">
-
-            <button
-                class="icon-btn"
-                type="button"
-                aria-label="Search"
-            >
-                ⌕
-            </button>
-
-
-            <a
-                href="#products"
-                class="header-link"
-            >
-                Products
-            </a>
-
-
-            <a
-                href="{{ url_for('about') }}"
-                class="header-link"
-            >
-                About
-            </a>
-
-
-            <a
-                href="{{ url_for('contact') }}"
-                class="header-link"
-            >
-                Contact
-            </a>
-
-
-            <button
-                class="icon-btn"
-                type="button"
-                aria-label="Wishlist"
-            >
-                ♡
-            </button>
-
-
-            <button
-                class="cart-btn"
-                type="button"
-            >
-                <span>Bag</span>
-                <span class="cart-count">0</span>
-            </button>
-
-
-            <button
-                class="menu-btn"
-                id="menuBtn"
-                type="button"
-                aria-label="Open menu"
-            >
-                ☰
-            </button>
+            <p>
+                Glamora AR brings together beauty,
+                creativity and augmented reality to
+                create a completely new way to
+                experience makeup.
+            </p>
 
         </div>
 
-    </header>
+    </section>
+
+
+    <!-- =================================================
+         ABOUT STORY
+         ================================================= -->
+
+    <section class="about-story section">
+
+        <div class="about-story-grid">
+
+
+            <!-- STORY CONTENT -->
+
+            <div class="about-story-content reveal">
+
+                <span class="section-label">
+                    OUR VISION
+                </span>
+
+                <h2>
+                    The future of beauty
+                    is <em>interactive.</em>
+                </h2>
+
+                <p>
+                    Glamora AR was created with a simple idea:
+                    beauty should be something you can experience,
+                    not just something you see on a shelf.
+                </p>
+
+                <p>
+                    With virtual try-on technology, users can
+                    experiment with lipstick, eyeliner, blush
+                    and other beauty products before deciding
+                    what they love.
+                </p>
+
+                <p>
+                    Our goal is to make discovering beauty
+                    easier, more creative and more personal.
+                </p>
+
+            </div>
+
+
+            <!-- STORY VISUAL -->
+
+            <div class="about-story-visual reveal">
+
+                <div class="story-orbit"></div>
+
+                <div class="story-card">
+
+                    <span>
+                        ✦
+                    </span>
+
+                    <strong>
+                        BEAUTY
+                    </strong>
+
+                    <small>
+                        MEETS TECHNOLOGY
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
     <!-- =====================================================
-         MAIN
+         CATEGORIES
          ===================================================== -->
 
-    <main>
+    <section
+        class="categories section"
+        id="categories"
+    >
 
+        <div class="section-heading reveal">
 
-        <!-- =================================================
-             ABOUT HERO
-             ================================================= -->
-
-        <section class="inner-hero">
-
-            <div class="inner-hero-content reveal">
+            <div>
 
                 <span class="section-label">
-                    ABOUT GLAMORA AR
+                    EXPLORE
                 </span>
-
-                <h1>
-                    Beauty
-                    <em>without limits.</em>
-                </h1>
-
-                <p>
-                    Glamora AR brings together beauty,
-                    creativity and augmented reality to
-                    create a completely new way to experience makeup.
-                </p>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             ABOUT STORY
-             ================================================= -->
-
-        <section class="about-story section">
-
-            <div class="about-story-grid">
-
-                <div class="about-story-content reveal">
-
-                    <span class="section-label">
-                        OUR VISION
-                    </span>
-
-                    <h2>
-                        The future of beauty
-                        is <em>interactive.</em>
-                    </h2>
-
-                    <p>
-                        Glamora AR was created with a simple idea:
-                        beauty should be something you can experience,
-                        not just something you see on a shelf.
-                    </p>
-
-                    <p>
-                        With virtual try-on technology, users can
-                        experiment with lipstick, eyeliner, blush
-                        and other beauty products before deciding
-                        what they love.
-                    </p>
-
-                    <p>
-                        Our goal is to make discovering beauty
-                        easier, more creative and more personal.
-                    </p>
-
-                </div>
-
-
-                <div class="about-story-visual reveal">
-
-                    <div class="story-orbit"></div>
-
-                    <div class="story-card">
-
-                        <span>✦</span>
-
-                        <strong>
-                            BEAUTY
-                        </strong>
-
-                        <small>
-                            MEETS TECHNOLOGY
-                        </small>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================================================
-             CATEGORIES
-             ===================================================== -->
-
-        <section
-            class="categories section"
-            id="categories"
-        >
-
-            <div class="section-heading reveal">
-
-                <div>
-
-                    <span class="section-label">
-                        EXPLORE
-                    </span>
-
-                    <h2>
-                        Your beauty,
-                        <em>your rules.</em>
-                    </h2>
-
-                </div>
-
-                <p>
-                    Find your favorite products and discover
-                    a new version of yourself.
-                </p>
-
-            </div>
-
-
-            <div class="category-grid">
-
-
-                <!-- =================================================
-                     LIPSTICK
-                     ================================================= -->
-
-                <a
-                    href="#products"
-                    class="category-card lipstick-card reveal"
-                >
-
-                    <div class="category-number">
-                        01
-                    </div>
-
-
-                    <div class="makeup-preview lipstick-preview">
-
-                        <div class="lipstick-product">
-
-                            <div class="lipstick-top"></div>
-
-                            <div class="lipstick-body"></div>
-
-                            <div class="lipstick-base"></div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="category-info">
-
-                        <span>
-                            BEAUTY
-                        </span>
-
-                        <h3>
-                            Lipstick
-                        </h3>
-
-                        <small
-                            class="shade-name"
-                            id="lipstickShade"
-                        >
-                            Ruby Red
-                        </small>
-
-                    </div>
-
-
-                    <div class="category-arrow">
-                        ↗
-                    </div>
-
-                </a>
-
-
-                <!-- =================================================
-                     EYELINER
-                     ================================================= -->
-
-                <a
-                    href="#tryon"
-                    class="category-card eye-card reveal"
-                >
-
-                    <div class="category-number">
-                        02
-                    </div>
-
-
-                    <div class="eye-preview">
-
-                        <div class="eye">
-
-                            <div class="eye-white">
-
-                                <div class="iris">
-
-                                    <div class="iris-detail"></div>
-
-                                    <div class="pupil"></div>
-
-                                    <div class="eye-highlight"></div>
-
-                                    <div class="eye-highlight small"></div>
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- EYELINER -->
-
-                            <div
-                                class="eyeliner"
-                                id="eyeliner"
-                            ></div>
-
-
-                            <!-- UPPER LASHES -->
-
-                            <div
-                                class="lashes lashes-top"
-                                id="lashesTop"
-                            >
-
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-
-                            </div>
-
-
-                            <!-- LOWER LASHES -->
-
-                            <div
-                                class="lashes lashes-bottom"
-                                id="lashesBottom"
-                            >
-
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-
-                            </div>
-
-
-                            <!-- BLINK -->
-
-                            <div class="blink-lid blink-top"></div>
-
-                            <div class="blink-lid blink-bottom"></div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="category-info">
-
-                        <span>
-                            BEAUTY
-                        </span>
-
-                        <h3>
-                            Eyeliner
-                        </h3>
-
-                        <small
-                            class="eyeliner-name"
-                            id="eyelinerName"
-                        >
-                            Classic
-                        </small>
-
-                    </div>
-
-
-                    <div class="category-arrow">
-                        ↗
-                    </div>
-
-                </a>
-
-
-                <!-- =================================================
-                     BLUSH
-                     ================================================= -->
-
-                <a
-                    href="#products"
-                    class="category-card blush-card reveal"
-                >
-
-                    <div class="category-number">
-                        03
-                    </div>
-
-
-                    <div class="category-emoji">
-                        🌸
-                    </div>
-
-
-                    <div class="category-info">
-
-                        <span>
-                            BEAUTY
-                        </span>
-
-                        <h3>
-                            Blush
-                        </h3>
-
-                    </div>
-
-
-                    <div class="category-arrow">
-                        ↗
-                    </div>
-
-                </a>
-
-
-                <!-- =================================================
-                     FACE
-                     ================================================= -->
-
-                <a
-                    href="#products"
-                    class="category-card face-card-category reveal"
-                >
-
-                    <div class="category-number">
-                        04
-                    </div>
-
-
-                    <div class="category-emoji">
-                        ✨
-                    </div>
-
-
-                    <div class="category-info">
-
-                        <span>
-                            BEAUTY
-                        </span>
-
-                        <h3>
-                            Face
-                        </h3>
-
-                    </div>
-
-
-                    <div class="category-arrow">
-                        ↗
-                    </div>
-
-                </a>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================================================
-             TRY ON
-             ===================================================== -->
-
-        <section
-            class="tryon-section"
-            id="tryon"
-        >
-
-            <div class="tryon-glow"></div>
-
-
-            <!-- CONTENT -->
-
-            <div class="tryon-content reveal">
-
-                <span class="section-label">
-                    THE FUTURE OF BEAUTY
-                </span>
-
 
                 <h2>
-
-                    See it.
-
-                    <br>
-
-                    <em>Try it.</em>
-
-                    <br>
-
-                    Love it.
-
+                    Your beauty,
+                    <em>your rules.</em>
                 </h2>
 
-
-                <p>
-                    Turn on your camera and experience
-                    makeup like never before.
-                </p>
-
-
-                <button
-                    class="tryon-btn"
-                    type="button"
-                    id="startTryOn"
-                >
-
-                    <span class="camera-icon">
-                        ◉
-                    </span>
-
-                    Start Virtual Try-On
-
-                    <span>
-                        →
-                    </span>
-
-                </button>
-
             </div>
+
+            <p>
+                Find your favorite products and discover
+                a new version of yourself.
+            </p>
+
+        </div>
+
+
+        <div class="category-grid">
 
 
             <!-- =================================================
-                 TRY-ON DEMO
+                 LIPSTICK
                  ================================================= -->
 
-            <div class="tryon-demo reveal">
+            <a
+                href="#products"
+                class="category-card lipstick-card reveal"
+            >
 
-                <div class="demo-frame">
-
-
-                    <!-- HEADER -->
-
-                    <div class="demo-header">
-
-                        <span>
-                            GLAMORA AR
-                        </span>
+                <div class="category-number">
+                    01
+                </div>
 
 
-                        <span class="live">
+                <div class="makeup-preview lipstick-preview">
 
-                            <i></i>
+                    <div class="lipstick-product">
 
-                            LIVE
+                        <div class="lipstick-top"></div>
 
-                        </span>
+                        <div class="lipstick-body"></div>
+
+                        <div class="lipstick-base"></div>
 
                     </div>
 
+                </div>
 
-                    <!-- FACE -->
 
-                    <div class="demo-face">
+                <div class="category-info">
 
-                        <div class="face-guide">
+                    <span>
+                        BEAUTY
+                    </span>
+
+                    <h3>
+                        Lipstick
+                    </h3>
+
+                    <small
+                        class="shade-name"
+                        id="lipstickShade"
+                    >
+                        Ruby Red
+                    </small>
+
+                </div>
+
+
+                <div class="category-arrow">
+                    ↗
+                </div>
+
+            </a>
+
+
+            <!-- =================================================
+                 EYELINER
+                 ================================================= -->
+
+            <a
+                href="#tryon"
+                class="category-card eye-card reveal"
+            >
+
+                <div class="category-number">
+                    02
+                </div>
+
+
+                <div class="eye-preview">
+
+                    <div class="eye">
+
+                        <div class="eye-white">
+
+                            <div class="iris">
+
+                                <div class="iris-detail"></div>
+
+                                <div class="pupil"></div>
+
+                                <div class="eye-highlight"></div>
+
+                                <div class="eye-highlight small"></div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- EYELINER -->
+
+                        <div
+                            class="eyeliner"
+                            id="eyeliner"
+                        ></div>
+
+
+                        <!-- UPPER LASHES -->
+
+                        <div
+                            class="lashes lashes-top"
+                            id="lashesTop"
+                        >
+
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+
+                        </div>
+
+
+                        <!-- LOWER LASHES -->
+
+                        <div
+                            class="lashes lashes-bottom"
+                            id="lashesBottom"
+                        >
+
+                            <span></span>
+                            <span></span>
+                            <span></span>
 
                             <span></span>
 
                         </div>
 
 
-                        <div class="demo-scan"></div>
+                        <!-- BLINK -->
 
-                    </div>
+                        <div class="blink-lid blink-top"></div>
 
-
-                    <!-- CONTROLS -->
-
-                    <div class="demo-controls">
-
-                        <button
-                            class="makeup-option active"
-                            type="button"
-                            data-makeup="lips"
-                        >
-
-                            <span>
-                                💋
-                            </span>
-
-                            Lips
-
-                        </button>
-
-
-                        <button
-                            class="makeup-option"
-                            type="button"
-                            data-makeup="eyes"
-                        >
-
-                            <span>
-                                👁️
-                            </span>
-
-                            Eyes
-
-                        </button>
-
-
-                        <button
-                            class="makeup-option"
-                            type="button"
-                            data-makeup="blush"
-                        >
-
-                            <span>
-                                🌸
-                            </span>
-
-                            Blush
-
-                        </button>
-
-
-                        <button
-                            class="makeup-option"
-                            type="button"
-                            data-makeup="glow"
-                        >
-
-                            <span>
-                                ✨
-                            </span>
-
-                            Glow
-
-                        </button>
+                        <div class="blink-lid blink-bottom"></div>
 
                     </div>
 
                 </div>
 
-            </div>
 
-        </section>
+                <div class="category-info">
 
-
-        <!-- =====================================================
-             PRODUCTS
-             ===================================================== -->
-
-        <section
-            class="products section"
-            id="products"
-        >
-
-            <div class="section-heading reveal">
-
-                <div>
-
-                    <span class="section-label">
-                        SHOP THE LOOK
+                    <span>
+                        BEAUTY
                     </span>
 
-                    <h2>
-                        Beauty
-                        <em>favorites.</em>
-                    </h2>
+                    <h3>
+                        Eyeliner
+                    </h3>
+
+                    <small
+                        class="eyeliner-name"
+                        id="eyelinerName"
+                    >
+                        Classic
+                    </small>
 
                 </div>
 
-            </div>
+
+                <div class="category-arrow">
+                    ↗
+                </div>
+
+            </a>
 
 
-            <div class="product-grid">
+            <!-- =================================================
+                 BLUSH
+                 ================================================= -->
+
+            <a
+                href="#products"
+                class="category-card blush-card reveal"
+            >
+
+                <div class="category-number">
+                    03
+                </div>
 
 
-                <!-- PRODUCT 1 -->
-
-                <article class="product-card reveal">
-
-                    <div class="product-image pink-bg">
-
-                        <span class="product-badge">
-                            BESTSELLER
-                        </span>
-
-                        <div class="product-placeholder">
-                            💄
-                        </div>
-
-                        <button
-                            class="quick-try"
-                            type="button"
-                        >
-                            Try AR
-                        </button>
-
-                    </div>
+                <div class="category-emoji">
+                    🌸
+                </div>
 
 
-                    <div class="product-info">
+                <div class="category-info">
 
-                        <div>
+                    <span>
+                        BEAUTY
+                    </span>
 
-                            <span>
-                                LIPSTICK
-                            </span>
+                    <h3>
+                        Blush
+                    </h3>
 
-                            <h3>
-                                Rose Velvet
-                            </h3>
-
-                        </div>
-
-                        <strong>
-                            $24
-                        </strong>
-
-                    </div>
-
-                </article>
+                </div>
 
 
-                <!-- PRODUCT 2 -->
+                <div class="category-arrow">
+                    ↗
+                </div>
 
-                <article class="product-card reveal">
-
-                    <div class="product-image nude-bg">
-
-                        <span class="product-badge">
-                            NEW
-                        </span>
-
-                        <div class="product-placeholder">
-                            🎨
-                        </div>
-
-                        <button
-                            class="quick-try"
-                            type="button"
-                        >
-                            Try AR
-                        </button>
-
-                    </div>
+            </a>
 
 
-                    <div class="product-info">
+            <!-- =================================================
+                 FACE
+                 ================================================= -->
 
-                        <div>
+            <a
+                href="#products"
+                class="category-card face-card-category reveal"
+            >
 
-                            <span>
-                                EYESHADOW
-                            </span>
-
-                            <h3>
-                                Sunset Palette
-                            </h3>
-
-                        </div>
-
-                        <strong>
-                            $38
-                        </strong>
-
-                    </div>
-
-                </article>
+                <div class="category-number">
+                    04
+                </div>
 
 
-                <!-- PRODUCT 3 -->
-
-                <article class="product-card reveal">
-
-                    <div class="product-image rose-bg">
-
-                        <div class="product-placeholder">
-                            🌸
-                        </div>
-
-                        <button
-                            class="quick-try"
-                            type="button"
-                        >
-                            Try AR
-                        </button>
-
-                    </div>
+                <div class="category-emoji">
+                    ✨
+                </div>
 
 
-                    <div class="product-info">
+                <div class="category-info">
 
-                        <div>
+                    <span>
+                        BEAUTY
+                    </span>
 
-                            <span>
-                                BLUSH
-                            </span>
+                    <h3>
+                        Face
+                    </h3>
 
-                            <h3>
-                                Soft Rose
-                            </h3>
+                </div>
 
-                        </div>
 
-                        <strong>
-                            $19
-                        </strong>
+                <div class="category-arrow">
+                    ↗
+                </div>
 
-                    </div>
+            </a>
 
-                </article>
+        </div>
 
-            </div>
-
-        </section>
-
-    </main>
+    </section>
 
 
     <!-- =====================================================
-         FOOTER
+         VIRTUAL TRY-ON
          ===================================================== -->
 
-    <footer>
+    <section
+        class="tryon-section"
+        id="tryon"
+    >
 
-        <div class="footer-top">
+        <div class="tryon-glow"></div>
 
-            <div class="footer-brand">
 
-                <a
-                    href="{{ url_for('home') }}"
-                    class="logo"
-                >
-                    GLAMORA<span>AR</span>
+        <!-- TRY-ON CONTENT -->
+
+        <div class="tryon-content reveal">
+
+            <span class="section-label">
+                THE FUTURE OF BEAUTY
+            </span>
+
+
+            <h2>
+
+                See it.
+
+                <br>
+
+                <em>Try it.</em>
+
+                <br>
+
+                Love it.
+
+            </h2>
+
+
+            <p>
+                Turn on your camera and experience
+                makeup like never before.
+            </p>
+
+
+            <button
+                class="tryon-btn"
+                type="button"
+                id="startTryOn"
+            >
+
+                <span class="camera-icon">
+                    ◉
+                </span>
+
+                Start Virtual Try-On
+
+                <span>
+                    →
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <!-- TRY-ON DEMO -->
+
+        <div class="tryon-demo reveal">
+
+            <div class="demo-frame">
+
+
+                <!-- DEMO HEADER -->
+
+                <div class="demo-header">
+
+                    <span>
+                        GLAMORA AR
+                    </span>
+
+
+                    <span class="live">
+
+                        <i></i>
+
+                        LIVE
+
+                    </span>
+
+                </div>
+
+
+                <!-- DEMO FACE -->
+
+                <div class="demo-face">
+
+                    <div class="face-guide">
+
+                        <span></span>
+
+                    </div>
+
+
+                    <div class="demo-scan"></div>
+
+                </div>
+
+
+                <!-- DEMO CONTROLS -->
+
+                <div class="demo-controls">
+
+                    <button
+                        class="makeup-option active"
+                        type="button"
+                        data-makeup="lips"
+                    >
+
+                        <span>
+                            💋
+                        </span>
+
+                        Lips
+
+                    </button>
+
+
+                    <button
+                        class="makeup-option"
+                        type="button"
+                        data-makeup="eyes"
+                    >
+
+                        <span>
+                            👁️
+                        </span>
+
+                        Eyes
+
+                    </button>
+
+
+                    <button
+                        class="makeup-option"
+                        type="button"
+                        data-makeup="blush"
+                    >
+
+                        <span>
+                            🌸
+                        </span>
+
+                        Blush
+
+                    </button>
+
+
+                    <button
+                        class="makeup-option"
+                        type="button"
+                        data-makeup="glow"
+                    >
+
+                        <span>
+                            ✨
+                        </span>
+
+                        Glow
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PRODUCTS
+         ===================================================== -->
+
+    <section
+        class="products section"
+        id="products"
+    >
+
+        <div class="section-heading reveal">
+
+            <div>
+
+                <span class="section-label">
+                    SHOP THE LOOK
+                </span>
+
+                <h2>
+                    Beauty
+                    <em>favorites.</em>
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="product-grid">
+
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer>
+
+    <div class="footer-top">
+
+
+        <!-- FOOTER BRAND -->
+
+        <div class="footer-brand">
+
+            <a
+                href="/"
+                class="logo"
+            >
+                GLAMORA<span>AR</span>
+            </a>
+
+            <p>
+                Beauty technology designed for everyone.
+            </p>
+
+        </div>
+
+
+        <!-- FOOTER LINKS -->
+
+        <div class="footer-links">
+
+
+            <!-- EXPLORE -->
+
+            <div>
+
+                <span>
+                    EXPLORE
+                </span>
+
+                <a href="#categories">
+                    Beauty
                 </a>
 
-                <p>
-                    Beauty technology designed for everyone.
-                </p>
+                <a href="#tryon">
+                    Virtual Try-On
+                </a>
+
+                <a href="#products">
+                    Products
+                </a>
 
             </div>
 
 
-            <div class="footer-links">
+            <!-- COMPANY -->
 
-                <div>
+            <div>
 
-                    <span>EXPLORE</span>
+                <span>
+                    COMPANY
+                </span>
 
-                    <a href="#categories">
-                        Beauty
-                    </a>
+                <a href="/">
+                    Home
+                </a>
 
-                    <a href="#tryon">
-                        Virtual Try-On
-                    </a>
+                <a href="/contact">
+                    Contact
+                </a>
 
-                    <a href="#products">
-                        Products
-                    </a>
+                <a href="#">
+                    Privacy
+                </a>
 
-                </div>
-
-
-                <div>
-
-                    <span>COMPANY</span>
-
-                    <a href="{{ url_for('home') }}">
-                        Home
-                    </a>
-
-                    <a href="{{ url_for('contact') }}">
-                        Contact
-                    </a>
-
-                    <a href="#">
-                        Privacy
-                    </a>
-
-                </div>
+            </div>
 
 
-                <div>
+            <!-- FOLLOW -->
 
-                    <span>FOLLOW</span>
+            <div>
 
-                    <a href="#">
-                        Instagram
-                    </a>
+                <span>
+                    FOLLOW
+                </span>
 
-                    <a href="#">
-                        TikTok
-                    </a>
+                <a href="#">
+                    Instagram
+                </a>
 
-                    <a href="#">
-                        Pinterest
-                    </a>
+                <a href="#">
+                    TikTok
+                </a>
 
-                </div>
+                <a href="#">
+                    Pinterest
+                </a>
 
             </div>
 
         </div>
 
-
-        <div class="footer-bottom">
-
-            <span>
-                © 2026 Glamora AR
-            </span>
-
-            <span>
-                Made for the future of beauty ✦
-            </span>
-
-        </div>
-
-    </footer>
+    </div>
 
 
-    <!-- ================= JAVASCRIPT ================= -->
+    <!-- FOOTER BOTTOM -->
 
-    <script
-        src="{{ url_for('static', filename='js/main.js') }}"
-    ></script>
+    <div class="footer-bottom">
+
+        <span>
+            © 2026 Glamora AR
+        </span>
+
+        <span>
+            Made for the future of beauty ✦
+        </span>
+
+    </div>
+
+</footer>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+     ===================================================== -->
+
+<script
+    src="{{ url_for('static', filename='js/main.js') }}"
+></script>
+
 
 </body>
-</html>
 
+</html>

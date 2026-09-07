@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -31,6 +30,7 @@
   </head>
 
   <body>
+
     <!-- =====================================================
          PRELOADER
          ===================================================== -->
@@ -45,54 +45,51 @@
       </div>
     </div>
 
+
     <!-- =====================================================
          NAVBAR
          ===================================================== -->
 
     <header class="navbar">
 
-      <!-- ================= LOGO ================= -->
+      <!-- LOGO -->
 
       <a
-        href="{{ url_for('home') }}"
+        href="/"
         class="logo"
         aria-label="Glamora AR Home"
       >
         GLAMORA <span>AR</span>
       </a>
 
-      <!-- ================= MAIN NAVIGATION ================= -->
+
+      <!-- MAIN NAVIGATION -->
 
       <nav class="nav-links" id="navLinks">
 
         <a
-          href="{{ url_for('home') }}"
+          href="/"
           class="active"
         >
           Home
         </a>
 
-        <a
-          href="{{ url_for('beauty') }}"
-        >
+        <a href="/beauty">
           Beauty
         </a>
 
-        <a
-          href="{{ url_for('about') }}"
-        >
+        <a href="/about">
           About
         </a>
 
-        <a
-          href="{{ url_for('contact') }}"
-        >
+        <a href="/contact">
           Contact
         </a>
 
       </nav>
 
-      <!-- ================= HEADER ACTIONS ================= -->
+
+      <!-- HEADER ACTIONS -->
 
       <div class="nav-actions">
 
@@ -106,6 +103,7 @@
           ⌕
         </button>
 
+
         <!-- WISHLIST -->
 
         <button
@@ -116,7 +114,8 @@
           ♡
         </button>
 
-        <!-- CART -->
+
+        <!-- BAG -->
 
         <button
           class="cart-btn"
@@ -129,6 +128,7 @@
             0
           </span>
         </button>
+
 
         <!-- MOBILE MENU -->
 
@@ -143,13 +143,16 @@
         </button>
 
       </div>
+
     </header>
+
 
     <!-- =====================================================
          MAIN CONTENT
          ===================================================== -->
 
     <main>
+
 
       <!-- ===================================================
            HERO
@@ -160,7 +163,7 @@
         id="home"
       >
 
-        <!-- ================= HERO BACKGROUND ================= -->
+        <!-- HERO BACKGROUND -->
 
         <div class="hero-background">
 
@@ -172,7 +175,8 @@
 
         </div>
 
-        <!-- ================= HERO CONTENT ================= -->
+
+        <!-- HERO CONTENT -->
 
         <div class="hero-content">
 
@@ -186,6 +190,7 @@
 
           </div>
 
+
           <!-- TITLE -->
 
           <h1 class="hero-title reveal">
@@ -197,6 +202,7 @@
             <em>Perfect Look.</em>
 
           </h1>
+
 
           <!-- DESCRIPTION -->
 
@@ -210,14 +216,15 @@
 
           </p>
 
-          <!-- BUTTONS -->
+
+          <!-- HERO BUTTONS -->
 
           <div class="hero-buttons reveal">
 
             <!-- TRY VIRTUALLY -->
 
             <a
-              href="{{ url_for('about') }}#tryon"
+              href="/beauty#tryon"
               class="primary-btn"
             >
 
@@ -229,10 +236,11 @@
 
             </a>
 
+
             <!-- EXPLORE MAKEUP -->
 
             <a
-              href="{{ url_for('beauty') }}"
+              href="/beauty#categories"
               class="secondary-btn"
             >
               Explore Makeup
@@ -240,39 +248,49 @@
 
           </div>
 
-          <!-- ================= HERO STATS ================= -->
+
+          <!-- HERO STATS -->
 
           <div class="hero-stats reveal">
 
             <div>
+
               <strong>100+</strong>
 
               <span>
                 Beauty Products
               </span>
+
             </div>
 
+
             <div>
+
               <strong>AR</strong>
 
               <span>
                 Virtual Try-On
               </span>
+
             </div>
 
+
             <div>
+
               <strong>∞</strong>
 
               <span>
                 Looks to Try
               </span>
+
             </div>
 
           </div>
 
         </div>
 
-        <!-- ================= HERO VISUAL ================= -->
+
+        <!-- HERO VISUAL -->
 
         <div class="hero-visual">
 
@@ -280,7 +298,8 @@
 
           <div class="orbit orbit-two"></div>
 
-          <!-- ================= LIPSTICK ================= -->
+
+          <!-- LIPSTICK -->
 
           <div class="floating-product lipstick">
 
@@ -302,7 +321,8 @@
 
           </div>
 
-          <!-- ================= BLUSH ================= -->
+
+          <!-- BLUSH -->
 
           <div class="floating-product blush">
 
@@ -324,7 +344,8 @@
 
           </div>
 
-          <!-- ================= FACE CARD ================= -->
+
+          <!-- FACE CARD -->
 
           <div class="face-card">
 
@@ -342,7 +363,9 @@
 
             </div>
 
+
             <div class="scan-line"></div>
+
 
             <div class="face-label">
 
@@ -356,7 +379,8 @@
 
         </div>
 
-        <!-- ================= SCROLL INDICATOR ================= -->
+
+        <!-- SCROLL INDICATOR -->
 
         <div class="scroll-indicator">
 
@@ -369,6 +393,7 @@
         </div>
 
       </section>
+
 
       <!-- ===================================================
            MARQUEE
@@ -412,12 +437,9 @@
 
       </section>
 
+
       <!-- ===================================================
            PRODUCTS PREVIEW
-           
-           IMPORTANT:
-           There is NO ABOUT SECTION here.
-           The About page is completely separate.
            =================================================== -->
 
       <section
@@ -425,7 +447,7 @@
         id="products"
       >
 
-        <!-- ================= PRODUCTS HEADING ================= -->
+        <!-- PRODUCTS HEADING -->
 
         <div class="section-heading reveal">
 
@@ -447,8 +469,9 @@
 
           </div>
 
+
           <a
-            href="{{ url_for('beauty') }}"
+            href="/beauty"
             class="view-all"
           >
             View all products →
@@ -456,11 +479,15 @@
 
         </div>
 
-        <!-- ================= PRODUCT GRID ================= -->
+
+        <!-- PRODUCT GRID -->
 
         <div class="product-grid">
 
-          <!-- ================= PRODUCT 1 ================= -->
+
+          <!-- =================================================
+               PRODUCT 1
+               ================================================= -->
 
           <article class="product-card reveal">
 
@@ -475,13 +502,14 @@
               </div>
 
               <a
-                href="{{ url_for('about') }}#tryon"
+                href="/beauty#tryon"
                 class="quick-try"
               >
                 Try AR
               </a>
 
             </div>
+
 
             <div class="product-info">
 
@@ -505,7 +533,10 @@
 
           </article>
 
-          <!-- ================= PRODUCT 2 ================= -->
+
+          <!-- =================================================
+               PRODUCT 2
+               ================================================= -->
 
           <article class="product-card reveal">
 
@@ -520,13 +551,14 @@
               </div>
 
               <a
-                href="{{ url_for('about') }}#tryon"
+                href="/beauty#tryon"
                 class="quick-try"
               >
                 Try AR
               </a>
 
             </div>
+
 
             <div class="product-info">
 
@@ -550,7 +582,10 @@
 
           </article>
 
-          <!-- ================= PRODUCT 3 ================= -->
+
+          <!-- =================================================
+               PRODUCT 3
+               ================================================= -->
 
           <article class="product-card reveal">
 
@@ -561,13 +596,14 @@
               </div>
 
               <a
-                href="{{ url_for('about') }}#tryon"
+                href="/beauty#tryon"
                 class="quick-try"
               >
                 Try AR
               </a>
 
             </div>
+
 
             <div class="product-info">
 
@@ -597,22 +633,25 @@
 
     </main>
 
+
     <!-- =====================================================
          FOOTER
          ===================================================== -->
 
     <footer>
 
-      <!-- ================= FOOTER TOP ================= -->
+
+      <!-- FOOTER TOP -->
 
       <div class="footer-top">
 
-        <!-- ================= FOOTER BRAND ================= -->
+
+        <!-- FOOTER BRAND -->
 
         <div class="footer-brand">
 
           <a
-            href="{{ url_for('home') }}"
+            href="/"
             class="logo"
           >
             GLAMORA<span>AR</span>
@@ -624,9 +663,11 @@
 
         </div>
 
-        <!-- ================= FOOTER LINKS ================= -->
+
+        <!-- FOOTER LINKS -->
 
         <div class="footer-links">
+
 
           <!-- EXPLORE -->
 
@@ -636,23 +677,24 @@
               EXPLORE
             </span>
 
-            <a href="{{ url_for('home') }}">
+            <a href="/">
               Home
             </a>
 
-            <a href="{{ url_for('beauty') }}">
+            <a href="/beauty">
               Beauty
             </a>
 
-            <a href="{{ url_for('about') }}">
+            <a href="/about">
               About
             </a>
 
-            <a href="{{ url_for('contact') }}">
+            <a href="/contact">
               Contact
             </a>
 
           </div>
+
 
           <!-- GLAMORA AR -->
 
@@ -662,15 +704,16 @@
               GLAMORA AR
             </span>
 
-            <a href="{{ url_for('about') }}#tryon">
+            <a href="/beauty#tryon">
               Virtual Try-On
             </a>
 
-            <a href="{{ url_for('beauty') }}">
+            <a href="/beauty#categories">
               Products
             </a>
 
           </div>
+
 
           <!-- FOLLOW -->
 
@@ -698,7 +741,8 @@
 
       </div>
 
-      <!-- ================= FOOTER BOTTOM ================= -->
+
+      <!-- FOOTER BOTTOM -->
 
       <div class="footer-bottom">
 
@@ -713,6 +757,7 @@
       </div>
 
     </footer>
+
 
     <!-- =====================================================
          JAVASCRIPT
