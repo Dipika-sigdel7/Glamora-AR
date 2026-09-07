@@ -36,42 +36,72 @@
       </div>
     </div>
 
-    <!-- =====================================================
-     NAVBAR
-     ===================================================== -->
-
+    <!-- Header -->
     <header class="navbar">
+      <!-- LOGO -->
       <div class="logo">GLAMORA <span>AR</span></div>
 
+      <!-- MAIN NAVIGATION -->
       <nav class="nav-links">
         <a href="#home" class="active"> Home </a>
 
-        <a href="#categories"> Beauty </a>
+        <nav class="nav-links">
+          <a href="{{ url_for('home') }}">Home</a>
+          <a href="{{ url_for('beauty') }}">Beauty</a>
+          <a href="{{ url_for('tryon') }}">Virtual Try-On</a>
+        </nav>
 
-        <a href="#tryon"> Virtual Try-On </a>
+        <div class="nav-actions">
+          <a href="{{ url_for('products') }}" class="header-link"> Products </a>
 
-        <a href="#products"> Products </a>
+          <a href="{{ url_for('about') }}" class="header-link"> About </a>
 
-        <a href="#about"> About </a>
+          <a href="{{ url_for('contact') }}" class="header-link"> Contact </a>
 
-        <a href="#contact"> Contact </a>
+          <button class="icon-btn" aria-label="Wishlist">
+            <span>♡</span>
+          </button>
+
+          <button class="cart-btn">
+            <span>Bag</span>
+            <span class="cart-count">0</span>
+          </button>
+
+          <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+            ☰
+          </button>
+        </div>
       </nav>
 
+      <!-- HEADER ACTIONS -->
       <div class="nav-actions">
+        <!-- SEARCH -->
         <button class="icon-btn" aria-label="Search">
           <span>⌕</span>
         </button>
 
+        <!-- PRODUCTS -->
+        <a href="#products" class="header-link"> Products </a>
+
+        <!-- ABOUT -->
+        <a href="#about" class="header-link"> About </a>
+
+        <!-- CONTACT -->
+        <a href="#contact" class="header-link"> Contact </a>
+
+        <!-- WISHLIST -->
         <button class="icon-btn" aria-label="Wishlist">
           <span>♡</span>
         </button>
 
+        <!-- BAG -->
         <button class="cart-btn">
           <span> Bag </span>
 
           <span class="cart-count"> 0 </span>
         </button>
 
+        <!-- MOBILE MENU -->
         <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
       </div>
     </header>
