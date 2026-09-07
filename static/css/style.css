@@ -744,7 +744,427 @@ button {
     transform: rotate(30deg);
 }
 
+/* =========================================================
+   NATURAL EYELINER STYLES
+   ========================================================= */
 
+/*
+   IMPORTANT:
+   These styles modify the .eyeliner element,
+   NOT the complete .eye container.
+*/
+
+
+/* =========================================================
+   CLASSIC
+   ========================================================= */
+
+.eye.style-classic .eyeliner {
+    width: 202px;
+    height: 45px;
+
+    border-top: 2.5px solid var(--eyeliner-color);
+
+    border-radius: 50% 50% 0 0 / 90% 90% 0 0;
+
+    filter: none;
+}
+
+.eye.style-classic .eyeliner::after {
+    content: "";
+
+    position: absolute;
+
+    right: -9px;
+    top: -5px;
+
+    width: 18px;
+    height: 5px;
+
+    border-top: 2.5px solid var(--eyeliner-color);
+
+    border-radius: 50%;
+
+    transform: rotate(-12deg);
+}
+
+
+/* =========================================================
+   WINGED
+   ========================================================= */
+
+.eye.style-winged .eyeliner {
+    width: 204px;
+    height: 46px;
+
+    border-top: 3px solid var(--eyeliner-color);
+
+    border-radius: 50% 50% 0 0 / 90% 90% 0 0;
+}
+
+.eye.style-winged .eyeliner::after {
+    content: "";
+
+    position: absolute;
+
+    right: -17px;
+    top: -7px;
+
+    width: 28px;
+    height: 8px;
+
+    border-top: 3px solid var(--eyeliner-color);
+
+    border-radius: 50%;
+
+    transform: rotate(-18deg);
+
+    transform-origin: left center;
+}
+
+
+/* =========================================================
+   CAT EYE
+   ========================================================= */
+
+.eye.style-cat .eyeliner {
+    width: 203px;
+    height: 47px;
+
+    border-top: 3px solid var(--eyeliner-color);
+
+    border-radius: 50% 50% 0 0 / 90% 90% 0 0;
+}
+
+.eye.style-cat .eyeliner::after {
+    content: "";
+
+    position: absolute;
+
+    right: -22px;
+    top: -9px;
+
+    width: 34px;
+    height: 10px;
+
+    border-top: 3.5px solid var(--eyeliner-color);
+
+    border-radius: 50%;
+
+    transform: rotate(-25deg);
+
+    transform-origin: left center;
+}
+
+
+/* =========================================================
+   DOUBLE WING
+   ========================================================= */
+
+.eye.style-double .eyeliner {
+    width: 202px;
+    height: 46px;
+
+    border-top: 2.5px solid var(--eyeliner-color);
+
+    border-radius: 50% 50% 0 0 / 90% 90% 0 0;
+}
+
+.eye.style-double .eyeliner::before {
+    content: "";
+
+    position: absolute;
+
+    right: -18px;
+    top: 5px;
+
+    width: 25px;
+    height: 6px;
+
+    border-top: 2px solid var(--eyeliner-color);
+
+    border-radius: 50%;
+
+    transform: rotate(-10deg);
+}
+
+.eye.style-double .eyeliner::after {
+    content: "";
+
+    position: absolute;
+
+    right: -19px;
+    top: -7px;
+
+    width: 29px;
+    height: 8px;
+
+    border-top: 2.5px solid var(--eyeliner-color);
+
+    border-radius: 50%;
+
+    transform: rotate(-19deg);
+}
+
+
+/* =========================================================
+   SOFT LINE
+   ========================================================= */
+
+.eye.style-soft .eyeliner {
+    width: 200px;
+    height: 44px;
+
+    border-top: 2px solid var(--eyeliner-color);
+
+    border-radius: 50% 50% 0 0 / 90% 90% 0 0;
+
+    opacity: 0.72;
+
+    filter:
+        drop-shadow(
+            0 0 2px
+            var(--eyeliner-color)
+        );
+}
+
+.eye.style-soft .eyeliner::after {
+    content: "";
+
+    position: absolute;
+
+    right: -10px;
+    top: -4px;
+
+    width: 19px;
+    height: 5px;
+
+    border-top: 1.5px solid var(--eyeliner-color);
+
+    border-radius: 50%;
+
+    transform: rotate(-9deg);
+
+    opacity: 0.7;
+}
+
+
+/* =========================================================
+   DRAMATIC
+   ========================================================= */
+
+.eye.style-dramatic .eyeliner {
+    width: 207px;
+    height: 49px;
+
+    border-top: 4px solid var(--eyeliner-color);
+
+    border-radius: 50% 50% 0 0 / 90% 90% 0 0;
+}
+
+.eye.style-dramatic .eyeliner::after {
+    content: "";
+
+    position: absolute;
+
+    right: -27px;
+    top: -12px;
+
+    width: 43px;
+    height: 13px;
+
+    border-top: 4px solid var(--eyeliner-color);
+
+    border-radius: 50%;
+
+    transform: rotate(-27deg);
+
+    transform-origin: left center;
+}
+
+
+/* =========================================================
+   LASH VARIATIONS
+   ========================================================= */
+
+
+/* -------------------------
+   NATURAL / CLASSIC
+   ------------------------- */
+
+.lashes.soft span {
+    height: 13px;
+    width: 1.2px;
+
+    opacity: 0.68;
+}
+
+
+/* -------------------------
+   LONG LASHES
+   ------------------------- */
+
+.lashes.long span {
+    height: 20px;
+    width: 1.8px;
+
+    opacity: 0.9;
+}
+
+
+/* -------------------------
+   DRAMATIC LASHES
+   ------------------------- */
+
+.lashes.dramatic span {
+    height: 25px;
+    width: 2.3px;
+
+    opacity: 0.95;
+}
+
+
+/* Outer lashes longer */
+
+.lashes.dramatic span:nth-child(1),
+.lashes.dramatic span:nth-child(8) {
+    height: 29px;
+}
+
+
+/* Next lashes */
+
+.lashes.dramatic span:nth-child(2),
+.lashes.dramatic span:nth-child(7) {
+    height: 27px;
+}
+
+
+/* Middle lashes */
+
+.lashes.dramatic span:nth-child(3),
+.lashes.dramatic span:nth-child(6) {
+    height: 25px;
+}
+
+
+/* =========================================================
+   NATURAL LASH CURVE
+   ========================================================= */
+
+.lashes-top span:nth-child(1) {
+    transform: rotate(-43deg);
+}
+
+.lashes-top span:nth-child(2) {
+    transform: rotate(-30deg);
+}
+
+.lashes-top span:nth-child(3) {
+    transform: rotate(-17deg);
+}
+
+.lashes-top span:nth-child(4) {
+    transform: rotate(-5deg);
+}
+
+.lashes-top span:nth-child(5) {
+    transform: rotate(8deg);
+}
+
+.lashes-top span:nth-child(6) {
+    transform: rotate(21deg);
+}
+
+.lashes-top span:nth-child(7) {
+    transform: rotate(35deg);
+}
+
+.lashes-top span:nth-child(8) {
+    transform: rotate(49deg);
+}
+
+
+/* =========================================================
+   LASH HOVER ANIMATION
+   ========================================================= */
+
+.eye-card:hover .lashes-top span {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   EYELINER SMOOTH TRANSITION
+   ========================================================= */
+
+.eyeliner {
+    transition:
+        width 0.55s ease,
+        height 0.55s ease,
+        border-width 0.55s ease,
+        opacity 0.55s ease,
+        filter 0.55s ease;
+}
+
+
+/* =========================================================
+   BLINKING — KEEP THIS BELOW EYELINER
+   ========================================================= */
+
+.blink-lid {
+    pointer-events: none;
+}
+
+
+/* Smooth blink */
+
+.blink-top,
+.blink-bottom {
+    will-change: transform;
+}
+
+
+/* =========================================================
+   SUBTLE EYE MOVEMENT
+   ========================================================= */
+
+.eye {
+    will-change: transform;
+}
+
+
+/* =========================================================
+   NATURAL HOVER
+   ========================================================= */
+
+.eye-card:hover .iris {
+    transition: transform 0.45s ease;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1.025);
+}
+
+
+/* =========================================================
+   REDUCE MOTION FOR ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .eye,
+    .blink-top,
+    .blink-bottom {
+        animation: none !important;
+    }
+
+    .iris,
+    .eyeliner,
+    .lashes span {
+        transition: none !important;
+    }
+}
 
 
 /* =========================================================
