@@ -1,0 +1,525 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Contact Glamora AR
+    </title>
+
+
+    <!-- ================= FONTS ================= -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- ================= CSS ================= -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         PRELOADER
+         ===================================================== -->
+
+    <div
+        class="loader"
+        id="loader"
+    >
+
+        <div class="loader-logo">
+            GLAMORA <span>AR</span>
+        </div>
+
+        <div class="loader-line">
+            <div></div>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         NAVBAR
+         ===================================================== -->
+
+    <header class="navbar">
+
+        <a
+            href="{{ url_for('home') }}"
+            class="logo"
+        >
+            GLAMORA <span>AR</span>
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a href="{{ url_for('home') }}">
+                Home
+            </a>
+
+            <a href="{{ url_for('about') }}">
+                Beauty
+            </a>
+
+            <a href="{{ url_for('about') }}#tryon">
+                Virtual Try-On
+            </a>
+
+        </nav>
+
+
+        <div class="nav-actions">
+
+            <button
+                class="icon-btn"
+                type="button"
+                aria-label="Search"
+            >
+                ⌕
+            </button>
+
+
+            <a
+                href="{{ url_for('about') }}#products"
+                class="header-link"
+            >
+                Products
+            </a>
+
+
+            <a
+                href="{{ url_for('about') }}"
+                class="header-link"
+            >
+                About
+            </a>
+
+
+            <a
+                href="{{ url_for('contact') }}"
+                class="header-link active-link"
+            >
+                Contact
+            </a>
+
+
+            <button
+                class="icon-btn"
+                type="button"
+                aria-label="Wishlist"
+            >
+                ♡
+            </button>
+
+
+            <button
+                class="cart-btn"
+                type="button"
+            >
+
+                <span>
+                    Bag
+                </span>
+
+                <span class="cart-count">
+                    0
+                </span>
+
+            </button>
+
+
+            <button
+                class="menu-btn"
+                id="menuBtn"
+                type="button"
+                aria-label="Open menu"
+            >
+                ☰
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTACT HERO
+         ===================================================== -->
+
+    <section class="inner-hero contact-hero">
+
+        <div class="inner-hero-content reveal">
+
+            <span class="section-label">
+                GET IN TOUCH
+            </span>
+
+            <h1>
+                Let's create
+                <em>beauty together.</em>
+            </h1>
+
+            <p>
+                Have a question about Glamora AR,
+                virtual try-on, or our beauty products?
+                We'd love to hear from you.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CONTACT
+         ===================================================== -->
+
+    <main>
+
+        <section class="contact-section contact-page">
+
+            <div class="contact-container">
+
+
+                <!-- CONTACT INFORMATION -->
+
+                <div class="contact-content reveal">
+
+                    <span class="section-label">
+                        CONTACT GLAMORA
+                    </span>
+
+                    <h2>
+                        We would love
+                        to hear from <em>you.</em>
+                    </h2>
+
+                    <p>
+                        Whether you have a question,
+                        feedback or simply want to learn
+                        more about Glamora AR, send us a message.
+                    </p>
+
+
+                    <div class="contact-details">
+
+
+                        <div class="contact-detail">
+
+                            <span class="detail-icon">
+                                ✉
+                            </span>
+
+                            <div>
+
+                                <small>
+                                    EMAIL
+                                </small>
+
+                                <strong>
+                                    hello@glamoraar.com
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="contact-detail">
+
+                            <span class="detail-icon">
+                                ◉
+                            </span>
+
+                            <div>
+
+                                <small>
+                                    VIRTUAL BEAUTY
+                                </small>
+
+                                <strong>
+                                    Available worldwide
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="contact-detail">
+
+                            <span class="detail-icon">
+                                ✦
+                            </span>
+
+                            <div>
+
+                                <small>
+                                    RESPONSE TIME
+                                </small>
+
+                                <strong>
+                                    Within 24–48 hours
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CONTACT FORM -->
+
+                <div class="contact-form-wrapper reveal">
+
+                    <form
+                        class="contact-form"
+                        id="contactForm"
+                    >
+
+
+                        <!-- NAME + EMAIL -->
+
+                        <div class="form-row">
+
+
+                            <div class="form-group">
+
+                                <label for="contactName">
+                                    Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="contactName"
+                                    name="name"
+                                    placeholder="Your name"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="contactEmail">
+                                    Email
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="contactEmail"
+                                    name="email"
+                                    placeholder="your@email.com"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SUBJECT -->
+
+                        <div class="form-group">
+
+                            <label for="contactSubject">
+                                Subject
+                            </label>
+
+                            <input
+                                type="text"
+                                id="contactSubject"
+                                name="subject"
+                                placeholder="How can we help?"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- MESSAGE -->
+
+                        <div class="form-group">
+
+                            <label for="contactMessage">
+                                Message
+                            </label>
+
+                            <textarea
+                                id="contactMessage"
+                                name="message"
+                                rows="7"
+                                placeholder="Write your message..."
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- SUBMIT -->
+
+                        <button
+                            type="submit"
+                            class="contact-submit"
+                        >
+
+                            Send Message
+
+                            <span>
+                                →
+                            </span>
+
+                        </button>
+
+
+                        <p
+                            class="form-status"
+                            id="formStatus"
+                        ></p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer>
+
+        <div class="footer-top">
+
+            <div class="footer-brand">
+
+                <a
+                    href="{{ url_for('home') }}"
+                    class="logo"
+                >
+                    GLAMORA<span>AR</span>
+                </a>
+
+                <p>
+                    Beauty technology designed for everyone.
+                </p>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <div>
+
+                    <span>EXPLORE</span>
+
+                    <a href="{{ url_for('about') }}">
+                        Beauty
+                    </a>
+
+                    <a href="{{ url_for('about') }}#tryon">
+                        Virtual Try-On
+                    </a>
+
+                    <a href="{{ url_for('about') }}#products">
+                        Products
+                    </a>
+
+                </div>
+
+
+                <div>
+
+                    <span>COMPANY</span>
+
+                    <a href="{{ url_for('home') }}">
+                        Home
+                    </a>
+
+                    <a href="{{ url_for('about') }}">
+                        About
+                    </a>
+
+                    <a href="{{ url_for('contact') }}">
+                        Contact
+                    </a>
+
+                </div>
+
+
+                <div>
+
+                    <span>FOLLOW</span>
+
+                    <a href="#">
+                        Instagram
+                    </a>
+
+                    <a href="#">
+                        TikTok
+                    </a>
+
+                    <a href="#">
+                        Pinterest
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <span>
+                © 2026 Glamora AR
+            </span>
+
+            <span>
+                Made for the future of beauty ✦
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script
+        src="{{ url_for('static', filename='js/main.js') }}"
+    ></script>
+
+</body>
+
+</html>
