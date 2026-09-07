@@ -745,6 +745,572 @@ button {
 }
 
 
+
+/* =========================================================
+   DYNAMIC EYELINER PREVIEW
+   ========================================================= */
+
+.eye-preview {
+    height: 220px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+}
+
+
+/* eye */
+
+.eye {
+    width: 180px;
+    height: 95px;
+
+    position: relative;
+
+    border-radius:
+        50% 50% 48% 48% / 70% 70% 40% 40%;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fdfaf7,
+            #e7ddd5
+        );
+
+    border-top:
+        7px solid var(--eyeliner-color, #33231f);
+
+    border-bottom:
+        2px solid rgba(80,50,40,0.35);
+
+    transform:
+        rotate(-2deg);
+
+    transition:
+        all 0.5s ease;
+}
+
+
+/* eyelid */
+
+.eyelid {
+    position: absolute;
+
+    left: 10px;
+    right: 10px;
+
+    top: 7px;
+
+    height: 35px;
+
+    border-top:
+        2px solid rgba(80,50,40,0.25);
+
+    border-radius: 50%;
+}
+
+
+/* iris */
+
+.iris {
+    width: 55px;
+    height: 55px;
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -45%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #211c1a 0 20%,
+            #8b634a 21% 55%,
+            #c9a17d 56% 70%,
+            #5e4738 71% 100%
+        );
+
+    border:
+        3px solid #d7c1ad;
+}
+
+
+/* pupil */
+
+.pupil {
+    width: 21px;
+    height: 21px;
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: #161313;
+}
+
+
+/* eye highlight */
+
+.eye-highlight {
+    width: 8px;
+    height: 8px;
+
+    position: absolute;
+
+    top: 9px;
+    right: 10px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    opacity: 0.8;
+}
+
+
+/* =========================================================
+   EYELASHES
+   ========================================================= */
+
+.lashes {
+    position: absolute;
+
+    display: flex;
+
+    z-index: 5;
+}
+
+.lashes span {
+    display: block;
+
+    width: 2px;
+    height: 17px;
+
+    margin: 0 5px;
+
+    border-radius: 100%;
+
+    background:
+        var(--eyeliner-color, #33231f);
+
+    transform-origin: bottom;
+
+    transition:
+        all 0.4s ease;
+}
+
+
+/* upper lashes */
+
+.lashes-top {
+    left: 8px;
+    right: 8px;
+
+    top: -16px;
+
+    justify-content: space-between;
+}
+
+
+/* lower lashes */
+
+.lashes-bottom {
+    left: 45px;
+    right: 45px;
+
+    bottom: -7px;
+
+    justify-content: space-between;
+}
+
+.lashes-bottom span {
+    height: 8px;
+
+    transform:
+        rotate(20deg);
+}
+
+/* =========================================================
+   DYNAMIC LIPSTICK
+   ========================================================= */
+
+.lipstick-preview {
+    height: 220px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+}
+
+.lipstick-product {
+    width: 58px;
+
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    filter:
+        drop-shadow(0 15px 12px rgba(0, 0, 0, 0.15));
+
+    transition:
+        transform 0.5s cubic-bezier(.2,.8,.2,1);
+}
+
+.category-card:hover .lipstick-product {
+    transform:
+        translateY(-10px)
+        rotate(5deg)
+        scale(1.08);
+}
+
+
+/* lipstick top */
+
+.lipstick-top {
+    width: 40px;
+    height: 65px;
+
+    background: var(--lipstick-color, #c6283d);
+
+    border-radius:
+        12px 12px 5px 5px;
+
+    position: relative;
+
+    box-shadow:
+        inset -7px 0 10px rgba(0,0,0,0.12),
+        inset 7px 0 10px rgba(255,255,255,0.1);
+}
+
+
+/* lipstick shine */
+
+.lipstick-top::after {
+    content: "";
+
+    position: absolute;
+
+    width: 8px;
+    height: 38px;
+
+    left: 7px;
+    top: 10px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.18);
+
+    transform: rotate(10deg);
+}
+
+
+/* lipstick body */
+
+.lipstick-body {
+    width: 48px;
+    height: 22px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #b8b8b8,
+            #eeeeee,
+            #8e8e8e
+        );
+
+    border-radius: 3px;
+}
+
+
+/* lipstick base */
+
+.lipstick-base {
+    width: 55px;
+    height: 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #222,
+            #555,
+            #222
+        );
+
+    border-radius:
+        3px 3px 7px 7px;
+}
+
+
+/* shade label */
+
+.shade-name {
+    display: inline-block;
+
+    margin-top: 6px;
+
+    font-family: var(--sans);
+
+    font-size: 9px;
+
+    letter-spacing: 1.5px;
+
+    color: rgba(23,20,20,0.55);
+
+    text-transform: uppercase;
+}
+
+
+/* eyeliner name */
+
+.eyeliner-name {
+    display: inline-block;
+
+    margin-top: 6px;
+
+    font-size: 9px;
+
+    letter-spacing: 1.5px;
+
+    color: rgba(23,20,20,0.55);
+
+    text-transform: uppercase;
+}
+
+
+
+/* =========================================================
+   EYELINER STYLES
+   ========================================================= */
+
+
+/* CLASSIC */
+
+.eye.style-classic {
+    border-top-width: 6px;
+}
+
+.eye.style-classic::after {
+    content: "";
+
+    position: absolute;
+
+    right: -14px;
+    top: -8px;
+
+    width: 28px;
+    height: 5px;
+
+    border-radius: 100%;
+
+    background:
+        var(--eyeliner-color);
+    
+    transform:
+        rotate(-15deg);
+}
+
+
+/* WINGED */
+
+.eye.style-winged {
+    border-top-width: 8px;
+}
+
+.eye.style-winged::after {
+    content: "";
+
+    position: absolute;
+
+    right: -30px;
+    top: -17px;
+
+    width: 42px;
+    height: 8px;
+
+    border-radius: 100%;
+
+    background:
+        var(--eyeliner-color);
+
+    transform:
+        rotate(-27deg);
+}
+
+
+/* CAT EYE */
+
+.eye.style-cat {
+    border-top-width: 9px;
+}
+
+.eye.style-cat::after {
+    content: "";
+
+    position: absolute;
+
+    right: -40px;
+    top: -25px;
+
+    width: 55px;
+    height: 11px;
+
+    background:
+        var(--eyeliner-color);
+
+    border-radius: 100%;
+
+    transform:
+        rotate(-35deg);
+}
+
+
+/* DOUBLE WING */
+
+.eye.style-double {
+    border-top-width: 6px;
+}
+
+.eye.style-double::after {
+    content: "";
+
+    position: absolute;
+
+    right: -35px;
+    top: -18px;
+
+    width: 45px;
+    height: 5px;
+
+    background:
+        var(--eyeliner-color);
+
+    border-radius: 100%;
+
+    transform:
+        rotate(-25deg);
+
+    box-shadow:
+        7px 13px 0 -1px var(--eyeliner-color);
+}
+
+
+/* SOFT */
+
+.eye.style-soft {
+    border-top-width: 3px;
+
+    filter:
+        drop-shadow(
+            0 0 5px
+            var(--eyeliner-color)
+        );
+}
+
+.eye.style-soft::after {
+    content: "";
+
+    position: absolute;
+
+    right: -15px;
+    top: -5px;
+
+    width: 25px;
+    height: 3px;
+
+    background:
+        var(--eyeliner-color);
+
+    opacity: 0.7;
+
+    transform:
+        rotate(-10deg);
+}
+
+
+/* DRAMATIC */
+
+.eye.style-dramatic {
+    border-top-width: 11px;
+}
+
+.eye.style-dramatic::after {
+    content: "";
+
+    position: absolute;
+
+    right: -50px;
+    top: -30px;
+
+    width: 70px;
+    height: 15px;
+
+    background:
+        var(--eyeliner-color);
+
+    border-radius: 100%;
+
+    transform:
+        rotate(-38deg);
+}
+
+
+/* =========================================================
+   LASH VARIATIONS
+   ========================================================= */
+
+.lashes.dramatic span {
+    height: 25px;
+
+    width: 3px;
+
+    margin: 0 4px;
+}
+
+.lashes.long span {
+    height: 22px;
+
+    width: 2px;
+}
+
+.lashes.soft span {
+    height: 13px;
+
+    width: 1px;
+
+    opacity: 0.7;
+}
+
+.lashes.dramatic span:nth-child(1),
+.lashes.dramatic span:nth-child(6) {
+    height: 30px;
+}
+
+.lashes.dramatic span:nth-child(2),
+.lashes.dramatic span:nth-child(5) {
+    height: 27px;
+}
+
+
+
+
 /* =========================================================
    SCROLL
    ========================================================= */
