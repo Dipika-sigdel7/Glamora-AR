@@ -62,14 +62,6 @@ function initializeLoader() {
 
             if (loader) {
 
-                /*
-                 * CSS uses:
-                 *
-                 * .loader.hidden
-                 *
-                 * Therefore use "hidden".
-                 */
-
                 loader.classList.add("hidden");
 
             }
@@ -92,13 +84,11 @@ function initializeRevealAnimations() {
     const revealElements =
         document.querySelectorAll(".reveal");
 
-
     if (!revealElements.length) {
 
         return;
 
     }
-
 
     const revealObserver =
         new IntersectionObserver(
@@ -126,7 +116,6 @@ function initializeRevealAnimations() {
             }
         );
 
-
     revealElements.forEach((element) => {
 
         revealObserver.observe(element);
@@ -147,25 +136,14 @@ function initializeActiveNavigation() {
             ".nav-links a"
         );
 
-
     if (!navLinks.length) {
 
         return;
 
     }
 
-
     let currentPath =
         window.location.pathname;
-
-
-    /*
-     * Remove trailing slash.
-     *
-     * /about/
-     * becomes
-     * /about
-     */
 
     if (
         currentPath.length > 1 &&
@@ -177,15 +155,12 @@ function initializeActiveNavigation() {
 
     }
 
-
     navLinks.forEach((link) => {
 
         link.classList.remove("active");
 
-
         const href =
             link.getAttribute("href");
-
 
         if (!href) {
 
@@ -193,22 +168,8 @@ function initializeActiveNavigation() {
 
         }
 
-
-        /*
-         * Ignore URL hash.
-         *
-         * Example:
-         *
-         * /beauty#tryon
-         *
-         * becomes:
-         *
-         * /beauty
-         */
-
         const linkPath =
             href.split("#")[0];
-
 
         if (
             linkPath === currentPath ||
@@ -238,13 +199,11 @@ function initializeMakeupOptions() {
             ".makeup-option"
         );
 
-
     if (!makeupOptions.length) {
 
         return;
 
     }
-
 
     makeupOptions.forEach((option) => {
 
@@ -259,7 +218,6 @@ function initializeMakeupOptions() {
                     );
 
                 });
-
 
                 option.classList.add(
                     "active"
@@ -284,17 +242,11 @@ function initializeHeroParallax() {
             ".hero-visual"
         );
 
-
     if (!heroVisual) {
 
         return;
 
     }
-
-
-    /*
-     * Disable parallax on touch devices.
-     */
 
     if (
         window.matchMedia(
@@ -306,7 +258,6 @@ function initializeHeroParallax() {
 
     }
 
-
     window.addEventListener(
         "mousemove",
         (event) => {
@@ -316,12 +267,10 @@ function initializeHeroParallax() {
                 window.innerWidth -
                 0.5;
 
-
             const y =
                 event.clientY /
                 window.innerHeight -
                 0.5;
-
 
             heroVisual.style.transform =
                 `translate(
@@ -331,11 +280,6 @@ function initializeHeroParallax() {
 
         }
     );
-
-
-    /*
-     * Reset when mouse leaves window.
-     */
 
     document.addEventListener(
         "mouseleave",
@@ -361,19 +305,16 @@ function initializeMobileMenu() {
             "menuBtn"
         );
 
-
     const nav =
         document.querySelector(
             ".nav-links"
         );
-
 
     if (!menuBtn || !nav) {
 
         return;
 
     }
-
 
     menuBtn.addEventListener(
         "click",
@@ -384,12 +325,10 @@ function initializeMobileMenu() {
                     "open"
                 );
 
-
             menuBtn.setAttribute(
                 "aria-expanded",
                 isOpen ? "true" : "false"
             );
-
 
             menuBtn.setAttribute(
                 "aria-label",
@@ -398,26 +337,14 @@ function initializeMobileMenu() {
                     : "Open navigation menu"
             );
 
-
-            /*
-             * Change menu icon.
-             */
-
             menuBtn.textContent =
                 isOpen ? "✕" : "☰";
 
         }
     );
 
-
-    /*
-     * Close mobile menu
-     * after clicking a link.
-     */
-
     const links =
         nav.querySelectorAll("a");
-
 
     links.forEach((link) => {
 
@@ -429,18 +356,15 @@ function initializeMobileMenu() {
                     "open"
                 );
 
-
                 menuBtn.setAttribute(
                     "aria-expanded",
                     "false"
                 );
 
-
                 menuBtn.setAttribute(
                     "aria-label",
                     "Open navigation menu"
                 );
-
 
                 menuBtn.textContent =
                     "☰";
@@ -465,16 +389,85 @@ function initializeProductHover() {
         );
 
 
+    /*
+     * =====================================================
+     * LIPSTICK CARD HOVER
+     * =====================================================
+     */
+
+    const lipstickCard =
+        document.querySelector(
+            ".lipstick-card"
+        );
+
+    let lipstickHoverTimer = null;
+
+
+    if (lipstickCard) {
+
+        /*
+         * Change immediately when
+         * pointer enters the lipstick card.
+         */
+
+        lipstickCard.addEventListener(
+            "mouseenter",
+            () => {
+
+                randomizeLipstick();
+
+
+                /*
+                 * Keep changing while the
+                 * pointer remains on the card.
+                 */
+
+                lipstickHoverTimer =
+                    setInterval(() => {
+
+                        randomizeLipstick();
+
+                    }, 1000);
+
+            }
+        );
+
+
+        /*
+         * Stop changing when pointer
+         * leaves the card.
+         */
+
+        lipstickCard.addEventListener(
+            "mouseleave",
+            () => {
+
+                if (lipstickHoverTimer) {
+
+                    clearInterval(
+                        lipstickHoverTimer
+                    );
+
+                    lipstickHoverTimer = null;
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /*
+     * Existing product hover effect.
+     */
+
     if (!productCards.length) {
 
         return;
 
     }
 
-
-    /*
-     * Disable 3D hover on touch devices.
-     */
 
     if (
         window.matchMedia(
@@ -496,32 +489,25 @@ function initializeProductHover() {
                 const rect =
                     card.getBoundingClientRect();
 
-
                 const x =
                     event.clientX -
                     rect.left;
-
 
                 const y =
                     event.clientY -
                     rect.top;
 
-
                 const centerX =
                     rect.width / 2;
-
 
                 const centerY =
                     rect.height / 2;
 
-
                 const rotateX =
                     (y - centerY) / 35;
 
-
                 const rotateY =
                     (centerX - x) / 35;
-
 
                 card.style.transform =
                     `perspective(800px)
@@ -531,7 +517,6 @@ function initializeProductHover() {
 
             }
         );
-
 
         card.addEventListener(
             "mouseleave",
@@ -556,24 +541,15 @@ function initializeCartDemo() {
 
     let cartCount = 0;
 
-
     const cartCounter =
         document.querySelector(
             ".cart-count"
         );
 
-
     const quickTryButtons =
         document.querySelectorAll(
             ".quick-try"
         );
-
-
-    /*
-     * Quick Try buttons
-     *
-     * These remain normal navigation links.
-     */
 
     quickTryButtons.forEach((button) => {
 
@@ -583,9 +559,7 @@ function initializeCartDemo() {
 
                 /*
                  * Do not use preventDefault().
-                 *
-                 * The original link navigation
-                 * should continue working.
+                 * Original navigation continues.
                  */
 
             }
@@ -593,16 +567,10 @@ function initializeCartDemo() {
 
     });
 
-
-    /*
-     * Cart button
-     */
-
     const cartButton =
         document.querySelector(
             ".cart-btn"
         );
-
 
     if (cartButton) {
 
@@ -611,7 +579,6 @@ function initializeCartDemo() {
             () => {
 
                 cartCount++;
-
 
                 if (cartCounter) {
 
@@ -631,6 +598,9 @@ function initializeCartDemo() {
 /* =========================================================
    RANDOM LIPSTICK
    ========================================================= */
+
+let lastLipstickIndex = -1;
+
 
 function randomizeLipstick() {
 
@@ -700,14 +670,27 @@ function randomizeLipstick() {
 
 
     /*
-     * Select random lipstick.
+     * Always select a different shade.
      */
 
-    const randomIndex =
-        Math.floor(
-            Math.random() *
-            lipstickColors.length
-        );
+    let randomIndex;
+
+    do {
+
+        randomIndex =
+            Math.floor(
+                Math.random() *
+                lipstickColors.length
+            );
+
+    } while (
+        randomIndex === lastLipstickIndex &&
+        lipstickColors.length > 1
+    );
+
+
+    lastLipstickIndex =
+        randomIndex;
 
 
     const selected =
@@ -754,13 +737,8 @@ function randomizeLipstick() {
 
         if (lipstickTop) {
 
-            /*
-             * Smooth color transition.
-             */
-
             lipstickTop.style.transition =
                 "background 0.7s ease";
-
 
             lipstickTop.style.background =
                 `linear-gradient(
@@ -977,6 +955,4 @@ function randomizeEyeliner() {
     }
 
 }
-
-
 
