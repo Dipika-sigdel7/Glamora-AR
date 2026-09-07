@@ -1,16 +1,19 @@
-<!doctype html>
 
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
 
     <title>Glamora AR — Virtual Beauty Experience</title>
 
     <!-- =====================================================
-     FONTS
-     ===================================================== -->
+         GOOGLE FONTS
+         ===================================================== -->
 
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
@@ -18,8 +21,8 @@
     />
 
     <!-- =====================================================
-     CSS
-     ===================================================== -->
+         MAIN CSS
+         ===================================================== -->
 
     <link
       rel="stylesheet"
@@ -29,11 +32,13 @@
 
   <body>
     <!-- =====================================================
-     PRELOADER
-     ===================================================== -->
+         PRELOADER
+         ===================================================== -->
 
     <div class="loader" id="loader">
-      <div class="loader-logo">GLAMORA <span>AR</span></div>
+      <div class="loader-logo">
+        GLAMORA <span>AR</span>
+      </div>
 
       <div class="loader-line">
         <div></div>
@@ -41,43 +46,88 @@
     </div>
 
     <!-- =====================================================
-     NAVBAR
-     ===================================================== -->
+         NAVBAR
+         ===================================================== -->
 
     <header class="navbar">
+
       <!-- ================= LOGO ================= -->
 
-      <a href="{{ url_for('home') }}" class="logo"> GLAMORA <span>AR</span> </a>
+      <a
+        href="{{ url_for('home') }}"
+        class="logo"
+        aria-label="Glamora AR Home"
+      >
+        GLAMORA <span>AR</span>
+      </a>
 
       <!-- ================= MAIN NAVIGATION ================= -->
 
-      <nav class="nav-links">
-        <a href="{{ url_for('home') }}" class="active"> Home </a>
+      <nav class="nav-links" id="navLinks">
 
-        <a href="{{ url_for('home') }}#categories"> Beauty </a>
+        <a
+          href="{{ url_for('home') }}"
+          class="active"
+        >
+          Home
+        </a>
 
-        <a href="{{ url_for('about') }}"> About </a>
+        <a
+          href="{{ url_for('beauty') }}"
+        >
+          Beauty
+        </a>
 
-        <a href="{{ url_for('contact') }}"> Contact </a>
+        <a
+          href="{{ url_for('about') }}"
+        >
+          About
+        </a>
+
+        <a
+          href="{{ url_for('contact') }}"
+        >
+          Contact
+        </a>
+
       </nav>
 
       <!-- ================= HEADER ACTIONS ================= -->
 
       <div class="nav-actions">
+
         <!-- SEARCH -->
 
-        <button class="icon-btn" aria-label="Search" type="button">⌕</button>
+        <button
+          class="icon-btn"
+          type="button"
+          aria-label="Search"
+        >
+          ⌕
+        </button>
 
         <!-- WISHLIST -->
 
-        <button class="icon-btn" aria-label="Wishlist" type="button">♡</button>
+        <button
+          class="icon-btn"
+          type="button"
+          aria-label="Wishlist"
+        >
+          ♡
+        </button>
 
         <!-- CART -->
 
-        <button class="cart-btn" type="button">
-          <span> Bag </span>
+        <button
+          class="cart-btn"
+          type="button"
+          aria-label="Shopping bag"
+        >
+          <span>Bag</span>
 
-          <span class="cart-count"> 0 </span>
+          <span class="cart-count">
+            0
+          </span>
         </button>
 
         <!-- MOBILE MENU -->
@@ -85,429 +135,592 @@
         <button
           class="menu-btn"
           id="menuBtn"
-          aria-label="Open menu"
           type="button"
+          aria-label="Open navigation menu"
+          aria-expanded="false"
         >
           ☰
         </button>
+
       </div>
     </header>
 
     <!-- =====================================================
-     MAIN CONTENT
-     ===================================================== -->
+         MAIN CONTENT
+         ===================================================== -->
 
     <main>
-      <!-- =================================================
-         HERO
-         ================================================= -->
 
-      <section class="hero" id="home">
-        <!-- HERO BACKGROUND -->
+      <!-- ===================================================
+           HERO
+           =================================================== -->
+
+      <section
+        class="hero"
+        id="home"
+      >
+
+        <!-- ================= HERO BACKGROUND ================= -->
 
         <div class="hero-background">
+
           <div class="glow glow-one"></div>
 
           <div class="glow glow-two"></div>
 
           <div class="glow glow-three"></div>
+
         </div>
 
         <!-- ================= HERO CONTENT ================= -->
 
         <div class="hero-content">
+
           <!-- EYEBROW -->
 
           <div class="eyebrow reveal">
+
             <span class="eyebrow-line"></span>
 
             BEAUTY MEETS TECHNOLOGY
+
           </div>
 
           <!-- TITLE -->
 
           <h1 class="hero-title reveal">
+
             Discover
 
-            <span> Your </span>
+            <span>Your</span>
 
-            <em> Perfect Look. </em>
+            <em>Perfect Look.</em>
+
           </h1>
 
           <!-- DESCRIPTION -->
 
           <p class="hero-description reveal">
-            Experience the future of beauty. Try makeup virtually on your own
-            face before you buy it.
+
+            Experience the future of beauty.
+
+            Try makeup virtually on your own face
+
+            before you buy it.
+
           </p>
 
           <!-- BUTTONS -->
 
           <div class="hero-buttons reveal">
+
             <!-- TRY VIRTUALLY -->
 
-            <a href="{{ url_for('home') }}#tryon" class="primary-btn">
-              <span> ✦ </span>
+            <a
+              href="{{ url_for('about') }}#tryon"
+              class="primary-btn"
+            >
+
+              <span>✦</span>
 
               Try Virtually
 
-              <span class="arrow"> → </span>
+              <span class="arrow">→</span>
+
             </a>
 
             <!-- EXPLORE MAKEUP -->
 
-            <a href="{{ url_for('home') }}#products" class="secondary-btn">
+            <a
+              href="{{ url_for('beauty') }}"
+              class="secondary-btn"
+            >
               Explore Makeup
             </a>
+
           </div>
 
           <!-- ================= HERO STATS ================= -->
 
           <div class="hero-stats reveal">
-            <div>
-              <strong> 100+ </strong>
 
-              <span> Beauty Products </span>
+            <div>
+              <strong>100+</strong>
+
+              <span>
+                Beauty Products
+              </span>
             </div>
 
             <div>
-              <strong> AR </strong>
+              <strong>AR</strong>
 
-              <span> Virtual Try-On </span>
+              <span>
+                Virtual Try-On
+              </span>
             </div>
 
             <div>
-              <strong> ∞ </strong>
+              <strong>∞</strong>
 
-              <span> Looks to Try </span>
+              <span>
+                Looks to Try
+              </span>
             </div>
+
           </div>
+
         </div>
 
         <!-- ================= HERO VISUAL ================= -->
 
         <div class="hero-visual">
+
           <div class="orbit orbit-one"></div>
 
           <div class="orbit orbit-two"></div>
 
-          <!-- LIPSTICK -->
+          <!-- ================= LIPSTICK ================= -->
 
           <div class="floating-product lipstick">
-            <div class="product-icon">💄</div>
+
+            <div class="product-icon">
+              💄
+            </div>
 
             <div>
-              <small> TRY </small>
 
-              <strong> Lip Color </strong>
+              <small>
+                TRY
+              </small>
+
+              <strong>
+                Lip Color
+              </strong>
+
             </div>
+
           </div>
 
-          <!-- BLUSH -->
+          <!-- ================= BLUSH ================= -->
 
           <div class="floating-product blush">
-            <div class="product-icon">🌸</div>
+
+            <div class="product-icon">
+              🌸
+            </div>
 
             <div>
-              <small> NEW </small>
 
-              <strong> Rose Blush </strong>
+              <small>
+                NEW
+              </small>
+
+              <strong>
+                Rose Blush
+              </strong>
+
             </div>
+
           </div>
 
-          <!-- FACE CARD -->
+          <!-- ================= FACE CARD ================= -->
 
           <div class="face-card">
+
             <div class="face-overlay"></div>
 
             <div class="face-placeholder">
+
               <div class="face-circle">
-                <span> ✦ </span>
+                <span>✦</span>
               </div>
 
-              <p>Virtual Beauty</p>
+              <p>
+                Virtual Beauty
+              </p>
+
             </div>
 
             <div class="scan-line"></div>
 
             <div class="face-label">
+
               <span class="status-dot"></span>
 
               AR READY
+
             </div>
+
           </div>
+
         </div>
 
         <!-- ================= SCROLL INDICATOR ================= -->
 
         <div class="scroll-indicator">
-          <span> SCROLL TO EXPLORE </span>
+
+          <span>
+            SCROLL TO EXPLORE
+          </span>
 
           <div class="scroll-line"></div>
+
         </div>
+
       </section>
 
-      <!-- =================================================
-         MARQUEE
-         ================================================= -->
+      <!-- ===================================================
+           MARQUEE
+           =================================================== -->
 
       <section class="marquee-section">
+
         <div class="marquee">
-          <span> VIRTUAL BEAUTY </span>
 
-          <i> ✦ </i>
+          <span>
+            VIRTUAL BEAUTY
+          </span>
 
-          <span> TRY BEFORE YOU BUY </span>
+          <i>✦</i>
 
-          <i> ✦ </i>
+          <span>
+            TRY BEFORE YOU BUY
+          </span>
 
-          <span> BEAUTY WITHOUT LIMITS </span>
+          <i>✦</i>
 
-          <i> ✦ </i>
+          <span>
+            BEAUTY WITHOUT LIMITS
+          </span>
 
-          <span> VIRTUAL BEAUTY </span>
+          <i>✦</i>
 
-          <i> ✦ </i>
+          <span>
+            VIRTUAL BEAUTY
+          </span>
 
-          <span> TRY BEFORE YOU BUY </span>
+          <i>✦</i>
 
-          <i> ✦ </i>
+          <span>
+            TRY BEFORE YOU BUY
+          </span>
+
+          <i>✦</i>
+
         </div>
+
       </section>
 
-      <!-- =================================================
-         ABOUT PREVIEW
-         ================================================= -->
+      <!-- ===================================================
+           PRODUCTS PREVIEW
+           
+           IMPORTANT:
+           There is NO ABOUT SECTION here.
+           The About page is completely separate.
+           =================================================== -->
 
-      <section class="about-preview section">
-        <div class="section-heading reveal">
-          <div>
-            <span class="section-label"> ABOUT GLAMORA </span>
+      <section
+        class="products section"
+        id="products"
+      >
 
-            <h2>
-              Beauty meets
-
-              <em> innovation. </em>
-            </h2>
-          </div>
-
-          <p>
-            Glamora AR combines modern beauty products with augmented reality
-            technology to create a completely new way to discover makeup.
-          </p>
-        </div>
-
-        <!-- ABOUT CARDS -->
-
-        <div class="about-preview-grid">
-          <!-- CARD 1 -->
-
-          <div class="about-preview-card reveal">
-            <span class="about-icon"> ✦ </span>
-
-            <h3>Virtual Beauty</h3>
-
-            <p>See how makeup looks on your face before purchasing it.</p>
-          </div>
-
-          <!-- CARD 2 -->
-
-          <div class="about-preview-card reveal">
-            <span class="about-icon"> ◉ </span>
-
-            <h3>Smart AR</h3>
-
-            <p>
-              Our virtual experience is designed to make beauty interactive and
-              simple.
-            </p>
-          </div>
-
-          <!-- CARD 3 -->
-
-          <div class="about-preview-card reveal">
-            <span class="about-icon"> ♡ </span>
-
-            <h3>Your Style</h3>
-
-            <p>Explore different colors, styles and beauty combinations.</p>
-          </div>
-        </div>
-
-        <!-- ABOUT BUTTON -->
-
-        <div class="center-button reveal">
-          <a href="{{ url_for('about') }}" class="primary-btn">
-            Discover Glamora
-
-            <span> → </span>
-          </a>
-        </div>
-      </section>
-
-      <!-- =================================================
-         PRODUCTS PREVIEW
-         ================================================= -->
-
-      <section class="products section" id="products">
-        <!-- PRODUCTS HEADING -->
+        <!-- ================= PRODUCTS HEADING ================= -->
 
         <div class="section-heading reveal">
+
           <div>
-            <span class="section-label"> SHOP THE LOOK </span>
+
+            <span class="section-label">
+              SHOP THE LOOK
+            </span>
 
             <h2>
+
               Beauty
 
-              <em> favorites. </em>
+              <em>
+                favorites.
+              </em>
+
             </h2>
+
           </div>
 
-          <a href="#products" class="view-all"> View all products → </a>
+          <a
+            href="{{ url_for('beauty') }}"
+            class="view-all"
+          >
+            View all products →
+          </a>
+
         </div>
 
-        <!-- PRODUCT GRID -->
+        <!-- ================= PRODUCT GRID ================= -->
 
         <div class="product-grid">
+
           <!-- ================= PRODUCT 1 ================= -->
 
           <article class="product-card reveal">
+
             <div class="product-image pink-bg">
-              <span class="product-badge"> BESTSELLER </span>
 
-              <div class="product-placeholder">💄</div>
+              <span class="product-badge">
+                BESTSELLER
+              </span>
 
-              <a href="#tryon" class="quick-try"> Try AR </a>
+              <div class="product-placeholder">
+                💄
+              </div>
+
+              <a
+                href="{{ url_for('about') }}#tryon"
+                class="quick-try"
+              >
+                Try AR
+              </a>
+
             </div>
 
             <div class="product-info">
-              <div>
-                <span> LIPSTICK </span>
 
-                <h3>Rose Velvet</h3>
+              <div>
+
+                <span>
+                  LIPSTICK
+                </span>
+
+                <h3>
+                  Rose Velvet
+                </h3>
+
               </div>
 
-              <strong> $24 </strong>
+              <strong>
+                $24
+              </strong>
+
             </div>
+
           </article>
 
           <!-- ================= PRODUCT 2 ================= -->
 
           <article class="product-card reveal">
+
             <div class="product-image nude-bg">
-              <span class="product-badge"> NEW </span>
 
-              <div class="product-placeholder">🎨</div>
+              <span class="product-badge">
+                NEW
+              </span>
 
-              <a href="#tryon" class="quick-try"> Try AR </a>
+              <div class="product-placeholder">
+                🎨
+              </div>
+
+              <a
+                href="{{ url_for('about') }}#tryon"
+                class="quick-try"
+              >
+                Try AR
+              </a>
+
             </div>
 
             <div class="product-info">
-              <div>
-                <span> EYESHADOW </span>
 
-                <h3>Sunset Palette</h3>
+              <div>
+
+                <span>
+                  EYESHADOW
+                </span>
+
+                <h3>
+                  Sunset Palette
+                </h3>
+
               </div>
 
-              <strong> $38 </strong>
+              <strong>
+                $38
+              </strong>
+
             </div>
+
           </article>
 
           <!-- ================= PRODUCT 3 ================= -->
 
           <article class="product-card reveal">
-            <div class="product-image rose-bg">
-              <div class="product-placeholder">🌸</div>
 
-              <a href="#tryon" class="quick-try"> Try AR </a>
+            <div class="product-image rose-bg">
+
+              <div class="product-placeholder">
+                🌸
+              </div>
+
+              <a
+                href="{{ url_for('about') }}#tryon"
+                class="quick-try"
+              >
+                Try AR
+              </a>
+
             </div>
 
             <div class="product-info">
-              <div>
-                <span> BLUSH </span>
 
-                <h3>Soft Rose</h3>
+              <div>
+
+                <span>
+                  BLUSH
+                </span>
+
+                <h3>
+                  Soft Rose
+                </h3>
+
               </div>
 
-              <strong> $19 </strong>
+              <strong>
+                $19
+              </strong>
+
             </div>
+
           </article>
+
         </div>
+
       </section>
+
     </main>
 
     <!-- =====================================================
-     FOOTER
-     ===================================================== -->
+         FOOTER
+         ===================================================== -->
 
     <footer>
+
       <!-- ================= FOOTER TOP ================= -->
 
       <div class="footer-top">
-        <!-- FOOTER BRAND -->
+
+        <!-- ================= FOOTER BRAND ================= -->
 
         <div class="footer-brand">
-          <a href="{{ url_for('home') }}" class="logo">
+
+          <a
+            href="{{ url_for('home') }}"
+            class="logo"
+          >
             GLAMORA<span>AR</span>
           </a>
 
-          <p>Beauty technology designed for everyone.</p>
+          <p>
+            Beauty technology designed for everyone.
+          </p>
+
         </div>
 
-        <!-- FOOTER LINKS -->
+        <!-- ================= FOOTER LINKS ================= -->
 
         <div class="footer-links">
+
           <!-- EXPLORE -->
 
           <div>
-            <span> EXPLORE </span>
 
-            <a href="{{ url_for('home') }}"> Home </a>
+            <span>
+              EXPLORE
+            </span>
 
-            <a href="{{ url_for('home') }}#categories"> Beauty </a>
+            <a href="{{ url_for('home') }}">
+              Home
+            </a>
 
-            <a href="{{ url_for('about') }}"> About </a>
+            <a href="{{ url_for('beauty') }}">
+              Beauty
+            </a>
 
-            <a href="{{ url_for('contact') }}"> Contact </a>
+            <a href="{{ url_for('about') }}">
+              About
+            </a>
+
+            <a href="{{ url_for('contact') }}">
+              Contact
+            </a>
+
           </div>
 
           <!-- GLAMORA AR -->
 
           <div>
-            <span> GLAMORA AR </span>
 
-            <a href="{{ url_for('home') }}#tryon"> Virtual Try-On </a>
+            <span>
+              GLAMORA AR
+            </span>
 
-            <a href="{{ url_for('home') }}#products"> Products </a>
+            <a href="{{ url_for('about') }}#tryon">
+              Virtual Try-On
+            </a>
+
+            <a href="{{ url_for('beauty') }}">
+              Products
+            </a>
+
           </div>
 
           <!-- FOLLOW -->
 
           <div>
-            <span> FOLLOW </span>
 
-            <a href="#"> Instagram </a>
+            <span>
+              FOLLOW
+            </span>
 
-            <a href="#"> TikTok </a>
+            <a href="#">
+              Instagram
+            </a>
 
-            <a href="#"> Pinterest </a>
+            <a href="#">
+              TikTok
+            </a>
+
+            <a href="#">
+              Pinterest
+            </a>
+
           </div>
+
         </div>
+
       </div>
 
       <!-- ================= FOOTER BOTTOM ================= -->
 
       <div class="footer-bottom">
-        <span> © 2026 Glamora AR </span>
 
-        <span> Made for the future of beauty ✦ </span>
+        <span>
+          © 2026 Glamora AR
+        </span>
+
+        <span>
+          Made for the future of beauty ✦
+        </span>
+
       </div>
+
     </footer>
 
     <!-- =====================================================
-     JAVASCRIPT
-     ===================================================== -->
+         JAVASCRIPT
+         ===================================================== -->
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script
+      src="{{ url_for('static', filename='js/main.js') }}"
+    ></script>
+
   </body>
 </html>
