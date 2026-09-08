@@ -6,6 +6,14 @@
 
 
 /* =========================================================
+   GLOBAL VARIABLES
+   ========================================================= */
+
+let lastLipstickIndex = -1;
+let lipstickHoverTimer = null;
+
+
+/* =========================================================
    PAGE LOAD
    ========================================================= */
 
@@ -27,17 +35,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initializeCartDemo();
 
+
     /*
-     * Initial random beauty look
+     * =====================================================
+     * INITIAL RANDOM BEAUTY LOOK
+     * =====================================================
      */
+
     randomizeLipstick();
 
     randomizeEyeliner();
 
+
     /*
-     * Change lipstick automatically
-     * every 5 seconds.
+     * =====================================================
+     * AUTOMATIC LIPSTICK CHANGE
+     *
+     * Changes lipstick every 5 seconds.
+     * =====================================================
      */
+
     setInterval(() => {
 
         randomizeLipstick();
@@ -90,6 +107,7 @@ function initializeRevealAnimations() {
 
     }
 
+
     const revealObserver =
         new IntersectionObserver(
             (entries) => {
@@ -115,6 +133,7 @@ function initializeRevealAnimations() {
                 threshold: 0.12
             }
         );
+
 
     revealElements.forEach((element) => {
 
@@ -142,8 +161,14 @@ function initializeActiveNavigation() {
 
     }
 
+
     let currentPath =
         window.location.pathname;
+
+
+    /*
+     * Remove trailing slash.
+     */
 
     if (
         currentPath.length > 1 &&
@@ -155,12 +180,15 @@ function initializeActiveNavigation() {
 
     }
 
+
     navLinks.forEach((link) => {
 
         link.classList.remove("active");
 
+
         const href =
             link.getAttribute("href");
+
 
         if (!href) {
 
@@ -168,14 +196,49 @@ function initializeActiveNavigation() {
 
         }
 
+
+        /*
+         * Remove hash from URL.
+         */
+
         const linkPath =
             href.split("#")[0];
 
+
+        /*
+         * Normalize link path.
+         */
+
+        let normalizedLinkPath =
+            linkPath;
+
+
         if (
-            linkPath === currentPath ||
+            normalizedLinkPath.length > 1 &&
+            normalizedLinkPath.endsWith("/")
+        ) {
+
+            normalizedLinkPath =
+                normalizedLinkPath.slice(0, -1);
+
+        }
+
+
+        /*
+         * Homepage handling.
+         */
+
+        if (
+            normalizedLinkPath === currentPath ||
             (
-                currentPath === "" &&
-                linkPath === "/"
+                (
+                    currentPath === "" ||
+                    currentPath === "/"
+                ) &&
+                (
+                    normalizedLinkPath === "" ||
+                    normalizedLinkPath === "/"
+                )
             )
         ) {
 
@@ -199,11 +262,13 @@ function initializeMakeupOptions() {
             ".makeup-option"
         );
 
+
     if (!makeupOptions.length) {
 
         return;
 
     }
+
 
     makeupOptions.forEach((option) => {
 
@@ -218,6 +283,7 @@ function initializeMakeupOptions() {
                     );
 
                 });
+
 
                 option.classList.add(
                     "active"
@@ -242,11 +308,17 @@ function initializeHeroParallax() {
             ".hero-visual"
         );
 
+
     if (!heroVisual) {
 
         return;
 
     }
+
+
+    /*
+     * Disable on touch devices.
+     */
 
     if (
         window.matchMedia(
@@ -258,6 +330,7 @@ function initializeHeroParallax() {
 
     }
 
+
     window.addEventListener(
         "mousemove",
         (event) => {
@@ -267,10 +340,12 @@ function initializeHeroParallax() {
                 window.innerWidth -
                 0.5;
 
+
             const y =
                 event.clientY /
                 window.innerHeight -
                 0.5;
+
 
             heroVisual.style.transform =
                 `translate(
@@ -280,6 +355,7 @@ function initializeHeroParallax() {
 
         }
     );
+
 
     document.addEventListener(
         "mouseleave",
@@ -305,16 +381,19 @@ function initializeMobileMenu() {
             "menuBtn"
         );
 
+
     const nav =
         document.querySelector(
             ".nav-links"
         );
+
 
     if (!menuBtn || !nav) {
 
         return;
 
     }
+
 
     menuBtn.addEventListener(
         "click",
@@ -325,10 +404,12 @@ function initializeMobileMenu() {
                     "open"
                 );
 
+
             menuBtn.setAttribute(
                 "aria-expanded",
                 isOpen ? "true" : "false"
             );
+
 
             menuBtn.setAttribute(
                 "aria-label",
@@ -337,14 +418,19 @@ function initializeMobileMenu() {
                     : "Open navigation menu"
             );
 
+
             menuBtn.textContent =
-                isOpen ? "✕" : "☰";
+                isOpen
+                    ? "✕"
+                    : "☰";
 
         }
     );
 
+
     const links =
         nav.querySelectorAll("a");
+
 
     links.forEach((link) => {
 
@@ -356,15 +442,18 @@ function initializeMobileMenu() {
                     "open"
                 );
 
+
                 menuBtn.setAttribute(
                     "aria-expanded",
                     "false"
                 );
 
+
                 menuBtn.setAttribute(
                     "aria-label",
                     "Open navigation menu"
                 );
+
 
                 menuBtn.textContent =
                     "☰";
@@ -389,10 +478,18 @@ function initializeProductHover() {
         );
 
 
+    /* =====================================================
+       FIND LIPSTICK CARD
+       ===================================================== */
+
     /*
-     * =====================================================
-     * LIPSTICK CARD HOVER
-     * =====================================================
+     * First try:
+     *
+     * .lipstick-card
+     *
+     * Then fallback to:
+     *
+     * .product-card.lipstick-card
      */
 
     const lipstickCard =
@@ -400,26 +497,62 @@ function initializeProductHover() {
             ".lipstick-card"
         );
 
-    let lipstickHoverTimer = null;
 
+    /*
+     * If lipstick card does not exist,
+     * show a useful console warning.
+     */
+
+    if (!lipstickCard) {
+
+        console.warn(
+            "Glamora AR: .lipstick-card was not found. " +
+            "Make sure your lipstick card has class=\"lipstick-card\"."
+        );
+
+    }
+
+
+    /* =====================================================
+       LIPSTICK MOUSE ENTER
+       ===================================================== */
 
     if (lipstickCard) {
-
-        /*
-         * Change immediately when
-         * pointer enters the lipstick card.
-         */
 
         lipstickCard.addEventListener(
             "mouseenter",
             () => {
 
+                console.log(
+                    "Glamora AR: Lipstick card hovered"
+                );
+
+
+                /*
+                 * Change immediately.
+                 */
+
                 randomizeLipstick();
 
 
                 /*
-                 * Keep changing while the
-                 * pointer remains on the card.
+                 * Clear any existing timer.
+                 */
+
+                if (lipstickHoverTimer) {
+
+                    clearInterval(
+                        lipstickHoverTimer
+                    );
+
+                    lipstickHoverTimer = null;
+
+                }
+
+
+                /*
+                 * Change lipstick every second
+                 * while mouse remains inside.
                  */
 
                 lipstickHoverTimer =
@@ -433,14 +566,22 @@ function initializeProductHover() {
         );
 
 
-        /*
-         * Stop changing when pointer
-         * leaves the card.
-         */
+        /* =================================================
+           LIPSTICK MOUSE LEAVE
+           ================================================= */
 
         lipstickCard.addEventListener(
             "mouseleave",
             () => {
+
+                console.log(
+                    "Glamora AR: Lipstick card mouse left"
+                );
+
+
+                /*
+                 * Stop changing lipstick.
+                 */
 
                 if (lipstickHoverTimer) {
 
@@ -458,9 +599,9 @@ function initializeProductHover() {
     }
 
 
-    /*
-     * Existing product hover effect.
-     */
+    /* =====================================================
+       NORMAL PRODUCT CARD HOVER
+       ===================================================== */
 
     if (!productCards.length) {
 
@@ -468,6 +609,10 @@ function initializeProductHover() {
 
     }
 
+
+    /*
+     * Disable 3D effect on touch devices.
+     */
 
     if (
         window.matchMedia(
@@ -482,6 +627,25 @@ function initializeProductHover() {
 
     productCards.forEach((card) => {
 
+        /*
+         * Do not apply the 3D effect
+         * to the lipstick card itself.
+         *
+         * This prevents the lipstick hover
+         * from fighting with the 3D transform.
+         */
+
+        if (
+            card.classList.contains(
+                "lipstick-card"
+            )
+        ) {
+
+            return;
+
+        }
+
+
         card.addEventListener(
             "mousemove",
             (event) => {
@@ -489,25 +653,32 @@ function initializeProductHover() {
                 const rect =
                     card.getBoundingClientRect();
 
+
                 const x =
                     event.clientX -
                     rect.left;
+
 
                 const y =
                     event.clientY -
                     rect.top;
 
+
                 const centerX =
                     rect.width / 2;
+
 
                 const centerY =
                     rect.height / 2;
 
+
                 const rotateX =
                     (y - centerY) / 35;
 
+
                 const rotateY =
                     (centerX - x) / 35;
+
 
                 card.style.transform =
                     `perspective(800px)
@@ -518,12 +689,15 @@ function initializeProductHover() {
             }
         );
 
+
         card.addEventListener(
             "mouseleave",
             () => {
 
                 card.style.transform =
-                    "perspective(800px) rotateX(0deg) rotateY(0deg)";
+                    "perspective(800px) " +
+                    "rotateX(0deg) " +
+                    "rotateY(0deg)";
 
             }
         );
@@ -541,15 +715,24 @@ function initializeCartDemo() {
 
     let cartCount = 0;
 
+
     const cartCounter =
         document.querySelector(
             ".cart-count"
         );
 
+
     const quickTryButtons =
         document.querySelectorAll(
             ".quick-try"
         );
+
+
+    /*
+     * Quick Try buttons.
+     *
+     * Navigation continues normally.
+     */
 
     quickTryButtons.forEach((button) => {
 
@@ -559,7 +742,6 @@ function initializeCartDemo() {
 
                 /*
                  * Do not use preventDefault().
-                 * Original navigation continues.
                  */
 
             }
@@ -567,10 +749,12 @@ function initializeCartDemo() {
 
     });
 
+
     const cartButton =
         document.querySelector(
             ".cart-btn"
         );
+
 
     if (cartButton) {
 
@@ -579,6 +763,7 @@ function initializeCartDemo() {
             () => {
 
                 cartCount++;
+
 
                 if (cartCounter) {
 
@@ -598,9 +783,6 @@ function initializeCartDemo() {
 /* =========================================================
    RANDOM LIPSTICK
    ========================================================= */
-
-let lastLipstickIndex = -1;
-
 
 function randomizeLipstick() {
 
@@ -664,16 +846,39 @@ function randomizeLipstick() {
         {
             name: "Soft Pink",
             color: "#e58aa0"
+        },
+
+        {
+            name: "Rosewood",
+            color: "#914f54"
+        },
+
+        {
+            name: "Brick Red",
+            color: "#9e3f35"
+        },
+
+        {
+            name: "Deep Berry",
+            color: "#72243d"
+        },
+
+        {
+            name: "Peach",
+            color: "#df7f70"
         }
 
     ];
 
 
     /*
-     * Always select a different shade.
+     * =====================================================
+     * SELECT A DIFFERENT SHADE
+     * =====================================================
      */
 
     let randomIndex;
+
 
     do {
 
@@ -697,8 +902,17 @@ function randomizeLipstick() {
         lipstickColors[randomIndex];
 
 
+    console.log(
+        "Glamora AR lipstick:",
+        selected.name,
+        selected.color
+    );
+
+
     /*
-     * Find lipstick preview.
+     * =====================================================
+     * FIND LIPSTICK PRODUCT
+     * =====================================================
      */
 
     const lipstick =
@@ -708,7 +922,23 @@ function randomizeLipstick() {
 
 
     /*
-     * Find lipstick name.
+     * =====================================================
+     * FIND LIPSTICK TOP
+     * =====================================================
+     */
+
+    const lipstickTop =
+        lipstick
+            ? lipstick.querySelector(
+                ".lipstick-top"
+            )
+            : null;
+
+
+    /*
+     * =====================================================
+     * FIND LIPSTICK NAME
+     * =====================================================
      */
 
     const lipstickName =
@@ -718,10 +948,16 @@ function randomizeLipstick() {
 
 
     /*
-     * Apply lipstick color.
+     * =====================================================
+     * APPLY COLOR TO LIPSTICK
+     * =====================================================
      */
 
     if (lipstick) {
+
+        /*
+         * CSS variable.
+         */
 
         lipstick.style.setProperty(
             "--lipstick-color",
@@ -729,31 +965,77 @@ function randomizeLipstick() {
         );
 
 
-        const lipstickTop =
-            lipstick.querySelector(
-                ".lipstick-top"
-            );
+        /*
+         * Apply background directly
+         * to the lipstick itself.
+         */
+
+        lipstick.style.background =
+            selected.color;
 
 
-        if (lipstickTop) {
+        /*
+         * Smooth transition.
+         */
 
-            lipstickTop.style.transition =
-                "background 0.7s ease";
+        lipstick.style.transition =
+            "background 0.7s ease, " +
+            "box-shadow 0.7s ease";
 
-            lipstickTop.style.background =
-                `linear-gradient(
-                    145deg,
-                    ${selected.color},
-                    ${selected.color}
-                )`;
 
-        }
+        /*
+         * Add subtle glow.
+         */
+
+        lipstick.style.boxShadow =
+            `0 0 18px ${selected.color}66`;
 
     }
 
 
     /*
-     * Update lipstick name.
+     * =====================================================
+     * APPLY COLOR TO LIPSTICK TOP
+     * =====================================================
+     */
+
+    if (lipstickTop) {
+
+        lipstickTop.style.transition =
+            "background 0.7s ease, " +
+            "box-shadow 0.7s ease";
+
+
+        lipstickTop.style.background =
+            selected.color;
+
+
+        lipstickTop.style.boxShadow =
+            `0 0 15px ${selected.color}66`;
+
+    }
+
+
+    /*
+     * =====================================================
+     * APPLY CSS VARIABLE TO LIPSTICK TOP
+     * =====================================================
+     */
+
+    if (lipstickTop) {
+
+        lipstickTop.style.setProperty(
+            "--lipstick-color",
+            selected.color
+        );
+
+    }
+
+
+    /*
+     * =====================================================
+     * UPDATE LIPSTICK NAME
+     * =====================================================
      */
 
     if (lipstickName) {
@@ -834,8 +1116,16 @@ function randomizeEyeliner() {
         eyelinerStyles[randomIndex];
 
 
+    console.log(
+        "Glamora AR eyeliner:",
+        selected.name
+    );
+
+
     /*
-     * Find eye.
+     * =====================================================
+     * FIND EYE
+     * =====================================================
      */
 
     const eye =
@@ -845,7 +1135,9 @@ function randomizeEyeliner() {
 
 
     /*
-     * Find eyeliner name.
+     * =====================================================
+     * FIND EYELINER NAME
+     * =====================================================
      */
 
     const eyelinerName =
@@ -855,7 +1147,9 @@ function randomizeEyeliner() {
 
 
     /*
-     * Find lashes.
+     * =====================================================
+     * FIND TOP LASHES
+     * =====================================================
      */
 
     const lashesTop =
@@ -864,6 +1158,12 @@ function randomizeEyeliner() {
         );
 
 
+    /*
+     * =====================================================
+     * FIND BOTTOM LASHES
+     * =====================================================
+     */
+
     const lashesBottom =
         document.getElementById(
             "lashesBottom"
@@ -871,7 +1171,9 @@ function randomizeEyeliner() {
 
 
     /*
-     * Remove all previous eyeliner styles.
+     * =====================================================
+     * EYE / EYELINER
+     * =====================================================
      */
 
     if (eye) {
@@ -887,7 +1189,7 @@ function randomizeEyeliner() {
 
 
         /*
-         * Apply new style.
+         * Apply selected eyeliner style.
          */
 
         eye.classList.add(
@@ -908,7 +1210,9 @@ function randomizeEyeliner() {
 
 
     /*
-     * Remove previous lash styles.
+     * =====================================================
+     * TOP LASHES
+     * =====================================================
      */
 
     if (lashesTop) {
@@ -927,6 +1231,12 @@ function randomizeEyeliner() {
     }
 
 
+    /*
+     * =====================================================
+     * BOTTOM LASHES
+     * =====================================================
+     */
+
     if (lashesBottom) {
 
         lashesBottom.classList.remove(
@@ -944,7 +1254,9 @@ function randomizeEyeliner() {
 
 
     /*
-     * Update eyeliner name.
+     * =====================================================
+     * UPDATE EYELINER NAME
+     * =====================================================
      */
 
     if (eyelinerName) {
@@ -955,4 +1267,28 @@ function randomizeEyeliner() {
     }
 
 }
+
+
+/* =========================================================
+   DEBUG HELPERS
+   ========================================================= */
+
+/*
+ * Run these from the browser console if needed:
+ *
+ * randomizeLipstick()
+ * randomizeEyeliner()
+ *
+ * If randomizeLipstick() works from the console but
+ * does not work on hover, the problem is your HTML class.
+ */
+
+
+/* =========================================================
+   GLAMORA AR READY
+   ========================================================= */
+
+console.log(
+    "Glamora AR interactive UI loaded successfully."
+);
 
