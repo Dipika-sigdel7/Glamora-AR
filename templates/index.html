@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 
@@ -33,393 +32,6 @@
     href="{{ url_for('static', filename='css/style.css') }}"
   />
 
-
-  <!-- =====================================================
-       LIPSTICK CARD EXTRA STYLES
-       ===================================================== -->
-
-  <style>
-
-    /* =====================================================
-       LIPSTICK CARD
-       ===================================================== */
-
-    .lipstick-card {
-      cursor: pointer;
-      position: relative;
-    }
-
-
-    /* =====================================================
-       LIPSTICK PRODUCT
-       ===================================================== */
-
-    .lipstick-product {
-
-      position: relative;
-
-      width: 110px;
-      height: 180px;
-
-      margin: 30px auto 10px;
-
-      display: flex;
-
-      justify-content: center;
-
-      align-items: flex-end;
-
-      transition:
-        transform 0.5s ease,
-        filter 0.5s ease;
-
-      transform-origin: center bottom;
-
-    }
-
-
-    /* =====================================================
-       LIPSTICK HOVER
-       ===================================================== */
-
-    .lipstick-card:hover .lipstick-product {
-
-      transform:
-        translateY(-8px)
-        rotate(-4deg)
-        scale(1.05);
-
-      filter:
-        drop-shadow(
-          0 15px 18px
-          rgba(80, 20, 40, 0.25)
-        );
-
-    }
-
-
-    /* =====================================================
-       LIPSTICK BODY
-       ===================================================== */
-
-    .lipstick-body {
-
-      position: absolute;
-
-      bottom: 0;
-
-      left: 50%;
-
-      transform:
-        translateX(-50%);
-
-      width: 55px;
-      height: 105px;
-
-      border-radius:
-        7px 7px 10px 10px;
-
-      background:
-        linear-gradient(
-          90deg,
-          #171717 0%,
-          #333333 25%,
-          #111111 50%,
-          #3d3d3d 75%,
-          #151515 100%
-        );
-
-      box-shadow:
-        0 10px 20px
-        rgba(0, 0, 0, 0.22);
-
-    }
-
-
-    /* =====================================================
-       LIPSTICK BODY HIGHLIGHT
-       ===================================================== */
-
-    .lipstick-body::before {
-
-      content: "";
-
-      position: absolute;
-
-      left: 9px;
-      top: 7px;
-
-      width: 5px;
-      height: 82px;
-
-      border-radius: 5px;
-
-      background:
-        linear-gradient(
-          to bottom,
-          rgba(255,255,255,0.55),
-          rgba(255,255,255,0.05)
-        );
-
-      opacity: 0.45;
-
-    }
-
-
-    /* =====================================================
-       LIPSTICK BOTTOM
-       ===================================================== */
-
-    .lipstick-bottom {
-
-      position: absolute;
-
-      bottom: -4px;
-
-      left: 50%;
-
-      transform:
-        translateX(-50%);
-
-      width: 64px;
-      height: 14px;
-
-      border-radius: 0 0 8px 8px;
-
-      background:
-        linear-gradient(
-          180deg,
-          #444,
-          #111
-        );
-
-    }
-
-
-    /* =====================================================
-       LIPSTICK TOP
-       ===================================================== */
-
-    .lipstick-top {
-
-      position: absolute;
-
-      bottom: 92px;
-
-      left: 50%;
-
-      transform:
-        translateX(-50%);
-
-      width: 43px;
-      height: 68px;
-
-      background:
-        #c6283d;
-
-      border-radius:
-        5px 5px 12px 12px;
-
-      clip-path:
-        polygon(
-          0 18%,
-          72% 0,
-          100% 0,
-          100% 100%,
-          0 100%
-        );
-
-      box-shadow:
-        inset -7px 0 10px
-        rgba(0, 0, 0, 0.18),
-
-        0 5px 12px
-        rgba(0, 0, 0, 0.15);
-
-      transition:
-        background 0.7s ease,
-        box-shadow 0.7s ease,
-        transform 0.7s ease;
-
-    }
-
-
-    /* =====================================================
-       LIPSTICK TOP HIGHLIGHT
-       ===================================================== */
-
-    .lipstick-top::after {
-
-      content: "";
-
-      position: absolute;
-
-      left: 7px;
-      top: 10px;
-
-      width: 5px;
-      height: 45px;
-
-      border-radius: 5px;
-
-      background:
-        rgba(255, 255, 255, 0.22);
-
-      transform:
-        rotate(5deg);
-
-    }
-
-
-    /* =====================================================
-       SHADE INFORMATION
-       ===================================================== */
-
-    .lipstick-shade {
-
-      display: flex;
-
-      flex-direction: column;
-
-      align-items: center;
-
-      gap: 3px;
-
-      margin-top: 5px;
-
-      pointer-events: none;
-
-    }
-
-
-    .lipstick-shade span {
-
-      font-size: 9px;
-
-      letter-spacing: 1.5px;
-
-      font-weight: 600;
-
-      opacity: 0.55;
-
-    }
-
-
-    .lipstick-shade strong {
-
-      font-size: 13px;
-
-      font-weight: 600;
-
-      transition:
-        opacity 0.3s ease;
-
-    }
-
-
-    /* =====================================================
-       HOVER INSTRUCTION
-       ===================================================== */
-
-    .lipstick-card::after {
-
-      content:
-        "HOVER TO CHANGE SHADE";
-
-      position: absolute;
-
-      top: 15px;
-
-      left: 50%;
-
-      transform:
-        translateX(-50%)
-        translateY(5px);
-
-      font-size: 8px;
-
-      letter-spacing: 1.4px;
-
-      white-space: nowrap;
-
-      opacity: 0;
-
-      transition:
-        opacity 0.35s ease,
-        transform 0.35s ease;
-
-      pointer-events: none;
-
-    }
-
-
-    .lipstick-card:hover::after {
-
-      opacity: 0.55;
-
-      transform:
-        translateX(-50%)
-        translateY(0);
-
-    }
-
-
-    /* =====================================================
-       QUICK TRY
-       ===================================================== */
-
-    .lipstick-card .quick-try {
-
-      z-index: 10;
-
-    }
-
-
-    /* =====================================================
-       MOBILE
-       ===================================================== */
-
-    @media (max-width: 768px) {
-
-      .lipstick-product {
-
-        width: 95px;
-        height: 160px;
-
-      }
-
-      .lipstick-body {
-
-        width: 48px;
-        height: 92px;
-
-      }
-
-      .lipstick-top {
-
-        bottom: 82px;
-
-        width: 38px;
-        height: 60px;
-
-      }
-
-      .lipstick-bottom {
-
-        width: 56px;
-
-      }
-
-      .lipstick-card::after {
-
-        display: none;
-
-      }
-
-    }
-
-  </style>
-
 </head>
 
 
@@ -436,16 +48,11 @@
   >
 
     <div class="loader-logo">
-
       GLAMORA <span>AR</span>
-
     </div>
 
-
     <div class="loader-line">
-
       <div></div>
-
     </div>
 
   </div>
@@ -458,26 +65,28 @@
 
   <header class="navbar">
 
-
-    <!-- LOGO -->
+    <!-- ===================================================
+         LOGO
+         =================================================== -->
 
     <a
       href="/"
       class="logo"
       aria-label="Glamora AR Home"
     >
-
       GLAMORA <span>AR</span>
-
     </a>
 
 
 
-    <!-- MAIN NAVIGATION -->
+    <!-- ===================================================
+         MAIN NAVIGATION
+         =================================================== -->
 
     <nav
       class="nav-links"
       id="navLinks"
+      aria-label="Main navigation"
     >
 
       <a
@@ -503,48 +112,65 @@
 
 
 
-    <!-- HEADER ACTIONS -->
+    <!-- ===================================================
+         HEADER ACTIONS
+         =================================================== -->
 
     <div class="nav-actions">
 
 
-      <!-- SEARCH -->
+      <!-- =================================================
+           SEARCH
+           ================================================= -->
 
       <button
         class="icon-btn"
+        id="searchBtn"
         type="button"
         aria-label="Search"
+        title="Search"
       >
         ⌕
       </button>
 
 
 
-      <!-- WISHLIST -->
+      <!-- =================================================
+           WISHLIST
+           ================================================= -->
 
       <button
-        class="icon-btn"
+        class="icon-btn wishlist-btn"
+        id="wishlistBtn"
         type="button"
         aria-label="Wishlist"
+        title="Wishlist"
       >
         ♡
       </button>
 
 
 
-      <!-- BAG -->
+      <!-- =================================================
+           SHOPPING BAG
+           ================================================= -->
 
       <button
         class="cart-btn"
+        id="cartBtn"
         type="button"
         aria-label="Shopping bag"
+        title="Shopping bag"
       >
 
         <span>
           Bag
         </span>
 
-        <span class="cart-count">
+        <span
+          class="cart-count"
+          id="cartCount"
+        >
           0
         </span>
 
@@ -552,7 +178,32 @@
 
 
 
-      <!-- MOBILE MENU -->
+      <!-- =================================================
+           LOGIN
+           ================================================= -->
+
+      <a
+        href="{{ url_for('login') }}"
+        class="login-btn"
+        id="loginBtn"
+        aria-label="Login to Glamora AR"
+      >
+
+        <span class="login-icon">
+          ♙
+        </span>
+
+        <span>
+          Login
+        </span>
+
+      </a>
+
+
+
+      <!-- =================================================
+           MOBILE MENU
+           ================================================= -->
 
       <button
         class="menu-btn"
@@ -560,6 +211,7 @@
         type="button"
         aria-label="Open navigation menu"
         aria-expanded="false"
+        aria-controls="navLinks"
       >
 
         ☰
@@ -569,7 +221,6 @@
     </div>
 
   </header>
-
 
 
   <!-- =====================================================
