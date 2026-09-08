@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Account — Glamora AR</title>
+
+
+    <!-- =====================================================
+         GOOGLE FONTS
+         ===================================================== -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         REGISTER PAGE CSS
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/register.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         REGISTER PAGE
+         ===================================================== -->
+
+    <main class="register-page">
+
+
+        <!-- =================================================
+             DECORATIVE ELEMENTS
+             ================================================= -->
+
+        <div class="decor decor-one"></div>
+
+        <div class="decor decor-two"></div>
+
+        <div class="decor decor-three"></div>
+
+
+
+        <!-- =================================================
+             REGISTER CONTAINER
+             ================================================= -->
+
+        <section class="register-container">
+
+
+            <!-- =================================================
+                 LEFT VISUAL SECTION
+                 ================================================= -->
+
+            <div class="register-visual">
+
+
+                <!-- BRAND -->
+
+                <a
+                    href="/"
+                    class="register-brand"
+                    aria-label="Glamora AR Home"
+                >
+                    GLAMORA <span>AR</span>
+                </a>
+
+
+
+                <!-- VISUAL CONTENT -->
+
+                <div class="visual-content">
+
+                    <span class="eyebrow">
+                        Welcome to Glamora AR
+                    </span>
+
+
+                    <h1>
+                        Discover your
+                        beauty.
+                    </h1>
+
+
+                    <p>
+                        Create your Glamora AR account and
+                        unlock a personalized beauty experience.
+                        Save your favourite products, build your
+                        bag, and explore virtual beauty.
+                    </p>
+
+                </div>
+
+
+
+                <!-- BEAUTY ORB -->
+
+                <div class="beauty-orb">
+
+                    <div class="orb-inner"></div>
+
+                    <span class="orb-sparkle sparkle-one">
+                        ✦
+                    </span>
+
+                    <span class="orb-sparkle sparkle-two">
+                        ✧
+                    </span>
+
+                    <span class="orb-sparkle sparkle-three">
+                        ·
+                    </span>
+
+                </div>
+
+
+
+                <!-- VISUAL FOOTER -->
+
+                <div class="visual-footer">
+
+                    Create your account.
+                    Discover your look.
+                    Be beautifully you.
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 RIGHT REGISTER FORM
+                 ================================================= -->
+
+            <div class="register-form-area">
+
+                <div class="register-form-wrapper">
+
+
+                    <!-- HEADING -->
+
+                    <div class="register-heading">
+
+                        <span>
+                            Start your journey
+                        </span>
+
+
+                        <h2>
+                            Create account
+                        </h2>
+
+
+                        <p>
+                            Join Glamora AR and make beauty
+                            more personal.
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- ERROR MESSAGE -->
+
+                    <div
+                        class="register-error"
+                        id="registerError"
+                        role="alert"
+                        aria-live="polite"
+                    ></div>
+
+
+
+                    <!-- SUCCESS MESSAGE -->
+
+                    <div
+                        class="register-success"
+                        id="registerSuccess"
+                        role="status"
+                        aria-live="polite"
+                    ></div>
+
+
+
+                    <!-- =================================================
+                         REGISTER FORM
+                         ================================================= -->
+
+                    <form
+                        class="register-form"
+                        id="registerForm"
+                        method="POST"
+                        action="{{ url_for('register') }}"
+                    >
+
+
+                        <!-- NAME -->
+
+                        <div class="form-group">
+
+                            <label for="name">
+                                Full name
+                            </label>
+
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    placeholder="Enter your full name"
+                                    autocomplete="name"
+                                    maxlength="100"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- EMAIL -->
+
+                        <div class="form-group">
+
+                            <label for="email">
+                                Email address
+                            </label>
+
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="Enter your email"
+                                    autocomplete="email"
+                                    maxlength="150"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- PASSWORD -->
+
+                        <div class="form-group">
+
+                            <label for="password">
+                                Password
+                            </label>
+
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    placeholder="Create a password"
+                                    autocomplete="new-password"
+                                    minlength="6"
+                                    required
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    id="passwordToggle"
+                                    aria-label="Show password"
+                                >
+                                    ◉
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- CONFIRM PASSWORD -->
+
+                        <div class="form-group">
+
+                            <label for="confirmPassword">
+                                Confirm password
+                            </label>
+
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    name="confirm_password"
+                                    placeholder="Confirm your password"
+                                    autocomplete="new-password"
+                                    minlength="6"
+                                    required
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    id="confirmPasswordToggle"
+                                    aria-label="Show password"
+                                >
+                                    ◉
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- TERMS -->
+
+                        <label class="terms">
+
+                            <input
+                                type="checkbox"
+                                id="terms"
+                                name="terms"
+                                required
+                            >
+
+                            <span>
+                                I agree to the
+                                <a href="#" class="terms-link">
+                                    Terms &amp; Conditions
+                                </a>
+                                and
+                                <a href="#" class="terms-link">
+                                    Privacy Policy
+                                </a>.
+                            </span>
+
+                        </label>
+
+
+
+                        <!-- CREATE ACCOUNT BUTTON -->
+
+                        <button
+                            type="submit"
+                            class="submit-register"
+                        >
+
+                            <span class="button-text">
+                                Create my account
+                            </span>
+
+                        </button>
+
+                    </form>
+
+
+
+                    <!-- =================================================
+                         DIVIDER
+                         ================================================= -->
+
+                    <div class="divider">
+
+                        <span>
+                            Already a member?
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- LOGIN -->
+
+                    <p class="login-text">
+
+                        Already have an account?
+
+                        <a href="{{ url_for('login') }}">
+                            Sign in
+                        </a>
+
+                    </p>
+
+
+
+                    <!-- BACK HOME -->
+
+                    <div class="back-home">
+
+                        <a href="/">
+                            ← Back to Glamora AR
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         REGISTER JAVASCRIPT
+         ===================================================== -->
+
+    <script
+        src="{{ url_for('static', filename='js/register.js') }}"
+    ></script>
+
+
+</body>
+
+</html>
