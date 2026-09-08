@@ -482,16 +482,6 @@ function initializeProductHover() {
        FIND LIPSTICK CARD
        ===================================================== */
 
-    /*
-     * First try:
-     *
-     * .lipstick-card
-     *
-     * Then fallback to:
-     *
-     * .product-card.lipstick-card
-     */
-
     const lipstickCard =
         document.querySelector(
             ".lipstick-card"
@@ -630,9 +620,6 @@ function initializeProductHover() {
         /*
          * Do not apply the 3D effect
          * to the lipstick card itself.
-         *
-         * This prevents the lipstick hover
-         * from fighting with the 3D transform.
          */
 
         if (
@@ -949,46 +936,32 @@ function randomizeLipstick() {
 
     /*
      * =====================================================
-     * APPLY COLOR TO LIPSTICK
+     * APPLY COLOR ONLY TO LIPSTICK TOP
      * =====================================================
+     *
+     * IMPORTANT:
+     *
+     * We intentionally DO NOT set:
+     *
+     * lipstick.style.background
+     *
+     * This prevents the entire lipstick product
+     * container from becoming the selected color.
      */
 
     if (lipstick) {
 
         /*
-         * CSS variable.
+         * Store the selected shade as a CSS variable.
+         *
+         * This can still be used by your CSS
+         * if needed.
          */
 
         lipstick.style.setProperty(
             "--lipstick-color",
             selected.color
         );
-
-
-        /*
-         * Apply background directly
-         * to the lipstick itself.
-         */
-
-        lipstick.style.background =
-            selected.color;
-
-
-        /*
-         * Smooth transition.
-         */
-
-        lipstick.style.transition =
-            "background 0.7s ease, " +
-            "box-shadow 0.7s ease";
-
-
-        /*
-         * Add subtle glow.
-         */
-
-        lipstick.style.boxShadow =
-            `0 0 18px ${selected.color}66`;
 
     }
 
@@ -1006,23 +979,26 @@ function randomizeLipstick() {
             "box-shadow 0.7s ease";
 
 
+        /*
+         * Only the actual lipstick top
+         * receives the random color.
+         */
+
         lipstickTop.style.background =
             selected.color;
 
 
+        /*
+         * Subtle shade glow.
+         */
+
         lipstickTop.style.boxShadow =
             `0 0 15px ${selected.color}66`;
 
-    }
 
-
-    /*
-     * =====================================================
-     * APPLY CSS VARIABLE TO LIPSTICK TOP
-     * =====================================================
-     */
-
-    if (lipstickTop) {
+        /*
+         * CSS variable for the lipstick top.
+         */
 
         lipstickTop.style.setProperty(
             "--lipstick-color",
@@ -1280,7 +1256,17 @@ function randomizeEyeliner() {
  * randomizeEyeliner()
  *
  * If randomizeLipstick() works from the console but
- * does not work on hover, the problem is your HTML class.
+ * does not work on hover, check that your HTML contains:
+ *
+ * class="lipstick-card"
+ *
+ * and:
+ *
+ * class="lipstick-product"
+ *
+ * and:
+ *
+ * class="lipstick-top"
  */
 
 
@@ -1291,4 +1277,3 @@ function randomizeEyeliner() {
 console.log(
     "Glamora AR interactive UI loaded successfully."
 );
-
