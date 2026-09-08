@@ -1,0 +1,1385 @@
+/* =========================================================
+   GLAMORA AR — CREATE ACCOUNT
+   REGISTER PAGE
+   ========================================================= */
+
+
+/* =========================================================
+   ROOT VARIABLES
+   ========================================================= */
+
+:root {
+
+    --bg: #fff5f7;
+
+    --text: #2b1b20;
+
+    --text-soft: #806b72;
+
+    --accent: #c85f7a;
+
+    --accent-dark: #a74360;
+
+    --accent-light: #f3b8c6;
+
+    --accent-pale: #fde7ed;
+
+    --white: #ffffff;
+
+    --border: #ead7dd;
+
+    --shadow: 0 30px 80px rgba(83, 37, 50, 0.14);
+
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+
+    min-height: 100vh;
+
+    font-family: "DM Sans", sans-serif;
+
+    background: var(--bg);
+
+    color: var(--text);
+
+    overflow-x: hidden;
+
+}
+
+
+button,
+input {
+    font-family: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.register-page {
+
+    min-height: 100vh;
+
+    padding: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    position: relative;
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   DECORATIVE CIRCLES
+   ========================================================= */
+
+.decor {
+
+    position: absolute;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    opacity: 0.55;
+
+    filter: blur(1px);
+
+}
+
+
+.decor-one {
+
+    width: 420px;
+
+    height: 420px;
+
+    top: -190px;
+
+    left: -180px;
+
+    background: var(--accent-light);
+
+    animation: floatOne 9s ease-in-out infinite;
+
+}
+
+
+.decor-two {
+
+    width: 300px;
+
+    height: 300px;
+
+    right: -130px;
+
+    bottom: -120px;
+
+    background: #f8d8e1;
+
+    animation: floatTwo 11s ease-in-out infinite;
+
+}
+
+
+.decor-three {
+
+    width: 110px;
+
+    height: 110px;
+
+    right: 15%;
+
+    top: 8%;
+
+    background: #f4c5d1;
+
+    animation: floatThree 7s ease-in-out infinite;
+
+}
+
+
+@keyframes floatOne {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(30px, 25px);
+    }
+
+}
+
+
+@keyframes floatTwo {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-25px, -30px);
+    }
+
+}
+
+
+@keyframes floatThree {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(20px);
+    }
+
+}
+
+
+/* =========================================================
+   REGISTER CONTAINER
+   ========================================================= */
+
+.register-container {
+
+    width: min(1100px, 100%);
+
+    min-height: 700px;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    background: var(--white);
+
+    border-radius: 30px;
+
+    overflow: hidden;
+
+    position: relative;
+
+    z-index: 2;
+
+    box-shadow: var(--shadow);
+
+    animation: containerAppear 0.8s ease forwards;
+
+}
+
+
+@keyframes containerAppear {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(30px)
+            scale(0.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   LEFT VISUAL
+   ========================================================= */
+
+.register-visual {
+
+    position: relative;
+
+    padding: 55px;
+
+    overflow: hidden;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    background:
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(255, 255, 255, 0.22),
+            transparent 25%
+        ),
+        linear-gradient(
+            145deg,
+            #d77b94,
+            #c65e79 55%,
+            #a94360
+        );
+
+    color: var(--white);
+
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.register-brand {
+
+    font-size: 23px;
+
+    font-weight: 700;
+
+    letter-spacing: 4px;
+
+    position: relative;
+
+    z-index: 3;
+
+    transition: transform 0.3s ease;
+
+}
+
+
+.register-brand span {
+
+    font-weight: 500;
+
+    opacity: 0.8;
+
+}
+
+
+.register-brand:hover {
+
+    transform: translateX(5px);
+
+}
+
+
+/* =========================================================
+   VISUAL CONTENT
+   ========================================================= */
+
+.visual-content {
+
+    position: relative;
+
+    z-index: 3;
+
+    max-width: 410px;
+
+}
+
+
+.eyebrow {
+
+    display: inline-block;
+
+    font-size: 12px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 2.5px;
+
+    font-weight: 700;
+
+    margin-bottom: 20px;
+
+    opacity: 0.85;
+
+}
+
+
+.visual-content h1 {
+
+    font-family: "Playfair Display", serif;
+
+    font-size: clamp(42px, 5vw, 68px);
+
+    line-height: 1.02;
+
+    font-weight: 500;
+
+    margin-bottom: 25px;
+
+}
+
+
+.visual-content p {
+
+    font-size: 15px;
+
+    line-height: 1.8;
+
+    opacity: 0.88;
+
+    max-width: 380px;
+
+}
+
+
+/* =========================================================
+   BEAUTY ORB
+   ========================================================= */
+
+.beauty-orb {
+
+    width: 230px;
+
+    height: 230px;
+
+    position: absolute;
+
+    right: -30px;
+
+    bottom: 80px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            rgba(255, 255, 255, 0.8),
+            rgba(255, 255, 255, 0.15) 18%,
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 50% 50%,
+            #f5b5c4,
+            #ce6e88 55%,
+            #a64260
+        );
+
+    box-shadow:
+        0 20px 60px rgba(73, 19, 35, 0.25),
+        inset -20px -20px 40px rgba(96, 25, 45, 0.15);
+
+    animation: orbFloat 6s ease-in-out infinite;
+
+}
+
+
+.orb-inner {
+
+    position: absolute;
+
+    width: 70%;
+
+    height: 70%;
+
+    top: 15%;
+
+    left: 15%;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+
+    box-shadow:
+        inset 0 0 30px rgba(255, 255, 255, 0.15);
+
+}
+
+
+@keyframes orbFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-18px) rotate(5deg);
+    }
+
+}
+
+
+.orb-sparkle {
+
+    position: absolute;
+
+    color: white;
+
+    z-index: 2;
+
+    animation: sparkleFloat 3s ease-in-out infinite;
+
+}
+
+
+.sparkle-one {
+
+    top: 10px;
+
+    right: 55px;
+
+    font-size: 25px;
+
+}
+
+
+.sparkle-two {
+
+    top: 65px;
+
+    left: -5px;
+
+    font-size: 18px;
+
+    animation-delay: 0.8s;
+
+}
+
+
+.sparkle-three {
+
+    bottom: 35px;
+
+    right: 15px;
+
+    font-size: 30px;
+
+    animation-delay: 1.4s;
+
+}
+
+
+@keyframes sparkleFloat {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.15);
+    }
+
+}
+
+
+/* =========================================================
+   VISUAL FOOTER
+   ========================================================= */
+
+.visual-footer {
+
+    position: relative;
+
+    z-index: 3;
+
+    font-size: 12px;
+
+    letter-spacing: 1.5px;
+
+    line-height: 1.8;
+
+    text-transform: uppercase;
+
+    opacity: 0.75;
+
+}
+
+
+/* =========================================================
+   RIGHT FORM AREA
+   ========================================================= */
+
+.register-form-area {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 50px;
+
+    background: var(--white);
+
+}
+
+
+.register-form-wrapper {
+
+    width: 100%;
+
+    max-width: 430px;
+
+}
+
+
+/* =========================================================
+   HEADING
+   ========================================================= */
+
+.register-heading {
+
+    margin-bottom: 25px;
+
+}
+
+
+.register-heading > span {
+
+    display: block;
+
+    color: var(--accent);
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+    margin-bottom: 8px;
+
+}
+
+
+.register-heading h2 {
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 42px;
+
+    line-height: 1.1;
+
+    font-weight: 500;
+
+    margin-bottom: 10px;
+
+}
+
+
+.register-heading p {
+
+    color: var(--text-soft);
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   ERROR / SUCCESS
+   ========================================================= */
+
+.register-error,
+.register-success {
+
+    display: none;
+
+    padding: 12px 15px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.register-error.show {
+
+    display: block;
+
+    background: #fff0f2;
+
+    color: #a33d56;
+
+    border: 1px solid #f1c7d0;
+
+}
+
+
+.register-success.show {
+
+    display: block;
+
+    background: #f0faf4;
+
+    color: #397552;
+
+    border: 1px solid #c6e7d2;
+
+}
+
+
+.register-error.shake {
+
+    animation: errorShake 0.4s ease;
+
+}
+
+
+@keyframes errorShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-7px);
+    }
+
+    75% {
+        transform: translateX(7px);
+    }
+
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.register-form {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 17px;
+
+}
+
+
+.form-group {
+
+    width: 100%;
+
+}
+
+
+.form-group label {
+
+    display: block;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    margin-bottom: 8px;
+
+}
+
+
+.input-wrapper {
+
+    position: relative;
+
+}
+
+
+.input-wrapper input {
+
+    width: 100%;
+
+    height: 52px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    outline: none;
+
+    padding: 0 48px 0 16px;
+
+    background: #fffafb;
+
+    color: var(--text);
+
+    font-size: 14px;
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        background 0.3s ease;
+
+}
+
+
+.input-wrapper input::placeholder {
+
+    color: #b19da4;
+
+}
+
+
+.input-wrapper input:focus {
+
+    border-color: var(--accent);
+
+    background: var(--white);
+
+    box-shadow:
+        0 0 0 4px rgba(200, 95, 122, 0.1);
+
+}
+
+
+.form-group.focused label {
+
+    color: var(--accent);
+
+}
+
+
+/* =========================================================
+   PASSWORD TOGGLE
+   ========================================================= */
+
+.password-toggle {
+
+    position: absolute;
+
+    right: 8px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 38px;
+
+    height: 38px;
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--text-soft);
+
+    font-size: 15px;
+
+    border-radius: 8px;
+
+    transition:
+        color 0.3s ease,
+        background 0.3s ease;
+
+}
+
+
+.password-toggle:hover {
+
+    color: var(--accent);
+
+    background: var(--accent-pale);
+
+}
+
+
+/* =========================================================
+   TERMS
+   ========================================================= */
+
+.terms {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 10px;
+
+    color: var(--text-soft);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    cursor: pointer;
+
+    margin-top: 2px;
+
+}
+
+
+.terms input {
+
+    width: 17px;
+
+    height: 17px;
+
+    margin-top: 2px;
+
+    accent-color: var(--accent);
+
+    flex-shrink: 0;
+
+}
+
+
+.terms-link {
+
+    color: var(--accent-dark);
+
+    font-weight: 700;
+
+}
+
+
+.terms-link:hover {
+
+    text-decoration: underline;
+
+}
+
+
+/* =========================================================
+   CREATE ACCOUNT BUTTON
+   ========================================================= */
+
+.submit-register {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 54px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            110deg,
+            #c85f7a,
+            #a94360,
+            #d16b85,
+            #c85f7a
+        );
+
+    background-size: 250% 100%;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.3px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+
+    animation: gradientMove 5s linear infinite;
+
+}
+
+
+.submit-register::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: -100%;
+
+    width: 70%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.28),
+            transparent
+        );
+
+    transition: left 0.6s ease;
+
+}
+
+
+.submit-register:hover::before {
+
+    left: 130%;
+
+}
+
+
+.submit-register:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 15px 30px rgba(167, 67, 96, 0.25);
+
+}
+
+
+.submit-register:active {
+
+    transform: translateY(0);
+
+}
+
+
+.submit-register.loading {
+
+    opacity: 0.75;
+
+    cursor: wait;
+
+}
+
+
+@keyframes gradientMove {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.divider {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin: 25px 0 17px;
+
+    color: #aa979e;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+}
+
+
+.divider::before,
+.divider::after {
+
+    content: "";
+
+    height: 1px;
+
+    flex: 1;
+
+    background: var(--border);
+
+}
+
+
+/* =========================================================
+   LOGIN TEXT
+   ========================================================= */
+
+.login-text {
+
+    text-align: center;
+
+    color: var(--text-soft);
+
+    font-size: 13px;
+
+}
+
+
+.login-text a {
+
+    color: var(--accent-dark);
+
+    font-weight: 700;
+
+    margin-left: 4px;
+
+    transition: color 0.3s ease;
+
+}
+
+
+.login-text a:hover {
+
+    color: var(--accent);
+
+}
+
+
+/* =========================================================
+   BACK HOME
+   ========================================================= */
+
+.back-home {
+
+    text-align: center;
+
+    margin-top: 25px;
+
+}
+
+
+.back-home a {
+
+    color: var(--text-soft);
+
+    font-size: 12px;
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+
+    display: inline-block;
+
+}
+
+
+.back-home a:hover {
+
+    color: var(--accent-dark);
+
+    transform: translateX(-4px);
+
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .register-page {
+
+        padding: 25px;
+
+    }
+
+
+    .register-container {
+
+        grid-template-columns: 0.9fr 1.1fr;
+
+    }
+
+
+    .register-visual {
+
+        padding: 40px;
+
+    }
+
+
+    .register-form-area {
+
+        padding: 40px;
+
+    }
+
+
+    .visual-content h1 {
+
+        font-size: 48px;
+
+    }
+
+
+    .beauty-orb {
+
+        width: 180px;
+
+        height: 180px;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .register-page {
+
+        padding: 15px;
+
+        align-items: flex-start;
+
+    }
+
+
+    .register-container {
+
+        width: 100%;
+
+        min-height: auto;
+
+        grid-template-columns: 1fr;
+
+        border-radius: 22px;
+
+    }
+
+
+    .register-visual {
+
+        min-height: 390px;
+
+        padding: 32px;
+
+    }
+
+
+    .visual-content {
+
+        margin-top: 45px;
+
+    }
+
+
+    .visual-content h1 {
+
+        font-size: 43px;
+
+    }
+
+
+    .visual-content p {
+
+        font-size: 14px;
+
+        max-width: 330px;
+
+    }
+
+
+    .beauty-orb {
+
+        width: 145px;
+
+        height: 145px;
+
+        right: -25px;
+
+        bottom: 45px;
+
+    }
+
+
+    .visual-footer {
+
+        font-size: 10px;
+
+    }
+
+
+    .register-form-area {
+
+        padding: 35px 25px 40px;
+
+    }
+
+
+    .register-heading h2 {
+
+        font-size: 36px;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .register-page {
+
+        padding: 10px;
+
+    }
+
+
+    .register-visual {
+
+        min-height: 350px;
+
+        padding: 25px;
+
+    }
+
+
+    .register-brand {
+
+        font-size: 19px;
+
+        letter-spacing: 3px;
+
+    }
+
+
+    .visual-content h1 {
+
+        font-size: 38px;
+
+    }
+
+
+    .visual-content p {
+
+        font-size: 13px;
+
+    }
+
+
+    .beauty-orb {
+
+        width: 110px;
+
+        height: 110px;
+
+        bottom: 55px;
+
+    }
+
+
+    .register-form-area {
+
+        padding: 30px 20px 35px;
+
+    }
+
+
+    .register-heading h2 {
+
+        font-size: 32px;
+
+    }
+
+
+    .input-wrapper input {
+
+        height: 50px;
+
+    }
+
+}
