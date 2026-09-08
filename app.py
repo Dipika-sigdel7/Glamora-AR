@@ -32,6 +32,12 @@ def login():
     return render_template("login.html")
 
 
+# REGISTER
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    return render_template("register.html")
+
+
 #RUN APPLICATION 
 if __name__ == "__main__":
     app.run(
