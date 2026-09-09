@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Glamora AR — Add Product</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+</head>
+
+<body class="admin-page">
+
+    <aside class="admin-sidebar">
+
+        <div class="admin-sidebar-logo">
+
+            <a href="{{ url_for('home') }}">
+                GLAMORA <span>AR</span>
+            </a>
+
+            <small>
+                ADMIN PANEL
+            </small>
+
+        </div>
+
+
+        <nav class="admin-navigation">
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="admin-nav-item"
+            >
+                <span>⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_products') }}"
+                class="admin-nav-item"
+            >
+                <span>✦</span>
+                <span>Products</span>
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_add_product') }}"
+                class="admin-nav-item active"
+            >
+                <span>＋</span>
+                <span>Add Product</span>
+            </a>
+
+
+            <a
+                href="{{ url_for('home') }}"
+                class="admin-nav-item"
+            >
+                <span>↗</span>
+                <span>View Website</span>
+            </a>
+
+        </nav>
+
+
+        <div class="admin-sidebar-bottom">
+
+            <div class="admin-user-mini">
+
+                <div class="admin-avatar">
+                    {{ admin_name[0]|upper }}
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ admin_name }}
+                    </strong>
+
+                    <small>
+                        Administrator
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('admin_logout') }}"
+                class="admin-logout"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <main class="admin-main">
+
+        <header class="admin-topbar">
+
+            <div>
+
+                <p class="admin-eyebrow">
+                    CATALOG
+                </p>
+
+                <h1>
+                    Add Product
+                </h1>
+
+                <p class="admin-welcome">
+                    Add a new beauty product to the Glamora AR catalog.
+                </p>
+
+            </div>
+
+        </header>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-messages">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <form
+            action="{{ url_for('admin_add_product') }}"
+            method="POST"
+            enctype="multipart/form-data"
+            class="admin-product-form"
+        >
+
+            <section class="admin-content-card">
+
+                <div class="admin-section-header">
+
+                    <div>
+
+                        <p class="admin-eyebrow">
+                            BASIC INFORMATION
+                        </p>
+
+                        <h2>
+                            Product Details
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-form-grid">
+
+                    <div class="admin-form-group full-width">
+
+                        <label for="name">
+                            Product Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="e.g. Rose Velvet Lipstick"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="admin-form-group">
+
+                        <label for="category_id">
+                            Category *
+                        </label>
+
+                        <select
+                            id="category_id"
+                            name="category_id"
+                            required
+                        >
+
+                            <option value="">
+                                Select category
+                            </option>
+
+                            {% for category in categories %}
+
+                                <option value="{{ category.id }}">
+                                    {{ category.name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="admin-form-group">
+
+                        <label for="product_type">
+                            Product Type
+                        </label>
+
+                        <input
+                            type="text"
+                            id="product_type"
+                            name="product_type"
+                            placeholder="e.g. Liquid Lipstick"
+                        >
+
+                    </div>
+
+
+                    <div class="admin-form-group">
+
+                        <label for="price">
+                            Price *
+                        </label>
+
+                        <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="admin-form-group">
+
+                        <label for="stock">
+                            Stock *
+                        </label>
+
+                        <input
+                            type="number"
+                            id="stock"
+                            name="stock"
+                            min="0"
+                            value="0"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="admin-form-group">
+
+                        <label for="shade">
+                            Shade
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shade"
+                            name="shade"
+                            placeholder="e.g. Rose Nude"
+                        >
+
+                    </div>
+
+
+                    <div class="admin-form-group">
+
+                        <label for="color">
+                            Color
+                        </label>
+
+                        <input
+                            type="text"
+                            id="color"
+                            name="color"
+                            placeholder="e.g. #C85F7A"
+                        >
+
+                    </div>
+
+
+                    <div class="admin-form-group full-width">
+
+                        <label for="description">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="6"
+                            placeholder="Describe the product..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="admin-form-group full-width">
+
+                        <label class="checkbox-label">
+
+                            <input
+                                type="checkbox"
+                                name="is_available"
+                                value="1"
+                                checked
+                            >
+
+                            <span>
+                                Product is available for customers
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section class="admin-content-card">
+
+                <div class="admin-section-header">
+
+                    <div>
+
+                        <p class="admin-eyebrow">
+                            PRODUCT MEDIA
+                        </p>
+
+                        <h2>
+                            Product Images
+                        </h2>
+
+                        <p>
+                            Upload multiple images for this product.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="image-upload-area">
+
+                    <label
+                        for="images"
+                        class="image-upload-box"
+                    >
+
+                        <span class="upload-icon">
+                            ↑
+                        </span>
+
+                        <strong>
+                            Choose Product Images
+                        </strong>
+
+                        <small>
+                            JPG, JPEG, PNG, WEBP — multiple images allowed
+                        </small>
+
+                        <span class="upload-button">
+                            Browse Images
+                        </span>
+
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="images"
+                        name="images"
+                        accept="image/*"
+                        multiple
+                        hidden
+                    >
+
+
+                    <div
+                        id="imagePreview"
+                        class="image-preview-grid"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+            <div class="admin-form-actions">
+
+                <a
+                    href="{{ url_for('admin_products') }}"
+                    class="admin-secondary-button"
+                >
+                    Cancel
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="admin-primary-button"
+                >
+                    Save Product →
+                </button>
+
+            </div>
+
+        </form>
+
+    </main>
+
+
+    <script
+        src="{{ url_for('static', filename='js/admin.js') }}"
+    ></script>
+
+</body>
+</html>
