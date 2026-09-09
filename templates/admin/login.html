@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Glamora AR — Admin Login</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+</head>
+
+<body class="admin-auth-page">
+
+    <div class="admin-auth-background">
+        <div class="floating-shape shape-one"></div>
+        <div class="floating-shape shape-two"></div>
+        <div class="floating-shape shape-three"></div>
+    </div>
+
+
+    <main class="admin-login-wrapper">
+
+        <section class="admin-login-card">
+
+            <div class="admin-brand">
+                <a href="{{ url_for('home') }}" class="admin-logo">
+                    GLAMORA <span>AR</span>
+                </a>
+
+                <p class="admin-label">
+                    ADMIN PANEL
+                </p>
+            </div>
+
+
+            <div class="admin-login-heading">
+
+                <span class="admin-icon">
+                    ♔
+                </span>
+
+                <h1>
+                    Welcome Back
+                </h1>
+
+                <p>
+                    Sign in to manage your beauty products.
+                </p>
+
+            </div>
+
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                    <div class="flash-messages">
+
+                        {% for category, message in messages %}
+
+                            <div class="flash-message {{ category }}">
+                                {{ message }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <form
+                action="{{ url_for('admin_login') }}"
+                method="POST"
+                class="admin-login-form"
+            >
+
+                <div class="admin-form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="admin@example.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="admin-form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="admin-login-button"
+                >
+                    <span>Sign In</span>
+                    <span>→</span>
+                </button>
+
+            </form>
+
+
+            <div class="admin-login-footer">
+
+                <a href="{{ url_for('home') }}">
+                    ← Back to Glamora AR
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
