@@ -57,109 +57,163 @@
     </div>
 
 
-    <!-- =====================================================
-         NAVBAR
-         ===================================================== -->
 
-    <header class="navbar">
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<header class="navbar">
+
+    <!-- ===================================================
+         LOGO
+         =================================================== -->
+
+    <a
+        href="/"
+        class="logo"
+        aria-label="Glamora AR Home"
+    >
+        GLAMORA <span>AR</span>
+    </a>
+
+
+    <!-- ===================================================
+         MAIN NAVIGATION
+         =================================================== -->
+
+    <nav
+        class="nav-links"
+        id="navLinks"
+        aria-label="Main navigation"
+    >
+
+        <a href="/">
+            Home
+        </a>
+
+        <a href="/beauty">
+            Beauty
+        </a>
+
+        <a href="/about">
+            About
+        </a>
 
         <a
-            href="{{ url_for('home') }}"
-            class="logo"
+            href="/contact"
+            class="active"
         >
-            GLAMORA <span>AR</span>
+            Contact
+        </a>
+
+    </nav>
+
+
+    <!-- ===================================================
+         HEADER ACTIONS
+         =================================================== -->
+
+    <div class="nav-actions">
+
+
+        <!-- =================================================
+             SEARCH
+             ================================================= -->
+
+        <button
+            class="icon-btn"
+            id="searchBtn"
+            type="button"
+            aria-label="Search"
+            title="Search"
+        >
+            ⌕
+        </button>
+
+
+        <!-- =================================================
+             WISHLIST
+             ================================================= -->
+
+        <button
+            class="icon-btn wishlist-btn"
+            id="wishlistBtn"
+            type="button"
+            aria-label="Wishlist"
+            title="Wishlist"
+        >
+            ♡
+        </button>
+
+
+        <!-- =================================================
+             SHOPPING BAG
+             ================================================= -->
+
+        <button
+            class="cart-btn"
+            id="cartBtn"
+            type="button"
+            aria-label="Shopping bag"
+            title="Shopping bag"
+        >
+
+            <span>
+                Bag
+            </span>
+
+            <span
+                class="cart-count"
+                id="cartCount"
+            >
+                0
+            </span>
+
+        </button>
+
+
+        <!-- =================================================
+             LOGIN
+             ================================================= -->
+
+        <a
+            href="{{ url_for('login') }}"
+            class="login-btn"
+            id="loginBtn"
+            aria-label="Login to Glamora AR"
+        >
+
+            <span class="login-icon">
+                ♙
+            </span>
+
+            <span>
+                Login
+            </span>
+
         </a>
 
 
-        <nav class="nav-links">
+        <!-- =================================================
+             MOBILE MENU
+             ================================================= -->
 
-            <a href="{{ url_for('home') }}">
-                Home
-            </a>
+        <button
+            class="menu-btn"
+            id="menuBtn"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="navLinks"
+        >
+            ☰
+        </button>
 
-            <a href="{{ url_for('about') }}">
-                Beauty
-            </a>
+    </div>
 
-            <a href="{{ url_for('about') }}#tryon">
-                Virtual Try-On
-            </a>
-
-        </nav>
-
-
-        <div class="nav-actions">
-
-            <button
-                class="icon-btn"
-                type="button"
-                aria-label="Search"
-            >
-                ⌕
-            </button>
+</header>
 
 
-            <a
-                href="{{ url_for('about') }}#products"
-                class="header-link"
-            >
-                Products
-            </a>
-
-
-            <a
-                href="{{ url_for('about') }}"
-                class="header-link"
-            >
-                About
-            </a>
-
-
-            <a
-                href="{{ url_for('contact') }}"
-                class="header-link active-link"
-            >
-                Contact
-            </a>
-
-
-            <button
-                class="icon-btn"
-                type="button"
-                aria-label="Wishlist"
-            >
-                ♡
-            </button>
-
-
-            <button
-                class="cart-btn"
-                type="button"
-            >
-
-                <span>
-                    Bag
-                </span>
-
-                <span class="cart-count">
-                    0
-                </span>
-
-            </button>
-
-
-            <button
-                class="menu-btn"
-                id="menuBtn"
-                type="button"
-                aria-label="Open menu"
-            >
-                ☰
-            </button>
-
-        </div>
-
-    </header>
 
 
     <!-- =====================================================
