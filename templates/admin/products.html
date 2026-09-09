@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Glamora AR — Manage Products</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+</head>
+
+<body class="admin-page">
+
+    <aside class="admin-sidebar">
+
+        <div class="admin-sidebar-logo">
+
+            <a href="{{ url_for('home') }}">
+                GLAMORA <span>AR</span>
+            </a>
+
+            <small>
+                ADMIN PANEL
+            </small>
+
+        </div>
+
+
+        <nav class="admin-navigation">
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="admin-nav-item"
+            >
+                <span>⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_products') }}"
+                class="admin-nav-item active"
+            >
+                <span>✦</span>
+                <span>Products</span>
+            </a>
+
+
+            <a
+                href="{{ url_for('admin_add_product') }}"
+                class="admin-nav-item"
+            >
+                <span>＋</span>
+                <span>Add Product</span>
+            </a>
+
+
+            <a
+                href="{{ url_for('home') }}"
+                class="admin-nav-item"
+            >
+                <span>↗</span>
+                <span>View Website</span>
+            </a>
+
+        </nav>
+
+
+        <div class="admin-sidebar-bottom">
+
+            <div class="admin-user-mini">
+
+                <div class="admin-avatar">
+                    {{ admin_name[0]|upper }}
+                </div>
+
+                <div>
+                    <strong>
+                        {{ admin_name }}
+                    </strong>
+
+                    <small>
+                        Administrator
+                    </small>
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('admin_logout') }}"
+                class="admin-logout"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <main class="admin-main">
+
+        <header class="admin-topbar">
+
+            <div>
+
+                <p class="admin-eyebrow">
+                    CATALOG
+                </p>
+
+                <h1>
+                    Products
+                </h1>
+
+                <p class="admin-welcome">
+                    Manage the products displayed on Glamora AR.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('admin_add_product') }}"
+                class="admin-primary-button"
+            >
+                + Add Product
+            </a>
+
+        </header>
+
+
+        <section class="admin-content-card">
+
+            <div class="admin-section-header">
+
+                <div>
+
+                    <p class="admin-eyebrow">
+                        PRODUCT CATALOG
+                    </p>
+
+                    <h2>
+                        All Products
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            {% if products %}
+
+                <div class="admin-product-grid">
+
+                    {% for product in products %}
+
+                        <article class="admin-product-card">
+
+                            <div class="admin-product-image">
+
+                                {% if product.image_url %}
+
+                                    <img
+                                        src="{{ product.image_url }}"
+                                        alt="{{ product.name }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="admin-product-placeholder">
+                                        ✦
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="admin-product-card-content">
+
+                                <span class="product-category">
+                                    {{ product.category_name or 'Uncategorized' }}
+                                </span>
+
+                                <h3>
+                                    {{ product.name }}
+                                </h3>
+
+                                <p>
+                                    {{ product.description or 'No description available.' }}
+                                </p>
+
+
+                                <div class="product-meta">
+
+                                    <strong>
+                                        ${{ "%.2f"|format(product.price) }}
+                                    </strong>
+
+                                    <span>
+                                        Stock: {{ product.stock }}
+                                    </span>
+
+                                </div>
+
+
+                                {% if product.is_available %}
+
+                                    <span class="status available">
+                                        Available
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status unavailable">
+                                        Unavailable
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="admin-empty-state">
+
+                    <div class="empty-icon">
+                        ✦
+                    </div>
+
+                    <h3>
+                        Your catalog is empty
+                    </h3>
+
+                    <p>
+                        Products added here will automatically become
+                        available to your Glamora AR user interface.
+                    </p>
+
+                    <a
+                        href="{{ url_for('admin_add_product') }}"
+                        class="admin-primary-button"
+                    >
+                        + Add Product
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</body>
+</html>
