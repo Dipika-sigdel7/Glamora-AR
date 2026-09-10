@@ -47,7 +47,71 @@ def home():
 
 @app.route("/beauty")
 def beauty():
-    return render_template("beauty.html")
+
+    connection = get_db_connection()
+
+    if connection is None:
+        flash("Database connection failed.", "error")
+        return render_template("beauty.html", products=[])
+
+    cursor = None
+
+    try:
+        cursor = connection.cursor(dictionary=True)
+
+        # Get available products for the beauty page
+        cursor.execute("""
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                p.price,
+                p.stock,
+                p.shade,
+                p.color,
+                p.product_type,
+                p.is_available,
+                c.name AS category_name,
+
+                (
+                    SELECT pi.image_url
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id
+                    ORDER BY
+                        pi.is_primary DESC,
+                        pi.id ASC
+                    LIMIT 1
+                ) AS image_url
+
+            FROM products p
+
+            LEFT JOIN categories c
+                ON p.category_id = c.id
+
+            WHERE p.is_available = 1
+
+            ORDER BY p.created_at DESC
+        """)
+
+        products = cursor.fetchall()
+
+        return render_template("beauty.html", products=products)
+
+    except Exception as error:
+
+        print("Beauty page error:")
+        print(error)
+
+        flash("Unable to load beauty products.", "error")
+
+        return render_template("beauty.html", products=[])
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        connection.close()
 
 
 # =========================================================
