@@ -1,3 +1,6 @@
+import os
+import uuid
+
 from flask import (
     Flask,
     render_template,
@@ -9,6 +12,7 @@ from flask import (
 )
 
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
 
 from database.db import get_db_connection
 
@@ -20,6 +24,35 @@ from database.db import get_db_connection
 app = Flask(__name__)
 
 app.secret_key = "glamora-ar-secret-key"
+
+
+
+
+# =========================================================
+# PRODUCT IMAGE UPLOAD CONFIGURATION
+# =========================================================
+
+PRODUCT_UPLOAD_FOLDER = os.path.join(
+    app.root_path,
+    "static",
+    "uploads",
+    "products"
+)
+
+os.makedirs(
+    PRODUCT_UPLOAD_FOLDER,
+    exist_ok=True
+)
+
+app.config["PRODUCT_UPLOAD_FOLDER"] = PRODUCT_UPLOAD_FOLDER
+
+ALLOWED_IMAGE_EXTENSIONS = {
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+    "gif"
+}
 
 
 # =========================================================
