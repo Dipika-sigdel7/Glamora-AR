@@ -17,6 +17,37 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
+
+    <style>
+      /* =====================================================
+       CLICKABLE CATEGORY CARDS
+       ===================================================== */
+
+      .category-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .category-link .product-card {
+        cursor: pointer;
+      }
+
+      .category-link .product-card:hover {
+        transform: translateY(-8px);
+      }
+
+      /* =====================================================
+       CATEGORY PRODUCT COUNT
+       ===================================================== */
+
+      .category-count {
+        display: block;
+        margin-top: 6px;
+        font-size: 13px;
+        opacity: 0.65;
+      }
+    </style>
   </head>
 
   <body>
@@ -43,7 +74,7 @@
         <button class="icon-btn" type="button" aria-label="Wishlist">♡</button>
 
         <button class="cart-btn" type="button">
-          <span> Bag </span>
+          <span>Bag</span>
 
           <span class="cart-count"> 0 </span>
         </button>
@@ -64,7 +95,12 @@
      ===================================================== -->
 
     <main>
+      ```
       <section class="section">
+        <!-- =================================================
+         PAGE HEADING
+         ================================================= -->
+
         <div class="section-heading reveal">
           <div>
             <span class="section-label"> EXPLORE </span>
@@ -79,23 +115,37 @@
         </div>
 
         <!-- =================================================
-             CATEGORIES
-             ================================================= -->
+         CATEGORIES
+         ================================================= -->
 
         <div class="product-grid" id="categories">
-          <article class="product-card reveal">
-            <div class="product-image pink-bg">
-              <div class="product-placeholder">💄</div>
-            </div>
+          <!-- =================================================
+             LIPSTICK
+             ================================================= -->
 
-            <div class="product-info">
-              <div>
-                <span> LIPS </span>
-
-                <h3>Lipstick</h3>
+          <a href="{{ url_for('lipsticks') }}" class="category-link">
+            <article class="product-card reveal">
+              <div class="product-image pink-bg">
+                <div class="product-placeholder">💄</div>
               </div>
-            </div>
-          </article>
+
+              <div class="product-info">
+                <div>
+                  <span> LIPS </span>
+
+                  <h3>Lipstick</h3>
+
+                  <small class="category-count">
+                    Explore all lipsticks →
+                  </small>
+                </div>
+              </div>
+            </article>
+          </a>
+
+          <!-- =================================================
+             EYESHADOW
+             ================================================= -->
 
           <article class="product-card reveal">
             <div class="product-image nude-bg">
@@ -110,6 +160,10 @@
               </div>
             </div>
           </article>
+
+          <!-- =================================================
+             BLUSH
+             ================================================= -->
 
           <article class="product-card reveal">
             <div class="product-image rose-bg">
@@ -127,8 +181,8 @@
         </div>
 
         <!-- =================================================
-             VIRTUAL TRY-ON
-             ================================================= -->
+         VIRTUAL TRY-ON
+         ================================================= -->
 
         <section id="tryon" class="section">
           <div class="section-heading reveal">
@@ -191,6 +245,8 @@
             <span> GLAMORA AR </span>
 
             <a href="{{ url_for('beauty') }}#tryon"> Virtual Try-On </a>
+
+            <a href="{{ url_for('lipsticks') }}"> Lipsticks </a>
 
             <a href="{{ url_for('beauty') }}#categories"> Products </a>
           </div>
