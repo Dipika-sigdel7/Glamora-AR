@@ -3415,6 +3415,986 @@ button {
 
 
 /* =========================================================
+   GLAMORA AR
+   BEAUTY CATEGORY CARDS
+   ========================================================= */
+
+
+/* =========================================================
+   CATEGORY SECTION
+   ========================================================= */
+
+.beauty-categories {
+    padding-top: 40px;
+    padding-bottom: 100px;
+}
+
+
+.beauty-category-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 22px;
+
+    margin-top: 55px;
+}
+
+
+/* =========================================================
+   CATEGORY CARD
+   ========================================================= */
+
+.beauty-category-card {
+
+    position: relative;
+
+    min-height: 390px;
+
+    overflow: hidden;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-end;
+
+    padding: 28px;
+
+    border-radius: 28px;
+
+    text-decoration: none;
+
+    border: 1px solid
+        rgba(200, 95, 122, 0.13);
+
+    box-shadow:
+        0 18px 50px
+        rgba(90, 35, 50, 0.08);
+
+    transition:
+        transform 0.55s
+        cubic-bezier(.22,1,.36,1),
+
+        box-shadow 0.55s ease;
+}
+
+
+.beauty-category-card:hover {
+
+    transform:
+        translateY(-12px);
+
+    box-shadow:
+        0 30px 70px
+        rgba(90, 35, 50, 0.17);
+}
+
+
+/* =========================================================
+   CATEGORY BACKGROUNDS
+   ========================================================= */
+
+.category-lipstick {
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #fff0f3 0%,
+            #f6d4dc 48%,
+            #e9a9ba 100%
+        );
+}
+
+
+.category-eyeshadow {
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #fff8f2 0%,
+            #eadbd3 48%,
+            #d5b8aa 100%
+        );
+}
+
+
+.category-blush {
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #fff1f3 0%,
+            #f1cbd2 48%,
+            #dfa5b5 100%
+        );
+}
+
+
+.category-eyeliner {
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #faf7f6 0%,
+            #e7dddc 48%,
+            #cfc0bf 100%
+        );
+}
+
+
+.category-mascara {
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #f7f2f3 0%,
+            #ded4d7 48%,
+            #c3b3b8 100%
+        );
+}
+
+
+.category-foundation {
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #fff8f0 0%,
+            #eddbcc 48%,
+            #d8bda9 100%
+        );
+}
+
+
+.category-highlighter {
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #fffdf5 0%,
+            #f4e6c8 48%,
+            #dfc48e 100%
+        );
+}
+
+
+/* =========================================================
+   NUMBER
+   ========================================================= */
+
+.category-card-number {
+
+    position: absolute;
+
+    top: 22px;
+    left: 24px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    opacity: .55;
+}
+
+
+/* =========================================================
+   VISUAL AREA
+   ========================================================= */
+
+.beauty-category-visual {
+
+    position: absolute;
+
+    top: 45%;
+    left: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    display: grid;
+
+    place-items: center;
+
+    width: 85%;
+    height: 60%;
+
+    transition:
+        transform .65s
+        cubic-bezier(.22,1,.36,1);
+}
+
+
+.beauty-category-card:hover
+.beauty-category-visual {
+
+    transform:
+        translate(-50%, -54%)
+        scale(1.08);
+}
+
+
+/* =========================================================
+   LIPSTICK
+   ========================================================= */
+
+.category-lipstick-product {
+
+    position: relative;
+
+    width: 90px;
+    height: 175px;
+
+    transition:
+        transform .6s
+        cubic-bezier(.22,1,.36,1);
+}
+
+
+.beauty-category-card:hover
+.category-lipstick-product {
+
+    transform:
+        rotate(-8deg)
+        translateY(-10px);
+}
+
+
+.category-lipstick-body {
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 0;
+
+    width: 50px;
+    height: 105px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius:
+        6px 6px 10px 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #101010,
+            #454545,
+            #121212,
+            #3c3c3c,
+            #0b0b0b
+        );
+
+    box-shadow:
+        0 20px 30px
+        rgba(40,20,25,.25);
+}
+
+
+.category-lipstick-color {
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 92px;
+
+    width: 39px;
+    height: 64px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius:
+        6px 6px 2px 2px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8d2944,
+            #d84d6c,
+            #a93251
+        );
+
+    clip-path:
+        polygon(
+            0 25%,
+            100% 0,
+            100% 100%,
+            0 100%
+        );
+}
+
+
+.category-lipstick-base {
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -4px;
+
+    width: 60px;
+    height: 15px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 4px;
+
+    background: #090909;
+}
+
+
+/* =========================================================
+   EYESHADOW
+   ========================================================= */
+
+.category-eyeshadow-palette {
+
+    width: 185px;
+    height: 125px;
+
+    padding: 15px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 10px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #403034,
+            #181416
+        );
+
+    box-shadow:
+        0 25px 35px
+        rgba(50,25,30,.25);
+
+    transform:
+        rotate(-8deg);
+
+    transition:
+        transform .6s
+        cubic-bezier(.22,1,.36,1);
+}
+
+
+.beauty-category-card:hover
+.category-eyeshadow-palette {
+
+    transform:
+        rotate(-3deg)
+        translateY(-12px);
+}
+
+
+.category-eyeshadow-palette span {
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #fff,
+            #c9a095
+        );
+}
+
+
+.category-eyeshadow-palette
+span:nth-child(2) {
+
+    background:
+        radial-gradient(
+            circle,
+            #e0b0a7,
+            #965d5b
+        );
+}
+
+
+.category-eyeshadow-palette
+span:nth-child(3) {
+
+    background:
+        radial-gradient(
+            circle,
+            #d994a1,
+            #733e4b
+        );
+}
+
+
+.category-eyeshadow-palette
+span:nth-child(4) {
+
+    background:
+        radial-gradient(
+            circle,
+            #efd0b2,
+            #a97860
+        );
+}
+
+
+/* =========================================================
+   BLUSH
+   ========================================================= */
+
+.category-blush-product {
+
+    width: 150px;
+    height: 150px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8dfe4,
+            #c78396
+        );
+
+    box-shadow:
+        0 25px 40px
+        rgba(80,30,45,.20);
+
+    transform:
+        rotate(-8deg);
+
+    transition:
+        transform .6s
+        cubic-bezier(.22,1,.36,1);
+}
+
+
+.beauty-category-card:hover
+.category-blush-product {
+
+    transform:
+        rotate(4deg)
+        translateY(-12px);
+}
+
+
+.category-blush-inner {
+
+    width: 108px;
+    height: 108px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #dc8298,
+            #a84e69
+        );
+
+    box-shadow:
+        inset 0 8px 20px
+        rgba(255,255,255,.25);
+}
+
+
+/* =========================================================
+   EYELINER
+   ========================================================= */
+
+.category-eyeliner-product {
+
+    position: relative;
+
+    width: 190px;
+    height: 48px;
+
+    border-radius: 30px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #111,
+            #454044,
+            #0e0e0e
+        );
+
+    box-shadow:
+        0 20px 30px
+        rgba(40,20,25,.22);
+
+    transform:
+        rotate(-12deg);
+
+    transition:
+        transform .6s
+        cubic-bezier(.22,1,.36,1);
+}
+
+
+.beauty-category-card:hover
+.category-eyeliner-product {
+
+    transform:
+        rotate(-5deg)
+        translateY(-12px);
+}
+
+
+.category-eyeliner-tip {
+
+    position: absolute;
+
+    right: -32px;
+    top: 50%;
+
+    width: 42px;
+    height: 11px;
+
+    transform:
+        translateY(-50%);
+
+    background: #090909;
+
+    clip-path:
+        polygon(
+            0 0,
+            100% 50%,
+            0 100%
+        );
+}
+
+
+/* =========================================================
+   MASCARA
+   ========================================================= */
+
+.category-mascara-product {
+
+    position: relative;
+
+    width: 75px;
+    height: 210px;
+
+    transform:
+        rotate(8deg);
+
+    transition:
+        transform .6s
+        cubic-bezier(.22,1,.36,1);
+}
+
+
+.beauty-category-card:hover
+.category-mascara-product {
+
+    transform:
+        rotate(1deg)
+        translateY(-14px);
+}
+
+
+.category-mascara-body {
+
+    position: absolute;
+
+    bottom: 0;
+    left: 50%;
+
+    width: 50px;
+    height: 140px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #101010,
+            #4a4a4a,
+            #111
+        );
+
+    box-shadow:
+        0 20px 30px
+        rgba(30,15,20,.25);
+}
+
+
+.category-mascara-brush {
+
+    position: absolute;
+
+    left: 50%;
+    top: 0;
+
+    width: 25px;
+    height: 80px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 15px;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #111 0 3px,
+            #555 3px 5px
+        );
+}
+
+
+/* =========================================================
+   FOUNDATION
+   ========================================================= */
+
+.category-foundation-product {
+
+    position: relative;
+
+    width: 115px;
+    height: 190px;
+
+    transition:
+        transform .6s
+        cubic-bezier(.22,1,.36,1);
+}
+
+
+.beauty-category-card:hover
+.category-foundation-product {
+
+    transform:
+        rotate(-4deg)
+        translateY(-12px);
+}
+
+
+.category-foundation-bottle {
+
+    position: absolute;
+
+    bottom: 0;
+    left: 50%;
+
+    width: 95px;
+    height: 145px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius:
+        12px 12px 22px 22px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ae7659,
+            #e2b69d,
+            #a56a4e
+        );
+
+    box-shadow:
+        0 20px 30px
+        rgba(70,40,30,.20);
+}
+
+
+.category-foundation-pump {
+
+    position: absolute;
+
+    left: 50%;
+    top: 0;
+
+    width: 28px;
+    height: 58px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius:
+        5px 5px 2px 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #151515,
+            #555,
+            #101010
+        );
+}
+
+
+/* =========================================================
+   HIGHLIGHTER
+   ========================================================= */
+
+.category-highlighter-product {
+
+    width: 150px;
+    height: 150px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff8df,
+            #d5b46a
+        );
+
+    box-shadow:
+        0 25px 40px
+        rgba(100,70,25,.20);
+
+    transform:
+        rotate(-8deg);
+
+    transition:
+        transform .6s
+        cubic-bezier(.22,1,.36,1);
+}
+
+
+.beauty-category-card:hover
+.category-highlighter-product {
+
+    transform:
+        rotate(5deg)
+        translateY(-12px);
+}
+
+
+.category-highlighter-inner {
+
+    width: 108px;
+    height: 108px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 25%,
+            #fff,
+            #f2d98e 45%,
+            #c69b48
+        );
+
+    box-shadow:
+        inset 0 8px 18px
+        rgba(255,255,255,.55);
+}
+
+
+/* =========================================================
+   CATEGORY TEXT
+   ========================================================= */
+
+.beauty-category-content {
+
+    position: relative;
+
+    z-index: 10;
+}
+
+
+.beauty-category-content span {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    opacity: .65;
+}
+
+
+.beauty-category-content h3 {
+
+    margin: 0;
+
+    font-family:
+        "Playfair Display",
+        serif;
+
+    font-size: 30px;
+
+    line-height: 1.1;
+
+    transition:
+        color .35s ease;
+}
+
+
+.beauty-category-card:hover
+.beauty-category-content h3 {
+
+    color:
+        var(--accent);
+}
+
+
+.beauty-category-content p {
+
+    margin-top: 8px;
+
+    font-size: 11px;
+
+    opacity: .68;
+}
+
+
+/* =========================================================
+   ARROW
+   ========================================================= */
+
+.beauty-category-arrow {
+
+    position: absolute;
+
+    right: 24px;
+    bottom: 24px;
+
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.65);
+
+    font-size: 18px;
+
+    transition:
+        transform .5s
+        cubic-bezier(.22,1,.36,1),
+
+        background .3s ease,
+
+        color .3s ease;
+}
+
+
+.beauty-category-card:hover
+.beauty-category-arrow {
+
+    transform:
+        rotate(45deg);
+
+    background:
+        var(--text);
+
+    color: white;
+}
+
+
+/* =========================================================
+   SHINE EFFECT
+   ========================================================= */
+
+.beauty-category-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: -120%;
+    left: -70%;
+
+    width: 45%;
+    height: 250%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.5),
+            transparent
+        );
+
+    transform:
+        rotate(25deg);
+
+    transition:
+        left .8s ease;
+
+    pointer-events: none;
+
+    z-index: 5;
+}
+
+
+.beauty-category-card:hover::before {
+
+    left: 130%;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .beauty-category-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .beauty-category-grid {
+
+        grid-template-columns: 1fr;
+
+        gap: 18px;
+    }
+
+
+    .beauty-category-card {
+
+        min-height: 410px;
+    }
+
+}
+
+
+
+/* =========================================================
    LIPSTICK HOVER INSTRUCTION
    ========================================================= */
 
