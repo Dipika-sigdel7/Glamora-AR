@@ -1277,3 +1277,189 @@ function randomizeEyeliner() {
 console.log(
     "Glamora AR interactive UI loaded successfully."
 );
+
+
+
+/* =========================================================
+   BEAUTY CATEGORY CARDS
+   ========================================================= */
+
+function initializeBeautyCategoryCards() {
+
+    const categoryCards =
+        document.querySelectorAll(".beauty-category-card");
+
+    const productCards =
+        document.querySelectorAll(".product-card");
+
+    const productGrid =
+        document.getElementById("productGrid");
+
+    const categoryLabel =
+        document.getElementById("selectedCategoryLabel");
+
+    const categoryDescription =
+        document.getElementById("selectedCategoryDescription");
+
+
+    if (!categoryCards.length || !productCards.length) {
+        return;
+    }
+
+
+    function normalizeCategory(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        return String(value)
+            .toLowerCase()
+            .trim()
+            .replace(/[_\s]+/g, "-");
+
+    }
+
+
+    categoryCards.forEach(function(card) {
+
+        card.addEventListener("click", function() {
+
+            const selectedCategory =
+                normalizeCategory(
+                    card.getAttribute("data-category")
+                );
+
+
+            /* REMOVE ACTIVE FROM ALL CARDS */
+
+            categoryCards.forEach(function(item) {
+
+                item.classList.remove("active");
+
+            });
+
+
+            /* ACTIVE CARD */
+
+            card.classList.add("active");
+
+
+            /* SHOW/HIDE PRODUCTS */
+
+            productCards.forEach(function(product) {
+
+                const productType =
+                    normalizeCategory(
+                        product.getAttribute(
+                            "data-product-type"
+                        )
+                    );
+
+
+                if (productType === selectedCategory) {
+
+                    product.style.display = "";
+
+                    product.classList.add(
+                        "category-visible"
+                    );
+
+                } else {
+
+                    product.style.display = "none";
+
+                    product.classList.remove(
+                        "category-visible"
+                    );
+
+                }
+
+            });
+
+
+            /* UPDATE HEADING */
+
+            const categoryNames = {
+
+                lipstick: "LIPSTICKS",
+
+                eyeshadow: "EYESHADOW",
+
+                blush: "BLUSH",
+
+                eyeliner: "EYELINER",
+
+                mascara: "MASCARA",
+
+                foundation: "FOUNDATION",
+
+                highlighter: "HIGHLIGHTER"
+
+            };
+
+
+            const categoryDescriptions = {
+
+                lipstick:
+                    "Explore all our lipstick shades and finishes.",
+
+                eyeshadow:
+                    "Discover eyeshadow palettes for every look.",
+
+                blush:
+                    "Find beautiful blush shades for a natural flush.",
+
+                eyeliner:
+                    "Define your eyes with our eyeliner collection.",
+
+                mascara:
+                    "Discover mascaras designed for beautiful lashes.",
+
+                foundation:
+                    "Find the perfect foundation for your complexion.",
+
+                highlighter:
+                    "Add radiant glow with our highlighter collection."
+
+            };
+
+
+            if (categoryLabel) {
+
+                categoryLabel.textContent =
+                    categoryNames[selectedCategory]
+                    || "BEAUTY";
+
+            }
+
+
+            if (categoryDescription) {
+
+                categoryDescription.textContent =
+                    categoryDescriptions[selectedCategory]
+                    || "Explore our beauty collection.";
+
+            }
+
+
+            /* SCROLL TO PRODUCTS */
+
+            if (productGrid) {
+
+                setTimeout(function() {
+
+                    productGrid.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                }, 150);
+
+            }
+
+        });
+
+    });
+
+}
