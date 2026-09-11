@@ -1,0 +1,1775 @@
+
+/* =========================================================
+   GLAMORA AR
+   BEAUTY PAGE CSS
+   =========================================================
+
+   This file contains Beauty-page-specific styling.
+
+   Main site styling remains in:
+   static/css/style.css
+
+   ========================================================= */
+
+
+/* =========================================================
+   BEAUTY CATEGORY SECTION
+   ========================================================= */
+
+.beauty-filter {
+    width: 100%;
+    padding: 65px 7vw 75px;
+
+    background: var(--bg);
+}
+
+.beauty-filter-inner {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 24px;
+}
+
+
+/* =========================================================
+   BEAUTY CATEGORY CARD
+   ========================================================= */
+
+.beauty-filter-btn {
+    position: relative;
+
+    min-height: 220px;
+
+    padding: 28px;
+
+    overflow: hidden;
+
+    border: 1px solid var(--border);
+    border-radius: 28px;
+
+    background: var(--white);
+
+    color: var(--text);
+
+    cursor: pointer;
+
+    text-align: left;
+
+    font-family: "DM Sans", sans-serif;
+
+    box-shadow:
+        0 15px 40px rgba(164, 73, 98, 0.07);
+
+    transition:
+        transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.4s ease,
+        border-color 0.4s ease,
+        background 0.4s ease;
+}
+
+
+/* Soft decorative glow */
+
+.beauty-filter-btn::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    top: -70px;
+    right: -65px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(243, 184, 198, 0.42),
+            rgba(243, 184, 198, 0) 70%
+        );
+
+    pointer-events: none;
+
+    transition:
+        transform 0.5s ease;
+}
+
+
+/* Bottom accent */
+
+.beauty-filter-btn::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--accent),
+            transparent
+        );
+
+    opacity: 0;
+
+    transform: scaleX(0.4);
+
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+}
+
+
+/* Hover */
+
+.beauty-filter-btn:hover {
+    transform: translateY(-9px);
+
+    border-color:
+        rgba(200, 95, 122, 0.28);
+
+    box-shadow:
+        0 28px 65px rgba(164, 73, 98, 0.15);
+}
+
+.beauty-filter-btn:hover::before {
+    transform: scale(1.3);
+}
+
+.beauty-filter-btn:hover::after {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+
+/* Active */
+
+.beauty-filter-btn.active {
+    border-color: var(--accent);
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #fff7f9 100%
+        );
+
+    box-shadow:
+        0 24px 60px rgba(200, 95, 122, 0.18);
+}
+
+.beauty-filter-btn.active::after {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+
+/* =========================================================
+   CATEGORY CARD — ICON AREA
+   ========================================================= */
+
+.beauty-filter-btn::marker {
+    display: none;
+}
+
+
+/*
+ * We create the product visuals using
+ * pseudo-elements based on the button itself.
+ */
+
+
+/* ---------------------------------------------------------
+   ALL BEAUTY
+   --------------------------------------------------------- */
+
+.beauty-filter-btn[data-filter="all"] {
+    padding-top: 30px;
+}
+
+.beauty-filter-btn[data-filter="all"]::before {
+    background:
+        radial-gradient(
+            circle,
+            rgba(200, 95, 122, 0.18),
+            rgba(200, 95, 122, 0) 70%
+        );
+}
+
+
+/* ---------------------------------------------------------
+   LIPSTICKS
+   --------------------------------------------------------- */
+
+.beauty-filter-btn[data-filter="lipstick"] {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #fff7f9
+        );
+}
+
+.beauty-filter-btn[data-filter="lipstick"]::after {
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #c85f7a,
+            transparent
+        );
+}
+
+
+/* Lipstick visual */
+
+.beauty-filter-btn[data-filter="lipstick"] {
+    --lipstick-main: #c85f7a;
+    --lipstick-dark: #8f304d;
+    --lipstick-light: #e77d99;
+}
+
+.beauty-filter-btn[data-filter="lipstick"]::before {
+    width: 75px;
+    height: 115px;
+
+    top: 25px;
+    right: 38px;
+
+    border-radius: 10px 10px 18px 18px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--lipstick-dark),
+            var(--lipstick-main),
+            var(--lipstick-light),
+            var(--lipstick-dark)
+        );
+
+    opacity: 0.95;
+
+    box-shadow:
+        7px 15px 25px rgba(143, 48, 77, 0.2);
+
+    transform:
+        rotate(8deg);
+}
+
+
+/* ---------------------------------------------------------
+   EYESHADOW
+   --------------------------------------------------------- */
+
+.beauty-filter-btn[data-filter="eyeshadow"]::before {
+    width: 120px;
+    height: 88px;
+
+    top: 25px;
+    right: 30px;
+
+    border-radius: 22px;
+
+    background:
+        radial-gradient(
+            circle at 20% 30%,
+            #d99aa5 0 11px,
+            transparent 12px
+        ),
+        radial-gradient(
+            circle at 50% 30%,
+            #9d6571 0 11px,
+            transparent 12px
+        ),
+        radial-gradient(
+            circle at 80% 30%,
+            #e3baa8 0 11px,
+            transparent 12px
+        ),
+        radial-gradient(
+            circle at 20% 70%,
+            #76505d 0 11px,
+            transparent 12px
+        ),
+        radial-gradient(
+            circle at 50% 70%,
+            #c6818f 0 11px,
+            transparent 12px
+        ),
+        radial-gradient(
+            circle at 80% 70%,
+            #efd1c2 0 11px,
+            transparent 12px
+        ),
+        linear-gradient(
+            145deg,
+            #39282e,
+            #70515a
+        );
+
+    box-shadow:
+        10px 15px 28px rgba(43, 27, 32, 0.2);
+
+    transform: rotate(-7deg);
+}
+
+
+/* ---------------------------------------------------------
+   BLUSH
+   --------------------------------------------------------- */
+
+.beauty-filter-btn[data-filter="blush"]::before {
+    width: 95px;
+    height: 95px;
+
+    top: 25px;
+    right: 45px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #e890a5 0%,
+            #d96685 48%,
+            #b94e6c 100%
+        );
+
+    border:
+        13px solid #f7e5e9;
+
+    box-shadow:
+        10px 15px 30px rgba(164, 73, 98, 0.18);
+
+    transform: rotate(-7deg);
+}
+
+
+/* ---------------------------------------------------------
+   EYELINER
+   --------------------------------------------------------- */
+
+.beauty-filter-btn[data-filter="eyeliner"]::before {
+    width: 120px;
+    height: 16px;
+
+    top: 60px;
+    right: 28px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #171013,
+            #514047,
+            #1b1215
+        );
+
+    box-shadow:
+        6px 10px 18px rgba(43, 27, 32, 0.2);
+
+    transform: rotate(-16deg);
+}
+
+
+/* Pencil tip */
+
+.beauty-filter-btn[data-filter="eyeliner"]::after {
+    height: 3px;
+
+    opacity: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #2b1b20,
+            transparent
+        );
+}
+
+
+/* ---------------------------------------------------------
+   MASCARA
+   --------------------------------------------------------- */
+
+.beauty-filter-btn[data-filter="mascara"]::before {
+    width: 52px;
+    height: 105px;
+
+    top: 20px;
+    right: 55px;
+
+    border-radius:
+        9px
+        9px
+        13px
+        13px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #1c1417,
+            #59424a,
+            #211519
+        );
+
+    box-shadow:
+        8px 15px 28px rgba(43, 27, 32, 0.22);
+
+    transform: rotate(-7deg);
+}
+
+
+/* ---------------------------------------------------------
+   FOUNDATION
+   --------------------------------------------------------- */
+
+.beauty-filter-btn[data-filter="foundation"]::before {
+    width: 78px;
+    height: 100px;
+
+    top: 24px;
+    right: 45px;
+
+    border-radius:
+        15px
+        15px
+        22px
+        22px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #c98770,
+            #efc0a8,
+            #d69c82
+        );
+
+    box-shadow:
+        9px 15px 25px rgba(130, 78, 65, 0.18);
+
+    transform: rotate(-4deg);
+}
+
+
+/* Foundation pump */
+
+.beauty-filter-btn[data-filter="foundation"]::after {
+    height: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #c85f7a,
+            transparent
+        );
+}
+
+
+/* ---------------------------------------------------------
+   HIGHLIGHTER
+   --------------------------------------------------------- */
+
+.beauty-filter-btn[data-filter="highlighter"]::before {
+    width: 100px;
+    height: 82px;
+
+    top: 30px;
+    right: 40px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #fff9eb 0%,
+            #f5d49b 43%,
+            #d9a969 100%
+        );
+
+    border:
+        8px solid #f7ead9;
+
+    box-shadow:
+        0 0 30px rgba(240, 200, 130, 0.5),
+        10px 15px 25px rgba(164, 73, 98, 0.13);
+
+    transform: rotate(8deg);
+}
+
+
+/* =========================================================
+   CATEGORY TEXT
+   ========================================================= */
+
+.beauty-filter-btn {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-end;
+}
+
+.beauty-filter-btn {
+    font-size: 0;
+}
+
+
+/*
+ * Category names are generated using data-filter.
+ * This allows the HTML buttons to remain exactly as
+ * you provided them.
+ */
+
+.beauty-filter-btn[data-filter="all"]::selection {
+    background: transparent;
+}
+
+
+/* =========================================================
+   CATEGORY LABELS
+   ========================================================= */
+
+/*
+ * Use the existing button text visually.
+ */
+
+.beauty-filter-btn {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+
+/* Keep the actual text readable */
+
+.beauty-filter-btn[data-filter="all"] {
+    color: var(--text);
+}
+
+.beauty-filter-btn[data-filter="lipstick"] {
+    color: var(--text);
+}
+
+.beauty-filter-btn[data-filter="eyeshadow"] {
+    color: var(--text);
+}
+
+.beauty-filter-btn[data-filter="blush"] {
+    color: var(--text);
+}
+
+.beauty-filter-btn[data-filter="eyeliner"] {
+    color: var(--text);
+}
+
+.beauty-filter-btn[data-filter="mascara"] {
+    color: var(--text);
+}
+
+.beauty-filter-btn[data-filter="foundation"] {
+    color: var(--text);
+}
+
+.beauty-filter-btn[data-filter="highlighter"] {
+    color: var(--text);
+}
+
+
+/* =========================================================
+   BEAUTY PRODUCTS
+   ========================================================= */
+
+.products .product-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 30px;
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
+
+.products .product-card {
+    position: relative;
+
+    overflow: hidden;
+
+    background: var(--white);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 28px;
+
+    box-shadow:
+        0 18px 45px rgba(164, 73, 98, 0.09);
+
+    transition:
+        transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.4s ease,
+        border-color 0.4s ease;
+}
+
+.products .product-card:hover {
+    transform: translateY(-10px);
+
+    border-color:
+        rgba(200, 95, 122, 0.25);
+
+    box-shadow:
+        0 28px 65px rgba(164, 73, 98, 0.16);
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE
+   ========================================================= */
+
+.products .product-image {
+    position: relative;
+
+    min-height: 330px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff8fa,
+            #fdecef
+        );
+}
+
+
+/* Image decorative glow */
+
+.products .product-image::before {
+    content: "";
+
+    position: absolute;
+
+    width: 230px;
+    height: 230px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(243, 184, 198, 0.3),
+            rgba(243, 184, 198, 0) 70%
+        );
+
+    transition:
+        transform 0.5s ease;
+}
+
+.products .product-card:hover
+.product-image::before {
+    transform: scale(1.2);
+}
+
+
+/* =========================================================
+   REAL PRODUCT IMAGE
+   ========================================================= */
+
+.product-real-image {
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+    height: 330px;
+
+    object-fit: contain;
+
+    padding: 30px;
+
+    transition:
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.4s ease;
+}
+
+.product-card:hover
+.product-real-image {
+    transform:
+        scale(1.06)
+        translateY(-4px);
+}
+
+
+/* =========================================================
+   PRODUCT BADGE
+   ========================================================= */
+
+.products .product-badge {
+    position: absolute;
+
+    z-index: 5;
+
+    top: 18px;
+    left: 18px;
+
+    padding: 8px 13px;
+
+    border-radius: 50px;
+
+    background:
+        rgba(255, 255, 255, 0.9);
+
+    color: var(--accent);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+
+    box-shadow:
+        0 8px 20px rgba(164, 73, 98, 0.08);
+}
+
+
+/* =========================================================
+   QUICK TRY BUTTON
+   ========================================================= */
+
+.products .quick-try {
+    position: absolute;
+
+    z-index: 6;
+
+    right: 18px;
+    top: 18px;
+
+    padding: 9px 13px;
+
+    border: 1px solid rgba(200, 95, 122, 0.18);
+
+    border-radius: 50px;
+
+    background:
+        rgba(255, 255, 255, 0.92);
+
+    color: var(--accent);
+
+    font-family: "DM Sans", sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    transform: translateY(-7px);
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease,
+        background 0.3s ease,
+        color 0.3s ease;
+}
+
+.products .product-card:hover
+.quick-try {
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+.products .quick-try:hover {
+    background: var(--accent);
+
+    color: var(--white);
+}
+
+
+/* =========================================================
+   DYNAMIC SHADE
+   ========================================================= */
+
+.products .dynamic-shade {
+    position: absolute;
+
+    z-index: 5;
+
+    left: 18px;
+    bottom: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 7px 11px;
+
+    border-radius: 50px;
+
+    background:
+        rgba(255, 255, 255, 0.9);
+
+    color: var(--text);
+
+    font-size: 10px;
+
+    box-shadow:
+        0 8px 18px rgba(164, 73, 98, 0.08);
+}
+
+.products .dynamic-shade i {
+    display: block;
+
+    width: 15px;
+    height: 15px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid rgba(255,255,255,0.9);
+
+    box-shadow:
+        0 0 0 1px rgba(43, 27, 32, 0.08);
+}
+
+
+/* =========================================================
+   PRODUCT INFORMATION
+   ========================================================= */
+
+.products .product-info {
+    min-height: 145px;
+
+    padding: 25px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    background: var(--white);
+}
+
+.products .product-info > div {
+    min-width: 0;
+}
+
+.products .product-info > div > span {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--accent);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.13em;
+
+    text-transform: uppercase;
+}
+
+.products .product-info h3 {
+    margin: 0 0 8px;
+
+    color: var(--text);
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 23px;
+
+    font-weight: 600;
+
+    line-height: 1.2;
+}
+
+.products .product-info strong {
+    flex-shrink: 0;
+
+    color: var(--text);
+
+    font-size: 17px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   PRODUCT SHADE TEXT
+   ========================================================= */
+
+.products .product-shade-text {
+    display: block;
+
+    margin: 0;
+
+    color: var(--text-soft);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   FALLBACK PRODUCT AREA
+   ========================================================= */
+
+.products .product-placeholder {
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+    height: 330px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.fallback-product-visual {
+    position: relative;
+
+    width: 230px;
+    height: 230px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================================
+   FALLBACK LIPSTICK
+   ========================================================= */
+
+.fallback-lipstick {
+    position: relative;
+
+    width: 80px;
+    height: 160px;
+}
+
+.fallback-lipstick .lipstick-cap {
+    position: absolute;
+
+    left: 21px;
+    top: 55px;
+
+    width: 38px;
+    height: 80px;
+
+    border-radius:
+        5px
+        5px
+        9px
+        9px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2b1b20,
+            #64464f,
+            #26191d
+        );
+}
+
+.fallback-lipstick .lipstick-body {
+    position: absolute;
+
+    left: 22px;
+    bottom: 0;
+
+    width: 36px;
+    height: 55px;
+
+    border-radius:
+        5px
+        5px
+        8px
+        8px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #b74d69,
+            #e77d99,
+            #a74360
+        );
+}
+
+.fallback-lipstick .lipstick-bullet {
+    position: absolute;
+
+    left: 24px;
+    top: 30px;
+
+    width: 32px;
+    height: 40px;
+
+    border-radius:
+        18px
+        18px
+        4px
+        4px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8f304d,
+            #e65d83
+        );
+
+    transform:
+        skewX(-8deg);
+}
+
+
+/* =========================================================
+   FALLBACK EYESHADOW
+   ========================================================= */
+
+.fallback-eyeshadow {
+    width: 170px;
+    height: 125px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.eyeshadow-palette {
+    width: 155px;
+    height: 110px;
+
+    padding: 18px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+
+    border-radius: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #3b292f,
+            #70525b
+        );
+
+    box-shadow:
+        12px 18px 30px rgba(43, 27, 32, 0.2);
+
+    transform: rotate(-7deg);
+}
+
+.eyeshadow-palette span {
+    width: 27px;
+    height: 27px;
+
+    border-radius: 50%;
+
+    box-shadow:
+        inset 0 2px 5px rgba(255,255,255,0.22);
+}
+
+.eyeshadow-palette span:nth-child(1) {
+    background: #d89a9d;
+}
+
+.eyeshadow-palette span:nth-child(2) {
+    background: #9d6571;
+}
+
+.eyeshadow-palette span:nth-child(3) {
+    background: #e2b7a5;
+}
+
+.eyeshadow-palette span:nth-child(4) {
+    background: #79515e;
+}
+
+.eyeshadow-palette span:nth-child(5) {
+    background: #c6818f;
+}
+
+.eyeshadow-palette span:nth-child(6) {
+    background: #f0d0c0;
+}
+
+
+/* =========================================================
+   FALLBACK BLUSH
+   ========================================================= */
+
+.fallback-blush {
+    width: 170px;
+    height: 150px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.blush-compact {
+    position: relative;
+
+    width: 125px;
+    height: 100px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f3d6dc,
+            #ffffff
+        );
+
+    box-shadow:
+        12px 18px 30px rgba(164, 73, 98, 0.16);
+
+    transform: rotate(-7deg);
+}
+
+.blush-color {
+    width: 70px;
+    height: 70px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #e890a5 0%,
+            #d96685 45%,
+            #b94e6c 100%
+        );
+}
+
+.blush-highlight {
+    position: absolute;
+
+    width: 18px;
+    height: 18px;
+
+    top: 15px;
+    right: 18px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.55);
+
+    filter: blur(1px);
+}
+
+
+/* =========================================================
+   FALLBACK EYELINER
+   ========================================================= */
+
+.fallback-eyeliner {
+    width: 190px;
+    height: 100px;
+
+    position: relative;
+}
+
+.eyeliner-pencil {
+    position: absolute;
+
+    width: 155px;
+    height: 16px;
+
+    left: 10px;
+    top: 42px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #1c1316,
+            #463038,
+            #1c1316
+        );
+
+    box-shadow:
+        7px 10px 20px rgba(43, 27, 32, 0.22);
+
+    transform: rotate(-14deg);
+}
+
+.eyeliner-cap {
+    position: absolute;
+
+    width: 35px;
+    height: 20px;
+
+    right: 0;
+    top: 37px;
+
+    border-radius: 5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #8c6a73,
+            #b998a0
+        );
+
+    transform: rotate(-14deg);
+}
+
+
+/* =========================================================
+   FALLBACK MASCARA
+   ========================================================= */
+
+.fallback-mascara {
+    position: relative;
+
+    width: 180px;
+    height: 180px;
+}
+
+.mascara-body {
+    position: absolute;
+
+    width: 55px;
+    height: 110px;
+
+    left: 50px;
+    top: 35px;
+
+    border-radius:
+        9px
+        9px
+        13px
+        13px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #201619,
+            #554049,
+            #201619
+        );
+
+    box-shadow:
+        10px 17px 28px rgba(43, 27, 32, 0.22);
+}
+
+.mascara-cap {
+    position: absolute;
+
+    width: 59px;
+    height: 28px;
+
+    left: 48px;
+    top: 21px;
+
+    border-radius:
+        8px
+        8px
+        4px
+        4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2a1c20,
+            #60464f,
+            #24171b
+        );
+}
+
+.mascara-brush {
+    position: absolute;
+
+    width: 9px;
+    height: 85px;
+
+    left: 108px;
+    top: 37px;
+
+    border-radius: 5px;
+
+    background: #2b1b20;
+
+    transform: rotate(5deg);
+}
+
+.mascara-brush::after {
+    content: "";
+
+    position: absolute;
+
+    width: 25px;
+    height: 45px;
+
+    left: -8px;
+    top: 60px;
+
+    border-radius: 50%;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #211519 0,
+            #211519 2px,
+            transparent 2px,
+            transparent 4px
+        );
+}
+
+
+/* =========================================================
+   FALLBACK FOUNDATION
+   ========================================================= */
+
+.fallback-foundation {
+    position: relative;
+
+    width: 180px;
+    height: 180px;
+}
+
+.foundation-bottle {
+    position: absolute;
+
+    width: 82px;
+    height: 120px;
+
+    left: 49px;
+    top: 45px;
+
+    border-radius:
+        15px
+        15px
+        22px
+        22px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #d69c82,
+            #efc0a8,
+            #c98770
+        );
+
+    box-shadow:
+        10px 18px 28px rgba(130, 78, 65, 0.18);
+}
+
+.foundation-pump {
+    position: absolute;
+
+    width: 46px;
+    height: 12px;
+
+    left: 18px;
+    top: -12px;
+
+    border-radius: 7px;
+
+    background: #d2a2a4;
+}
+
+.foundation-pump::after {
+    content: "";
+
+    position: absolute;
+
+    width: 18px;
+    height: 6px;
+
+    left: 30px;
+    top: 0;
+
+    border-radius: 5px;
+
+    background: #b8808c;
+}
+
+.foundation-label {
+    position: absolute;
+
+    left: 15px;
+    top: 52px;
+
+    width: 52px;
+    height: 22px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 4px;
+
+    background:
+        rgba(255,255,255,0.58);
+
+    color: #8b5965;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+}
+
+
+/* =========================================================
+   FALLBACK HIGHLIGHTER
+   ========================================================= */
+
+.fallback-highlighter {
+    width: 180px;
+    height: 160px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.highlighter-compact {
+    width: 135px;
+    height: 105px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f7e2c7,
+            #fff9ef
+        );
+
+    box-shadow:
+        12px 18px 30px rgba(164, 73, 98, 0.14);
+
+    transform: rotate(8deg);
+}
+
+.highlighter-glow {
+    width: 75px;
+    height: 75px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #fff8e7 0%,
+            #f5d49b 42%,
+            #d9a969 100%
+        );
+
+    box-shadow:
+        0 0 30px rgba(240, 200, 130, 0.55);
+}
+
+
+/* =========================================================
+   FALLBACK DEFAULT BEAUTY
+   ========================================================= */
+
+.fallback-beauty {
+    width: 110px;
+    height: 110px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f3b8c6,
+            #c85f7a
+        );
+
+    box-shadow:
+        10px 18px 30px rgba(164, 73, 98, 0.2);
+}
+
+.fallback-beauty span {
+    color: white;
+
+    font-size: 40px;
+}
+
+
+/* =========================================================
+   EMPTY PRODUCTS
+   ========================================================= */
+
+.products .empty-products {
+    grid-column: 1 / -1;
+
+    min-height: 300px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 50px;
+
+    text-align: center;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 28px;
+
+    background: var(--white);
+}
+
+.empty-products-icon {
+    width: 65px;
+    height: 65px;
+
+    margin-bottom: 20px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--pink-light);
+
+    color: var(--accent);
+
+    font-size: 25px;
+}
+
+.empty-products h3 {
+    margin: 0 0 10px;
+
+    color: var(--text);
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 26px;
+}
+
+.empty-products p {
+    max-width: 470px;
+
+    margin: 0;
+
+    color: var(--text-soft);
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   FILTERED PRODUCT ANIMATION
+   ========================================================= */
+
+.product-card.category-hidden {
+    display: none;
+}
+
+.product-card.category-visible {
+    animation:
+        beautyProductAppear
+        0.45s
+        cubic-bezier(0.22, 1, 0.36, 1)
+        both;
+}
+
+@keyframes beautyProductAppear {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(18px)
+            scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   BEAUTY PAGE RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    .beauty-filter-inner {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+    .products .product-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .beauty-filter {
+        padding:
+            55px 5vw 65px;
+    }
+
+    .beauty-filter-inner {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 18px;
+    }
+
+    .beauty-filter-btn {
+        min-height: 205px;
+
+        padding: 24px;
+    }
+
+    .products .product-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .beauty-filter {
+        padding:
+            45px 5vw 55px;
+    }
+
+    .beauty-filter-inner {
+        grid-template-columns: 1fr;
+
+        gap: 16px;
+    }
+
+    .beauty-filter-btn {
+        min-height: 190px;
+
+        border-radius: 24px;
+    }
+
+    .products .product-image {
+        min-height: 290px;
+    }
+
+    .product-real-image {
+        height: 290px;
+    }
+
+    .products .product-placeholder {
+        height: 290px;
+    }
+
+    .products .product-info {
+        padding: 21px;
+    }
+
+    .products .product-info h3 {
+        font-size: 21px;
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .beauty-filter-btn,
+    .beauty-filter-btn::before,
+    .beauty-filter-btn::after,
+    .products .product-card,
+    .products .product-image::before,
+    .product-real-image,
+    .products .quick-try {
+        transition: none;
+    }
+
+    .product-card.category-visible {
+        animation: none;
+    }
+
+}
+
