@@ -1,7 +1,33 @@
+
 /* =========================================================
    GLAMORA AR
-   BEAUTY CATEGORY FILTER
+   BEAUTY PAGE JAVASCRIPT
    ========================================================= */
+
+
+/* =========================================================
+   LOADER
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const loader = document.getElementById("loader");
+
+    if (!loader) {
+        return;
+    }
+
+    setTimeout(function () {
+
+        loader.classList.add("hidden");
+
+        setTimeout(function () {
+            loader.style.display = "none";
+        }, 600);
+
+    }, 1200);
+
+});
 
 
 /* =========================================================
@@ -11,23 +37,21 @@
 function initializeBeautyCategoryFilter() {
 
     const filterButtons =
-        document.querySelectorAll(
-            ".beauty-filter-btn"
-        );
+        document.querySelectorAll(".beauty-filter-btn");
 
     const productCards =
-        document.querySelectorAll(
-            ".product-card"
-        );
+        document.querySelectorAll(".product-card");
 
     const categoryCards =
-        document.querySelectorAll(
-            "[data-category-link]"
-        );
+        document.querySelectorAll("[data-category-link]");
 
     const productGrid =
-        document.querySelector("#productGrid");
+        document.getElementById("productGrid");
 
+
+    /* -----------------------------------------------------
+       STOP IF THERE ARE NO FILTER BUTTONS
+       ----------------------------------------------------- */
 
     if (!filterButtons.length) {
         return;
@@ -35,7 +59,7 @@ function initializeBeautyCategoryFilter() {
 
 
     /* =====================================================
-       NORMALIZE CATEGORY
+       NORMALIZE CATEGORY NAME
        ===================================================== */
 
     function normalizeCategory(value) {
@@ -44,10 +68,11 @@ function initializeBeautyCategoryFilter() {
             return "";
         }
 
-        return value
+        return String(value)
             .toLowerCase()
             .trim()
             .replace(/[_\s]+/g, "-");
+
     }
 
 
@@ -61,83 +86,82 @@ function initializeBeautyCategoryFilter() {
             normalizeCategory(category);
 
 
-        productCards.forEach(
-            function (card) {
+        productCards.forEach(function (card) {
 
-                const productType =
-                    normalizeCategory(
-                        card.dataset.productType
-                    );
-
-
-                const shouldShow =
-                    normalizedCategory === "all" ||
-                    productType === normalizedCategory;
+            const productType =
+                normalizeCategory(
+                    card.dataset.productType
+                );
 
 
-                if (shouldShow) {
+            const shouldShow =
+                normalizedCategory === "all" ||
+                productType === normalizedCategory;
 
-                    card.style.display = "";
 
-                    requestAnimationFrame(
-                        function () {
+            if (shouldShow) {
 
-                            card.classList.add(
-                                "category-visible"
-                            );
+                card.style.display = "";
 
-                        }
-                    );
+                /* Force animation restart */
+                card.classList.remove(
+                    "category-visible"
+                );
 
-                } else {
+                requestAnimationFrame(function () {
 
-                    card.classList.remove(
+                    card.classList.add(
                         "category-visible"
                     );
 
-                    card.style.display = "none";
+                });
 
-                }
+            } else {
 
-            }
-        );
-
-
-        /* =================================================
-           ACTIVE FILTER BUTTON
-           ================================================= */
-
-        filterButtons.forEach(
-            function (button) {
-
-                button.classList.toggle(
-                    "active",
-                    normalizeCategory(
-                        button.dataset.filter
-                    ) === normalizedCategory
+                card.classList.remove(
+                    "category-visible"
                 );
 
+                card.style.display = "none";
+
             }
-        );
+
+        });
 
 
         /* =================================================
-           SCROLL TO PRODUCTS
+           UPDATE ACTIVE FILTER BUTTON
+           ================================================= */
+
+        filterButtons.forEach(function (button) {
+
+            const buttonCategory =
+                normalizeCategory(
+                    button.dataset.filter
+                );
+
+            button.classList.toggle(
+                "active",
+                buttonCategory === normalizedCategory
+            );
+
+        });
+
+
+        /* =================================================
+           SCROLL TO PRODUCT GRID
            ================================================= */
 
         if (productGrid) {
 
-            setTimeout(
-                function () {
+            setTimeout(function () {
 
-                    productGrid.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
+                productGrid.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
 
-                },
-                100
-            );
+            }, 100);
 
         }
 
@@ -148,67 +172,96 @@ function initializeBeautyCategoryFilter() {
        FILTER BUTTON CLICK
        ===================================================== */
 
-    filterButtons.forEach(
-        function (button) {
+    filterButtons.forEach(function (button) {
 
-            button.addEventListener(
-                "click",
-                function () {
+        button.addEventListener(
+            "click",
+            function () {
 
-                    const category =
-                        button.dataset.filter || "all";
+                const category =
+                    button.dataset.filter || "all";
 
-                    filterProducts(category);
+                filterProducts(category);
 
-                }
-            );
+            }
+        );
 
-        }
-    );
+    });
 
 
     /* =====================================================
        CATEGORY CARD CLICK
        ===================================================== */
 
-    categoryCards.forEach(
-        function (card) {
+    categoryCards.forEach(function (card) {
 
-            card.addEventListener(
-                "click",
-                function (event) {
+        card.addEventListener(
+            "click",
+            function (event) {
 
-                    event.preventDefault();
-
-                    const category =
-                        card.dataset.categoryLink;
-
-                    if (!category) {
-                        return;
-                    }
+                event.preventDefault();
 
 
-                    const matchingButton =
-                        document.querySelector(
-                            `.beauty-filter-btn[data-filter="${category}"]`
+                const category =
+                    card.dataset.categoryLink;
+
+
+                if (!category) {
+                    return;
+                }
+
+
+                const normalizedCategory =
+                    normalizeCategory(category);
+
+
+                /* Find matching filter button */
+                let matchingButton = null;
+
+
+                filterButtons.forEach(function (button) {
+
+                    const buttonCategory =
+                        normalizeCategory(
+                            button.dataset.filter
                         );
 
 
-                    if (matchingButton) {
+                    if (
+                        buttonCategory ===
+                        normalizedCategory
+                    ) {
 
-                        matchingButton.click();
+                        matchingButton = button;
 
                     }
 
-                }
-            );
+                });
 
-        }
-    );
+
+                if (matchingButton) {
+
+                    matchingButton.click();
+
+                } else {
+
+                    /*
+                     * If no filter button exists,
+                     * directly filter the products.
+                     */
+
+                    filterProducts(category);
+
+                }
+
+            }
+        );
+
+    });
 
 
     /* =====================================================
-       SHOW ALL ON FIRST LOAD
+       SHOW ALL PRODUCTS ON FIRST LOAD
        ===================================================== */
 
     filterProducts("all");
@@ -228,34 +281,32 @@ function initializeCategoryHover() {
         );
 
 
-    cards.forEach(
-        function (card) {
+    cards.forEach(function (card) {
 
-            card.addEventListener(
-                "mouseenter",
-                function () {
+        card.addEventListener(
+            "mouseenter",
+            function () {
 
-                    card.classList.add(
-                        "is-hovered"
-                    );
+                card.classList.add(
+                    "is-hovered"
+                );
 
-                }
-            );
+            }
+        );
 
 
-            card.addEventListener(
-                "mouseleave",
-                function () {
+        card.addEventListener(
+            "mouseleave",
+            function () {
 
-                    card.classList.remove(
-                        "is-hovered"
-                    );
+                card.classList.remove(
+                    "is-hovered"
+                );
 
-                }
-            );
+            }
+        );
 
-        }
-    );
+    });
 
 }
 
@@ -274,3 +325,4 @@ document.addEventListener(
 
     }
 );
+
