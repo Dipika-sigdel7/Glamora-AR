@@ -1,184 +1,276 @@
 /* =========================================================
    GLAMORA AR
-   BEAUTY PAGE INTERACTIONS
+   BEAUTY CATEGORY FILTER
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
 
-    /* =====================================================
-       CATEGORY CARD MAGNETIC HOVER
-       ===================================================== */
+/* =========================================================
+   CATEGORY FILTER
+   ========================================================= */
 
-    const cards = document.querySelectorAll(".category-card");
+function initializeBeautyCategoryFilter() {
 
-    cards.forEach((card) => {
-
-        card.addEventListener("mousemove", (event) => {
-
-            const rect = card.getBoundingClientRect();
-
-            const x =
-                event.clientX - rect.left;
-
-            const y =
-                event.clientY - rect.top;
-
-            const centerX =
-                rect.width / 2;
-
-            const centerY =
-                rect.height / 2;
-
-            const rotateX =
-                ((y - centerY) / centerY) * -2;
-
-            const rotateY =
-                ((x - centerX) / centerX) * 2;
-
-            card.style.transform =
-                `translateY(-12px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
-        });
-
-
-        card.addEventListener("mouseleave", () => {
-
-            card.style.transform =
-                "";
-
-        });
-
-    });
-
-
-    /* =====================================================
-       PRODUCT IMAGE TILT
-       ===================================================== */
+    const filterButtons =
+        document.querySelectorAll(
+            ".beauty-filter-btn"
+        );
 
     const productCards =
         document.querySelectorAll(
-            ".beauty-product-card"
+            ".product-card"
         );
 
-    productCards.forEach((card) => {
-
-        card.addEventListener(
-            "mousemove",
-            (event) => {
-
-                const image =
-                    card.querySelector(
-                        ".product-photo img"
-                    );
-
-                if (!image) {
-                    return;
-                }
-
-                const rect =
-                    card.getBoundingClientRect();
-
-                const x =
-                    event.clientX - rect.left;
-
-                const y =
-                    event.clientY - rect.top;
-
-                const rotateY =
-                    ((x - rect.width / 2)
-                    / rect.width) * 3;
-
-                const rotateX =
-                    ((y - rect.height / 2)
-                    / rect.height) * -3;
-
-                image.style.transform =
-                    `scale(1.07) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
-            }
+    const categoryCards =
+        document.querySelectorAll(
+            "[data-category-link]"
         );
 
+    const productGrid =
+        document.querySelector("#productGrid");
 
-        card.addEventListener(
-            "mouseleave",
-            () => {
 
-                const image =
-                    card.querySelector(
-                        ".product-photo img"
-                    );
-
-                if (image) {
-
-                    image.style.transform =
-                        "";
-
-                }
-
-            }
-        );
-
-    });
+    if (!filterButtons.length) {
+        return;
+    }
 
 
     /* =====================================================
-       WISHLIST BUTTON
+       NORMALIZE CATEGORY
        ===================================================== */
 
-    const wishlistButtons =
-        document.querySelectorAll(
-            ".product-wishlist"
+    function normalizeCategory(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        return value
+            .toLowerCase()
+            .trim()
+            .replace(/[_\s]+/g, "-");
+    }
+
+
+    /* =====================================================
+       FILTER PRODUCTS
+       ===================================================== */
+
+    function filterProducts(category) {
+
+        const normalizedCategory =
+            normalizeCategory(category);
+
+
+        productCards.forEach(
+            function (card) {
+
+                const productType =
+                    normalizeCategory(
+                        card.dataset.productType
+                    );
+
+
+                const shouldShow =
+                    normalizedCategory === "all" ||
+                    productType === normalizedCategory;
+
+
+                if (shouldShow) {
+
+                    card.style.display = "";
+
+                    requestAnimationFrame(
+                        function () {
+
+                            card.classList.add(
+                                "category-visible"
+                            );
+
+                        }
+                    );
+
+                } else {
+
+                    card.classList.remove(
+                        "category-visible"
+                    );
+
+                    card.style.display = "none";
+
+                }
+
+            }
         );
 
-    wishlistButtons.forEach((button) => {
 
-        button.addEventListener(
-            "click",
-            (event) => {
+        /* =================================================
+           ACTIVE FILTER BUTTON
+           ================================================= */
 
-                event.preventDefault();
-
-                event.stopPropagation();
+        filterButtons.forEach(
+            function (button) {
 
                 button.classList.toggle(
-                    "liked"
-                );
-
-                button.textContent =
-                    button.classList.contains(
-                        "liked"
-                    )
-                        ? "♥"
-                        : "♡";
-
-            }
-        );
-
-    });
-
-
-    /* =====================================================
-       TRY-ON BUTTON
-       ===================================================== */
-
-    const tryOnButton =
-        document.getElementById(
-            "startTryOn"
-        );
-
-    if (tryOnButton) {
-
-        tryOnButton.addEventListener(
-            "click",
-            () => {
-
-                alert(
-                    "Virtual Try-On is ready to connect with your AR camera."
+                    "active",
+                    normalizeCategory(
+                        button.dataset.filter
+                    ) === normalizedCategory
                 );
 
             }
         );
+
+
+        /* =================================================
+           SCROLL TO PRODUCTS
+           ================================================= */
+
+        if (productGrid) {
+
+            setTimeout(
+                function () {
+
+                    productGrid.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                },
+                100
+            );
+
+        }
 
     }
 
-});
+
+    /* =====================================================
+       FILTER BUTTON CLICK
+       ===================================================== */
+
+    filterButtons.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const category =
+                        button.dataset.filter || "all";
+
+                    filterProducts(category);
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       CATEGORY CARD CLICK
+       ===================================================== */
+
+    categoryCards.forEach(
+        function (card) {
+
+            card.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+
+                    const category =
+                        card.dataset.categoryLink;
+
+                    if (!category) {
+                        return;
+                    }
+
+
+                    const matchingButton =
+                        document.querySelector(
+                            `.beauty-filter-btn[data-filter="${category}"]`
+                        );
+
+
+                    if (matchingButton) {
+
+                        matchingButton.click();
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       SHOW ALL ON FIRST LOAD
+       ===================================================== */
+
+    filterProducts("all");
+
+}
+
+
+/* =========================================================
+   CATEGORY CARD HOVER ANIMATION
+   ========================================================= */
+
+function initializeCategoryHover() {
+
+    const cards =
+        document.querySelectorAll(
+            ".beauty-category-card"
+        );
+
+
+    cards.forEach(
+        function (card) {
+
+            card.addEventListener(
+                "mouseenter",
+                function () {
+
+                    card.classList.add(
+                        "is-hovered"
+                    );
+
+                }
+            );
+
+
+            card.addEventListener(
+                "mouseleave",
+                function () {
+
+                    card.classList.remove(
+                        "is-hovered"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZE BEAUTY PAGE
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        initializeBeautyCategoryFilter();
+
+        initializeCategoryHover();
+
+    }
+);
