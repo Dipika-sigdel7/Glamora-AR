@@ -34,7 +34,6 @@
 
         </div>
 
-
         <nav class="admin-navigation">
 
             <a
@@ -45,7 +44,6 @@
                 <span>Dashboard</span>
             </a>
 
-
             <a
                 href="{{ url_for('admin_products') }}"
                 class="admin-nav-item"
@@ -54,7 +52,6 @@
                 <span>Products</span>
             </a>
 
-
             <a
                 href="{{ url_for('admin_add_product') }}"
                 class="admin-nav-item active"
@@ -62,7 +59,6 @@
                 <span>＋</span>
                 <span>Add Product</span>
             </a>
-
 
             <a
                 href="{{ url_for('home') }}"
@@ -73,7 +69,6 @@
             </a>
 
         </nav>
-
 
         <div class="admin-sidebar-bottom">
 
@@ -96,7 +91,6 @@
                 </div>
 
             </div>
-
 
             <a
                 href="{{ url_for('admin_logout') }}"
@@ -231,7 +225,7 @@
                     <div class="admin-form-group">
 
                         <label for="product_type">
-                            Product Type
+                            Product Type *
                         </label>
 
                         <input
@@ -239,6 +233,7 @@
                             id="product_type"
                             name="product_type"
                             placeholder="e.g. Liquid Lipstick"
+                            required
                         >
 
                     </div>
@@ -392,7 +387,7 @@
                         </strong>
 
                         <small>
-                            JPG, JPEG, PNG, WEBP — multiple images allowed
+                            JPG, JPEG, PNG, WEBP and GIF — multiple images allowed
                         </small>
 
                         <span class="upload-button">
@@ -406,7 +401,7 @@
                         type="file"
                         id="images"
                         name="images"
-                        accept="image/*"
+                        accept=".jpg,.jpeg,.png,.webp,.gif,image/*"
                         multiple
                         hidden
                     >
