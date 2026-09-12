@@ -244,7 +244,7 @@ def beauty():
         )
 
         # -------------------------------------------------
-        # PRODUCTS
+        # GET ALL AVAILABLE PRODUCTS
         # -------------------------------------------------
 
         cursor.execute("""
@@ -275,12 +275,12 @@ def beauty():
             FROM products p
 
             LEFT JOIN categories c
-                ON p.category_id = c.id
+                ON c.id = p.category_id 
 
             WHERE p.is_available = 1
 
             ORDER BY
-                p.created_at DESC
+                p.id DESC
         """)
 
         products = cursor.fetchall()
