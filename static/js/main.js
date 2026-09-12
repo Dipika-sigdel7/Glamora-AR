@@ -1442,6 +1442,298 @@ function initializeBeautyCategoryCards() {
 
 }
 
+/* =========================================================
+   BEAUTY CATEGORY FILTER
+   ========================================================= */
+
+function initializeBeautyCategoryCards() {
+
+    const categoryCards = document.querySelectorAll(
+        ".beauty-category-card"
+    );
+
+    const productCards = document.querySelectorAll(
+        ".product-card"
+    );
+
+    if (!categoryCards.length) {
+        return;
+    }
+
+
+    function normalize(value) {
+
+        return String(value || "")
+            .toLowerCase()
+            .trim()
+            .replace(/[\s_-]+/g, "-");
+
+    }
+
+
+    function matchesCategory(product, filter) {
+
+        filter = normalize(filter);
+
+        if (filter === "all") {
+            return true;
+        }
+
+
+        const category = normalize(
+            product.dataset.category
+        );
+
+
+        const productType = normalize(
+            product.dataset.productType
+        );
+
+
+        /* -----------------------------------------------
+           EXACT DATABASE CATEGORY
+           ----------------------------------------------- */
+
+        if (category === filter) {
+            return true;
+        }
+
+
+        /* -----------------------------------------------
+           PLURAL CATEGORY
+           ----------------------------------------------- */
+
+        if (
+            category === filter + "s"
+            ||
+            filter === category + "s"
+        ) {
+
+            return true;
+
+        }
+
+
+        /* -----------------------------------------------
+           PRODUCT TYPE FALLBACK
+           ----------------------------------------------- */
+
+        if (
+            filter === "lipstick"
+            &&
+            productType.includes("lipstick")
+        ) {
+
+            return true;
+
+        }
+
+
+        if (
+            filter === "eyeshadow"
+            &&
+            productType.includes("eyeshadow")
+        ) {
+
+            return true;
+
+        }
+
+
+        if (
+            filter === "blush"
+            &&
+            productType.includes("blush")
+        ) {
+
+            return true;
+
+        }
+
+
+        if (
+            filter === "eyeliner"
+            &&
+            productType.includes("eyeliner")
+        ) {
+
+            return true;
+
+        }
+
+
+        if (
+            filter === "mascara"
+            &&
+            productType.includes("mascara")
+        ) {
+
+            return true;
+
+        }
+
+
+        if (
+            filter === "foundation"
+            &&
+            productType.includes("foundation")
+        ) {
+
+            return true;
+
+        }
+
+
+        if (
+            filter === "highlighter"
+            &&
+            productType.includes("highlighter")
+        ) {
+
+            return true;
+
+        }
+
+
+        return false;
+
+    }
+
+
+    categoryCards.forEach(card => {
+
+        card.addEventListener(
+            "click",
+            function () {
+
+                const filter = normalize(
+                    this.dataset.filter
+                );
+
+
+                /* ---------------------------------------
+                   ACTIVE CATEGORY
+                   --------------------------------------- */
+
+                categoryCards.forEach(
+                    categoryCard => {
+
+                        categoryCard.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                this.classList.add(
+                    "active"
+                );
+
+
+                /* ---------------------------------------
+                   FILTER PRODUCTS
+                   --------------------------------------- */
+
+                let visibleCount = 0;
+
+
+                productCards.forEach(product => {
+
+                    const showProduct =
+                        matchesCategory(
+                            product,
+                            filter
+                        );
+
+
+                    if (showProduct) {
+
+                        product.style.display = "";
+
+                        product.classList.remove(
+                            "category-hidden"
+                        );
+
+                        visibleCount++;
+
+                    } else {
+
+                        product.style.display = "none";
+
+                        product.classList.add(
+                            "category-hidden"
+                        );
+
+                    }
+
+                });
+
+
+                console.log(
+                    "Glamora AR:",
+                    filter,
+                    "=>",
+                    visibleCount,
+                    "products"
+                );
+
+
+                /* ---------------------------------------
+                   SCROLL TO PRODUCT SECTION
+                   --------------------------------------- */
+
+                if (visibleCount > 0) {
+
+                    const productSection =
+                        document.getElementById(
+                            "products"
+                        );
+
+
+                    if (productSection) {
+
+                        setTimeout(() => {
+
+                            productSection.scrollIntoView({
+                                behavior: "smooth",
+                                block: "start"
+                            });
+
+                        }, 100);
+
+                    }
+
+                }
+
+            }
+        );
+
+    });
+
+
+    /* -----------------------------------------------
+       DEBUG
+       ----------------------------------------------- */
+
+    console.log(
+        "Glamora AR products loaded:",
+        [...productCards].map(product => ({
+
+            id:
+                product.dataset.productId,
+
+            category:
+                product.dataset.category,
+
+            type:
+                product.dataset.productType
+
+        }))
+    );
+
+}
+
 
 /* =========================================================
    DEBUG
