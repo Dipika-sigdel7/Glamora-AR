@@ -1,4 +1,3 @@
-
 /* =========================================================
    GLAMORA AR
    INTERACTIVE UI
@@ -35,11 +34,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initializeCartDemo();
 
+    /*
+     * IMPORTANT
+     *
+     * This was missing before.
+     * It initializes the category card click events.
+     */
+    initializeBeautyCategoryCards();
+
 
     /*
-     * =====================================================
-     * INITIAL RANDOM BEAUTY LOOK
-     * =====================================================
+     * Initial random beauty look
      */
 
     randomizeLipstick();
@@ -48,11 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /*
-     * =====================================================
-     * AUTOMATIC LIPSTICK CHANGE
-     *
-     * Changes lipstick every 5 seconds.
-     * =====================================================
+     * Change lipstick every 5 seconds.
      */
 
     setInterval(() => {
@@ -166,10 +167,6 @@ function initializeActiveNavigation() {
         window.location.pathname;
 
 
-    /*
-     * Remove trailing slash.
-     */
-
     if (
         currentPath.length > 1 &&
         currentPath.endsWith("/")
@@ -197,17 +194,9 @@ function initializeActiveNavigation() {
         }
 
 
-        /*
-         * Remove hash from URL.
-         */
-
         const linkPath =
             href.split("#")[0];
 
-
-        /*
-         * Normalize link path.
-         */
 
         let normalizedLinkPath =
             linkPath;
@@ -223,10 +212,6 @@ function initializeActiveNavigation() {
 
         }
 
-
-        /*
-         * Homepage handling.
-         */
 
         if (
             normalizedLinkPath === currentPath ||
@@ -315,10 +300,6 @@ function initializeHeroParallax() {
 
     }
 
-
-    /*
-     * Disable on touch devices.
-     */
 
     if (
         window.matchMedia(
@@ -478,34 +459,20 @@ function initializeProductHover() {
         );
 
 
-    /* =====================================================
-       FIND LIPSTICK CARD
-       ===================================================== */
-
     const lipstickCard =
         document.querySelector(
             ".lipstick-card"
         );
 
 
-    /*
-     * If lipstick card does not exist,
-     * show a useful console warning.
-     */
-
     if (!lipstickCard) {
 
         console.warn(
-            "Glamora AR: .lipstick-card was not found. " +
-            "Make sure your lipstick card has class=\"lipstick-card\"."
+            "Glamora AR: .lipstick-card was not found."
         );
 
     }
 
-
-    /* =====================================================
-       LIPSTICK MOUSE ENTER
-       ===================================================== */
 
     if (lipstickCard) {
 
@@ -513,21 +480,8 @@ function initializeProductHover() {
             "mouseenter",
             () => {
 
-                console.log(
-                    "Glamora AR: Lipstick card hovered"
-                );
-
-
-                /*
-                 * Change immediately.
-                 */
-
                 randomizeLipstick();
 
-
-                /*
-                 * Clear any existing timer.
-                 */
 
                 if (lipstickHoverTimer) {
 
@@ -539,11 +493,6 @@ function initializeProductHover() {
 
                 }
 
-
-                /*
-                 * Change lipstick every second
-                 * while mouse remains inside.
-                 */
 
                 lipstickHoverTimer =
                     setInterval(() => {
@@ -556,22 +505,9 @@ function initializeProductHover() {
         );
 
 
-        /* =================================================
-           LIPSTICK MOUSE LEAVE
-           ================================================= */
-
         lipstickCard.addEventListener(
             "mouseleave",
             () => {
-
-                console.log(
-                    "Glamora AR: Lipstick card mouse left"
-                );
-
-
-                /*
-                 * Stop changing lipstick.
-                 */
 
                 if (lipstickHoverTimer) {
 
@@ -589,20 +525,12 @@ function initializeProductHover() {
     }
 
 
-    /* =====================================================
-       NORMAL PRODUCT CARD HOVER
-       ===================================================== */
-
     if (!productCards.length) {
 
         return;
 
     }
 
-
-    /*
-     * Disable 3D effect on touch devices.
-     */
 
     if (
         window.matchMedia(
@@ -616,11 +544,6 @@ function initializeProductHover() {
 
 
     productCards.forEach((card) => {
-
-        /*
-         * Do not apply the 3D effect
-         * to the lipstick card itself.
-         */
 
         if (
             card.classList.contains(
@@ -715,12 +638,6 @@ function initializeCartDemo() {
         );
 
 
-    /*
-     * Quick Try buttons.
-     *
-     * Navigation continues normally.
-     */
-
     quickTryButtons.forEach((button) => {
 
         button.addEventListener(
@@ -728,7 +645,7 @@ function initializeCartDemo() {
             () => {
 
                 /*
-                 * Do not use preventDefault().
+                 * Reserved for virtual try-on.
                  */
 
             }
@@ -858,12 +775,6 @@ function randomizeLipstick() {
     ];
 
 
-    /*
-     * =====================================================
-     * SELECT A DIFFERENT SHADE
-     * =====================================================
-     */
-
     let randomIndex;
 
 
@@ -896,23 +807,11 @@ function randomizeLipstick() {
     );
 
 
-    /*
-     * =====================================================
-     * FIND LIPSTICK PRODUCT
-     * =====================================================
-     */
-
     const lipstick =
         document.querySelector(
             ".lipstick-product"
         );
 
-
-    /*
-     * =====================================================
-     * FIND LIPSTICK TOP
-     * =====================================================
-     */
 
     const lipstickTop =
         lipstick
@@ -922,41 +821,13 @@ function randomizeLipstick() {
             : null;
 
 
-    /*
-     * =====================================================
-     * FIND LIPSTICK NAME
-     * =====================================================
-     */
-
     const lipstickName =
         document.getElementById(
             "lipstickShade"
         );
 
 
-    /*
-     * =====================================================
-     * APPLY COLOR ONLY TO LIPSTICK TOP
-     * =====================================================
-     *
-     * IMPORTANT:
-     *
-     * We intentionally DO NOT set:
-     *
-     * lipstick.style.background
-     *
-     * This prevents the entire lipstick product
-     * container from becoming the selected color.
-     */
-
     if (lipstick) {
-
-        /*
-         * Store the selected shade as a CSS variable.
-         *
-         * This can still be used by your CSS
-         * if needed.
-         */
 
         lipstick.style.setProperty(
             "--lipstick-color",
@@ -966,12 +837,6 @@ function randomizeLipstick() {
     }
 
 
-    /*
-     * =====================================================
-     * APPLY COLOR TO LIPSTICK TOP
-     * =====================================================
-     */
-
     if (lipstickTop) {
 
         lipstickTop.style.transition =
@@ -979,26 +844,13 @@ function randomizeLipstick() {
             "box-shadow 0.7s ease";
 
 
-        /*
-         * Only the actual lipstick top
-         * receives the random color.
-         */
-
         lipstickTop.style.background =
             selected.color;
 
 
-        /*
-         * Subtle shade glow.
-         */
-
         lipstickTop.style.boxShadow =
             `0 0 15px ${selected.color}66`;
 
-
-        /*
-         * CSS variable for the lipstick top.
-         */
 
         lipstickTop.style.setProperty(
             "--lipstick-color",
@@ -1007,12 +859,6 @@ function randomizeLipstick() {
 
     }
 
-
-    /*
-     * =====================================================
-     * UPDATE LIPSTICK NAME
-     * =====================================================
-     */
 
     if (lipstickName) {
 
@@ -1077,10 +923,6 @@ function randomizeEyeliner() {
     ];
 
 
-    /*
-     * Select random eyeliner style.
-     */
-
     const randomIndex =
         Math.floor(
             Math.random() *
@@ -1098,23 +940,11 @@ function randomizeEyeliner() {
     );
 
 
-    /*
-     * =====================================================
-     * FIND EYE
-     * =====================================================
-     */
-
     const eye =
         document.querySelector(
             ".eye"
         );
 
-
-    /*
-     * =====================================================
-     * FIND EYELINER NAME
-     * =====================================================
-     */
 
     const eyelinerName =
         document.getElementById(
@@ -1122,35 +952,17 @@ function randomizeEyeliner() {
         );
 
 
-    /*
-     * =====================================================
-     * FIND TOP LASHES
-     * =====================================================
-     */
-
     const lashesTop =
         document.getElementById(
             "lashesTop"
         );
 
 
-    /*
-     * =====================================================
-     * FIND BOTTOM LASHES
-     * =====================================================
-     */
-
     const lashesBottom =
         document.getElementById(
             "lashesBottom"
         );
 
-
-    /*
-     * =====================================================
-     * EYE / EYELINER
-     * =====================================================
-     */
 
     if (eye) {
 
@@ -1164,18 +976,10 @@ function randomizeEyeliner() {
         );
 
 
-        /*
-         * Apply selected eyeliner style.
-         */
-
         eye.classList.add(
             selected.className
         );
 
-
-        /*
-         * Store eyeliner color.
-         */
 
         eye.style.setProperty(
             "--eyeliner-color",
@@ -1184,12 +988,6 @@ function randomizeEyeliner() {
 
     }
 
-
-    /*
-     * =====================================================
-     * TOP LASHES
-     * =====================================================
-     */
 
     if (lashesTop) {
 
@@ -1207,12 +1005,6 @@ function randomizeEyeliner() {
     }
 
 
-    /*
-     * =====================================================
-     * BOTTOM LASHES
-     * =====================================================
-     */
-
     if (lashesBottom) {
 
         lashesBottom.classList.remove(
@@ -1229,12 +1021,6 @@ function randomizeEyeliner() {
     }
 
 
-    /*
-     * =====================================================
-     * UPDATE EYELINER NAME
-     * =====================================================
-     */
-
     if (eyelinerName) {
 
         eyelinerName.textContent =
@@ -1246,72 +1032,57 @@ function randomizeEyeliner() {
 
 
 /* =========================================================
-   DEBUG HELPERS
-   ========================================================= */
-
-/*
- * Run these from the browser console if needed:
- *
- * randomizeLipstick()
- * randomizeEyeliner()
- *
- * If randomizeLipstick() works from the console but
- * does not work on hover, check that your HTML contains:
- *
- * class="lipstick-card"
- *
- * and:
- *
- * class="lipstick-product"
- *
- * and:
- *
- * class="lipstick-top"
- */
-
-
-/* =========================================================
-   GLAMORA AR READY
-   ========================================================= */
-
-console.log(
-    "Glamora AR interactive UI loaded successfully."
-);
-
-
-
-/* =========================================================
    BEAUTY CATEGORY CARDS
    ========================================================= */
 
 function initializeBeautyCategoryCards() {
 
     const categoryCards =
-        document.querySelectorAll(".beauty-category-card");
+        document.querySelectorAll(
+            ".beauty-category-card"
+        );
+
 
     const productCards =
-        document.querySelectorAll(".product-card");
+        document.querySelectorAll(
+            ".product-card"
+        );
+
 
     const productGrid =
-        document.getElementById("productGrid");
-
-    const categoryLabel =
-        document.getElementById("selectedCategoryLabel");
-
-    const categoryDescription =
-        document.getElementById("selectedCategoryDescription");
+        document.getElementById(
+            "productGrid"
+        );
 
 
-    if (!categoryCards.length || !productCards.length) {
+    if (!categoryCards.length) {
+
+        console.warn(
+            "Glamora AR: Beauty category cards were not found."
+        );
+
         return;
+
     }
 
+
+    /*
+     * Normalize values such as:
+     *
+     * lipstick
+     * Lipstick
+     * lip_stick
+     * lip stick
+     */
 
     function normalizeCategory(value) {
 
         if (!value) {
+
             return "";
+
         }
+
 
         return String(value)
             .toLowerCase()
@@ -1321,145 +1092,361 @@ function initializeBeautyCategoryCards() {
     }
 
 
+    /*
+     * =====================================================
+     * CATEGORY NAMES
+     * =====================================================
+     */
+
+    const categoryNames = {
+
+        all:
+            "ALL BEAUTY",
+
+        lipstick:
+            "LIPSTICKS",
+
+        eyeshadow:
+            "EYESHADOW",
+
+        blush:
+            "BLUSH",
+
+        eyeliner:
+            "EYELINER",
+
+        mascara:
+            "MASCARA",
+
+        foundation:
+            "FOUNDATION",
+
+        highlighter:
+            "HIGHLIGHTER"
+
+    };
+
+
+    /*
+     * =====================================================
+     * CATEGORY DESCRIPTIONS
+     * =====================================================
+     */
+
+    const categoryDescriptions = {
+
+        all:
+            "Explore our complete beauty collection.",
+
+        lipstick:
+            "Explore all our lipstick shades and finishes.",
+
+        eyeshadow:
+            "Discover eyeshadow palettes for every look.",
+
+        blush:
+            "Find beautiful blush shades for a natural flush.",
+
+        eyeliner:
+            "Define your eyes with our eyeliner collection.",
+
+        mascara:
+            "Discover mascaras designed for beautiful lashes.",
+
+        foundation:
+            "Find the perfect foundation for your complexion.",
+
+        highlighter:
+            "Add radiant glow with our highlighter collection."
+
+    };
+
+
+    /*
+     * =====================================================
+     * CATEGORY CARD CLICK
+     * =====================================================
+     */
+
     categoryCards.forEach(function(card) {
 
-        card.addEventListener("click", function() {
+        card.addEventListener(
+            "click",
+            function() {
 
-            const selectedCategory =
-                normalizeCategory(
-                    card.getAttribute("data-category")
-                );
+                /*
+                 * IMPORTANT:
+                 *
+                 * HTML uses:
+                 *
+                 * data-filter="lipstick"
+                 *
+                 * Therefore we MUST use
+                 * getAttribute("data-filter").
+                 */
 
-
-            /* REMOVE ACTIVE FROM ALL CARDS */
-
-            categoryCards.forEach(function(item) {
-
-                item.classList.remove("active");
-
-            });
-
-
-            /* ACTIVE CARD */
-
-            card.classList.add("active");
-
-
-            /* SHOW/HIDE PRODUCTS */
-
-            productCards.forEach(function(product) {
-
-                const productType =
+                const selectedCategory =
                     normalizeCategory(
-                        product.getAttribute(
-                            "data-product-type"
+                        card.getAttribute(
+                            "data-filter"
                         )
                     );
 
 
-                if (productType === selectedCategory) {
+                console.log(
+                    "Glamora AR category selected:",
+                    selectedCategory
+                );
 
-                    product.style.display = "";
 
-                    product.classList.add(
-                        "category-visible"
+                /*
+                 * =================================================
+                 * REMOVE ACTIVE FROM ALL CATEGORY CARDS
+                 * =================================================
+                 */
+
+                categoryCards.forEach(
+                    function(item) {
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                /*
+                 * =================================================
+                 * ACTIVATE SELECTED CATEGORY
+                 * =================================================
+                 */
+
+                card.classList.add(
+                    "active"
+                );
+
+
+                /*
+                 * =================================================
+                 * IF THERE ARE NO PRODUCTS
+                 * =================================================
+                 */
+
+                if (!productCards.length) {
+
+                    console.warn(
+                        "Glamora AR: No product cards found."
                     );
 
-                } else {
+                    if (productGrid) {
 
-                    product.style.display = "none";
+                        productGrid.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
 
-                    product.classList.remove(
-                        "category-visible"
+                    }
+
+                    return;
+
+                }
+
+
+                /*
+                 * =================================================
+                 * ALL BEAUTY
+                 * =================================================
+                 */
+
+                if (
+                    selectedCategory === "all"
+                ) {
+
+                    productCards.forEach(
+                        function(product) {
+
+                            product.style.display =
+                                "";
+
+                            product.classList.add(
+                                "category-visible"
+                            );
+
+                        }
                     );
 
                 }
 
-            });
+
+                /*
+                 * =================================================
+                 * SPECIFIC CATEGORY
+                 * =================================================
+                 */
+
+                else {
+
+                    productCards.forEach(
+                        function(product) {
+
+                            const productType =
+                                normalizeCategory(
+                                    product.getAttribute(
+                                        "data-product-type"
+                                    )
+                                );
 
 
-            /* UPDATE HEADING */
+                            /*
+                             * Product belongs to
+                             * selected category.
+                             */
 
-            const categoryNames = {
+                            if (
+                                productType ===
+                                selectedCategory
+                            ) {
 
-                lipstick: "LIPSTICKS",
+                                product.style.display =
+                                    "";
 
-                eyeshadow: "EYESHADOW",
+                                product.classList.add(
+                                    "category-visible"
+                                );
 
-                blush: "BLUSH",
-
-                eyeliner: "EYELINER",
-
-                mascara: "MASCARA",
-
-                foundation: "FOUNDATION",
-
-                highlighter: "HIGHLIGHTER"
-
-            };
-
-
-            const categoryDescriptions = {
-
-                lipstick:
-                    "Explore all our lipstick shades and finishes.",
-
-                eyeshadow:
-                    "Discover eyeshadow palettes for every look.",
-
-                blush:
-                    "Find beautiful blush shades for a natural flush.",
-
-                eyeliner:
-                    "Define your eyes with our eyeliner collection.",
-
-                mascara:
-                    "Discover mascaras designed for beautiful lashes.",
-
-                foundation:
-                    "Find the perfect foundation for your complexion.",
-
-                highlighter:
-                    "Add radiant glow with our highlighter collection."
-
-            };
+                            }
 
 
-            if (categoryLabel) {
+                            /*
+                             * Product does not belong
+                             * to selected category.
+                             */
 
-                categoryLabel.textContent =
-                    categoryNames[selectedCategory]
-                    || "BEAUTY";
+                            else {
+
+                                product.style.display =
+                                    "none";
+
+                                product.classList.remove(
+                                    "category-visible"
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+                /*
+                 * =================================================
+                 * UPDATE OPTIONAL CATEGORY HEADING
+                 * =================================================
+                 */
+
+                const categoryLabel =
+                    document.getElementById(
+                        "selectedCategoryLabel"
+                    );
+
+
+                const categoryDescription =
+                    document.getElementById(
+                        "selectedCategoryDescription"
+                    );
+
+
+                if (categoryLabel) {
+
+                    categoryLabel.textContent =
+                        categoryNames[
+                            selectedCategory
+                        ] || "BEAUTY";
+
+                }
+
+
+                if (categoryDescription) {
+
+                    categoryDescription.textContent =
+                        categoryDescriptions[
+                            selectedCategory
+                        ] ||
+                        "Explore our beauty collection.";
+
+                }
+
+
+                /*
+                 * =================================================
+                 * SCROLL TO PRODUCTS
+                 * =================================================
+                 */
+
+                if (productGrid) {
+
+                    setTimeout(
+                        function() {
+
+                            productGrid.scrollIntoView({
+                                behavior: "smooth",
+                                block: "start"
+                            });
+
+                        },
+                        150
+                    );
+
+                }
 
             }
-
-
-            if (categoryDescription) {
-
-                categoryDescription.textContent =
-                    categoryDescriptions[selectedCategory]
-                    || "Explore our beauty collection.";
-
-            }
-
-
-            /* SCROLL TO PRODUCTS */
-
-            if (productGrid) {
-
-                setTimeout(function() {
-
-                    productGrid.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                }, 150);
-
-            }
-
-        });
+        );
 
     });
 
+
+    /*
+     * =====================================================
+     * INITIAL STATE
+     * =====================================================
+     */
+
+    categoryCards.forEach(
+        function(card) {
+
+            const filter =
+                normalizeCategory(
+                    card.getAttribute(
+                        "data-filter"
+                    )
+                );
+
+
+            if (filter === "all") {
+
+                card.classList.add(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+
+    console.log(
+        "Glamora AR: Beauty category cards initialized successfully."
+    );
+
 }
+
+
+/* =========================================================
+   DEBUG
+   ========================================================= */
+
+console.log(
+    "Glamora AR interactive UI loaded successfully."
+);
