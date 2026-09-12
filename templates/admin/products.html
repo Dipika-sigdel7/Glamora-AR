@@ -84,6 +84,7 @@
                 </div>
 
                 <div>
+
                     <strong>
                         {{ admin_name }}
                     </strong>
@@ -91,6 +92,7 @@
                     <small>
                         Administrator
                     </small>
+
                 </div>
 
             </div>
@@ -139,6 +141,27 @@
         </header>
 
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-messages">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
         <section class="admin-content-card">
 
             <div class="admin-section-header">
@@ -173,6 +196,7 @@
                                     <img
                                         src="{{ product.image_url }}"
                                         alt="{{ product.name }}"
+                                        loading="lazy"
                                     >
 
                                 {% else %}
@@ -192,13 +216,33 @@
                                     {{ product.category_name or 'Uncategorized' }}
                                 </span>
 
+
                                 <h3>
                                     {{ product.name }}
                                 </h3>
 
+
+                                {% if product.product_type %}
+
+                                    <small>
+                                        {{ product.product_type }}
+                                    </small>
+
+                                {% endif %}
+
+
                                 <p>
                                     {{ product.description or 'No description available.' }}
                                 </p>
+
+
+                                {% if product.shade %}
+
+                                    <p>
+                                        Shade: {{ product.shade }}
+                                    </p>
+
+                                {% endif %}
 
 
                                 <div class="product-meta">
@@ -250,7 +294,7 @@
 
                     <p>
                         Products added here will automatically become
-                        available to your Glamora AR user interface.
+                        available on the Glamora AR Beauty page.
                     </p>
 
                     <a
