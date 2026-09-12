@@ -286,7 +286,7 @@ def beauty():
         products = cursor.fetchall()
 
         # -------------------------------------------------
-        # CATEGORIES
+        # GET CATEGORIES
         # -------------------------------------------------
 
         cursor.execute("""
@@ -299,6 +299,32 @@ def beauty():
         """)
 
         categories = cursor.fetchall()
+
+
+
+        # DEBUG INFORMATION
+        print()
+        print("GLAMORA AR BEAUTY PAGE")
+        print("Products found:", len(products))
+        print("Categories found:", len(categories))
+
+        for product in products:
+            print(
+                "PRODUCT:",
+                product["id"],
+                "|",
+                product["name"],
+                "| CATEGORY:",
+                product["category_name"],
+                "| TYPE:",
+                product["product_type"],
+                "| AVAILABLE:",
+                product["is_available"],
+                "| IMAGE:",
+                product["image_url"]
+            )
+
+        print()
 
         return render_template(
             "beauty.html",
