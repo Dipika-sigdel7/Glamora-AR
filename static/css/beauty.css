@@ -408,17 +408,18 @@
 
 /* =========================================================
    HERO
+   SAME STYLE AS HOME PAGE
    ========================================================= */
 
 .beauty-hero {
-    position: relative;
-
     min-height: 100vh;
+
+    position: relative;
 
     display: flex;
     align-items: center;
 
-    padding: 150px 7vw 90px;
+    padding: 150px 7vw 80px;
 
     overflow: hidden;
 }
@@ -446,62 +447,43 @@
     opacity: .45;
 }
 
+
+/* SAME AS HOME .glow-one */
+
 .beauty-glow-one {
     width: 450px;
     height: 450px;
 
-    top: 8%;
-    left: 20%;
-
     background: #f3c9d2;
 
-    animation:
-        glowFloatOne 8s ease-in-out infinite;
+    top: 8%;
+    left: 20%;
 }
+
+
+/* SAME AS HOME .glow-two */
 
 .beauty-glow-two {
     width: 350px;
     height: 350px;
 
-    right: 8%;
-    top: 20%;
-
     background: #e9d4cb;
 
-    animation:
-        glowFloatTwo 9s ease-in-out infinite;
+    right: 8%;
+    top: 20%;
 }
+
+
+/* SAME AS HOME .glow-three */
 
 .beauty-glow-three {
     width: 280px;
     height: 280px;
 
+    background: #f2d9de;
+
     left: 45%;
     bottom: -100px;
-
-    background: #f2d9de;
-}
-
-@keyframes glowFloatOne {
-    0%,
-    100% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(35px, -25px);
-    }
-}
-
-@keyframes glowFloatTwo {
-    0%,
-    100% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(-25px, 30px);
-    }
 }
 
 
@@ -510,11 +492,12 @@
    ========================================================= */
 
 .beauty-hero-container {
+    width: 100%;
+
     position: relative;
 
     z-index: 2;
 
-    width: 100%;
     max-width: 1400px;
 
     margin: auto;
@@ -532,12 +515,19 @@
    ========================================================= */
 
 .beauty-hero-content {
+    width: 53%;
+
     position: relative;
 
-    z-index: 5;
+    z-index: 2;
 
-    max-width: 650px;
+    max-width: none;
 }
+
+
+/* =========================================================
+   EYEBROW
+   ========================================================= */
 
 .eyebrow {
     display: flex;
@@ -551,6 +541,7 @@
     color: var(--beauty-accent);
 
     font-size: 11px;
+
     font-weight: 700;
 
     letter-spacing: 3px;
@@ -563,18 +554,27 @@
     background: var(--beauty-accent);
 }
 
+
+/* =========================================================
+   HERO TITLE
+   SAME AS HOME
+   ========================================================= */
+
 .beauty-hero-content h1 {
     margin: 0;
 
-    font-family: "Playfair Display", serif;
+    font-family:
+        "Playfair Display",
+        serif;
 
-    font-size: clamp(60px, 8vw, 105px);
+    font-size:
+        clamp(60px, 8vw, 115px);
 
     line-height: .9;
 
     font-weight: 500;
 
-    letter-spacing: -3px;
+    letter-spacing: normal;
 }
 
 .beauty-hero-content h1 span {
@@ -582,19 +582,25 @@
 
     color: var(--beauty-accent);
 
-    font-style: italic;
+    font-style: normal;
 
     font-weight: 400;
 }
 
+
+/* =========================================================
+   HERO DESCRIPTION
+   SAME AS HOME
+   ========================================================= */
+
 .beauty-hero-content > p {
-    max-width: 510px;
+    max-width: 500px;
 
     margin: 35px 0;
 
     color: var(--beauty-text-soft);
 
-    font-size: 16px;
+    font-size: 17px;
 
     line-height: 1.8;
 }
@@ -602,6 +608,7 @@
 
 /* =========================================================
    HERO BUTTONS
+   SAME AS HOME
    ========================================================= */
 
 .hero-buttons {
@@ -610,8 +617,6 @@
     align-items: center;
 
     gap: 15px;
-
-    flex-wrap: wrap;
 }
 
 .primary-btn,
@@ -629,7 +634,8 @@
 
     border-radius: 100px;
 
-    font-size: 13px;
+    font-size: 14px;
+
     font-weight: 700;
 
     transition:
@@ -645,7 +651,8 @@
 }
 
 .primary-btn:hover {
-    transform: translateY(-4px);
+    transform:
+        translateY(-4px);
 
     box-shadow:
         0 15px 35px rgba(36, 27, 29, .18);
@@ -659,7 +666,8 @@
 }
 
 .primary-btn:hover span {
-    transform: translateX(4px);
+    transform:
+        translateX(4px);
 }
 
 .secondary-btn {
@@ -667,13 +675,14 @@
         1px solid var(--beauty-border);
 
     background:
-        rgba(255, 255, 255, .55);
+        rgba(255, 255, 255, .5);
 
     color: var(--beauty-text);
 }
 
 .secondary-btn:hover {
-    transform: translateY(-4px);
+    transform:
+        translateY(-4px);
 
     background: white;
 }
@@ -681,6 +690,7 @@
 
 /* =========================================================
    HERO STATS
+   SAME AS HOME
    ========================================================= */
 
 .hero-mini-stats {
@@ -688,7 +698,7 @@
 
     gap: 55px;
 
-    margin-top: 70px;
+    margin-top: 75px;
 }
 
 .hero-mini-stats div {
@@ -700,7 +710,9 @@
 }
 
 .hero-mini-stats strong {
-    font-family: "Playfair Display", serif;
+    font-family:
+        "Playfair Display",
+        serif;
 
     font-size: 30px;
 
@@ -710,7 +722,7 @@
 .hero-mini-stats span {
     color: var(--beauty-text-soft);
 
-    font-size: 10px;
+    font-size: 11px;
 
     text-transform: uppercase;
 
@@ -720,19 +732,23 @@
 
 /* =========================================================
    HERO VISUAL
+   SAME POSITION/SIZE AS HOME
    ========================================================= */
 
 .beauty-hero-visual {
-    position: relative;
+    position: absolute;
 
-    min-height: 650px;
+    right: 6vw;
+
+    width: 40vw;
+
+    height: 70vh;
+
+    max-width: 570px;
 
     display: grid;
 
     place-items: center;
-
-    transition:
-        transform .2s ease-out;
 }
 
 
@@ -763,6 +779,7 @@
 }
 
 @keyframes cardGlowPulse {
+
     0%,
     100% {
         transform: scale(1);
@@ -780,6 +797,7 @@
 
 /* =========================================================
    ORBITS
+   SAME SIZE + ANGLE AS HOME
    ========================================================= */
 
 .beauty-orbit {
@@ -794,20 +812,22 @@
 }
 
 .orbit-large {
-    width: 520px;
-    height: 280px;
+    width: 470px;
+    height: 230px;
 
-    transform: rotate(-20deg);
+    transform:
+        rotate(-20deg);
 
     animation:
         orbitSpin 18s linear infinite;
 }
 
 .orbit-small {
-    width: 470px;
-    height: 230px;
+    width: 520px;
+    height: 300px;
 
-    transform: rotate(35deg);
+    transform:
+        rotate(35deg);
 
     border-color:
         rgba(184, 92, 112, .11);
@@ -817,28 +837,35 @@
 }
 
 @keyframes orbitSpin {
+
     from {
-        transform: rotate(-20deg);
+        transform:
+            rotate(-20deg);
     }
 
     to {
-        transform: rotate(340deg);
+        transform:
+            rotate(340deg);
     }
 }
 
 @keyframes orbitSpinReverse {
+
     from {
-        transform: rotate(35deg);
+        transform:
+            rotate(35deg);
     }
 
     to {
-        transform: rotate(-325deg);
+        transform:
+            rotate(-325deg);
     }
 }
 
 
 /* =========================================================
    BEAUTY FACE CARD
+   HOME PAGE CARD STYLE
    ========================================================= */
 
 .beauty-face-card {
@@ -848,8 +875,6 @@
 
     width: 360px;
     height: 470px;
-
-    overflow: hidden;
 
     border-radius:
         180px 180px 35px 35px;
@@ -861,25 +886,18 @@
             #e9bfc0
         );
 
-    border:
-        1px solid rgba(255, 255, 255, .8);
+    overflow: hidden;
 
-    box-shadow: var(--beauty-shadow);
+    border: 1px solid rgba(255, 255, 255, .8);
 
-    animation:
-        beautyCardFloat 6s ease-in-out infinite;
+    box-shadow:
+        var(--beauty-shadow);
 }
 
-@keyframes beautyCardFloat {
-    0%,
-    100% {
-        transform: translateY(0);
-    }
 
-    50% {
-        transform: translateY(-13px);
-    }
-}
+/* =========================================================
+   FACE CARD OVERLAY
+   ========================================================= */
 
 .beauty-face-card::after {
     content: "";
@@ -906,7 +924,7 @@
 .beauty-card-label {
     position: absolute;
 
-    top: 24px;
+    top: 25px;
     left: 25px;
 
     z-index: 30;
@@ -924,17 +942,25 @@
     background:
         rgba(255, 255, 255, .75);
 
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(10px);
 
-    color: var(--beauty-accent-dark);
+    color: var(--beauty-text);
 
-    font-size: 8px;
+    font-size: 10px;
+
     font-weight: 700;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
 }
 
+
+/* =========================================================
+   LIVE DOT
+   ========================================================= */
+
 .live-dot {
+    display: inline-block;
+
     width: 7px;
     height: 7px;
 
@@ -943,460 +969,13 @@
     background: #4bb276;
 
     box-shadow:
-        0 0 10px rgba(75, 178, 118, .6);
-
-    animation:
-        livePulse 1.8s infinite;
-}
-
-@keyframes livePulse {
-    0%,
-    100% {
-        box-shadow:
-            0 0 0 3px rgba(75, 178, 118, .10);
-    }
-
-    50% {
-        box-shadow:
-            0 0 0 8px rgba(75, 178, 118, .03);
-    }
-}
-
-
-/* =========================================================
-   FACE
-   ========================================================= */
-
-.beauty-face {
-    position: absolute;
-
-    top: 58px;
-    left: 50%;
-
-    width: 285px;
-    height: 345px;
-
-    transform:
-        translateX(-50%);
-
-    border-radius:
-        48% 48% 44% 44%;
-
-    background:
-        radial-gradient(
-            ellipse at 50% 30%,
-            rgba(255, 255, 255, .20),
-            transparent 65%
-        );
-}
-
-
-/* =========================================================
-   FACE SHINE
-   ========================================================= */
-
-.face-shine {
-    position: absolute;
-
-    inset: 0;
-
-    border-radius: inherit;
-
-    background:
-        linear-gradient(
-            110deg,
-            transparent 20%,
-            rgba(255, 255, 255, .15),
-            transparent 70%
-        );
-
-    animation:
-        faceShine 5s ease-in-out infinite;
-}
-
-@keyframes faceShine {
-    0%,
-    100% {
-        opacity: .35;
-    }
-
-    50% {
-        opacity: .8;
-    }
-}
-
-
-/* =========================================================
-   EYES
-   ========================================================= */
-
-.beauty-eye {
-    position: absolute;
-
-    top: 105px;
-
-    width: 86px;
-    height: 43px;
-}
-
-.beauty-eye-left {
-    left: 20px;
-}
-
-.beauty-eye-right {
-    right: 20px;
-}
-
-.eye-white {
-    position: absolute;
-
-    left: 5px;
-    top: 10px;
-
-    width: 76px;
-    height: 27px;
-
-    border-radius: 50%;
-
-    background:
-        rgba(255, 255, 255, .62);
-
-    box-shadow:
-        inset 0 -4px 7px rgba(80, 45, 55, .07);
-}
-
-.eye-lid {
-    position: absolute;
-
-    left: 0;
-    top: 7px;
-
-    width: 86px;
-    height: 31px;
-
-    border-top:
-        2px solid rgba(66, 40, 47, .68);
-
-    border-radius:
-        50% 50% 0 0;
-
-    z-index: 4;
-}
-
-
-/* =========================================================
-   IRIS
-   ========================================================= */
-
-.eye-iris {
-    position: absolute;
-
-    top: 13px;
-    left: 50%;
-
-    width: 18px;
-    height: 18px;
-
-    transform:
-        translateX(-50%);
-
-    border-radius: 50%;
-
-    background:
-        radial-gradient(
-            circle,
-            #33252a 0 25%,
-            #674752 27% 55%,
-            #9b6d75 57%,
-            #39262d 80%
-        );
-
-    z-index: 3;
-}
-
-
-/* =========================================================
-   PUPIL
-   ========================================================= */
-
-.eye-pupil {
-    position: absolute;
-
-    top: 17px;
-    left: 50%;
-
-    width: 9px;
-    height: 9px;
-
-    transform:
-        translateX(-50%);
-
-    border-radius: 50%;
-
-    background: #21181b;
-
-    z-index: 5;
-}
-
-.eye-pupil::after {
-    content: "";
-
-    position: absolute;
-
-    top: 1px;
-    left: 2px;
-
-    width: 3px;
-    height: 3px;
-
-    border-radius: 50%;
-
-    background:
-        rgba(255, 255, 255, .75);
-}
-
-
-/* =========================================================
-   LASHES
-   ========================================================= */
-
-.eye-lash {
-    position: absolute;
-
-    right: -3px;
-
-    width: 16px;
-    height: 2px;
-
-    border-radius: 5px;
-
-    background:
-        rgba(50, 32, 38, .72);
-
-    transform-origin:
-        left center;
-
-    z-index: 5;
-}
-
-.lash-one {
-    top: 7px;
-
-    transform:
-        rotate(-24deg);
-}
-
-.lash-two {
-    top: 13px;
-    right: -7px;
-
-    transform:
-        rotate(-7deg);
-}
-
-.lash-three {
-    top: 19px;
-    right: -6px;
-
-    transform:
-        rotate(9deg);
-}
-
-
-/* =========================================================
-   BLINK
-   ========================================================= */
-
-.beauty-eye::before {
-    content: "";
-
-    position: absolute;
-
-    inset: 5px 0;
-
-    z-index: 10;
-
-    background: #e9bfc0;
-
-    border-radius: 50%;
-
-    transform:
-        scaleY(0);
-
-    transform-origin:
-        center;
-
-    animation:
-        blinkEyes 6s ease-in-out infinite;
-}
-
-@keyframes blinkEyes {
-    0%,
-    42%,
-    46%,
-    100% {
-        transform: scaleY(0);
-    }
-
-    44% {
-        transform: scaleY(1);
-    }
-}
-
-
-/* =========================================================
-   NOSE
-   ========================================================= */
-
-.beauty-nose {
-    position: absolute;
-
-    top: 145px;
-    left: 50%;
-
-    width: 3px;
-    height: 72px;
-
-    transform:
-        translateX(-50%);
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(110, 69, 79, .16),
-            transparent
-        );
-}
-
-.beauty-nose::after {
-    content: "";
-
-    position: absolute;
-
-    left: -12px;
-    bottom: 0;
-
-    width: 24px;
-    height: 7px;
-
-    border-bottom:
-        1px solid rgba(110, 69, 79, .18);
-
-    border-radius: 50%;
-}
-
-
-/* =========================================================
-   CHEEKS
-   ========================================================= */
-
-.beauty-cheek {
-    position: absolute;
-
-    top: 180px;
-
-    width: 70px;
-    height: 38px;
-
-    border-radius: 50%;
-
-    background:
-        rgba(207, 92, 119, .12);
-
-    filter: blur(8px);
-
-    animation:
-        cheekGlow 4s ease-in-out infinite;
-}
-
-.cheek-left {
-    left: 8px;
-}
-
-.cheek-right {
-    right: 8px;
-}
-
-@keyframes cheekGlow {
-    0%,
-    100% {
-        opacity: .55;
-    }
-
-    50% {
-        opacity: 1;
-    }
-}
-
-
-/* =========================================================
-   LIPS
-   ========================================================= */
-
-.beauty-lips {
-    position: absolute;
-
-    top: 252px;
-    left: 50%;
-
-    width: 82px;
-    height: 46px;
-
-    transform:
-        translateX(-50%);
-}
-
-.upper-lip {
-    position: absolute;
-
-    top: 4px;
-    left: 50%;
-
-    width: 76px;
-    height: 27px;
-
-    transform:
-        translateX(-50%);
-
-    background: #a74360;
-
-    clip-path:
-        polygon(
-            0 42%,
-            28% 12%,
-            50% 39%,
-            72% 12%,
-            100% 42%,
-            78% 78%,
-            50% 100%,
-            22% 78%
-        );
-}
-
-.lower-lip {
-    position: absolute;
-
-    top: 19px;
-    left: 50%;
-
-    width: 67px;
-    height: 23px;
-
-    transform:
-        translateX(-50%);
-
-    border-radius:
-        0 0 50% 50%;
-
-    background: #c45b76;
-
-    box-shadow:
-        inset 0 4px 8px rgba(255, 255, 255, .12);
+        0 0 10px #4bb276;
 }
 
 
 /* =========================================================
    SCAN LINE
+   SAME AS HOME
    ========================================================= */
 
 .beauty-scan-line {
@@ -1408,129 +987,34 @@
     height: 2px;
 
     background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, .95),
-            transparent
-        );
+        rgba(255, 255, 255, .8);
 
     box-shadow:
-        0 0 20px rgba(255, 255, 255, .9);
+        0 0 20px white;
 
     animation:
-        beautyScan 4s ease-in-out infinite;
+        beautyScan 3s ease-in-out infinite;
 }
 
 @keyframes beautyScan {
+
     0% {
-        top: 0;
-        opacity: 0;
+        top: 15%;
     }
 
-    15% {
-        opacity: 1;
-    }
-
-    55% {
-        top: 100%;
-        opacity: 1;
-    }
-
-    75% {
-        opacity: 0;
+    50% {
+        top: 85%;
     }
 
     100% {
-        top: 0;
-        opacity: 0;
+        top: 15%;
     }
-}
-
-
-/* =========================================================
-   CARD INFO
-   ========================================================= */
-
-.beauty-card-info {
-    position: absolute;
-
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-
-    z-index: 30;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 15px;
-
-    padding: 15px 17px;
-
-    border-radius: 20px;
-
-    background:
-        rgba(255, 255, 255, .76);
-
-    backdrop-filter: blur(15px);
-}
-
-.beauty-card-info small {
-    display: block;
-
-    color: var(--beauty-accent);
-
-    font-size: 7px;
-    font-weight: 700;
-
-    letter-spacing: 1.5px;
-}
-
-.beauty-card-info strong {
-    display: block;
-
-    margin-top: 4px;
-
-    font-family: "Playfair Display", serif;
-
-    font-size: 17px;
-    font-weight: 600;
-}
-
-.card-arrow {
-    width: 36px;
-    height: 36px;
-
-    display: grid;
-
-    place-items: center;
-
-    flex-shrink: 0;
-
-    border-radius: 50%;
-
-    background:
-        var(--beauty-accent);
-
-    color: white;
-
-    font-size: 17px;
-
-    transition:
-        transform .3s ease;
-}
-
-.beauty-card-info:hover .card-arrow {
-    transform:
-        translateX(4px);
 }
 
 
 /* =========================================================
    FLOATING PRODUCTS
+   SAME AS HOME
    ========================================================= */
 
 .floating-beauty-product {
@@ -1542,102 +1026,86 @@
 
     align-items: center;
 
-    gap: 11px;
+    gap: 12px;
 
-    padding: 10px 16px 10px 10px;
-
-    border:
-        1px solid rgba(255, 255, 255, .85);
+    padding: 12px 18px;
 
     border-radius: 50px;
 
     background:
-        rgba(255, 255, 255, .76);
+        rgba(255, 255, 255, .75);
 
     backdrop-filter: blur(15px);
 
     box-shadow:
         0 15px 40px rgba(60, 30, 30, .12);
+
+    animation:
+        beautyFloat 4s ease-in-out infinite;
 }
 
 .floating-product-icon {
-    width: 47px;
-    height: 47px;
+    width: auto;
+    height: auto;
 
     display: grid;
 
     place-items: center;
 
-    border-radius: 15px;
+    border-radius: 0;
 
-    background:
-        var(--beauty-pink-soft);
+    background: transparent;
 
-    font-size: 23px;
+    font-size: 25px;
 }
 
 .floating-beauty-product small {
     display: block;
 
-    margin-bottom: 2px;
+    margin: 0;
 
     color: var(--beauty-accent);
 
-    font-size: 7px;
-    font-weight: 700;
+    font-size: 8px;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
 }
 
 .floating-beauty-product strong {
+    display: block;
+
     font-size: 12px;
 }
 
 .lipstick-float {
-    top: 16%;
-    left: -3px;
+    top: 15%;
+    left: 0;
 
     animation:
-        lipstickFloat 5s ease-in-out infinite;
+        beautyFloat 4s ease-in-out infinite;
 }
 
 .blush-float {
-    right: -4px;
-    bottom: 16%;
+    right: 0;
+    bottom: 15%;
 
     animation:
-        blushFloat 5s ease-in-out infinite;
+        beautyFloat 4s ease-in-out infinite;
 
     animation-delay: -1.5s;
 }
 
-@keyframes lipstickFloat {
+@keyframes beautyFloat {
+
     0%,
     100% {
         transform:
-            translateY(0)
-            rotate(2deg);
+            translateY(0);
     }
 
     50% {
         transform:
-            translateY(-16px)
-            rotate(-3deg);
-    }
-}
-
-@keyframes blushFloat {
-    0%,
-    100% {
-        transform:
-            translateY(0)
-            rotate(-2deg);
-    }
-
-    50% {
-        transform:
-            translateY(16px)
-            rotate(3deg);
+            translateY(-15px);
     }
 }
 
@@ -1670,6 +1138,7 @@
     color: white;
 
     font-size: 8px;
+
     font-weight: 700;
 
     letter-spacing: 1.4px;
@@ -1689,29 +1158,36 @@
 }
 
 @keyframes badgeFloat {
+
     0%,
     100% {
-        transform: translateY(0);
+        transform:
+            translateY(0);
     }
 
     50% {
-        transform: translateY(-9px);
+        transform:
+            translateY(-9px);
     }
 }
 
 @keyframes badgeSpin {
+
     from {
-        transform: rotate(0);
+        transform:
+            rotate(0);
     }
 
     to {
-        transform: rotate(360deg);
+        transform:
+            rotate(360deg);
     }
 }
 
 
 /* =========================================================
    SCROLL INDICATOR
+   SAME AS HOME
    ========================================================= */
 
 .beauty-scroll {
@@ -1726,7 +1202,8 @@
 
     gap: 15px;
 
-    color: var(--beauty-text-soft);
+    color:
+        var(--beauty-text-soft);
 
     font-size: 9px;
 
@@ -1764,6 +1241,7 @@
 }
 
 @keyframes scrollLine {
+
     0% {
         left: -100%;
     }
@@ -1772,12 +1250,6 @@
         left: 100%;
     }
 }
-
-
-/* =========================================================
-   IMPORTANT:
-   MARQUEE REMOVED
-   ========================================================= */
 
 
 /* =========================================================
