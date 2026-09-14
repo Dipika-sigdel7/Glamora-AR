@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
@@ -12,19 +12,31 @@
 
     <title>Beauty — Glamora AR</title>
 
-    <!-- Google Fonts -->
+
+    <!-- =====================================================
+         GOOGLE FONTS
+         ===================================================== -->
+
     <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
         rel="stylesheet"
     >
 
-    <!-- Main CSS -->
+
+    <!-- =====================================================
+         MAIN WEBSITE CSS
+         ===================================================== -->
+
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}"
     >
 
-    <!-- Beauty Page CSS -->
+
+    <!-- =====================================================
+         BEAUTY PAGE CSS
+         ===================================================== -->
+
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/beauty.css') }}"
@@ -37,16 +49,23 @@
 
 
     <!-- =====================================================
-         LOADER
+         PRELOADER
          ===================================================== -->
 
-    <div class="loader" id="loader">
+    <div
+        class="loader"
+        id="loader"
+    >
 
         <div class="loader-content">
 
             <div class="loader-logo">
-                Glamora AR
+                GLAMORA <span>AR</span>
             </div>
+
+            <p>
+                Preparing your beauty experience...
+            </p>
 
             <div class="loader-line">
                 <span></span>
@@ -57,90 +76,153 @@
     </div>
 
 
+
     <!-- =====================================================
          NAVBAR
          ===================================================== -->
 
     <header class="navbar">
 
-        <a href="{{ url_for('home') }}" class="logo">
-            Glamora <span>AR</span>
+
+        <!-- =================================================
+             LOGO
+             ================================================= -->
+
+        <a
+            href="/"
+            class="logo"
+            aria-label="Glamora AR Home"
+        >
+            GLAMORA <span>AR</span>
         </a>
 
 
-        <nav class="nav-links" id="navLinks">
 
-            <a href="{{ url_for('home') }}">
+        <!-- =================================================
+             MAIN NAVIGATION
+             ================================================= -->
+
+        <nav
+            class="nav-links"
+            id="navLinks"
+            aria-label="Main navigation"
+        >
+
+            <a href="/">
                 Home
             </a>
 
-            <a href="{{ url_for('beauty') }}" class="active">
+            <a
+                href="/beauty"
+                class="active"
+            >
                 Beauty
             </a>
 
-            <a href="{{ url_for('about') }}">
+            <a href="/about">
                 About
             </a>
 
-            <a href="{{ url_for('contact') }}">
+            <a href="/contact">
                 Contact
             </a>
 
         </nav>
 
 
+
+        <!-- =================================================
+             HEADER ACTIONS
+             ================================================= -->
+
         <div class="nav-actions">
+
+
+            <!-- SEARCH -->
 
             <button
                 class="icon-btn"
                 id="searchBtn"
                 type="button"
                 aria-label="Search"
+                title="Search"
             >
                 ⌕
             </button>
 
+
+
+            <!-- WISHLIST -->
 
             <button
                 class="icon-btn wishlist-btn"
                 id="wishlistBtn"
                 type="button"
                 aria-label="Wishlist"
+                title="Wishlist"
             >
                 ♡
             </button>
 
+
+
+            <!-- SHOPPING BAG -->
 
             <button
                 class="cart-btn"
                 id="cartBtn"
                 type="button"
                 aria-label="Shopping bag"
+                title="Shopping bag"
             >
-                Bag
-                <span class="cart-count">0</span>
+
+                <span>
+                    Bag
+                </span>
+
+                <span
+                    class="cart-count"
+                    id="cartCount"
+                >
+                    0
+                </span>
+
             </button>
 
+
+
+            <!-- LOGIN -->
 
             <a
                 href="{{ url_for('login') }}"
                 class="login-btn"
                 id="loginBtn"
+                aria-label="Login to Glamora AR"
             >
-                <span class="login-icon">♡</span>
-                Login
+
+                <span class="login-icon">
+                    ♙
+                </span>
+
+                <span>
+                    Login
+                </span>
+
             </a>
 
+
+
+            <!-- MOBILE MENU -->
 
             <button
                 class="menu-btn"
                 id="menuBtn"
                 type="button"
-                aria-label="Open menu"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="navLinks"
             >
-                <span></span>
-                <span></span>
-                <span></span>
+                ☰
             </button>
 
         </div>
@@ -148,150 +230,221 @@
     </header>
 
 
+
     <!-- =====================================================
-         HERO
+         BEAUTY HERO
          ===================================================== -->
 
-    <section class="beauty-hero">
+    <section
+        class="beauty-hero"
+        id="beauty-home"
+    >
+
+
+        <!-- =================================================
+             HERO BACKGROUND
+             ================================================= -->
 
         <div class="beauty-hero-background">
 
-            <span class="beauty-glow beauty-glow-one"></span>
-            <span class="beauty-glow beauty-glow-two"></span>
-            <span class="beauty-glow beauty-glow-three"></span>
+            <div class="beauty-glow beauty-glow-one"></div>
+
+            <div class="beauty-glow beauty-glow-two"></div>
+
+            <div class="beauty-glow beauty-glow-three"></div>
 
         </div>
 
 
+
+        <!-- =================================================
+             HERO CONTAINER
+             ================================================= -->
+
         <div class="beauty-hero-container">
 
 
-            <!-- HERO CONTENT -->
+            <!-- =================================================
+                 HERO CONTENT
+                 ================================================= -->
 
             <div class="beauty-hero-content reveal">
+
+
+                <!-- EYEBROW -->
 
                 <div class="eyebrow">
 
                     <span class="eyebrow-line"></span>
 
-                    Virtual Beauty Experience
+                    BEAUTY COLLECTION
 
                 </div>
 
 
+
+                <!-- HERO TITLE -->
+
                 <h1>
+
                     Discover
-                    <span>Your Beauty.</span>
+
+                    <span>
+                        Your Beauty.
+                    </span>
+
                 </h1>
 
 
+
+                <!-- BEAUTY-SPECIFIC DESCRIPTION -->
+
                 <p>
-                    Explore premium beauty products and discover
-                    your perfect look with Glamora AR's virtual
-                    beauty experience.
+
+                    Explore a world of color, confidence, and creativity.
+                    Discover lipsticks, eyeshadows, blush, eyeliner,
+                    mascara, foundation, and more to create a look
+                    that is uniquely yours.
+
                 </p>
-
-
-                <div class="hero-buttons">
-
-                    <a
-                        href="#categories"
-                        class="primary-btn"
-                    >
-                        Explore Beauty
-                    </a>
-
-                    <a
-                        href="#tryon"
-                        class="secondary-btn"
-                    >
-                        Try Virtually
-                    </a>
-
-                </div>
-
-
-                <div class="hero-mini-stats">
-
-                    <div>
-                        <strong>100+</strong>
-                        <span>Beauty Products</span>
-                    </div>
-
-                    <div>
-                        <strong>AR</strong>
-                        <span>Virtual Try-On</span>
-                    </div>
-
-                    <div>
-                        <strong>∞</strong>
-                        <span>Looks to Try</span>
-                    </div>
-
-                </div>
 
             </div>
 
 
-            <!-- HERO VISUAL
-                 Uses the same classes as the main home page -->
 
-            <div class="hero-visual">
+            <!-- =================================================
+                 HERO VISUAL
+                 SAME STYLE AS HOME PAGE
+                 ================================================= -->
 
-                <div class="orbit orbit-one"></div>
-                <div class="orbit orbit-two"></div>
+            <div class="beauty-hero-visual reveal">
 
 
-                <div class="floating-product lipstick">
+                <!-- ORBITS -->
 
-                    <div class="product-icon">
+                <div class="beauty-orbit beauty-orbit-one"></div>
+
+                <div class="beauty-orbit beauty-orbit-two"></div>
+
+
+
+                <!-- FLOATING LIPSTICK -->
+
+                <div class="beauty-floating-product beauty-lipstick">
+
+                    <div class="beauty-product-icon">
                         💄
                     </div>
 
+                    <div>
+
+                        <small>
+                            TRY
+                        </small>
+
+                        <strong>
+                            Lip Color
+                        </strong>
+
+                    </div>
+
                 </div>
 
 
-                <div class="floating-product blush">
 
-                    <div class="product-icon">
+                <!-- FLOATING BLUSH -->
+
+                <div class="beauty-floating-product beauty-blush">
+
+                    <div class="beauty-product-icon">
                         🌸
                     </div>
 
-                </div>
+                    <div>
 
+                        <small>
+                            NEW
+                        </small>
 
-                <div class="face-card">
-
-                    <div class="face-overlay"></div>
-
-                    <div class="face-placeholder">
-
-                        <div class="face-circle"></div>
+                        <strong>
+                            Rose Blush
+                        </strong>
 
                     </div>
 
-                    <div class="scan-line"></div>
+                </div>
 
 
-                    <div class="face-label">
 
-                        <span class="status-dot"></span>
+                <!-- FACE CARD -->
 
-                        AR BEAUTY SCAN
+                <div class="beauty-face-card">
+
+                    <div class="beauty-face-overlay"></div>
+
+
+                    <div class="beauty-face-placeholder">
+
+                        <div class="beauty-face-circle">
+
+                            <span>
+                                ✦
+                            </span>
+
+                        </div>
+
+                        <p>
+                            Virtual Beauty
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- SCAN LINE -->
+
+                    <div class="beauty-scan-line"></div>
+
+
+
+                    <!-- AR STATUS -->
+
+                    <div class="beauty-face-label">
+
+                        <span class="beauty-status-dot"></span>
+
+                        AR READY
 
                     </div>
 
                 </div>
 
             </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SCROLL INDICATOR
+             ================================================= -->
+
+        <div class="scroll-indicator">
+
+            <span>
+                SCROLL TO EXPLORE
+            </span>
+
+            <div class="scroll-line"></div>
 
         </div>
 
     </section>
 
 
+
     <!-- =====================================================
-         BEAUTY CATEGORIES
+         CATEGORIES
          ===================================================== -->
 
     <section
@@ -301,52 +454,77 @@
 
         <div class="section-heading reveal">
 
-            <span class="section-label">
-                SHOP BY CATEGORY
-            </span>
+            <div>
 
-            <h2>
-                Find Your
-                <em>Perfect Look</em>
-            </h2>
+                <span class="section-label">
+                    EXPLORE BEAUTY
+                </span>
+
+                <h2>
+
+                    Find your
+
+                    <em>
+                        favorite.
+                    </em>
+
+                </h2>
+
+            </div>
 
             <p>
-                Explore our beauty collection and discover
-                products made for your style.
+                Explore every beauty category and discover products
+                designed to create your perfect look.
             </p>
 
         </div>
 
 
+
+        <!-- =================================================
+             CATEGORY GRID
+             ================================================= -->
+
         <div class="beauty-category-grid">
 
 
+            <!-- ALL -->
+
             <button
                 type="button"
-                class="beauty-category-card reveal active"
+                class="beauty-category-card active reveal"
                 data-filter="all"
             >
 
-                <span class="category-icon">
+                <div class="category-icon">
                     ✦
-                </span>
+                </div>
 
-                <span class="category-card-content">
+                <div class="category-card-content">
 
-                    <strong>All Beauty</strong>
+                    <span>
+                        01
+                    </span>
 
-                    <small>
+                    <h3>
+                        All Beauty
+                    </h3>
+
+                    <p>
                         Explore everything
-                    </small>
+                    </p>
 
-                </span>
+                </div>
 
-                <span class="category-arrow">
+                <div class="category-arrow">
                     →
-                </span>
+                </div>
 
             </button>
 
+
+
+            <!-- LIPSTICK -->
 
             <button
                 type="button"
@@ -354,26 +532,35 @@
                 data-filter="lipstick"
             >
 
-                <span class="category-icon">
+                <div class="category-icon">
                     💄
-                </span>
+                </div>
 
-                <span class="category-card-content">
+                <div class="category-card-content">
 
-                    <strong>Lipsticks</strong>
+                    <span>
+                        02
+                    </span>
 
-                    <small>
-                        Color your lips
-                    </small>
+                    <h3>
+                        Lipsticks
+                    </h3>
 
-                </span>
+                    <p>
+                        Colors made for you
+                    </p>
 
-                <span class="category-arrow">
+                </div>
+
+                <div class="category-arrow">
                     →
-                </span>
+                </div>
 
             </button>
 
+
+
+            <!-- EYESHADOW -->
 
             <button
                 type="button"
@@ -381,26 +568,35 @@
                 data-filter="eyeshadow"
             >
 
-                <span class="category-icon">
-                    ✨
-                </span>
+                <div class="category-icon">
+                    👁
+                </div>
 
-                <span class="category-card-content">
+                <div class="category-card-content">
 
-                    <strong>Eyeshadow</strong>
+                    <span>
+                        03
+                    </span>
 
-                    <small>
-                        Define your eyes
-                    </small>
+                    <h3>
+                        Eyeshadow
+                    </h3>
 
-                </span>
+                    <p>
+                        Create captivating eyes
+                    </p>
 
-                <span class="category-arrow">
+                </div>
+
+                <div class="category-arrow">
                     →
-                </span>
+                </div>
 
             </button>
 
+
+
+            <!-- BLUSH -->
 
             <button
                 type="button"
@@ -408,26 +604,35 @@
                 data-filter="blush"
             >
 
-                <span class="category-icon">
+                <div class="category-icon">
                     🌸
-                </span>
+                </div>
 
-                <span class="category-card-content">
+                <div class="category-card-content">
 
-                    <strong>Blush</strong>
+                    <span>
+                        04
+                    </span>
 
-                    <small>
-                        Add a natural glow
-                    </small>
+                    <h3>
+                        Blush
+                    </h3>
 
-                </span>
+                    <p>
+                        A natural rosy glow
+                    </p>
 
-                <span class="category-arrow">
+                </div>
+
+                <div class="category-arrow">
                     →
-                </span>
+                </div>
 
             </button>
 
+
+
+            <!-- EYELINER -->
 
             <button
                 type="button"
@@ -435,26 +640,35 @@
                 data-filter="eyeliner"
             >
 
-                <span class="category-icon">
-                    🖤
-                </span>
+                <div class="category-icon">
+                    ✧
+                </div>
 
-                <span class="category-card-content">
+                <div class="category-card-content">
 
-                    <strong>Eyeliner</strong>
+                    <span>
+                        05
+                    </span>
 
-                    <small>
-                        Perfect your eyes
-                    </small>
+                    <h3>
+                        Eyeliner
+                    </h3>
 
-                </span>
+                    <p>
+                        Define your eyes
+                    </p>
 
-                <span class="category-arrow">
+                </div>
+
+                <div class="category-arrow">
                     →
-                </span>
+                </div>
 
             </button>
 
+
+
+            <!-- MASCARA -->
 
             <button
                 type="button"
@@ -462,26 +676,35 @@
                 data-filter="mascara"
             >
 
-                <span class="category-icon">
-                    👁
-                </span>
+                <div class="category-icon">
+                    🖤
+                </div>
 
-                <span class="category-card-content">
+                <div class="category-card-content">
 
-                    <strong>Mascara</strong>
+                    <span>
+                        06
+                    </span>
 
-                    <small>
-                        Enhance your lashes
-                    </small>
+                    <h3>
+                        Mascara
+                    </h3>
 
-                </span>
+                    <p>
+                        Beautiful lashes
+                    </p>
 
-                <span class="category-arrow">
+                </div>
+
+                <div class="category-arrow">
                     →
-                </span>
+                </div>
 
             </button>
 
+
+
+            <!-- FOUNDATION -->
 
             <button
                 type="button"
@@ -489,26 +712,35 @@
                 data-filter="foundation"
             >
 
-                <span class="category-icon">
-                    ◉
-                </span>
+                <div class="category-icon">
+                    ✿
+                </div>
 
-                <span class="category-card-content">
+                <div class="category-card-content">
 
-                    <strong>Foundation</strong>
+                    <span>
+                        07
+                    </span>
 
-                    <small>
-                        Create your base
-                    </small>
+                    <h3>
+                        Foundation
+                    </h3>
 
-                </span>
+                    <p>
+                        Your perfect base
+                    </p>
 
-                <span class="category-arrow">
+                </div>
+
+                <div class="category-arrow">
                     →
-                </span>
+                </div>
 
             </button>
 
+
+
+            <!-- HIGHLIGHTER -->
 
             <button
                 type="button"
@@ -516,29 +748,36 @@
                 data-filter="highlighter"
             >
 
-                <span class="category-icon">
-                    ✧
-                </span>
+                <div class="category-icon">
+                    ✨
+                </div>
 
-                <span class="category-card-content">
+                <div class="category-card-content">
 
-                    <strong>Highlighter</strong>
+                    <span>
+                        08
+                    </span>
 
-                    <small>
-                        Glow naturally
-                    </small>
+                    <h3>
+                        Highlighter
+                    </h3>
 
-                </span>
+                    <p>
+                        Glow from within
+                    </p>
 
-                <span class="category-arrow">
+                </div>
+
+                <div class="category-arrow">
                     →
-                </span>
+                </div>
 
             </button>
 
         </div>
 
     </section>
+
 
 
     <!-- =====================================================
@@ -552,22 +791,36 @@
 
         <div class="section-heading reveal">
 
-            <span class="section-label">
-                BEAUTY COLLECTION
-            </span>
+            <div>
 
-            <h2>
-                Your Beauty,
-                <em>Your Choice</em>
-            </h2>
+                <span class="section-label">
+                    OUR COLLECTION
+                </span>
+
+                <h2>
+
+                    Beauty
+
+                    <em>
+                        essentials.
+                    </em>
+
+                </h2>
+
+            </div>
 
             <p>
-                Choose a product and see how it looks
-                with our virtual beauty experience.
+                Browse products added from your Glamora AR admin dashboard
+                and discover your next favorite.
             </p>
 
         </div>
 
+
+
+        <!-- =================================================
+             PRODUCT GRID
+             ================================================= -->
 
         <div
             class="beauty-product-grid"
@@ -578,17 +831,22 @@
 
                 {% for product in products %}
 
-                    {% set product_type = (product.product_type or '')
+                    {% set product_type =
+                        (product.product_type or 'beauty')
                         |lower
                         |trim
                         |replace(' ', '-')
-                        |replace('_', '-') %}
+                        |replace('_', '-')
+                    %}
 
-                    {% set product_category = (product.category_name or '')
+
+                    {% set product_category =
+                        (product.category_name or '')
                         |lower
                         |trim
                         |replace(' ', '-')
-                        |replace('_', '-') %}
+                        |replace('_', '-')
+                    %}
 
 
                     <article
@@ -610,30 +868,92 @@
                                     src="{{ product.image_url }}"
                                     alt="{{ product.name }}"
                                     loading="lazy"
+                                    onerror="
+                                        this.style.display = 'none';
+                                        this.nextElementSibling.style.display = 'flex';
+                                    "
                                 >
+
+
+                                <div
+                                    class="product-placeholder"
+                                    style="display: none"
+                                >
+
+                                    {% if "lipstick" in product_type %}
+
+                                        💄
+
+                                    {% elif "eyeshadow" in product_type %}
+
+                                        🎨
+
+                                    {% elif "blush" in product_type %}
+
+                                        🌸
+
+                                    {% elif "eyeliner" in product_type %}
+
+                                        ✧
+
+                                    {% elif "mascara" in product_type %}
+
+                                        🖤
+
+                                    {% elif "foundation" in product_type %}
+
+                                        ✿
+
+                                    {% elif "highlighter" in product_type %}
+
+                                        ✨
+
+                                    {% else %}
+
+                                        💕
+
+                                    {% endif %}
+
+                                </div>
+
 
                             {% else %}
 
-                                <div
-                                    class="product-placeholder product-placeholder-{{ product_type }}"
-                                >
 
-                                    {% if product_type == 'lipstick' %}
+                                <div class="product-placeholder">
+
+                                    {% if "lipstick" in product_type %}
+
                                         💄
-                                    {% elif product_type == 'eyeshadow' %}
-                                        ✨
-                                    {% elif product_type == 'blush' %}
+
+                                    {% elif "eyeshadow" in product_type %}
+
+                                        🎨
+
+                                    {% elif "blush" in product_type %}
+
                                         🌸
-                                    {% elif product_type == 'eyeliner' %}
-                                        🖤
-                                    {% elif product_type == 'mascara' %}
-                                        👁
-                                    {% elif product_type == 'foundation' %}
-                                        ◉
-                                    {% elif product_type == 'highlighter' %}
+
+                                    {% elif "eyeliner" in product_type %}
+
                                         ✧
+
+                                    {% elif "mascara" in product_type %}
+
+                                        🖤
+
+                                    {% elif "foundation" in product_type %}
+
+                                        ✿
+
+                                    {% elif "highlighter" in product_type %}
+
+                                        ✨
+
                                     {% else %}
-                                        ✦
+
+                                        💕
+
                                     {% endif %}
 
                                 </div>
@@ -641,20 +961,31 @@
                             {% endif %}
 
 
+
+                            <!-- PRODUCT BADGE -->
+
                             <span class="product-badge">
-                                {{ product.product_type or 'Beauty' }}
+
+                                {{ product.product_type or 'BEAUTY' }}
+
                             </span>
 
+
+
+                            <!-- QUICK TRY -->
 
                             <button
                                 type="button"
                                 class="quick-try-btn"
                                 data-product-id="{{ product.id }}"
                             >
-                                Try Virtually
+
+                                ✦ Quick Try-On
+
                             </button>
 
                         </div>
+
 
 
                         <!-- PRODUCT INFORMATION -->
@@ -662,23 +993,27 @@
                         <div class="beauty-product-info">
 
 
+                            <!-- CATEGORY / STOCK -->
+
                             <div class="product-category-row">
 
                                 <span class="product-category">
-                                    {{ product.category_name or product.product_type or 'Beauty' }}
+
+                                    {{ product.category_name or 'Beauty' }}
+
                                 </span>
 
 
-                                {% if product.stock is defined and product.stock|int <= 0 %}
+                                {% if product.stock and product.stock > 0 %}
 
-                                    <span class="stock-status out-stock">
-                                        Out of Stock
+                                    <span class="stock-status">
+                                        In Stock
                                     </span>
 
                                 {% else %}
 
-                                    <span class="stock-status">
-                                        In Stock
+                                    <span class="stock-status out-stock">
+                                        Out of Stock
                                     </span>
 
                                 {% endif %}
@@ -686,54 +1021,102 @@
                             </div>
 
 
+
+                            <!-- NAME -->
+
                             <h3 class="product-name">
+
                                 {{ product.name }}
+
                             </h3>
 
+
+
+                            <!-- DESCRIPTION -->
 
                             {% if product.description %}
 
                                 <p class="product-description">
+
                                     {{ product.description }}
+
+                                </p>
+
+                            {% else %}
+
+                                <p class="product-description">
+
+                                    Discover this beautiful Glamora AR
+                                    beauty product.
+
                                 </p>
 
                             {% endif %}
 
 
-                            {% if product.shade or product.color %}
+
+                            <!-- SHADE -->
+
+                            {% if product.shade %}
 
                                 <div class="product-detail">
 
-                                    {% if product.shade %}
-                                        <span>
-                                            Shade: {{ product.shade }}
-                                        </span>
-                                    {% endif %}
+                                    <span>
+                                        Shade
+                                    </span>
 
-                                    {% if product.color %}
-                                        <span>
-                                            {{ product.color }}
-                                        </span>
-                                    {% endif %}
+                                    <strong>
+                                        {{ product.shade }}
+                                    </strong>
 
                                 </div>
 
                             {% endif %}
 
 
+
+                            <!-- COLOR -->
+
+                            {% if product.color %}
+
+                                <div class="product-detail">
+
+                                    <span>
+                                        Color
+                                    </span>
+
+                                    <strong>
+                                        {{ product.color }}
+                                    </strong>
+
+                                </div>
+
+                            {% endif %}
+
+
+
+                            <!-- PRICE / VIEW -->
+
                             <div class="product-bottom">
 
-                                <strong class="product-price">
+                                <span class="product-price">
+
                                     ${{ "%.2f"|format(product.price|float) }}
-                                </strong>
+
+                                </span>
 
 
                                 <a
                                     href="{{ url_for('product_details', product_id=product.id) }}"
                                     class="product-view-btn"
                                 >
+
                                     View Product
-                                    <span>→</span>
+
+                                    <span>
+                                        →
+                                    </span>
+
                                 </a>
 
                             </div>
@@ -747,6 +1130,11 @@
 
             {% else %}
 
+
+                <!-- =================================================
+                     EMPTY PRODUCTS
+                     ================================================= -->
+
                 <div class="empty-products">
 
                     <div class="empty-products-icon">
@@ -754,12 +1142,20 @@
                     </div>
 
                     <h3>
-                        Beauty is coming soon
+                        Your beauty collection is waiting.
                     </h3>
 
                     <p>
-                        Our beauty collection will appear here.
+                        Products added from the Admin Dashboard will
+                        appear here automatically.
                     </p>
+
+                    <a
+                        href="{{ url_for('home') }}"
+                        class="secondary-btn"
+                    >
+                        Back Home
+                    </a>
 
                 </div>
 
@@ -770,93 +1166,146 @@
     </section>
 
 
+
     <!-- =====================================================
-         TRY ON SECTION
+         TRY ON
          ===================================================== -->
 
     <section
-        class="tryon-section"
+        class="beauty-section tryon-section"
         id="tryon"
     >
 
         <div class="tryon-container">
 
 
+            <!-- =================================================
+                 TRY-ON CONTENT
+                 ================================================= -->
+
             <div class="tryon-content reveal">
 
                 <span class="section-label">
-                    GLAMORA AR
+                    VIRTUAL BEAUTY
                 </span>
 
+
                 <h2>
-                    See It.
-                    <em>Love It.</em>
-                    Wear It.
+
+                    See your
+
+                    <span>
+                        perfect look.
+                    </span>
+
                 </h2>
 
+
                 <p>
-                    Try beauty products virtually before
-                    you buy them. Discover shades and looks
-                    that match your style.
+
+                    Experience beauty before you buy.
+                    Try different shades, styles and products
+                    virtually with Glamora AR.
+
                 </p>
 
 
+
+                <!-- FEATURES -->
+
                 <div class="tryon-features">
 
+
                     <div class="tryon-feature">
 
-                        <span>01</span>
+                        <span>
+                            ✦
+                        </span>
 
                         <div>
+
                             <strong>
-                                Choose a Product
+                                Virtual Try-On
                             </strong>
 
                             <p>
-                                Pick your favorite beauty product.
+                                See products on your face.
                             </p>
+
                         </div>
 
                     </div>
 
 
+
                     <div class="tryon-feature">
 
-                        <span>02</span>
+                        <span>
+                            ◉
+                        </span>
 
                         <div>
+
                             <strong>
-                                Activate AR
+                                Easy To Explore
                             </strong>
 
                             <p>
-                                Use your camera for a virtual try-on.
+                                Switch between beauty products.
                             </p>
+
                         </div>
 
                     </div>
 
 
+
                     <div class="tryon-feature">
 
-                        <span>03</span>
+                        <span>
+                            ♡
+                        </span>
 
                         <div>
+
                             <strong>
-                                Find Your Look
+                                Find Your Style
                             </strong>
 
                             <p>
-                                Experiment until you find your perfect look.
+                                Discover looks made for you.
                             </p>
+
                         </div>
 
                     </div>
 
                 </div>
 
+
+
+                <!-- BUTTON -->
+
+                <a
+                    href="#products"
+                    class="primary-btn"
+                >
+
+                    Start Exploring
+
+                    <span>
+                        →
+                    </span>
+
+                </a>
+
             </div>
 
+
+
+            <!-- =================================================
+                 TRY-ON VISUAL
+                 ================================================= -->
 
             <div class="tryon-visual reveal">
 
@@ -871,13 +1320,17 @@
                         ✦
                     </div>
 
+                    <span>
+                        AR
+                    </span>
+
                     <strong>
-                        AR BEAUTY
+                        BEAUTY
                     </strong>
 
-                    <span>
-                        Virtual Try-On
-                    </span>
+                    <small>
+                        EXPERIENCE
+                    </small>
 
                 </div>
 
@@ -897,6 +1350,7 @@
     </section>
 
 
+
     <!-- =====================================================
          FOOTER
          ===================================================== -->
@@ -906,22 +1360,27 @@
         <div class="footer-container">
 
 
+            <!-- FOOTER BRAND -->
+
             <div class="footer-brand">
 
                 <a
                     href="{{ url_for('home') }}"
                     class="footer-logo"
                 >
-                    Glamora <span>AR</span>
+                    GLAMORA <span>AR</span>
                 </a>
 
                 <p>
-                    Discover your beauty through
-                    augmented reality.
+                    Your virtual beauty experience.
+                    Discover, try and express your style.
                 </p>
 
             </div>
 
+
+
+            <!-- FOOTER EXPLORE -->
 
             <div class="footer-column">
 
@@ -948,40 +1407,14 @@
             </div>
 
 
+
+            <!-- FOOTER BEAUTY -->
+
             <div class="footer-column">
 
                 <h4>
                     Beauty
                 </h4>
-
-                <a href="#categories">
-                    Lipsticks
-                </a>
-
-                <a href="#categories">
-                    Eyeshadow
-                </a>
-
-                <a href="#categories">
-                    Blush
-                </a>
-
-                <a href="#categories">
-                    Foundation
-                </a>
-
-            </div>
-
-
-            <div class="footer-column">
-
-                <h4>
-                    Experience
-                </h4>
-
-                <a href="#tryon">
-                    Virtual Try-On
-                </a>
 
                 <a href="#products">
                     Products
@@ -991,10 +1424,17 @@
                     Categories
                 </a>
 
+                <a href="#tryon">
+                    Virtual Try-On
+                </a>
+
             </div>
 
         </div>
 
+
+
+        <!-- FOOTER BOTTOM -->
 
         <div class="footer-bottom">
 
@@ -1003,7 +1443,7 @@
             </span>
 
             <span>
-                Beauty meets technology.
+                Virtual Beauty Experience
             </span>
 
         </div>
@@ -1011,415 +1451,15 @@
     </footer>
 
 
+
     <!-- =====================================================
-         MAIN JAVASCRIPT
+         EXTERNAL JAVASCRIPT ONLY
          ===================================================== -->
 
     <script
         src="{{ url_for('static', filename='js/main.js') }}"
     ></script>
 
-
-    <!-- =====================================================
-         BEAUTY PAGE JAVASCRIPT
-         ===================================================== -->
-
-    <script>
-
-        document.addEventListener("DOMContentLoaded", function () {
-
-
-            /* =================================================
-               LOADER
-               ================================================= */
-
-            const loader = document.getElementById("loader");
-
-            if (loader) {
-
-                setTimeout(function () {
-
-                    loader.classList.add("hidden");
-
-                }, 1200);
-
-            }
-
-
-            /* =================================================
-               REVEAL ANIMATION
-               ================================================= */
-
-            const revealElements =
-                document.querySelectorAll(".reveal");
-
-
-            if ("IntersectionObserver" in window) {
-
-                const revealObserver =
-                    new IntersectionObserver(
-                        function (entries, observer) {
-
-                            entries.forEach(function (entry) {
-
-                                if (entry.isIntersecting) {
-
-                                    entry.target.classList.add("visible");
-
-                                    observer.unobserve(entry.target);
-
-                                }
-
-                            });
-
-                        },
-                        {
-                            threshold: 0.12
-                        }
-                    );
-
-
-                revealElements.forEach(function (element) {
-
-                    revealObserver.observe(element);
-
-                });
-
-            } else {
-
-                revealElements.forEach(function (element) {
-
-                    element.classList.add("visible");
-
-                });
-
-            }
-
-
-            /* =================================================
-               CATEGORY FILTER
-               ================================================= */
-
-            const categoryCards =
-                document.querySelectorAll(".beauty-category-card");
-
-            const productCards =
-                document.querySelectorAll(".beauty-product-card");
-
-            const productSection =
-                document.getElementById("products");
-
-
-            function normalize(value) {
-
-                return String(value || "")
-                    .toLowerCase()
-                    .trim()
-                    .replace(/[\s_]+/g, "-");
-
-            }
-
-
-            function matchesCategory(product, filter) {
-
-                if (filter === "all") {
-                    return true;
-                }
-
-
-                const type =
-                    normalize(
-                        product.dataset.productType
-                    );
-
-
-                const category =
-                    normalize(
-                        product.dataset.category
-                    );
-
-
-                const aliases = {
-
-                    lipstick: [
-                        "lipstick",
-                        "lipsticks",
-                        "lip-color",
-                        "lip-colour",
-                        "lips"
-                    ],
-
-                    eyeshadow: [
-                        "eyeshadow",
-                        "eye-shadow",
-                        "eyeshadows"
-                    ],
-
-                    blush: [
-                        "blush",
-                        "blushes"
-                    ],
-
-                    eyeliner: [
-                        "eyeliner",
-                        "eye-liner"
-                    ],
-
-                    mascara: [
-                        "mascara",
-                        "mascaras"
-                    ],
-
-                    foundation: [
-                        "foundation",
-                        "foundations"
-                    ],
-
-                    highlighter: [
-                        "highlighter",
-                        "highlighters"
-                    ]
-
-                };
-
-
-                const values =
-                    aliases[filter] || [filter];
-
-
-                return (
-                    values.includes(type) ||
-                    values.includes(category) ||
-                    type === filter ||
-                    category === filter
-                );
-
-            }
-
-
-            categoryCards.forEach(function (card) {
-
-                card.addEventListener("click", function () {
-
-                    const filter =
-                        normalize(
-                            card.dataset.filter
-                        );
-
-
-                    categoryCards.forEach(function (item) {
-
-                        item.classList.remove("active");
-
-                    });
-
-
-                    card.classList.add("active");
-
-
-                    productCards.forEach(function (product) {
-
-                        const show =
-                            matchesCategory(
-                                product,
-                                filter
-                            );
-
-
-                        if (show) {
-
-                            product.classList.remove(
-                                "category-hidden"
-                            );
-
-                            product.style.display = "";
-
-                            requestAnimationFrame(function () {
-
-                                product.classList.add("visible");
-
-                            });
-
-                        } else {
-
-                            product.classList.add(
-                                "category-hidden"
-                            );
-
-                            product.style.display = "none";
-
-                        }
-
-                    });
-
-
-                    if (productSection) {
-
-                        setTimeout(function () {
-
-                            productSection.scrollIntoView({
-                                behavior: "smooth",
-                                block: "start"
-                            });
-
-                        }, 100);
-
-                    }
-
-                });
-
-            });
-
-
-            /* =================================================
-               QUICK TRY BUTTON
-               ================================================= */
-
-            const quickTryButtons =
-                document.querySelectorAll(".quick-try-btn");
-
-
-            quickTryButtons.forEach(function (button) {
-
-                button.addEventListener("click", function (event) {
-
-                    event.preventDefault();
-                    event.stopPropagation();
-
-
-                    const productId =
-                        button.dataset.productId;
-
-
-                    if (productId) {
-
-                        sessionStorage.setItem(
-                            "glamoraTryOnProduct",
-                            productId
-                        );
-
-                    }
-
-
-                    const tryon =
-                        document.getElementById("tryon");
-
-
-                    if (tryon) {
-
-                        tryon.scrollIntoView({
-                            behavior: "smooth",
-                            block: "center"
-                        });
-
-                    }
-
-                });
-
-            });
-
-
-            /* =================================================
-               PRODUCT HOVER
-               ================================================= */
-
-            productCards.forEach(function (card) {
-
-                card.addEventListener(
-                    "mouseenter",
-                    function () {
-
-                        card.classList.add("product-hover");
-
-                    }
-                );
-
-
-                card.addEventListener(
-                    "mouseleave",
-                    function () {
-
-                        card.classList.remove("product-hover");
-
-                    }
-                );
-
-            });
-
-
-            /* =================================================
-               MOBILE NAVIGATION
-               ================================================= */
-
-            const menuBtn =
-                document.getElementById("menuBtn");
-
-            const navLinks =
-                document.getElementById("navLinks");
-
-
-            if (menuBtn && navLinks) {
-
-                menuBtn.addEventListener("click", function () {
-
-                    navLinks.classList.toggle("open");
-
-                    menuBtn.classList.toggle("open");
-
-                });
-
-
-                navLinks.querySelectorAll("a").forEach(function (link) {
-
-                    link.addEventListener("click", function () {
-
-                        navLinks.classList.remove("open");
-                        menuBtn.classList.remove("open");
-
-                    });
-
-                });
-
-            }
-
-
-            /* =================================================
-               HERO PARALLAX
-               ================================================= */
-
-            const heroVisual =
-                document.querySelector(".hero-visual");
-
-
-            if (heroVisual) {
-
-                window.addEventListener(
-                    "mousemove",
-                    function (event) {
-
-                        if (window.innerWidth <= 900) {
-                            return;
-                        }
-
-
-                        const x =
-                            (event.clientX / window.innerWidth - 0.5) * 8;
-
-                        const y =
-                            (event.clientY / window.innerHeight - 0.5) * 8;
-
-
-                        heroVisual.style.transform =
-                            `translate(${x}px, ${y}px)`;
-
-                    }
-                );
-
-            }
-
-        });
-
-    </script>
 
 </body>
 
