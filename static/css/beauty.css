@@ -1,8 +1,12 @@
 /* =========================================================
    GLAMORA AR — BEAUTY PAGE
-   COMPLETE BEAUTY PAGE CSS
-   HOME PAGE HERO STYLE
-   MARQUEE REMOVED
+   COMPLETE CORRECTED BEAUTY PAGE CSS
+   HOME-STYLE HERO VISUAL
+   REFERENCE IMAGE MATCH
+   NO MARQUEE
+
+   HERO VISUAL:
+   MOVED UP FOR BETTER BALANCE
    ========================================================= */
 
 
@@ -47,12 +51,11 @@
 
 .beauty-page {
     margin: 0;
+    padding: 0;
 
-    background:
-        var(--beauty-bg);
+    background: var(--beauty-bg);
 
-    color:
-        var(--beauty-text);
+    color: var(--beauty-text);
 
     font-family:
         "DM Sans",
@@ -66,7 +69,8 @@
     text-decoration: none;
 }
 
-.beauty-page button {
+.beauty-page button,
+.beauty-page input {
     font: inherit;
 }
 
@@ -91,8 +95,7 @@
     align-items: center;
     justify-content: center;
 
-    background:
-        var(--beauty-bg);
+    background: var(--beauty-bg);
 
     transition:
         opacity .6s ease,
@@ -101,9 +104,7 @@
 
 .beauty-page .loader.hidden {
     opacity: 0;
-
     visibility: hidden;
-
     pointer-events: none;
 }
 
@@ -118,27 +119,25 @@
 
     font-size: 32px;
 
+    font-weight: 600;
+
     letter-spacing: 5px;
 }
 
 .loader-logo span {
-    color:
-        var(--beauty-accent);
+    color: var(--beauty-accent);
 }
 
 .loader-content p {
-    margin:
-        8px 0 18px;
+    margin: 8px 0 18px;
 
-    color:
-        var(--beauty-text-soft);
+    color: var(--beauty-text-soft);
 
     font-size: 12px;
 }
 
 .loader-line {
     width: 180px;
-
     height: 2px;
 
     margin: auto;
@@ -153,7 +152,6 @@
     display: block;
 
     width: 50%;
-
     height: 100%;
 
     background:
@@ -166,13 +164,11 @@
 @keyframes loaderMove {
 
     0% {
-        transform:
-            translateX(-120%);
+        transform: translateX(-120%);
     }
 
     100% {
-        transform:
-            translateX(300%);
+        transform: translateX(300%);
     }
 }
 
@@ -183,7 +179,6 @@
 
 .beauty-page .site-header {
     position: relative;
-
     z-index: 1000;
 }
 
@@ -248,16 +243,17 @@
 
 
 /* =========================================================
-   NAV LINKS
+   NAVIGATION
    ========================================================= */
 
 .beauty-page .nav-links {
     display: flex;
 
+    align-items: center;
+
     gap: 38px;
 
     margin-left: auto;
-
     margin-right: 45px;
 }
 
@@ -287,11 +283,9 @@
     position: absolute;
 
     left: 0;
-
     bottom: -7px;
 
     width: 0;
-
     height: 1px;
 
     background:
@@ -363,7 +357,6 @@
     display: none;
 
     width: 40px;
-
     height: 40px;
 
     padding: 0;
@@ -372,8 +365,7 @@
 
     border-radius: 50%;
 
-    background:
-        transparent;
+    background: transparent;
 
     color:
         var(--beauty-text);
@@ -413,6 +405,9 @@
         rgba(255, 255, 255, .95);
 
     backdrop-filter:
+        blur(20px);
+
+    -webkit-backdrop-filter:
         blur(20px);
 
     box-shadow:
@@ -461,10 +456,8 @@
 }
 
 
-
 /* =========================================================
-   HERO
-   SAME GENERAL STYLE AS HOME
+   BEAUTY HERO
    ========================================================= */
 
 .beauty-hero {
@@ -493,6 +486,8 @@
     inset: 0;
 
     pointer-events: none;
+
+    overflow: hidden;
 }
 
 .beauty-glow {
@@ -508,48 +503,40 @@
 
 .beauty-glow-one {
     width: 450px;
-
     height: 450px;
+
+    top: 8%;
+    left: 20%;
 
     background:
         #f3c9d2;
-
-    top: 8%;
-
-    left: 20%;
 }
 
 .beauty-glow-two {
     width: 350px;
-
     height: 350px;
+
+    top: 20%;
+    right: 8%;
 
     background:
         #e9d4cb;
-
-    right: 8%;
-
-    top: 20%;
 }
 
 .beauty-glow-three {
     width: 280px;
-
     height: 280px;
+
+    left: 45%;
+    bottom: -100px;
 
     background:
         #f2d9de;
-
-    left: 45%;
-
-    bottom: -100px;
 }
 
 
 /* =========================================================
    HERO CONTAINER
-   IMPORTANT:
-   HOME PAGE USES ABSOLUTE HERO VISUAL
    ========================================================= */
 
 .beauty-hero-container {
@@ -584,7 +571,7 @@
    EYEBROW
    ========================================================= */
 
-.eyebrow {
+.beauty-hero .eyebrow {
     display: flex;
 
     align-items: center;
@@ -603,9 +590,8 @@
     letter-spacing: 3px;
 }
 
-.eyebrow-line {
+.beauty-hero .eyebrow-line {
     width: 40px;
-
     height: 1px;
 
     background:
@@ -625,13 +611,13 @@
         serif;
 
     font-size:
-        clamp(60px, 8vw, 115px);
+        clamp(60px, 8vw, 110px);
 
     line-height: .9;
 
     font-weight: 500;
 
-    letter-spacing: normal;
+    letter-spacing: -3px;
 }
 
 .beauty-hero-content h1 span {
@@ -666,215 +652,124 @@
 
 
 /* =========================================================
-   HERO BUTTONS
-   ========================================================= */
-
-.hero-buttons {
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-}
-
-.primary-btn,
-.secondary-btn {
-    display: inline-flex;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 13px;
-
-    min-height: 55px;
-
-    padding:
-        0 25px;
-
-    border-radius: 100px;
-
-    font-size: 14px;
-
-    font-weight: 700;
-
-    transition:
-        transform var(--beauty-transition),
-        box-shadow var(--beauty-transition),
-        background var(--beauty-transition);
-}
-
-.primary-btn {
-    background:
-        var(--beauty-text);
-
-    color:
-        white;
-}
-
-.primary-btn:hover {
-    transform:
-        translateY(-4px);
-
-    box-shadow:
-        0 15px 35px rgba(36, 27, 29, .18);
-}
-
-.primary-btn span {
-    font-size: 18px;
-
-    transition:
-        transform .3s ease;
-}
-
-.primary-btn:hover span {
-    transform:
-        translateX(4px);
-}
-
-.secondary-btn {
-    border:
-        1px solid var(--beauty-border);
-
-    background:
-        rgba(255, 255, 255, .5);
-
-    color:
-        var(--beauty-text);
-}
-
-.secondary-btn:hover {
-    transform:
-        translateY(-4px);
-
-    background:
-        white;
-}
-
-
-/* =========================================================
-   HERO STATS
-   ========================================================= */
-
-.hero-mini-stats {
-    display: flex;
-
-    gap: 55px;
-
-    margin-top: 75px;
-}
-
-.hero-mini-stats div {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 6px;
-}
-
-.hero-mini-stats strong {
-    font-family:
-        "Playfair Display",
-        serif;
-
-    font-size: 30px;
-
-    font-weight: 500;
-}
-
-.hero-mini-stats span {
-    color:
-        var(--beauty-text-soft);
-
-    font-size: 11px;
-
-    text-transform: uppercase;
-
-    letter-spacing: 1px;
-}
-
-
-/* =========================================================
    HERO VISUAL
-   SAME AS HOME PAGE
+   MOVED UP
    ========================================================= */
 
-.beauty-page .hero-visual {
+.beauty-hero-visual {
     position: absolute;
 
-    top: 50%;
+    /*
+       IMPORTANT:
+       Instead of moving only with translateY,
+       the actual top position is moved upward.
+    */
+    top:
+        calc(50% - 65px);
 
-    right: 6vw;
+    right:
+        -15px;
 
-    width: 40vw;
+    width:
+        540px;
 
-    height: 70vh;
-
-    max-width: 570px;
-
-    display: grid;
-
-    place-items: center;
+    height:
+        560px;
 
     transform:
-        translateY(calc(-50% - 35px));
+        translateY(-50%);
 
-    z-index: 5;
+    z-index:
+        5;
+
+    pointer-events:
+        none;
+}
+
+
+/* =========================================================
+   SOFT VISUAL BACKGROUND
+   ========================================================= */
+
+.beauty-hero-visual::before {
+    content: "";
+
+    position: absolute;
+
+    width: 410px;
+    height: 510px;
+
+    top: 38px;
+    left: 65px;
+
+    border-radius:
+        205px 205px 35px 35px;
+
+    background:
+        rgba(248, 215, 220, .55);
+
+    z-index: 0;
 }
 
 
 /* =========================================================
    ORBITS
-   SAME AS HOME
    ========================================================= */
 
-.beauty-page .orbit {
+.beauty-orbit {
     position: absolute;
 
     border:
-        1px solid rgba(184, 92, 112, .18);
+        1px solid rgba(184, 92, 112, .17);
 
     border-radius: 50%;
 
     pointer-events: none;
+
+    z-index: 1;
 }
 
-.beauty-page .orbit-one {
-    width: 470px;
+.beauty-orbit-one {
+    width: 500px;
+    height: 275px;
 
-    height: 230px;
+    left: 10px;
+    top: 125px;
 
     transform:
-        rotate(-20deg);
+        rotate(-22deg);
 
     animation:
         beautyOrbitOne 18s linear infinite;
 }
 
-.beauty-page .orbit-two {
-    width: 520px;
+.beauty-orbit-two {
+    width: 530px;
+    height: 305px;
 
-    height: 300px;
+    left: 65px;
+    top: 55px;
 
     transform:
-        rotate(35deg);
+        rotate(32deg);
 
     border-color:
-        rgba(184, 92, 112, .11);
+        rgba(255, 255, 255, .72);
 
     animation:
-        beautyOrbitTwo 14s linear infinite;
+        beautyOrbitTwo 16s linear infinite;
 }
 
 @keyframes beautyOrbitOne {
 
     from {
         transform:
-            rotate(-20deg);
+            rotate(-22deg);
     }
 
     to {
         transform:
-            rotate(340deg);
+            rotate(338deg);
     }
 }
 
@@ -882,55 +777,116 @@
 
     from {
         transform:
-            rotate(35deg);
+            rotate(32deg);
     }
 
     to {
         transform:
-            rotate(-325deg);
+            rotate(-328deg);
     }
 }
 
 
 /* =========================================================
-   FACE CARD
-   SAME AS HOME
+   BEAUTY FACE CARD
    ========================================================= */
 
-.beauty-page .face-card {
-    position: relative;
+.beauty-face-card {
+    position: absolute;
 
-    z-index: 10;
+    top: 38px;
+    left: 105px;
 
-    width: 360px;
-
+    width: 330px;
     height: 470px;
 
     overflow: hidden;
 
+    z-index: 5;
+
     border-radius:
-        180px 180px 35px 35px;
+        165px 165px 35px 35px;
 
     background:
         linear-gradient(
             145deg,
-            #f4d6d3,
-            #e9bfc0
+            #f5dada 0%,
+            #efc9cd 48%,
+            #e9bec4 100%
         );
 
     border:
-        1px solid rgba(255, 255, 255, .8);
+        1px solid rgba(255, 255, 255, .78);
 
     box-shadow:
-        var(--beauty-shadow);
+        0 30px 80px rgba(164, 73, 98, .12);
+
+    transition:
+        transform .6s cubic-bezier(.22, 1, .36, 1),
+        box-shadow .6s ease;
 }
 
 
 /* =========================================================
-   FACE CARD OVERLAY
+   FACE CARD INNER BORDER
    ========================================================= */
 
-.beauty-page .face-overlay {
+.beauty-face-card::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 18px;
+
+    z-index: 1;
+
+    border:
+        1px solid rgba(255, 255, 255, .72);
+
+    border-radius:
+        150px 150px 25px 25px;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   FACE CARD LIGHT
+   ========================================================= */
+
+.beauty-face-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 230px;
+    height: 230px;
+
+    left: 50%;
+    top: 15%;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, .12);
+
+    filter:
+        blur(18px);
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+
+/* =========================================================
+   FACE OVERLAY
+   ========================================================= */
+
+.beauty-face-overlay {
     position: absolute;
 
     inset: 20px;
@@ -938,10 +894,10 @@
     z-index: 3;
 
     border:
-        1px solid rgba(255, 255, 255, .75);
+        1px solid rgba(255, 255, 255, .70);
 
     border-radius:
-        160px 160px 25px 25px;
+        145px 145px 25px 25px;
 
     pointer-events: none;
 }
@@ -951,12 +907,12 @@
    FACE PLACEHOLDER
    ========================================================= */
 
-.beauty-page .face-placeholder {
+.beauty-face-placeholder {
     position: absolute;
 
     inset: 0;
 
-    z-index: 2;
+    z-index: 4;
 
     display: flex;
 
@@ -967,7 +923,7 @@
     justify-content: center;
 
     color:
-        rgba(255, 255, 255, .9);
+        rgba(255, 255, 255, .92);
 }
 
 
@@ -975,9 +931,8 @@
    FACE CIRCLE
    ========================================================= */
 
-.beauty-page .face-circle {
+.beauty-face-circle {
     width: 120px;
-
     height: 120px;
 
     display: grid;
@@ -985,23 +940,23 @@
     place-items: center;
 
     border:
-        1px solid rgba(255, 255, 255, .8);
+        1px solid rgba(255, 255, 255, .82);
 
     border-radius: 50%;
 
     background:
-        rgba(255, 255, 255, .08);
+        rgba(255, 255, 255, .035);
 
     box-shadow:
-        0 20px 50px rgba(116, 55, 74, .08);
+        0 15px 45px rgba(116, 55, 74, .05);
 
-    font-size: 35px;
+    font-size: 31px;
 
     animation:
-        faceCirclePulse 3s ease-in-out infinite;
+        beautyFacePulse 3.5s ease-in-out infinite;
 }
 
-@keyframes faceCirclePulse {
+@keyframes beautyFacePulse {
 
     0%,
     100% {
@@ -1011,23 +966,25 @@
 
     50% {
         transform:
-            scale(1.08);
+            scale(1.05);
     }
 }
 
 
 /* =========================================================
-   FACE PLACEHOLDER TEXT
+   FACE TEXT
    ========================================================= */
 
-.beauty-page .face-placeholder p {
+.beauty-face-placeholder p {
     margin:
         20px 0 0;
 
     color:
-        rgba(255, 255, 255, .9);
+        rgba(255, 255, 255, .88);
 
     font-size: 13px;
+
+    font-weight: 400;
 
     letter-spacing: 2px;
 }
@@ -1035,75 +992,58 @@
 
 /* =========================================================
    SCAN LINE
-   SAME HOME ANIMATION
    ========================================================= */
 
-.beauty-page .scan-line {
+.beauty-scan-line {
     position: absolute;
 
-    left: 0;
+    left: 20px;
+    right: 20px;
 
-    width: 100%;
+    top: 15%;
 
-    height: 2px;
+    height: 1px;
 
-    z-index: 6;
+    z-index: 7;
 
     background:
-        rgba(255, 255, 255, .8);
+        rgba(255, 255, 255, .78);
 
     box-shadow:
-        0 0 20px white;
+        0 0 15px rgba(255, 255, 255, .85);
 
     animation:
-        beautyScan 3s ease-in-out infinite;
+        beautyScan 3.5s ease-in-out infinite;
 }
 
 @keyframes beautyScan {
 
     0% {
         top: 15%;
+        opacity: .4;
     }
 
     50% {
-        top: 85%;
+        top: 84%;
+        opacity: .9;
     }
 
     100% {
         top: 15%;
+        opacity: .4;
     }
 }
 
 
 /* =========================================================
-   FACE CARD HOVER
+   AR READY LABEL
    ========================================================= */
 
-.beauty-page .face-card {
-    transition:
-        transform .6s cubic-bezier(.22, 1, .36, 1),
-        box-shadow .6s ease;
-}
-
-.beauty-page .face-card:hover {
-    transform:
-        translateY(-8px);
-
-    box-shadow:
-        0 35px 85px rgba(164, 73, 98, .20);
-}
-
-
-/* =========================================================
-   FACE LABEL
-   ========================================================= */
-
-.beauty-page .face-label {
+.beauty-face-label {
     position: absolute;
 
     left: 25px;
-
-    bottom: 25px;
+    bottom: 24px;
 
     z-index: 10;
 
@@ -1111,21 +1051,26 @@
 
     align-items: center;
 
+    min-height: 32px;
+
     padding:
-        9px 14px;
+        8px 15px;
 
     border-radius: 30px;
 
     background:
-        rgba(255, 255, 255, .75);
+        rgba(255, 255, 255, .82);
 
     backdrop-filter:
-        blur(10px);
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
 
     color:
-        var(--beauty-text);
+        #6d6064;
 
-    font-size: 10px;
+    font-size: 9px;
 
     font-weight: 700;
 
@@ -1134,31 +1079,30 @@
 
 
 /* =========================================================
-   STATUS DOT
+   AR STATUS DOT
    ========================================================= */
 
-.beauty-page .status-dot {
+.beauty-status-dot {
     display: inline-block;
 
     width: 7px;
-
     height: 7px;
 
-    margin-right: 7px;
+    margin-right: 9px;
 
     border-radius: 50%;
 
     background:
-        #4bb276;
+        #7bcba3;
 
     box-shadow:
-        0 0 10px #4bb276;
+        0 0 10px rgba(123, 203, 163, .75);
 
     animation:
-        statusPulse 2s ease-in-out infinite;
+        beautyStatusPulse 2s ease-in-out infinite;
 }
 
-@keyframes statusPulse {
+@keyframes beautyStatusPulse {
 
     0%,
     100% {
@@ -1169,68 +1113,72 @@
     }
 
     50% {
-        opacity: .65;
+        opacity: .55;
 
         transform:
-            scale(.85);
+            scale(.82);
     }
 }
 
 
 /* =========================================================
    FLOATING PRODUCTS
-   SAME AS HOME
    ========================================================= */
 
-.beauty-page .floating-product {
+.beauty-floating-product {
     position: absolute;
 
-    z-index: 50;
+    z-index: 20;
 
     display: flex;
 
     align-items: center;
 
-    gap: 12px;
+    gap: 11px;
+
+    min-width: 132px;
 
     padding:
-        12px 18px;
+        12px 17px;
 
     border-radius: 50px;
 
     background:
-        rgba(255, 255, 255, .75);
+        rgba(255, 255, 255, .78);
 
     backdrop-filter:
-        blur(15px);
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
 
     box-shadow:
-        0 15px 40px rgba(60, 30, 30, .12);
+        0 16px 38px rgba(60, 30, 30, .09);
+
+    pointer-events: auto;
 
     animation:
-        beautyFloat 4s ease-in-out infinite;
+        beautyFloatingProduct 4s ease-in-out infinite;
 }
 
 
 /* =========================================================
-   PRODUCT ICON
+   FLOATING PRODUCT ICON
    ========================================================= */
 
-.beauty-page .product-icon {
-    width: auto;
-
-    height: auto;
+.beauty-product-icon {
+    width: 29px;
+    height: 29px;
 
     display: grid;
 
     place-items: center;
 
-    border-radius: 0;
+    flex-shrink: 0;
 
-    background:
-        transparent;
+    font-size: 22px;
 
-    font-size: 25px;
+    line-height: 1;
 }
 
 
@@ -1238,59 +1186,89 @@
    FLOATING PRODUCT TEXT
    ========================================================= */
 
-.beauty-page .floating-product small {
+.beauty-floating-product small {
     display: block;
 
-    margin: 0;
+    margin-bottom: 2px;
 
     color:
         var(--beauty-accent);
 
-    font-size: 8px;
+    font-size: 7px;
+
+    font-weight: 700;
 
     letter-spacing: 2px;
 }
 
-.beauty-page .floating-product strong {
+.beauty-floating-product strong {
     display: block;
 
     color:
-        var(--beauty-text);
+        #66575b;
 
-    font-size: 12px;
+    font-size: 11px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
 }
 
 
 /* =========================================================
-   LIPSTICK FLOAT
+   LIP COLOR
    ========================================================= */
 
-.beauty-page .floating-product.lipstick {
-    top: 15%;
+.beauty-lipstick {
+    top: 35px;
+    left: 92px;
 
-    left: 0;
+    animation-delay:
+        -.5s;
 }
 
 
 /* =========================================================
-   BLUSH FLOAT
+   ROSE BLUSH
    ========================================================= */
 
-.beauty-page .floating-product.blush {
-    right: 0;
+.beauty-blush {
+    right: -30px;
+    bottom: 38px;
 
-    bottom: 15%;
+    width: 62px;
+    min-width: 62px;
+
+    height: 62px;
+
+    padding: 0;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, .82);
 
     animation-delay:
         -1.5s;
 }
 
+.beauty-blush small,
+.beauty-blush strong {
+    display: none;
+}
+
+.beauty-blush .beauty-product-icon {
+    font-size: 25px;
+}
+
 
 /* =========================================================
-   FLOAT ANIMATION
+   FLOATING ANIMATION
    ========================================================= */
 
-@keyframes beautyFloat {
+@keyframes beautyFloatingProduct {
 
     0%,
     100% {
@@ -1300,15 +1278,59 @@
 
     50% {
         transform:
-            translateY(-15px);
+            translateY(-10px);
     }
 }
 
 
+/* =========================================================
+   BEAUTY HERO REVEAL
+   ========================================================= */
+
+.beauty-hero .reveal {
+    opacity: 0;
+
+    transform:
+        translateY(35px);
+
+    transition:
+        opacity .8s ease,
+        transform .8s cubic-bezier(.22, 1, .36, 1);
+}
+
+.beauty-hero .reveal.visible {
+    opacity: 1;
+
+    transform:
+        translateY(0);
+}
 
 
 /* =========================================================
-   BEAUTY SECTION
+   GENERAL REVEAL
+   ========================================================= */
+
+.reveal {
+    opacity: 0;
+
+    transform:
+        translateY(35px);
+
+    transition:
+        opacity .8s ease,
+        transform .8s cubic-bezier(.22, 1, .36, 1);
+}
+
+.reveal.visible {
+    opacity: 1;
+
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   BEAUTY SECTIONS
    ========================================================= */
 
 .beauty-section {
@@ -1392,29 +1414,6 @@
 
 
 /* =========================================================
-   REVEAL ANIMATION
-   ========================================================= */
-
-.reveal {
-    opacity: 0;
-
-    transform:
-        translateY(35px);
-
-    transition:
-        opacity .8s ease,
-        transform .8s cubic-bezier(.22, 1, .36, 1);
-}
-
-.reveal.visible {
-    opacity: 1;
-
-    transform:
-        translateY(0);
-}
-
-
-/* =========================================================
    CATEGORY GRID
    ========================================================= */
 
@@ -1469,11 +1468,9 @@
     position: absolute;
 
     right: -45px;
-
     top: -45px;
 
     width: 140px;
-
     height: 140px;
 
     border-radius: 50%;
@@ -1491,11 +1488,9 @@
     position: absolute;
 
     left: -100%;
-
     top: 0;
 
     width: 60%;
-
     height: 100%;
 
     background:
@@ -1564,7 +1559,6 @@
     z-index: 2;
 
     width: 54px;
-
     height: 54px;
 
     display: grid;
@@ -1652,13 +1646,11 @@
     position: absolute;
 
     right: 20px;
-
     bottom: 19px;
 
     z-index: 3;
 
     width: 32px;
-
     height: 32px;
 
     display: grid;
@@ -1742,11 +1734,9 @@
     position: absolute;
 
     top: -120px;
-
     right: -120px;
 
     width: 230px;
-
     height: 230px;
 
     border-radius: 50%;
@@ -1801,11 +1791,9 @@
     position: absolute;
 
     width: 180px;
-
     height: 180px;
 
     left: 50%;
-
     top: 50%;
 
     transform:
@@ -1866,7 +1854,6 @@
     z-index: 2;
 
     width: 100%;
-
     height: 100%;
 
     display: block;
@@ -1897,7 +1884,6 @@
     position: absolute;
 
     top: 14px;
-
     left: 14px;
 
     z-index: 8;
@@ -1937,14 +1923,13 @@
 
 
 /* =========================================================
-   QUICK TRY
+   QUICK TRY BUTTON
    ========================================================= */
 
 .quick-try-btn {
     position: absolute;
 
     left: 50%;
-
     bottom: 16px;
 
     z-index: 10;
@@ -2006,7 +1991,6 @@
     position: relative;
 
     width: 100%;
-
     height: 100%;
 
     display: flex;
@@ -2035,7 +2019,6 @@
     position: absolute;
 
     width: 150px;
-
     height: 150px;
 
     border-radius: 50%;
@@ -2056,10 +2039,8 @@
         scale(1.15);
 }
 
-.product-placeholder span,
-.product-placeholder i {
+.product-placeholder {
     position: relative;
-
     z-index: 2;
 }
 
@@ -2094,7 +2075,6 @@
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     gap: 10px;
@@ -2312,7 +2292,6 @@
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
     padding: 50px;
@@ -2327,7 +2306,6 @@
 
 .empty-products-icon {
     width: 68px;
-
     height: 68px;
 
     display: grid;
@@ -2484,7 +2462,6 @@
 
 .tryon-feature > span {
     width: 40px;
-
     height: 40px;
 
     flex-shrink: 0;
@@ -2547,7 +2524,6 @@
 
 .tryon-orbit-one {
     width: 390px;
-
     height: 220px;
 
     transform:
@@ -2559,7 +2535,6 @@
 
 .tryon-orbit-two {
     width: 330px;
-
     height: 330px;
 
     border-color:
@@ -2597,7 +2572,7 @@
 
 
 /* =========================================================
-   TRY CENTER
+   TRY-ON CENTER CARD
    ========================================================= */
 
 .tryon-center-card {
@@ -2606,7 +2581,6 @@
     z-index: 5;
 
     width: 230px;
-
     height: 230px;
 
     display: flex;
@@ -2614,7 +2588,6 @@
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 50%;
@@ -2649,7 +2622,6 @@
 
 .tryon-center-icon {
     width: 68px;
-
     height: 68px;
 
     display: grid;
@@ -2723,7 +2695,7 @@
 
 
 /* =========================================================
-   TRY SPARKLES
+   TRY-ON SPARKLES
    ========================================================= */
 
 .tryon-sparkle {
@@ -2739,7 +2711,6 @@
 
 .sparkle-one {
     top: 45px;
-
     right: 70px;
 
     animation:
@@ -2748,7 +2719,6 @@
 
 .sparkle-two {
     left: 60px;
-
     bottom: 55px;
 
     animation:
@@ -2937,18 +2907,49 @@
             repeat(4, 1fr);
     }
 
-    .beauty-page .face-card {
-        width: 340px;
+    .beauty-hero-visual {
+        right:
+            -50px;
 
-        height: 450px;
+        /*
+           Explicitly move visual upward
+        */
+        top:
+            calc(50% - 55px);
+
+        transform:
+            translateY(-50%)
+            scale(.92);
+
+        transform-origin:
+            center right;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 1050px
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+    .beauty-hero-visual {
+        right:
+            -90px;
+
+        /*
+           Keep visual higher on medium screens
+        */
+        top:
+            calc(50% - 45px);
+
+        transform:
+            translateY(-50%)
+            scale(.82);
     }
 
-    .beauty-page .orbit-one {
-        width: 490px;
-    }
-
-    .beauty-page .orbit-two {
-        width: 430px;
+    .beauty-hero-content {
+        width: 55%;
     }
 }
 
@@ -2960,8 +2961,11 @@
 @media (max-width: 950px) {
 
     .beauty-hero {
-        padding-top:
-            130px;
+        min-height:
+            auto;
+
+        padding:
+            130px 7vw 70px;
     }
 
     .beauty-hero-container {
@@ -2984,39 +2988,33 @@
 
     .beauty-hero-content > p {
         margin-left: auto;
-
         margin-right: auto;
     }
 
-    .eyebrow {
+    .beauty-hero .eyebrow {
         justify-content: center;
     }
 
-    .hero-buttons {
-        justify-content: center;
-    }
-
-    .hero-mini-stats {
-        justify-content: center;
-    }
-
-    .beauty-page .hero-visual {
+    .beauty-hero-visual {
         position: relative;
 
         top: auto;
-
         right: auto;
 
-        width: 100%;
+        width: 540px;
+        height: 560px;
 
-        max-width: 570px;
-
-        height: 610px;
-
-        margin-top: 30px;
+        /*
+           Move visual upward after text
+        */
+        margin:
+            -20px auto 0;
 
         transform:
             none;
+
+        transform-origin:
+            center;
     }
 
     .beauty-category-grid {
@@ -3041,18 +3039,16 @@
 
     .tryon-content > p {
         margin-left: auto;
-
         margin-right: auto;
     }
 
     .tryon-features {
-        text-align: left;
-
         max-width: 400px;
 
         margin-left: auto;
-
         margin-right: auto;
+
+        text-align: left;
     }
 
     .footer-container {
@@ -3080,10 +3076,8 @@
     }
 
     .beauty-hero {
-        min-height: auto;
-
         padding:
-            125px 6vw 80px;
+            125px 6vw 60px;
     }
 
     .beauty-hero-content h1 {
@@ -3094,12 +3088,114 @@
             -2px;
     }
 
-    .beauty-page .hero-visual {
-        height:
-            560px;
+    .beauty-hero-content > p {
+        font-size:
+            14px;
+    }
 
-        min-height:
-            560px;
+    .beauty-hero-visual {
+        width:
+            470px;
+
+        height:
+            520px;
+
+        /*
+           More upward positioning
+        */
+        margin-top:
+            -20px;
+    }
+
+    .beauty-face-card {
+        width:
+            300px;
+
+        height:
+            430px;
+
+        left:
+            85px;
+
+        top:
+            42px;
+
+        border-radius:
+            150px 150px 30px 30px;
+    }
+
+    .beauty-face-card::before {
+        inset:
+            16px;
+
+        border-radius:
+            135px 135px 22px 22px;
+    }
+
+    .beauty-face-circle {
+        width:
+            105px;
+
+        height:
+            105px;
+    }
+
+    .beauty-orbit-one {
+        width:
+            440px;
+
+        height:
+            245px;
+
+        left:
+            0;
+
+        top:
+            125px;
+    }
+
+    .beauty-orbit-two {
+        width:
+            460px;
+
+        height:
+            275px;
+
+        left:
+            45px;
+
+        top:
+            65px;
+    }
+
+    .beauty-lipstick {
+        left:
+            70px;
+
+        top:
+            38px;
+    }
+
+    .beauty-blush {
+        right:
+            -15px;
+
+        bottom:
+            35px;
+    }
+
+    .beauty-hero-visual::before {
+        width:
+            370px;
+
+        height:
+            465px;
+
+        left:
+            60px;
+
+        top:
+            38px;
     }
 
     .beauty-section {
@@ -3114,7 +3210,8 @@
         flex-direction:
             column;
 
-        gap: 20px;
+        gap:
+            20px;
 
         margin-bottom:
             40px;
@@ -3129,7 +3226,8 @@
         grid-template-columns:
             1fr 1fr;
 
-        gap: 40px;
+        gap:
+            40px;
     }
 
     .footer-brand {
@@ -3157,91 +3255,120 @@
 
     .beauty-hero {
         padding:
-            115px 5vw 70px;
+            115px 5vw 55px;
     }
 
     .beauty-hero-content > p {
         font-size:
             14px;
+
+        line-height:
+            1.7;
     }
 
-    .hero-mini-stats {
-        gap:
-            20px;
-
-        margin-top:
-            50px;
-    }
-
-    .hero-mini-stats strong {
-        font-size:
-            22px;
-    }
-
-    .hero-mini-stats span {
-        font-size:
-            8px;
-    }
-
-    .beauty-page .hero-visual {
-        height:
-            500px;
-
-        min-height:
-            500px;
-
-        transform:
-            scale(.86);
-
-        margin:
-            -20px 0;
-    }
-
-    .beauty-page .face-card {
-        width:
-            320px;
-
-        height:
-            430px;
-    }
-
-    .beauty-page .face-overlay {
-        inset:
-            18px;
-    }
-
-    .beauty-page .face-circle {
-        width:
-            105px;
-
-        height:
-            105px;
-    }
-
-    .beauty-page .orbit-one {
+    .beauty-hero-visual {
         width:
             420px;
 
         height:
-            240px;
+            500px;
+
+        /*
+           Move the visual higher
+        */
+        margin:
+            -25px auto 0;
+
+        transform:
+            scale(.92);
+
+        transform-origin:
+            center top;
     }
 
-    .beauty-page .orbit-two {
+    .beauty-face-card {
         width:
-            360px;
+            290px;
 
         height:
-            210px;
-    }
+            425px;
 
-    .beauty-page .floating-product.lipstick {
         left:
-            -10px;
+            72px;
+
+        top:
+            42px;
     }
 
-    .beauty-page .floating-product.blush {
+    .beauty-face-circle {
+        width:
+            100px;
+
+        height:
+            100px;
+    }
+
+    .beauty-face-placeholder p {
+        font-size:
+            11px;
+    }
+
+    .beauty-face-label {
+        left:
+            22px;
+
+        bottom:
+            22px;
+
+        padding:
+            8px 13px;
+
+        font-size:
+            8px;
+    }
+
+    .beauty-orbit-one {
+        width:
+            410px;
+
+        height:
+            235px;
+
+        left:
+            0;
+
+        top:
+            125px;
+    }
+
+    .beauty-orbit-two {
+        width:
+            430px;
+
+        height:
+            255px;
+
+        left:
+            40px;
+
+        top:
+            65px;
+    }
+
+    .beauty-lipstick {
+        left:
+            55px;
+
+        top:
+            35px;
+    }
+
+    .beauty-blush {
         right:
-            -10px;
+            -5px;
+
+        bottom:
+            30px;
     }
 
     .beauty-category-grid {
@@ -3301,50 +3428,115 @@
 
 
 /* =========================================================
-   RESPONSIVE — 420px
+   RESPONSIVE — 480px
    ========================================================= */
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
+
+    .beauty-hero {
+        padding:
+            110px 5vw 35px;
+    }
 
     .beauty-hero-content h1 {
         font-size:
             48px;
+
+        line-height:
+            .95;
     }
 
-    .hero-mini-stats {
-        gap:
+    .beauty-hero-content > p {
+        font-size:
             13px;
-    }
-
-    .hero-mini-stats strong {
-        font-size:
-            19px;
-    }
-
-    .hero-mini-stats span {
-        font-size:
-            7px;
-    }
-
-    .beauty-page .hero-visual {
-        transform:
-            scale(.74);
 
         margin:
-            -65px 0;
+            25px auto;
     }
 
-    .beauty-page .face-card {
+    .beauty-hero-visual {
         width:
-            320px;
+            400px;
 
         height:
-            430px;
+            470px;
+
+        /*
+           Keep the visual closer to the text
+        */
+        margin-top:
+            -30px;
+
+        margin-left:
+            -10px;
+
+        transform:
+            scale(.86);
+
+        transform-origin:
+            center top;
     }
 
-    .beauty-page .floating-product {
-        transform:
-            scale(.82);
+    .beauty-face-card {
+        width:
+            285px;
+
+        height:
+            415px;
+
+        left:
+            72px;
+
+        top:
+            40px;
+    }
+
+    .beauty-face-card::before {
+        inset:
+            16px;
+    }
+
+    .beauty-face-circle {
+        width:
+            95px;
+
+        height:
+            95px;
+
+        font-size:
+            27px;
+    }
+
+    .beauty-lipstick {
+        left:
+            60px;
+
+        top:
+            35px;
+    }
+
+    .beauty-blush {
+        right:
+            -8px;
+
+        bottom:
+            25px;
+    }
+
+    .beauty-orbit-one {
+        width:
+            390px;
+
+        height:
+            225px;
+    }
+
+    .beauty-orbit-two {
+        width:
+            410px;
+
+        height:
+            245px;
     }
 
     .section-heading h2 {
@@ -3365,7 +3557,101 @@
 
 
 /* =========================================================
-   ACCESSIBILITY / REDUCED MOTION
+   RESPONSIVE — 420px
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .beauty-hero-content h1 {
+        font-size:
+            45px;
+    }
+
+    .beauty-hero-visual {
+        width:
+            390px;
+
+        height:
+            455px;
+
+        /*
+           Pull visual upward on very small screens
+        */
+        margin-top:
+            -35px;
+
+        margin-left:
+            -18px;
+
+        transform:
+            scale(.82);
+
+        transform-origin:
+            center top;
+    }
+
+    .beauty-face-card {
+        width:
+            280px;
+
+        height:
+            410px;
+
+        left:
+            70px;
+    }
+
+    .beauty-lipstick {
+        left:
+            58px;
+    }
+
+    .beauty-blush {
+        right:
+            -15px;
+    }
+
+    .beauty-face-label {
+        left:
+            20px;
+
+        bottom:
+            20px;
+    }
+
+    .beauty-orbit-one {
+        width:
+            380px;
+    }
+
+    .beauty-orbit-two {
+        width:
+            400px;
+    }
+
+    .beauty-floating-product {
+        transform:
+            scale(.90);
+    }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.beauty-page button:focus-visible,
+.beauty-page a:focus-visible {
+    outline:
+        2px solid var(--beauty-accent);
+
+    outline-offset:
+        4px;
+}
+
+
+/* =========================================================
+   REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
