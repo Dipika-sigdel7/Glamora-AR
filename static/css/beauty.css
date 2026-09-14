@@ -1,8 +1,7 @@
-
 /* =========================================================
    GLAMORA AR — BEAUTY PAGE
    COMPLETE BEAUTY PAGE CSS
-   HOME PAGE STYLE + CONSISTENT PRODUCT ANIMATIONS
+   HOME PAGE HERO STYLE
    MARQUEE REMOVED
    ========================================================= */
 
@@ -48,8 +47,12 @@
 
 .beauty-page {
     margin: 0;
-    background: var(--beauty-bg);
-    color: var(--beauty-text);
+
+    background:
+        var(--beauty-bg);
+
+    color:
+        var(--beauty-text);
 
     font-family:
         "DM Sans",
@@ -78,14 +81,18 @@
 
 .beauty-page .loader {
     position: fixed;
+
     inset: 0;
+
     z-index: 9999;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    background: var(--beauty-bg);
+    background:
+        var(--beauty-bg);
 
     transition:
         opacity .6s ease,
@@ -94,7 +101,9 @@
 
 .beauty-page .loader.hidden {
     opacity: 0;
+
     visibility: hidden;
+
     pointer-events: none;
 }
 
@@ -103,54 +112,67 @@
 }
 
 .loader-logo {
-    font-family: "Playfair Display", serif;
+    font-family:
+        "Playfair Display",
+        serif;
 
     font-size: 32px;
+
     letter-spacing: 5px;
 }
 
 .loader-logo span {
-    color: var(--beauty-accent);
+    color:
+        var(--beauty-accent);
 }
 
 .loader-content p {
-    margin: 8px 0 18px;
+    margin:
+        8px 0 18px;
 
-    color: var(--beauty-text-soft);
+    color:
+        var(--beauty-text-soft);
 
     font-size: 12px;
 }
 
 .loader-line {
     width: 180px;
+
     height: 2px;
 
     margin: auto;
 
     overflow: hidden;
 
-    background: rgba(36, 27, 29, .10);
+    background:
+        rgba(36, 27, 29, .10);
 }
 
 .loader-line span {
     display: block;
 
     width: 50%;
+
     height: 100%;
 
-    background: var(--beauty-accent);
+    background:
+        var(--beauty-accent);
 
     animation:
         loaderMove 1.4s ease-in-out infinite;
 }
 
 @keyframes loaderMove {
+
     0% {
-        transform: translateX(-120%);
+        transform:
+            translateX(-120%);
     }
 
     100% {
-        transform: translateX(300%);
+        transform:
+            translateX(300%);
     }
 }
 
@@ -161,6 +183,7 @@
 
 .beauty-page .site-header {
     position: relative;
+
     z-index: 1000;
 }
 
@@ -175,15 +198,21 @@
     z-index: 1000;
 
     display: flex;
+
     align-items: center;
     justify-content: space-between;
 
-    padding: 24px 5vw;
+    padding:
+        24px 5vw;
 
-    background: rgba(255, 250, 248, .84);
+    background:
+        rgba(255, 250, 248, .84);
 
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter:
+        blur(20px);
+
+    -webkit-backdrop-filter:
+        blur(20px);
 
     border-bottom:
         1px solid rgba(36, 27, 29, .05);
@@ -195,9 +224,12 @@
    ========================================================= */
 
 .beauty-page .logo {
-    font-family: "Playfair Display", serif;
+    font-family:
+        "Playfair Display",
+        serif;
 
     font-size: 24px;
+
     font-weight: 600;
 
     letter-spacing: 2px;
@@ -206,7 +238,8 @@
 }
 
 .beauty-page .logo span {
-    color: var(--beauty-accent);
+    color:
+        var(--beauty-accent);
 
     font-size: 15px;
 
@@ -224,15 +257,18 @@
     gap: 38px;
 
     margin-left: auto;
+
     margin-right: 45px;
 }
 
 .beauty-page .nav-links a {
     position: relative;
 
-    color: var(--beauty-text-soft);
+    color:
+        var(--beauty-text-soft);
 
     font-size: 14px;
+
     font-weight: 600;
 
     transition:
@@ -241,7 +277,8 @@
 
 .beauty-page .nav-links a:hover,
 .beauty-page .nav-links a.active {
-    color: var(--beauty-text);
+    color:
+        var(--beauty-text);
 }
 
 .beauty-page .nav-links a::after {
@@ -250,12 +287,15 @@
     position: absolute;
 
     left: 0;
+
     bottom: -7px;
 
     width: 0;
+
     height: 1px;
 
-    background: var(--beauty-accent);
+    background:
+        var(--beauty-accent);
 
     transition:
         width var(--beauty-transition);
@@ -287,15 +327,18 @@
 
     min-height: 40px;
 
-    padding: 0 18px;
+    padding:
+        0 18px;
 
     border-radius: 30px;
 
-    background: var(--beauty-text);
+    background:
+        var(--beauty-text);
 
     color: white;
 
     font-size: 12px;
+
     font-weight: 700;
 
     transition:
@@ -304,7 +347,8 @@
 }
 
 .beauty-nav-btn:hover {
-    transform: translateY(-3px);
+    transform:
+        translateY(-3px);
 
     box-shadow:
         0 12px 28px rgba(36, 27, 29, .18);
@@ -319,16 +363,20 @@
     display: none;
 
     width: 40px;
+
     height: 40px;
 
     padding: 0;
 
     border: 0;
+
     border-radius: 50%;
 
-    background: transparent;
+    background:
+        transparent;
 
-    color: var(--beauty-text);
+    color:
+        var(--beauty-text);
 
     font-size: 23px;
 
@@ -364,7 +412,8 @@
     background:
         rgba(255, 255, 255, .95);
 
-    backdrop-filter: blur(20px);
+    backdrop-filter:
+        blur(20px);
 
     box-shadow:
         0 25px 60px rgba(116, 55, 74, .13);
@@ -375,9 +424,11 @@
 }
 
 .mobile-menu a {
-    padding: 13px 8px;
+    padding:
+        13px 8px;
 
-    color: var(--beauty-text);
+    color:
+        var(--beauty-text);
 
     font-size: 13px;
 
@@ -390,17 +441,21 @@
 }
 
 .mobile-menu a.active {
-    color: var(--beauty-accent);
+    color:
+        var(--beauty-accent);
 }
 
 .mobile-try-btn {
     margin-top: 10px;
 
-    border-radius: 25px !important;
+    border-radius:
+        25px !important;
 
-    background: var(--beauty-accent);
+    background:
+        var(--beauty-accent);
 
-    color: white !important;
+    color:
+        white !important;
 
     text-align: center;
 }
@@ -408,18 +463,20 @@
 
 /* =========================================================
    HERO
-   SAME STYLE AS HOME PAGE
+   SAME GENERAL STYLE AS HOME
    ========================================================= */
 
 .beauty-hero {
-    min-height: 100vh;
-
     position: relative;
 
+    min-height: 100vh;
+
     display: flex;
+
     align-items: center;
 
-    padding: 150px 7vw 80px;
+    padding:
+        150px 7vw 80px;
 
     overflow: hidden;
 }
@@ -442,71 +499,68 @@
 
     border-radius: 50%;
 
-    filter: blur(90px);
+    filter:
+        blur(90px);
 
     opacity: .45;
 }
 
-
-/* SAME AS HOME .glow-one */
-
 .beauty-glow-one {
     width: 450px;
+
     height: 450px;
 
-    background: #f3c9d2;
+    background:
+        #f3c9d2;
 
     top: 8%;
+
     left: 20%;
 }
 
-
-/* SAME AS HOME .glow-two */
-
 .beauty-glow-two {
     width: 350px;
+
     height: 350px;
 
-    background: #e9d4cb;
+    background:
+        #e9d4cb;
 
     right: 8%;
+
     top: 20%;
 }
 
-
-/* SAME AS HOME .glow-three */
-
 .beauty-glow-three {
     width: 280px;
+
     height: 280px;
 
-    background: #f2d9de;
+    background:
+        #f2d9de;
 
     left: 45%;
+
     bottom: -100px;
 }
 
 
 /* =========================================================
    HERO CONTAINER
+   IMPORTANT:
+   HOME PAGE USES ABSOLUTE HERO VISUAL
    ========================================================= */
 
 .beauty-hero-container {
-    width: 100%;
-
     position: relative;
 
-    z-index: 2;
+    width: 100%;
 
     max-width: 1400px;
 
     margin: auto;
 
-    display: grid;
-
-    grid-template-columns: 53% 47%;
-
-    align-items: center;
+    z-index: 2;
 }
 
 
@@ -515,13 +569,13 @@
    ========================================================= */
 
 .beauty-hero-content {
-    width: 53%;
-
     position: relative;
 
-    z-index: 2;
+    z-index: 10;
 
-    max-width: none;
+    width: 53%;
+
+    max-width: 650px;
 }
 
 
@@ -538,7 +592,8 @@
 
     margin-bottom: 30px;
 
-    color: var(--beauty-accent);
+    color:
+        var(--beauty-accent);
 
     font-size: 11px;
 
@@ -549,15 +604,16 @@
 
 .eyebrow-line {
     width: 40px;
+
     height: 1px;
 
-    background: var(--beauty-accent);
+    background:
+        var(--beauty-accent);
 }
 
 
 /* =========================================================
    HERO TITLE
-   SAME AS HOME
    ========================================================= */
 
 .beauty-hero-content h1 {
@@ -580,7 +636,8 @@
 .beauty-hero-content h1 span {
     display: block;
 
-    color: var(--beauty-accent);
+    color:
+        var(--beauty-accent);
 
     font-style: normal;
 
@@ -590,15 +647,16 @@
 
 /* =========================================================
    HERO DESCRIPTION
-   SAME AS HOME
    ========================================================= */
 
 .beauty-hero-content > p {
     max-width: 500px;
 
-    margin: 35px 0;
+    margin:
+        35px 0;
 
-    color: var(--beauty-text-soft);
+    color:
+        var(--beauty-text-soft);
 
     font-size: 17px;
 
@@ -608,7 +666,6 @@
 
 /* =========================================================
    HERO BUTTONS
-   SAME AS HOME
    ========================================================= */
 
 .hero-buttons {
@@ -630,7 +687,8 @@
 
     min-height: 55px;
 
-    padding: 0 25px;
+    padding:
+        0 25px;
 
     border-radius: 100px;
 
@@ -645,9 +703,11 @@
 }
 
 .primary-btn {
-    background: var(--beauty-text);
+    background:
+        var(--beauty-text);
 
-    color: white;
+    color:
+        white;
 }
 
 .primary-btn:hover {
@@ -677,20 +737,21 @@
     background:
         rgba(255, 255, 255, .5);
 
-    color: var(--beauty-text);
+    color:
+        var(--beauty-text);
 }
 
 .secondary-btn:hover {
     transform:
         translateY(-4px);
 
-    background: white;
+    background:
+        white;
 }
 
 
 /* =========================================================
    HERO STATS
-   SAME AS HOME
    ========================================================= */
 
 .hero-mini-stats {
@@ -720,7 +781,8 @@
 }
 
 .hero-mini-stats span {
-    color: var(--beauty-text-soft);
+    color:
+        var(--beauty-text-soft);
 
     font-size: 11px;
 
@@ -732,403 +794,77 @@
 
 /* =========================================================
    HERO VISUAL
-   MATCHES THE SECOND REFERENCE IMAGE
+   SAME AS HOME PAGE
    ========================================================= */
 
-.beauty-hero-visual {
-    position: relative;
+.beauty-page .hero-visual {
+    position: absolute;
 
-    width: 100%;
+    top: 50%;
+
+    right: 6vw;
+
+    width: 40vw;
+
+    height: 70vh;
+
     max-width: 570px;
-    height: 610px;
 
-    margin-left: auto;
+    display: grid;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    z-index: 5;
-}
-
-
-/* =========================================================
-   SOFT HERO GLOW
-   ========================================================= */
-
-.beauty-card-glow {
-    position: absolute;
-
-    width: 440px;
-    height: 440px;
-
-    border-radius: 50%;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(243, 184, 198, .55) 0%,
-            rgba(243, 184, 198, .25) 45%,
-            transparent 72%
-        );
-
-    filter: blur(12px);
-
-    animation:
-        cardGlowPulse 5s ease-in-out infinite;
-
-    z-index: 0;
-}
-
-@keyframes cardGlowPulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: .75;
-    }
-
-    50% {
-        transform: scale(1.08);
-        opacity: 1;
-    }
-}
-
-
-/* =========================================================
-   OUTER DECORATIVE ARCH
-   ========================================================= */
-
-.beauty-face-card {
-    position: relative;
-
-    z-index: 10;
-
-    width: 360px;
-    height: 450px;
-
-    border-radius:
-        180px 180px 35px 35px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #f3d2d1 0%,
-            #edc4c5 55%,
-            #e8babb 100%
-        );
-
-    border: 0;
-
-    overflow: hidden;
-
-    box-shadow:
-        0 30px 70px rgba(164, 73, 98, .13);
-
-    animation:
-        beautyFaceFloat 6s ease-in-out infinite;
-}
-
-
-/* Outer pink arch */
-
-.beauty-face-card::before {
-    content: "";
-
-    position: absolute;
-
-    inset: -20px;
-
-    border-radius:
-        200px 200px 55px 55px;
-
-    background:
-        #f1ced0;
-
-    z-index: -2;
-}
-
-
-/* Thin white inner border */
-
-.beauty-face-card::after {
-    content: "";
-
-    position: absolute;
-
-    inset: 18px;
-
-    border:
-        1px solid rgba(255, 255, 255, .90);
-
-    border-radius:
-        165px 165px 25px 25px;
-
-    background:
-        transparent;
-
-    pointer-events: none;
-
-    z-index: 30;
-}
-
-
-/* =========================================================
-   FACE CARD FLOAT
-   ========================================================= */
-
-@keyframes beautyFaceFloat {
-
-    0%,
-    100% {
-        transform:
-            translateY(0);
-    }
-
-    50% {
-        transform:
-            translateY(-8px);
-    }
-}
-
-
-/* =========================================================
-   CARD LIGHT
-   ========================================================= */
-
-.beauty-face-card > * {
-    position: relative;
-    z-index: 5;
-}
-
-
-/* =========================================================
-   CARD LABEL / AR READY
-   ========================================================= */
-
-.beauty-card-label {
-    position: absolute;
-
-    left: 24px;
-    bottom: 24px;
-
-    top: auto;
-
-    z-index: 40;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-
-    padding: 9px 15px;
-
-    border-radius: 30px;
-
-    background:
-        rgba(255, 255, 255, .82);
-
-    backdrop-filter:
-        blur(12px);
-
-    -webkit-backdrop-filter:
-        blur(12px);
-
-    color:
-        var(--beauty-text);
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    letter-spacing: 2px;
-
-    box-shadow:
-        0 8px 25px rgba(70, 35, 42, .07);
-}
-
-
-/* =========================================================
-   LIVE DOT
-   ========================================================= */
-
-.live-dot {
-    display: inline-block;
-
-    width: 7px;
-    height: 7px;
-
-    flex-shrink: 0;
-
-    border-radius: 50%;
-
-    background:
-        #4bb276;
-
-    box-shadow:
-        0 0 10px rgba(75, 178, 118, .45);
-}
-
-
-/* =========================================================
-   SCAN LINE
-   ========================================================= */
-
-.beauty-scan-line {
-    position: absolute;
-
-    left: 18px;
-    right: 18px;
-
-    width: auto;
-
-    height: 1px;
-
-    background:
-        rgba(255, 255, 255, .45);
-
-    box-shadow:
-        0 0 15px rgba(255, 255, 255, .7);
-
-    animation:
-        beautyScan 4s ease-in-out infinite;
-
-    z-index: 15;
-}
-
-@keyframes beautyScan {
-
-    0% {
-        top: 20%;
-        opacity: 0;
-    }
-
-    20% {
-        opacity: 1;
-    }
-
-    50% {
-        top: 80%;
-        opacity: 1;
-    }
-
-    80% {
-        opacity: 1;
-    }
-
-    100% {
-        top: 20%;
-        opacity: 0;
-    }
-}
-
-
-/* =========================================================
-   CENTER VIRTUAL BEAUTY
-   ========================================================= */
-
-.beauty-face-card .virtual-beauty-text {
-    position: absolute;
-
-    top: 58%;
-
-    left: 50%;
+    place-items: center;
 
     transform:
-        translate(-50%, -50%);
+        translateY(-50%);
 
-    z-index: 20;
-
-    color:
-        rgba(255, 255, 255, .95);
-
-    font-size: 13px;
-
-    letter-spacing: 3px;
-
-    white-space: nowrap;
-}
-
-
-/* =========================================================
-   CENTER SPARKLE
-   ========================================================= */
-
-.beauty-face-card .virtual-beauty-icon {
-    position: absolute;
-
-    top: 48%;
-
-    left: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    z-index: 20;
-
-    width: 120px;
-    height: 120px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border:
-        1px solid rgba(255, 255, 255, .8);
-
-    border-radius: 50%;
-
-    color: white;
-
-    font-size: 28px;
+    z-index: 5;
 }
 
 
 /* =========================================================
    ORBITS
+   SAME AS HOME
    ========================================================= */
 
-.beauty-orbit {
+.beauty-page .orbit {
     position: absolute;
 
     border:
-        1px solid rgba(184, 92, 112, .16);
+        1px solid rgba(184, 92, 112, .18);
 
     border-radius: 50%;
 
     pointer-events: none;
-
-    z-index: 1;
 }
 
-.orbit-large {
+.beauty-page .orbit-one {
     width: 470px;
+
     height: 230px;
 
     transform:
         rotate(-20deg);
 
     animation:
-        orbitSpin 18s linear infinite;
+        beautyOrbitOne 18s linear infinite;
 }
 
-.orbit-small {
-    width: 500px;
-    height: 280px;
+.beauty-page .orbit-two {
+    width: 520px;
+
+    height: 300px;
 
     transform:
         rotate(35deg);
 
     border-color:
-        rgba(184, 92, 112, .10);
+        rgba(184, 92, 112, .11);
 
     animation:
-        orbitSpinReverse 14s linear infinite;
+        beautyOrbitTwo 14s linear infinite;
 }
 
-@keyframes orbitSpin {
+@keyframes beautyOrbitOne {
 
     from {
         transform:
@@ -1141,7 +877,7 @@
     }
 }
 
-@keyframes orbitSpinReverse {
+@keyframes beautyOrbitTwo {
 
     from {
         transform:
@@ -1156,122 +892,393 @@
 
 
 /* =========================================================
-   FLOATING BEAUTY PRODUCTS
+   FACE CARD
+   SAME AS HOME
    ========================================================= */
 
-.floating-beauty-product {
-    position: absolute;
+.beauty-page .face-card {
+    position: relative;
 
-    z-index: 60;
+    z-index: 10;
 
-    display: flex;
+    width: 360px;
 
-    align-items: center;
+    height: 470px;
 
-    gap: 11px;
+    overflow: hidden;
 
-    min-width: 132px;
-
-    padding: 12px 18px;
-
-    border-radius: 50px;
+    border-radius:
+        180px 180px 35px 35px;
 
     background:
-        rgba(255, 255, 255, .82);
+        linear-gradient(
+            145deg,
+            #f4d6d3,
+            #e9bfc0
+        );
 
-    backdrop-filter:
-        blur(15px);
-
-    -webkit-backdrop-filter:
-        blur(15px);
+    border:
+        1px solid rgba(255, 255, 255, .8);
 
     box-shadow:
-        0 15px 40px rgba(60, 30, 30, .10);
-
-    animation:
-        beautyFloat 4s ease-in-out infinite;
+        var(--beauty-shadow);
 }
 
 
 /* =========================================================
-   FLOATING ICON
+   FACE CARD OVERLAY
    ========================================================= */
 
-.floating-product-icon {
-    width: 34px;
-    height: 34px;
+.beauty-page .face-overlay {
+    position: absolute;
+
+    inset: 20px;
+
+    z-index: 3;
+
+    border:
+        1px solid rgba(255, 255, 255, .75);
+
+    border-radius:
+        160px 160px 25px 25px;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   FACE PLACEHOLDER
+   ========================================================= */
+
+.beauty-page .face-placeholder {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 2;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color:
+        rgba(255, 255, 255, .9);
+}
+
+
+/* =========================================================
+   FACE CIRCLE
+   ========================================================= */
+
+.beauty-page .face-circle {
+    width: 120px;
+
+    height: 120px;
 
     display: grid;
 
     place-items: center;
 
-    flex-shrink: 0;
+    border:
+        1px solid rgba(255, 255, 255, .8);
 
     border-radius: 50%;
 
     background:
-        rgba(252, 228, 234, .65);
+        rgba(255, 255, 255, .08);
 
-    font-size: 20px;
+    box-shadow:
+        0 20px 50px rgba(116, 55, 74, .08);
+
+    font-size: 35px;
+
+    animation:
+        faceCirclePulse 3s ease-in-out infinite;
+}
+
+@keyframes faceCirclePulse {
+
+    0%,
+    100% {
+        transform:
+            scale(1);
+    }
+
+    50% {
+        transform:
+            scale(1.08);
+    }
 }
 
 
 /* =========================================================
-   FLOATING TEXT
+   FACE PLACEHOLDER TEXT
    ========================================================= */
 
-.floating-beauty-product small {
+.beauty-page .face-placeholder p {
+    margin:
+        20px 0 0;
+
+    color:
+        rgba(255, 255, 255, .9);
+
+    font-size: 13px;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   SCAN LINE
+   SAME HOME ANIMATION
+   ========================================================= */
+
+.beauty-page .scan-line {
+    position: absolute;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 2px;
+
+    z-index: 6;
+
+    background:
+        rgba(255, 255, 255, .8);
+
+    box-shadow:
+        0 0 20px white;
+
+    animation:
+        beautyScan 3s ease-in-out infinite;
+}
+
+@keyframes beautyScan {
+
+    0% {
+        top: 15%;
+    }
+
+    50% {
+        top: 85%;
+    }
+
+    100% {
+        top: 15%;
+    }
+}
+
+
+/* =========================================================
+   FACE CARD HOVER
+   ========================================================= */
+
+.beauty-page .face-card {
+    transition:
+        transform .6s cubic-bezier(.22, 1, .36, 1),
+        box-shadow .6s ease;
+}
+
+.beauty-page .face-card:hover {
+    transform:
+        translateY(-8px);
+
+    box-shadow:
+        0 35px 85px rgba(164, 73, 98, .20);
+}
+
+
+/* =========================================================
+   FACE LABEL
+   ========================================================= */
+
+.beauty-page .face-label {
+    position: absolute;
+
+    left: 25px;
+
+    bottom: 25px;
+
+    z-index: 10;
+
+    display: flex;
+
+    align-items: center;
+
+    padding:
+        9px 14px;
+
+    border-radius: 30px;
+
+    background:
+        rgba(255, 255, 255, .75);
+
+    backdrop-filter:
+        blur(10px);
+
+    color:
+        var(--beauty-text);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   STATUS DOT
+   ========================================================= */
+
+.beauty-page .status-dot {
+    display: inline-block;
+
+    width: 7px;
+
+    height: 7px;
+
+    margin-right: 7px;
+
+    border-radius: 50%;
+
+    background:
+        #4bb276;
+
+    box-shadow:
+        0 0 10px #4bb276;
+
+    animation:
+        statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+
+        transform:
+            scale(1);
+    }
+
+    50% {
+        opacity: .65;
+
+        transform:
+            scale(.85);
+    }
+}
+
+
+/* =========================================================
+   FLOATING PRODUCTS
+   SAME AS HOME
+   ========================================================= */
+
+.beauty-page .floating-product {
+    position: absolute;
+
+    z-index: 50;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        12px 18px;
+
+    border-radius: 50px;
+
+    background:
+        rgba(255, 255, 255, .75);
+
+    backdrop-filter:
+        blur(15px);
+
+    box-shadow:
+        0 15px 40px rgba(60, 30, 30, .12);
+
+    animation:
+        beautyFloat 4s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   PRODUCT ICON
+   ========================================================= */
+
+.beauty-page .product-icon {
+    width: auto;
+
+    height: auto;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 0;
+
+    background:
+        transparent;
+
+    font-size: 25px;
+}
+
+
+/* =========================================================
+   FLOATING PRODUCT TEXT
+   ========================================================= */
+
+.beauty-page .floating-product small {
     display: block;
 
-    margin: 0 0 2px;
+    margin: 0;
 
     color:
         var(--beauty-accent);
 
-    font-size: 7px;
+    font-size: 8px;
 
     letter-spacing: 2px;
-
-    text-transform: uppercase;
 }
 
-.floating-beauty-product strong {
+.beauty-page .floating-product strong {
     display: block;
 
     color:
         var(--beauty-text);
 
-    font-size: 11px;
-
-    font-weight: 600;
-
-    white-space: nowrap;
+    font-size: 12px;
 }
 
 
 /* =========================================================
-   TOP LEFT LIPSTICK
+   LIPSTICK FLOAT
    ========================================================= */
 
-.lipstick-float {
-    top: 78px;
-    left: 18px;
+.beauty-page .floating-product.lipstick {
+    top: 15%;
 
-    animation:
-        beautyFloat 4s ease-in-out infinite;
+    left: 0;
 }
 
 
 /* =========================================================
-   BOTTOM RIGHT BLUSH
+   BLUSH FLOAT
    ========================================================= */
 
-.blush-float {
-    right: 10px;
-    bottom: 92px;
+.beauty-page .floating-product.blush {
+    right: 0;
 
-    animation:
-        beautyFloat 4s ease-in-out infinite;
+    bottom: 15%;
 
     animation-delay:
         -1.5s;
@@ -1292,171 +1299,23 @@
 
     50% {
         transform:
-            translateY(-12px);
-    }
-}
-
-
-/* =========================================================
-   AR READY BUTTON
-   ========================================================= */
-
-.beauty-ar-badge {
-    position: absolute;
-
-    right: 0;
-    bottom: 55px;
-
-    z-index: 70;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 11px 18px;
-
-    border-radius: 30px;
-
-    background:
-        var(--beauty-accent);
-
-    color: white;
-
-    font-size: 8px;
-
-    font-weight: 700;
-
-    letter-spacing: 1.5px;
-
-    box-shadow:
-        0 15px 35px rgba(200, 95, 122, .28);
-
-    animation:
-        badgeFloat 4s ease-in-out infinite;
-}
-
-.beauty-ar-badge span {
-    font-size: 13px;
-
-    animation:
-        badgeSpin 2s linear infinite;
-}
-
-@keyframes badgeFloat {
-
-    0%,
-    100% {
-        transform:
-            translateY(0);
-    }
-
-    50% {
-        transform:
-            translateY(-7px);
-    }
-}
-
-@keyframes badgeSpin {
-
-    from {
-        transform:
-            rotate(0);
-    }
-
-    to {
-        transform:
-            rotate(360deg);
-    }
-}
-
-
-/* =========================================================
-   AR BADGE
-   ========================================================= */
-
-.beauty-ar-badge {
-    position: absolute;
-
-    right: 2px;
-    bottom: 8%;
-
-    z-index: 60;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 11px 17px;
-
-    border-radius: 30px;
-
-    background:
-        var(--beauty-accent);
-
-    color: white;
-
-    font-size: 8px;
-
-    font-weight: 700;
-
-    letter-spacing: 1.4px;
-
-    box-shadow:
-        0 15px 35px rgba(200, 95, 122, .28);
-
-    animation:
-        badgeFloat 4s ease-in-out infinite;
-}
-
-.beauty-ar-badge span {
-    font-size: 14px;
-
-    animation:
-        badgeSpin 2s linear infinite;
-}
-
-@keyframes badgeFloat {
-
-    0%,
-    100% {
-        transform:
-            translateY(0);
-    }
-
-    50% {
-        transform:
-            translateY(-9px);
-    }
-}
-
-@keyframes badgeSpin {
-
-    from {
-        transform:
-            rotate(0);
-    }
-
-    to {
-        transform:
-            rotate(360deg);
+            translateY(-15px);
     }
 }
 
 
 /* =========================================================
    SCROLL INDICATOR
-   SAME AS HOME
    ========================================================= */
 
-.beauty-scroll {
+.beauty-page .scroll-indicator {
     position: absolute;
 
     left: 7vw;
+
     bottom: 35px;
+
+    z-index: 20;
 
     display: flex;
 
@@ -1472,10 +1331,11 @@
     letter-spacing: 2px;
 }
 
-.beauty-scroll div {
+.beauty-page .scroll-line {
     position: relative;
 
     width: 50px;
+
     height: 1px;
 
     overflow: hidden;
@@ -1484,25 +1344,27 @@
         var(--beauty-text-soft);
 }
 
-.beauty-scroll div::after {
+.beauty-page .scroll-line::after {
     content: "";
 
     position: absolute;
 
     left: -100%;
+
     top: 0;
 
     width: 100%;
+
     height: 100%;
 
     background:
         var(--beauty-accent);
 
     animation:
-        scrollLine 2s ease-in-out infinite;
+        beautyScrollLine 2s ease-in-out infinite;
 }
 
-@keyframes scrollLine {
+@keyframes beautyScrollLine {
 
     0% {
         left: -100%;
@@ -1513,12 +1375,14 @@
     }
 }
 
+
 /* =========================================================
    BEAUTY SECTION
    ========================================================= */
 
 .beauty-section {
-    padding: 120px 7vw;
+    padding:
+        120px 7vw;
 }
 
 .beauty-section:nth-of-type(even) {
@@ -1527,11 +1391,15 @@
 }
 
 
+/* =========================================================
+   SECTION HEADING
+   ========================================================= */
 
 .section-heading {
     display: flex;
 
     align-items: flex-end;
+
     justify-content: space-between;
 
     gap: 40px;
@@ -1544,9 +1412,11 @@
 
     margin-bottom: 17px;
 
-    color: var(--beauty-accent);
+    color:
+        var(--beauty-accent);
 
     font-size: 11px;
+
     font-weight: 700;
 
     letter-spacing: 3px;
@@ -1555,9 +1425,12 @@
 .section-heading h2 {
     margin: 0;
 
-    font-family: "Playfair Display", serif;
+    font-family:
+        "Playfair Display",
+        serif;
 
-    font-size: clamp(42px, 5vw, 70px);
+    font-size:
+        clamp(42px, 5vw, 70px);
 
     line-height: .98;
 
@@ -1567,7 +1440,8 @@
 }
 
 .section-heading h2 em {
-    color: var(--beauty-accent);
+    color:
+        var(--beauty-accent);
 
     font-weight: 400;
 }
@@ -1577,7 +1451,8 @@
 
     margin: 0;
 
-    color: var(--beauty-text-soft);
+    color:
+        var(--beauty-text-soft);
 
     font-size: 14px;
 
@@ -1643,7 +1518,8 @@
     background:
         rgba(255, 255, 255, .62);
 
-    color: var(--beauty-text);
+    color:
+        var(--beauty-text);
 
     text-align: left;
 
@@ -1662,9 +1538,11 @@
     position: absolute;
 
     right: -45px;
+
     top: -45px;
 
     width: 140px;
+
     height: 140px;
 
     border-radius: 50%;
@@ -1686,6 +1564,7 @@
     top: 0;
 
     width: 60%;
+
     height: 100%;
 
     background:
@@ -1696,7 +1575,8 @@
             transparent
         );
 
-    transform: skewX(-20deg);
+    transform:
+        skewX(-20deg);
 
     transition:
         left .7s ease;
@@ -1753,6 +1633,7 @@
     z-index: 2;
 
     width: 54px;
+
     height: 54px;
 
     display: grid;
@@ -1799,27 +1680,34 @@
 
     margin-bottom: 5px;
 
-    color: var(--beauty-accent);
+    color:
+        var(--beauty-accent);
 
     font-size: 8px;
+
     font-weight: 700;
 
     letter-spacing: 1.5px;
 }
 
 .category-card-content h3 {
-    margin: 0 0 7px;
+    margin:
+        0 0 7px;
 
-    font-family: "Playfair Display", serif;
+    font-family:
+        "Playfair Display",
+        serif;
 
     font-size: 23px;
+
     font-weight: 600;
 }
 
 .category-card-content p {
     margin: 0;
 
-    color: var(--beauty-text-soft);
+    color:
+        var(--beauty-text-soft);
 
     font-size: 10px;
 }
@@ -1833,11 +1721,13 @@
     position: absolute;
 
     right: 20px;
+
     bottom: 19px;
 
     z-index: 3;
 
     width: 32px;
+
     height: 32px;
 
     display: grid;
@@ -1865,7 +1755,8 @@
     background:
         var(--beauty-accent);
 
-    color: white;
+    color:
+        white;
 }
 
 
@@ -1890,7 +1781,6 @@
 
 /* =========================================================
    PRODUCT CARD
-   SAME STYLE + ANIMATION AS LIPSTICK
    ========================================================= */
 
 .beauty-product-card {
@@ -1921,9 +1811,11 @@
     position: absolute;
 
     top: -120px;
+
     right: -120px;
 
     width: 230px;
+
     height: 230px;
 
     border-radius: 50%;
@@ -1978,9 +1870,11 @@
     position: absolute;
 
     width: 180px;
+
     height: 180px;
 
     left: 50%;
+
     top: 50%;
 
     transform:
@@ -1991,7 +1885,8 @@
     background:
         rgba(255, 255, 255, .35);
 
-    filter: blur(2px);
+    filter:
+        blur(2px);
 
     transition:
         transform .6s ease,
@@ -2040,6 +1935,7 @@
     z-index: 2;
 
     width: 100%;
+
     height: 100%;
 
     display: block;
@@ -2070,25 +1966,29 @@
     position: absolute;
 
     top: 14px;
+
     left: 14px;
 
     z-index: 8;
 
     max-width: 75%;
 
-    padding: 7px 11px;
+    padding:
+        7px 11px;
 
     border-radius: 20px;
 
     background:
         rgba(255, 255, 255, .86);
 
-    backdrop-filter: blur(10px);
+    backdrop-filter:
+        blur(10px);
 
     color:
         var(--beauty-accent-dark);
 
     font-size: 7px;
+
     font-weight: 700;
 
     letter-spacing: 1px;
@@ -2113,6 +2013,7 @@
     position: absolute;
 
     left: 50%;
+
     bottom: 16px;
 
     z-index: 10;
@@ -2122,17 +2023,21 @@
 
     opacity: 0;
 
-    padding: 11px 19px;
+    padding:
+        11px 19px;
 
     border: 0;
+
     border-radius: 25px;
 
     background:
         var(--beauty-accent);
 
-    color: white;
+    color:
+        white;
 
     font-size: 9px;
+
     font-weight: 700;
 
     white-space: nowrap;
@@ -2164,13 +2069,13 @@
 
 /* =========================================================
    PRODUCT PLACEHOLDER
-   SAME FLOATING ANIMATION
    ========================================================= */
 
 .product-placeholder {
     position: relative;
 
     width: 100%;
+
     height: 100%;
 
     display: flex;
@@ -2199,6 +2104,7 @@
     position: absolute;
 
     width: 150px;
+
     height: 150px;
 
     border-radius: 50%;
@@ -2227,13 +2133,16 @@
 }
 
 @keyframes placeholderFloat {
+
     0%,
     100% {
-        transform: translateY(0);
+        transform:
+            translateY(0);
     }
 
     50% {
-        transform: translateY(-9px);
+        transform:
+            translateY(-9px);
     }
 }
 
@@ -2254,6 +2163,7 @@
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     gap: 10px;
@@ -2266,6 +2176,7 @@
         var(--beauty-accent);
 
     font-size: 8px;
+
     font-weight: 700;
 
     text-transform: uppercase;
@@ -2278,6 +2189,7 @@
         #5f9b6e;
 
     font-size: 8px;
+
     font-weight: 600;
 }
 
@@ -2312,7 +2224,8 @@
 .product-description {
     display: -webkit-box;
 
-    margin: 8px 0 12px;
+    margin:
+        8px 0 12px;
 
     overflow: hidden;
 
@@ -2324,6 +2237,7 @@
     line-height: 1.6;
 
     -webkit-line-clamp: 2;
+
     -webkit-box-orient: vertical;
 }
 
@@ -2405,7 +2319,8 @@
 
     gap: 7px;
 
-    padding: 9px 13px;
+    padding:
+        9px 13px;
 
     border-radius: 20px;
 
@@ -2416,6 +2331,7 @@
         var(--beauty-accent-dark);
 
     font-size: 8px;
+
     font-weight: 700;
 
     transition:
@@ -2445,7 +2361,8 @@
    ========================================================= */
 
 .beauty-product-card.category-hidden {
-    display: none !important;
+    display:
+        none !important;
 }
 
 
@@ -2454,7 +2371,8 @@
    ========================================================= */
 
 .empty-products {
-    grid-column: 1 / -1;
+    grid-column:
+        1 / -1;
 
     min-height: 330px;
 
@@ -2463,6 +2381,7 @@
     flex-direction: column;
 
     align-items: center;
+
     justify-content: center;
 
     padding: 50px;
@@ -2477,6 +2396,7 @@
 
 .empty-products-icon {
     width: 68px;
+
     height: 68px;
 
     display: grid;
@@ -2500,18 +2420,22 @@
 }
 
 @keyframes emptyFloat {
+
     0%,
     100% {
-        transform: translateY(0);
+        transform:
+            translateY(0);
     }
 
     50% {
-        transform: translateY(-8px);
+        transform:
+            translateY(-8px);
     }
 }
 
 .empty-products h3 {
-    margin: 0 0 8px;
+    margin:
+        0 0 8px;
 
     font-family:
         "Playfair Display",
@@ -2523,7 +2447,8 @@
 .empty-products p {
     max-width: 410px;
 
-    margin: 0 0 25px;
+    margin:
+        0 0 25px;
 
     color:
         var(--beauty-text-soft);
@@ -2628,6 +2553,7 @@
 
 .tryon-feature > span {
     width: 40px;
+
     height: 40px;
 
     flex-shrink: 0;
@@ -2690,6 +2616,7 @@
 
 .tryon-orbit-one {
     width: 390px;
+
     height: 220px;
 
     transform:
@@ -2701,6 +2628,7 @@
 
 .tryon-orbit-two {
     width: 330px;
+
     height: 330px;
 
     border-color:
@@ -2711,6 +2639,7 @@
 }
 
 @keyframes tryOrbitOne {
+
     from {
         transform:
             rotate(-25deg);
@@ -2723,6 +2652,7 @@
 }
 
 @keyframes tryOrbitTwo {
+
     from {
         transform:
             rotate(0);
@@ -2745,6 +2675,7 @@
     z-index: 5;
 
     width: 230px;
+
     height: 230px;
 
     display: flex;
@@ -2752,6 +2683,7 @@
     flex-direction: column;
 
     align-items: center;
+
     justify-content: center;
 
     border-radius: 50%;
@@ -2771,6 +2703,7 @@
 }
 
 @keyframes centerFloat {
+
     0%,
     100% {
         transform:
@@ -2785,6 +2718,7 @@
 
 .tryon-center-icon {
     width: 68px;
+
     height: 68px;
 
     display: grid;
@@ -2811,6 +2745,7 @@
 }
 
 @keyframes iconPulse {
+
     0%,
     100% {
         transform:
@@ -2873,6 +2808,7 @@
 
 .sparkle-one {
     top: 45px;
+
     right: 70px;
 
     animation:
@@ -2881,6 +2817,7 @@
 
 .sparkle-two {
     left: 60px;
+
     bottom: 55px;
 
     animation:
@@ -2888,6 +2825,7 @@
 }
 
 @keyframes sparkleOne {
+
     0%,
     100% {
         transform:
@@ -2903,6 +2841,7 @@
 }
 
 @keyframes sparkleTwo {
+
     0%,
     100% {
         transform:
@@ -2953,7 +2892,8 @@
         "Playfair Display",
         serif;
 
-    color: white;
+    color:
+        white;
 
     font-size: 23px;
 
@@ -2990,7 +2930,8 @@
     margin:
         0 0 8px;
 
-    color: white;
+    color:
+        white;
 
     font-size: 11px;
 
@@ -3051,9 +2992,8 @@
 
 @media (max-width: 1200px) {
 
-    .beauty-hero-container {
-        grid-template-columns:
-            50% 50%;
+    .beauty-hero-content {
+        width: 52%;
     }
 
     .beauty-product-grid {
@@ -3066,22 +3006,17 @@
             repeat(4, 1fr);
     }
 
-    .beauty-face-card {
+    .beauty-page .face-card {
         width: 340px;
+
         height: 450px;
     }
 
-    .beauty-face {
-        transform:
-            translateX(-50%)
-            scale(.94);
-    }
-
-    .orbit-large {
+    .beauty-page .orbit-one {
         width: 490px;
     }
 
-    .orbit-small {
+    .beauty-page .orbit-two {
         width: 430px;
     }
 }
@@ -3094,24 +3029,31 @@
 @media (max-width: 950px) {
 
     .beauty-hero {
-        padding-top: 130px;
+        padding-top:
+            130px;
     }
 
     .beauty-hero-container {
-        grid-template-columns:
-            1fr;
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+    }
+
+    .beauty-hero-content {
+        width: 100%;
+
+        max-width: 720px;
+
+        margin: auto;
 
         text-align: center;
     }
 
-    .beauty-hero-content {
-        max-width: 720px;
-
-        margin: auto;
-    }
-
     .beauty-hero-content > p {
         margin-left: auto;
+
         margin-right: auto;
     }
 
@@ -3127,10 +3069,23 @@
         justify-content: center;
     }
 
-    .beauty-hero-visual {
-        min-height: 610px;
+    .beauty-page .hero-visual {
+        position: relative;
+
+        top: auto;
+
+        right: auto;
+
+        width: 100%;
+
+        max-width: 570px;
+
+        height: 610px;
 
         margin-top: 30px;
+
+        transform:
+            none;
     }
 
     .beauty-category-grid {
@@ -3155,6 +3110,7 @@
 
     .tryon-content > p {
         margin-left: auto;
+
         margin-right: auto;
     }
 
@@ -3164,6 +3120,7 @@
         max-width: 400px;
 
         margin-left: auto;
+
         margin-right: auto;
     }
 
@@ -3206,7 +3163,10 @@
             -2px;
     }
 
-    .beauty-hero-visual {
+    .beauty-page .hero-visual {
+        height:
+            560px;
+
         min-height:
             560px;
     }
@@ -3292,7 +3252,10 @@
             8px;
     }
 
-    .beauty-hero-visual {
+    .beauty-page .hero-visual {
+        height:
+            500px;
+
         min-height:
             500px;
 
@@ -3303,7 +3266,7 @@
             -20px 0;
     }
 
-    .beauty-face-card {
+    .beauty-page .face-card {
         width:
             320px;
 
@@ -3311,21 +3274,20 @@
             430px;
     }
 
-    .beauty-face {
-        transform:
-            translateX(-50%)
-            scale(.90);
+    .beauty-page .face-overlay {
+        inset:
+            18px;
     }
 
-    .beauty-card-glow {
+    .beauty-page .face-circle {
         width:
-            410px;
+            105px;
 
         height:
-            410px;
+            105px;
     }
 
-    .orbit-large {
+    .beauty-page .orbit-one {
         width:
             420px;
 
@@ -3333,7 +3295,7 @@
             240px;
     }
 
-    .orbit-small {
+    .beauty-page .orbit-two {
         width:
             360px;
 
@@ -3341,19 +3303,14 @@
             210px;
     }
 
-    .lipstick-float {
+    .beauty-page .floating-product.lipstick {
         left:
             -10px;
     }
 
-    .blush-float {
+    .beauty-page .floating-product.blush {
         right:
             -10px;
-    }
-
-    .beauty-ar-badge {
-        right:
-            -5px;
     }
 
     .beauty-category-grid {
@@ -3438,7 +3395,7 @@
             7px;
     }
 
-    .beauty-hero-visual {
+    .beauty-page .hero-visual {
         transform:
             scale(.74);
 
@@ -3446,7 +3403,7 @@
             -65px 0;
     }
 
-    .beauty-face-card {
+    .beauty-page .face-card {
         width:
             320px;
 
@@ -3454,14 +3411,9 @@
             430px;
     }
 
-    .floating-beauty-product {
+    .beauty-page .floating-product {
         transform:
             scale(.82);
-    }
-
-    .beauty-ar-badge {
-        transform:
-            scale(.85);
     }
 
     .section-heading h2 {
