@@ -1,5 +1,6 @@
 import os
 import uuid
+import re
 from decimal import Decimal, InvalidOperation
 
 from flask import (
@@ -47,6 +48,7 @@ app.config["PRODUCT_UPLOAD_FOLDER"] = PRODUCT_UPLOAD_FOLDER
 
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
+
 ALLOWED_IMAGE_EXTENSIONS = {
     "jpg",
     "jpeg",
@@ -56,6 +58,65 @@ ALLOWED_IMAGE_EXTENSIONS = {
 }
 
 MAX_IMAGE_SIZE = 5 * 1024 * 1024
+
+
+# =========================================================
+# BEAUTY PRODUCT TYPE MAPPING
+# =========================================================
+#
+# This makes different admin inputs map to the same
+# category key used by the Beauty page.
+#
+# Example:
+#
+# Lipstick       -> lipstick
+# Lipsticks      -> lipstick
+# Eye Shadow     -> eyeshadow
+# Eye_Shadow     -> eyeshadow
+# Eye-shadow     -> eyeshadow
+# etc.
+#
+# =========================================================
+
+PRODUCT_TYPE_ALIASES = {
+
+    # Lipstick
+    "lipstick": "lipstick",
+    "lipsticks": "lipstick",
+    "lip stick": "lipstick",
+    "lip sticks": "lipstick",
+
+    # Eyeshadow
+    "eyeshadow": "eyeshadow",
+    "eyeshadows": "eyeshadow",
+    "eye shadow": "eyeshadow",
+    "eye shadows": "eyeshadow",
+    "eye-shadow": "eyeshadow",
+    "eye-shadows": "eyeshadow",
+
+    # Blush
+    "blush": "blush",
+    "blushes": "blush",
+
+    # Eyeliner
+    "eyeliner": "eyeliner",
+    "eyeliners": "eyeliner",
+    "eye liner": "eyeliner",
+    "eye liners": "eyeliner",
+
+    # Mascara
+    "mascara": "mascara",
+    "mascaras": "mascara",
+
+    # Foundation
+    "foundation": "foundation",
+    "foundations": "foundation",
+
+    # Highlighter
+    "highlighter": "highlighter",
+    "highlighters": "highlighter",
+    "highlight": "highlighter",
+}
 
 
 # =========================================================
@@ -86,6 +147,118 @@ def get_file_extension(filename):
 
     return filename.rsplit(".", 1)[1].lower()
 
+
+# =========================================================
+# NORMALIZE BEAUTY PRODUCT TYPE
+# =========================================================
+
+def normalize_product_type(product_type):
+
+    """
+    Converts the product type entered by the admin into
+    the exact category key used by the Beauty page.
+
+    Examples:
+
+        Lipstick       -> lipstick
+        LIPSTICK       -> lipstick
+        Lipsticks      -> lipstick
+        Lip Stick      -> lipstick
+
+        Eye Shadow     -> eyeshadow
+        Eye_Shadow     -> eyeshadow
+        eye-shadow     -> eyeshadow
+
+        Highlighters   -> highlighter
+    """
+
+    if not product_type:
+        return ""
+
+    # Convert to string
+    value = str(product_type)
+
+    # Remove leading/trailing spaces
+    value = value.strip().lower()
+
+    # Replace underscores with spaces
+    value = value.replace("_", " ")
+
+    # Replace multiple spaces
+    value = re.sub(
+        r"\s+",
+        " ",
+        value
+    )
+
+    # Remove spaces around hyphens
+    value = re.sub(
+        r"\s*-\s*",
+        "-",
+        value
+    )
+
+    # Check aliases first
+    if value in PRODUCT_TYPE_ALIASES:
+
+        return PRODUCT_TYPE_ALIASES[value]
+
+    # Remove hyphens for another alias check
+    no_hyphen = value.replace(
+        "-",
+        " "
+    )
+
+    if no_hyphen in PRODUCT_TYPE_ALIASES:
+
+        return PRODUCT_TYPE_ALIASES[no_hyphen]
+
+    # Generic fallback
+    #
+    # Example:
+    # "Lipstick" -> "lipstick"
+    #
+    normalized = value.replace(
+        " ",
+        "-"
+    )
+
+    return normalized
+
+
+# =========================================================
+# ADD CATEGORY KEY TO PRODUCTS
+# =========================================================
+
+def prepare_products(products):
+
+    """
+    Adds a normalized product_type_key to every product.
+
+    The original product_type is kept unchanged so that
+    the admin-entered value can still be displayed.
+
+    Example:
+
+        product_type:
+            "Lipsticks"
+
+        product_type_key:
+            "lipstick"
+    """
+
+    for product in products:
+
+        product["product_type_key"] = normalize_product_type(
+            product.get("product_type")
+        )
+
+    return products
+
+
+# =========================================================
+# GET CATEGORIES
+# =========================================================
 
 def get_categories():
 
@@ -127,6 +300,10 @@ def get_categories():
         connection.close()
 
 
+# =========================================================
+# GET PRODUCT IMAGE
+# =========================================================
+
 def get_product_image(product_id):
 
     connection = get_db_connection()
@@ -156,13 +333,17 @@ def get_product_image(product_id):
         image = cursor.fetchone()
 
         if image:
+
             return image["image_url"]
 
         return None
 
     except Exception as error:
 
-        print("PRODUCT IMAGE ERROR:", error)
+        print(
+            "PRODUCT IMAGE ERROR:",
+            error
+        )
 
         return None
 
@@ -173,6 +354,10 @@ def get_product_image(product_id):
 
         connection.close()
 
+
+# =========================================================
+# ADMIN REQUIRED
+# =========================================================
 
 def admin_required():
 
@@ -224,7 +409,7 @@ def beauty():
         )
 
         # =================================================
-        # PRODUCTS
+        # GET ALL AVAILABLE BEAUTY PRODUCTS
         # =================================================
 
         cursor.execute("""
@@ -266,7 +451,15 @@ def beauty():
         products = cursor.fetchall()
 
         # =================================================
-        # CATEGORIES
+        # NORMALIZE PRODUCT TYPES
+        # =================================================
+
+        products = prepare_products(
+            products
+        )
+
+        # =================================================
+        # GET CATEGORIES
         # =================================================
 
         cursor.execute("""
@@ -288,8 +481,18 @@ def beauty():
         print("========================================")
         print("GLAMORA AR - BEAUTY PAGE")
         print("========================================")
-        print("Products found:", len(products))
-        print("Categories found:", len(categories))
+
+        print(
+            "Products found:",
+            len(products)
+        )
+
+        print(
+            "Categories found:",
+            len(categories)
+        )
+
+        print("----------------------------------------")
 
         for product in products:
 
@@ -302,6 +505,8 @@ def beauty():
                 product["category_name"],
                 "| TYPE:",
                 product["product_type"],
+                "| TYPE KEY:",
+                product["product_type_key"],
                 "| AVAILABLE:",
                 product["is_available"],
                 "| IMAGE:",
@@ -350,7 +555,9 @@ def beauty():
 # PRODUCT DETAILS
 # =========================================================
 
-@app.route("/product/<int:product_id>")
+@app.route(
+    "/product/<int:product_id>"
+)
 def product_details(product_id):
 
     connection = get_db_connection()
@@ -373,6 +580,10 @@ def product_details(product_id):
         cursor = connection.cursor(
             dictionary=True
         )
+
+        # =================================================
+        # PRODUCT
+        # =================================================
 
         cursor.execute("""
             SELECT
@@ -412,6 +623,18 @@ def product_details(product_id):
                 url_for("beauty")
             )
 
+        # =================================================
+        # NORMALIZED PRODUCT TYPE
+        # =================================================
+
+        product["product_type_key"] = normalize_product_type(
+            product.get("product_type")
+        )
+
+        # =================================================
+        # PRODUCT IMAGES
+        # =================================================
+
         cursor.execute("""
             SELECT
                 id,
@@ -434,7 +657,10 @@ def product_details(product_id):
 
     except Exception as error:
 
-        print("PRODUCT DETAILS ERROR:", error)
+        print(
+            "PRODUCT DETAILS ERROR:",
+            error
+        )
 
         flash(
             "Unable to load product.",
@@ -586,8 +812,14 @@ def admin_login():
             ):
 
                 session["admin_id"] = admin["id"]
-                session["admin_name"] = admin["name"]
-                session["admin_email"] = admin["email"]
+
+                session["admin_name"] = (
+                    admin["name"]
+                )
+
+                session["admin_email"] = (
+                    admin["email"]
+                )
 
                 flash(
                     f"Welcome back, {admin['name']}!",
@@ -609,7 +841,10 @@ def admin_login():
 
         except Exception as error:
 
-            print("ADMIN LOGIN ERROR:", error)
+            print(
+                "ADMIN LOGIN ERROR:",
+                error
+            )
 
             flash(
                 "Something went wrong while logging in.",
@@ -636,7 +871,9 @@ def admin_login():
 # ADMIN DASHBOARD
 # =========================================================
 
-@app.route("/admin/dashboard")
+@app.route(
+    "/admin/dashboard"
+)
 def admin_dashboard():
 
     if not admin_required():
@@ -675,26 +912,48 @@ def admin_dashboard():
             dictionary=True
         )
 
+        # =================================================
+        # TOTAL PRODUCTS
+        # =================================================
+
         cursor.execute("""
             SELECT COUNT(*) AS total
             FROM products
         """)
 
-        total_products = cursor.fetchone()["total"]
+        total_products = (
+            cursor.fetchone()["total"]
+        )
+
+        # =================================================
+        # TOTAL CATEGORIES
+        # =================================================
 
         cursor.execute("""
             SELECT COUNT(*) AS total
             FROM categories
         """)
 
-        total_categories = cursor.fetchone()["total"]
+        total_categories = (
+            cursor.fetchone()["total"]
+        )
+
+        # =================================================
+        # TOTAL USERS
+        # =================================================
 
         cursor.execute("""
             SELECT COUNT(*) AS total
             FROM users
         """)
 
-        total_users = cursor.fetchone()["total"]
+        total_users = (
+            cursor.fetchone()["total"]
+        )
+
+        # =================================================
+        # AVAILABLE PRODUCTS
+        # =================================================
 
         cursor.execute("""
             SELECT COUNT(*) AS total
@@ -702,7 +961,13 @@ def admin_dashboard():
             WHERE is_available = 1
         """)
 
-        available_products = cursor.fetchone()["total"]
+        available_products = (
+            cursor.fetchone()["total"]
+        )
+
+        # =================================================
+        # RECENT PRODUCTS
+        # =================================================
 
         cursor.execute("""
             SELECT
@@ -742,6 +1007,10 @@ def admin_dashboard():
 
         products = cursor.fetchall()
 
+        products = prepare_products(
+            products
+        )
+
         return render_template(
             "admin/dashboard.html",
             admin_name=session.get(
@@ -757,7 +1026,10 @@ def admin_dashboard():
 
     except Exception as error:
 
-        print("DASHBOARD ERROR:", error)
+        print(
+            "DASHBOARD ERROR:",
+            error
+        )
 
         flash(
             "Unable to load dashboard data.",
@@ -789,7 +1061,9 @@ def admin_dashboard():
 # ADMIN PRODUCTS
 # =========================================================
 
-@app.route("/admin/products")
+@app.route(
+    "/admin/products"
+)
 def admin_products():
 
     if not admin_required():
@@ -856,6 +1130,10 @@ def admin_products():
 
         products = cursor.fetchall()
 
+        products = prepare_products(
+            products
+        )
+
         return render_template(
             "admin/products.html",
             admin_name=session.get(
@@ -867,7 +1145,10 @@ def admin_products():
 
     except Exception as error:
 
-        print("ADMIN PRODUCTS ERROR:", error)
+        print(
+            "ADMIN PRODUCTS ERROR:",
+            error
+        )
 
         flash(
             "Unable to load products.",
@@ -923,6 +1204,10 @@ def admin_add_product():
         cursor = connection.cursor(
             dictionary=True
         )
+
+        # =================================================
+        # GET CATEGORIES
+        # =================================================
 
         cursor.execute("""
             SELECT
@@ -996,7 +1281,9 @@ def admin_add_product():
 
         is_available = (
             1
-            if request.form.get("is_available")
+            if request.form.get(
+                "is_available"
+            )
             else 0
         )
 
@@ -1058,7 +1345,9 @@ def admin_add_product():
             LIMIT 1
         """, (category_id,))
 
-        selected_category = cursor.fetchone()
+        selected_category = (
+            cursor.fetchone()
+        )
 
         if not selected_category:
 
@@ -1097,6 +1386,24 @@ def admin_add_product():
             )
 
         # =================================================
+        # NORMALIZE PRODUCT TYPE
+        # =================================================
+
+        product_type_key = normalize_product_type(
+            product_type
+        )
+
+        print(
+            "ADMIN PRODUCT TYPE:",
+            product_type
+        )
+
+        print(
+            "NORMALIZED TYPE:",
+            product_type_key
+        )
+
+        # =================================================
         # PRICE
         # =================================================
 
@@ -1107,6 +1414,7 @@ def admin_add_product():
             )
 
             if price < 0:
+
                 raise InvalidOperation
 
             price = price.quantize(
@@ -1144,6 +1452,7 @@ def admin_add_product():
             )
 
             if stock < 0:
+
                 raise ValueError
 
         except (
@@ -1188,8 +1497,11 @@ def admin_add_product():
             )
 
             if not filename:
-
                 continue
+
+            # =================================================
+            # IMAGE EXTENSION
+            # =================================================
 
             if not allowed_image(filename):
 
@@ -1210,6 +1522,10 @@ def admin_add_product():
             extension = get_file_extension(
                 filename
             )
+
+            # =================================================
+            # IMAGE SIZE
+            # =================================================
 
             image.seek(
                 0,
@@ -1242,6 +1558,10 @@ def admin_add_product():
                     extension
                 )
             )
+
+        # =================================================
+        # REQUIRE IMAGE
+        # =================================================
 
         if not valid_images:
 
@@ -1304,7 +1624,11 @@ def admin_add_product():
                 stock,
                 shade,
                 color,
-                product_type,
+
+                # Store normalized type
+                # so future filtering is consistent.
+                product_type_key,
+
                 is_available
             )
         )
@@ -1318,7 +1642,7 @@ def admin_add_product():
             )
 
         # =================================================
-        # SAVE IMAGES
+        # SAVE PRODUCT IMAGES
         # =================================================
 
         for index, (
@@ -1386,16 +1710,42 @@ def admin_add_product():
 
         connection.commit()
 
+        # =================================================
+        # DEBUG
+        # =================================================
+
         print()
         print("========================================")
         print("PRODUCT ADDED SUCCESSFULLY")
         print("========================================")
-        print("Product ID:", product_id)
-        print("Product:", name)
-        print("Category:", selected_category["name"])
-        print("Product Type:", product_type)
-        print("Images:", len(valid_images))
-        print("Available:", is_available)
+        print(
+            "Product ID:",
+            product_id
+        )
+        print(
+            "Product:",
+            name
+        )
+        print(
+            "Category:",
+            selected_category["name"]
+        )
+        print(
+            "Original Product Type:",
+            product_type
+        )
+        print(
+            "Normalized Product Type:",
+            product_type_key
+        )
+        print(
+            "Images:",
+            len(valid_images)
+        )
+        print(
+            "Available:",
+            is_available
+        )
         print("========================================")
         print()
 
@@ -1411,15 +1761,23 @@ def admin_add_product():
     except Exception as error:
 
         try:
+
             connection.rollback()
+
         except Exception:
             pass
+
+        # =================================================
+        # DELETE SAVED IMAGES IF DATABASE FAILED
+        # =================================================
 
         for file_path in saved_files:
 
             try:
 
-                if os.path.exists(file_path):
+                if os.path.exists(
+                    file_path
+                ):
 
                     os.remove(
                         file_path
@@ -1461,7 +1819,9 @@ def admin_add_product():
 # ADMIN LOGOUT
 # =========================================================
 
-@app.route("/admin/logout")
+@app.route(
+    "/admin/logout"
+)
 def admin_logout():
 
     session.pop(
