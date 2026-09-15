@@ -1,6 +1,7 @@
 /* =========================================================
    GLAMORA AR
    INTERACTIVE UI
+   COMPLETE CORRECTED VERSION
    ========================================================= */
 
 
@@ -35,27 +36,37 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeCartDemo();
 
     /*
-     * IMPORTANT
+     * BEAUTY CATEGORY FILTER
      *
-     * This was missing before.
-     * It initializes the category card click events.
+     * This connects:
+     *
+     * Lipstick card
+     * Eyeshadow card
+     * Blush card
+     * Eyeliner card
+     * Mascara card
+     * Foundation card
+     * Highlighter card
+     *
+     * with products loaded from the database.
      */
     initializeBeautyCategoryCards();
 
+    /*
+     * Product card click -> product details
+     */
+    initializeProductDetailsLinks();
 
     /*
      * Initial random beauty look
      */
-
     randomizeLipstick();
 
     randomizeEyeliner();
 
-
     /*
-     * Change lipstick every 5 seconds.
+     * Change lipstick every 5 seconds
      */
-
     setInterval(() => {
 
         randomizeLipstick();
@@ -102,7 +113,26 @@ function initializeRevealAnimations() {
     const revealElements =
         document.querySelectorAll(".reveal");
 
+
     if (!revealElements.length) {
+
+        return;
+
+    }
+
+
+    /*
+     * Older browsers may not support
+     * IntersectionObserver.
+     */
+
+    if (!("IntersectionObserver" in window)) {
+
+        revealElements.forEach((element) => {
+
+            element.classList.add("visible");
+
+        });
 
         return;
 
@@ -155,6 +185,7 @@ function initializeActiveNavigation() {
         document.querySelectorAll(
             ".nav-links a"
         );
+
 
     if (!navLinks.length) {
 
@@ -301,6 +332,10 @@ function initializeHeroParallax() {
     }
 
 
+    /*
+     * Disable parallax on touch devices.
+     */
+
     if (
         window.matchMedia(
             "(pointer: coarse)"
@@ -388,7 +423,9 @@ function initializeMobileMenu() {
 
             menuBtn.setAttribute(
                 "aria-expanded",
-                isOpen ? "true" : "false"
+                isOpen
+                    ? "true"
+                    : "false"
             );
 
 
@@ -465,6 +502,10 @@ function initializeProductHover() {
         );
 
 
+    /*
+     * Lipstick special animation
+     */
+
     if (!lipstickCard) {
 
         console.warn(
@@ -532,6 +573,10 @@ function initializeProductHover() {
     }
 
 
+    /*
+     * Disable 3D hover on touch devices.
+     */
+
     if (
         window.matchMedia(
             "(pointer: coarse)"
@@ -544,6 +589,11 @@ function initializeProductHover() {
 
 
     productCards.forEach((card) => {
+
+        /*
+         * Do not apply the 3D effect
+         * to the lipstick demo card.
+         */
 
         if (
             card.classList.contains(
@@ -642,7 +692,14 @@ function initializeCartDemo() {
 
         button.addEventListener(
             "click",
-            () => {
+            (event) => {
+
+                /*
+                 * Prevent the button from
+                 * triggering product-card click.
+                 */
+
+                event.stopPropagation();
 
                 /*
                  * Reserved for virtual try-on.
@@ -664,7 +721,9 @@ function initializeCartDemo() {
 
         cartButton.addEventListener(
             "click",
-            () => {
+            (event) => {
+
+                event.stopPropagation();
 
                 cartCount++;
 
@@ -1033,6 +1092,28 @@ function randomizeEyeliner() {
 
 /* =========================================================
    BEAUTY CATEGORY CARDS
+   =========================================================
+   
+   IMPORTANT
+   
+   This function is intentionally defined
+   ONLY ONCE.
+   
+   It connects database products with
+   the category cards.
+   
+   Product information comes from:
+   
+   app.py
+   
+   category_name
+   product_type
+   
+   HTML should expose them as:
+   
+   data-category
+   data-product-type
+   
    ========================================================= */
 
 function initializeBeautyCategoryCards() {
@@ -1046,6 +1127,12 @@ function initializeBeautyCategoryCards() {
     const productCards =
         document.querySelectorAll(
             ".product-card"
+        );
+
+
+    const productSection =
+        document.getElementById(
+            "products"
         );
 
 
@@ -1067,34 +1154,145 @@ function initializeBeautyCategoryCards() {
 
 
     /*
-     * Normalize values such as:
+     * =====================================================
+     * NORMALIZE VALUE
+     * =====================================================
      *
-     * lipstick
+     * Examples:
+     *
      * Lipstick
+     * LIPSTICK
      * lip_stick
      * lip stick
+     * Lip-Stick
+     *
+     * all become:
+     *
+     * lipstick
+     *
+     * =====================================================
      */
 
-    function normalizeCategory(value) {
+    function normalize(value) {
 
-        if (!value) {
-
-            return "";
-
-        }
-
-
-        return String(value)
+        return String(value || "")
             .toLowerCase()
             .trim()
-            .replace(/[_\s]+/g, "-");
+            .replace(/[\s_-]+/g, "");
 
     }
 
 
     /*
      * =====================================================
-     * CATEGORY NAMES
+     * CATEGORY ALIASES
+     * =====================================================
+     *
+     * This makes the system work even if
+     * database category names are:
+     *
+     * Lipstick
+     * Lipsticks
+     * Lip Stick
+     *
+     * =====================================================
+     */
+
+    const categoryAliases = {
+
+        all: [
+            "all",
+            "allbeauty",
+            "beauty",
+            "allproducts"
+        ],
+
+        lipstick: [
+            "lipstick",
+            "lipsticks",
+            "lipcolor",
+            "lipcolors"
+        ],
+
+        eyeshadow: [
+            "eyeshadow",
+            "eyeshadows",
+            "eyeshadowpalette",
+            "eyeshadowpalettes"
+        ],
+
+        blush: [
+            "blush",
+            "blushes"
+        ],
+
+        eyeliner: [
+            "eyeliner",
+            "eyeliners"
+        ],
+
+        mascara: [
+            "mascara",
+            "mascaras"
+        ],
+
+        foundation: [
+            "foundation",
+            "foundations"
+        ],
+
+        highlighter: [
+            "highlighter",
+            "highlighters"
+        ]
+
+    };
+
+
+    /*
+     * =====================================================
+     * FIND CANONICAL CATEGORY
+     * =====================================================
+     */
+
+    function getCanonicalCategory(value) {
+
+        const normalized =
+            normalize(value);
+
+
+        if (!normalized) {
+
+            return "";
+
+        }
+
+
+        for (
+            const canonical in categoryAliases
+        ) {
+
+            if (
+                categoryAliases[
+                    canonical
+                ].includes(normalized)
+            ) {
+
+                return canonical;
+
+            }
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    /*
+     * =====================================================
+     * CATEGORY LABELS
      * =====================================================
      */
 
@@ -1164,349 +1362,21 @@ function initializeBeautyCategoryCards() {
 
     /*
      * =====================================================
-     * CATEGORY CARD CLICK
+     * CHECK IF PRODUCT BELONGS TO CATEGORY
      * =====================================================
      */
 
-    categoryCards.forEach(function(card) {
-
-        card.addEventListener(
-            "click",
-            function() {
-
-                /*
-                 * IMPORTANT:
-                 *
-                 * HTML uses:
-                 *
-                 * data-filter="lipstick"
-                 *
-                 * Therefore we MUST use
-                 * getAttribute("data-filter").
-                 */
-
-                const selectedCategory =
-                    normalizeCategory(
-                        card.getAttribute(
-                            "data-filter"
-                        )
-                    );
-
-
-                console.log(
-                    "Glamora AR category selected:",
-                    selectedCategory
-                );
-
-
-                /*
-                 * =================================================
-                 * REMOVE ACTIVE FROM ALL CATEGORY CARDS
-                 * =================================================
-                 */
-
-                categoryCards.forEach(
-                    function(item) {
-
-                        item.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
-
-
-                /*
-                 * =================================================
-                 * ACTIVATE SELECTED CATEGORY
-                 * =================================================
-                 */
-
-                card.classList.add(
-                    "active"
-                );
-
-
-                /*
-                 * =================================================
-                 * IF THERE ARE NO PRODUCTS
-                 * =================================================
-                 */
-
-                if (!productCards.length) {
-
-                    console.warn(
-                        "Glamora AR: No product cards found."
-                    );
-
-                    if (productGrid) {
-
-                        productGrid.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start"
-                        });
-
-                    }
-
-                    return;
-
-                }
-
-
-                /*
-                 * =================================================
-                 * ALL BEAUTY
-                 * =================================================
-                 */
-
-                if (
-                    selectedCategory === "all"
-                ) {
-
-                    productCards.forEach(
-                        function(product) {
-
-                            product.style.display =
-                                "";
-
-                            product.classList.add(
-                                "category-visible"
-                            );
-
-                        }
-                    );
-
-                }
-
-
-                /*
-                 * =================================================
-                 * SPECIFIC CATEGORY
-                 * =================================================
-                 */
-
-                else {
-
-                    productCards.forEach(
-                        function(product) {
-
-                            const productType =
-                                normalizeCategory(
-                                    product.getAttribute(
-                                        "data-product-type"
-                                    )
-                                );
-
-
-                            /*
-                             * Product belongs to
-                             * selected category.
-                             */
-
-                            if (
-                                productType ===
-                                selectedCategory
-                            ) {
-
-                                product.style.display =
-                                    "";
-
-                                product.classList.add(
-                                    "category-visible"
-                                );
-
-                            }
-
-
-                            /*
-                             * Product does not belong
-                             * to selected category.
-                             */
-
-                            else {
-
-                                product.style.display =
-                                    "none";
-
-                                product.classList.remove(
-                                    "category-visible"
-                                );
-
-                            }
-
-                        }
-                    );
-
-                }
-
-
-                /*
-                 * =================================================
-                 * UPDATE OPTIONAL CATEGORY HEADING
-                 * =================================================
-                 */
-
-                const categoryLabel =
-                    document.getElementById(
-                        "selectedCategoryLabel"
-                    );
-
-
-                const categoryDescription =
-                    document.getElementById(
-                        "selectedCategoryDescription"
-                    );
-
-
-                if (categoryLabel) {
-
-                    categoryLabel.textContent =
-                        categoryNames[
-                            selectedCategory
-                        ] || "BEAUTY";
-
-                }
-
-
-                if (categoryDescription) {
-
-                    categoryDescription.textContent =
-                        categoryDescriptions[
-                            selectedCategory
-                        ] ||
-                        "Explore our beauty collection.";
-
-                }
-
-
-                /*
-                 * =================================================
-                 * SCROLL TO PRODUCTS
-                 * =================================================
-                 */
-
-                if (productGrid) {
-
-                    setTimeout(
-                        function() {
-
-                            productGrid.scrollIntoView({
-                                behavior: "smooth",
-                                block: "start"
-                            });
-
-                        },
-                        150
-                    );
-
-                }
-
-            }
-        );
-
-    });
-
-
-    /*
-     * =====================================================
-     * INITIAL STATE
-     * =====================================================
-     */
-
-    categoryCards.forEach(
-        function(card) {
-
-            const filter =
-                normalizeCategory(
-                    card.getAttribute(
-                        "data-filter"
-                    )
-                );
-
-
-            if (filter === "all") {
-
-                card.classList.add(
-                    "active"
-                );
-
-            }
-
-        }
-    );
-
-
-    console.log(
-        "Glamora AR: Beauty category cards initialized successfully."
-    );
-
-}
-
-/* =========================================================
-   BEAUTY CATEGORY FILTER
-   ========================================================= */
-
-function initializeBeautyCategoryCards() {
-
-    const categoryCards = document.querySelectorAll(
-        ".beauty-category-card"
-    );
-
-    const productCards = document.querySelectorAll(
-        ".product-card"
-    );
-
-    if (!categoryCards.length) {
-        return;
-    }
-
-
-    function normalize(value) {
-
-        return String(value || "")
-            .toLowerCase()
-            .trim()
-            .replace(/[\s_-]+/g, "-");
-
-    }
-
-
-    function matchesCategory(product, filter) {
-
-        filter = normalize(filter);
-
-        if (filter === "all") {
-            return true;
-        }
-
-
-        const category = normalize(
-            product.dataset.category
-        );
-
-
-        const productType = normalize(
-            product.dataset.productType
-        );
-
-
-        /* -----------------------------------------------
-           EXACT DATABASE CATEGORY
-           ----------------------------------------------- */
-
-        if (category === filter) {
-            return true;
-        }
-
-
-        /* -----------------------------------------------
-           PLURAL CATEGORY
-           ----------------------------------------------- */
+    function productMatchesCategory(
+        product,
+        selectedCategory
+    ) {
+
+        /*
+         * ALL BEAUTY
+         */
 
         if (
-            category === filter + "s"
-            ||
-            filter === category + "s"
+            selectedCategory === "all"
         ) {
 
             return true;
@@ -1514,14 +1384,106 @@ function initializeBeautyCategoryCards() {
         }
 
 
-        /* -----------------------------------------------
-           PRODUCT TYPE FALLBACK
-           ----------------------------------------------- */
+        /*
+         * Read values from HTML.
+         *
+         * Example:
+         *
+         * data-category="Lipsticks"
+         * data-product-type="lipstick"
+         */
+
+        const databaseCategory =
+            product.getAttribute(
+                "data-category"
+            );
+
+
+        const databaseProductType =
+            product.getAttribute(
+                "data-product-type"
+            );
+
+
+        /*
+         * Convert both into canonical names.
+         */
+
+        const categoryName =
+            getCanonicalCategory(
+                databaseCategory
+            );
+
+
+        const productType =
+            getCanonicalCategory(
+                databaseProductType
+            );
+
+
+        /*
+         * Exact category match.
+         */
 
         if (
-            filter === "lipstick"
-            &&
-            productType.includes("lipstick")
+            categoryName ===
+            selectedCategory
+        ) {
+
+            return true;
+
+        }
+
+
+        /*
+         * Product type match.
+         *
+         * This is important because the
+         * admin product form stores
+         * product_type separately.
+         */
+
+        if (
+            productType ===
+            selectedCategory
+        ) {
+
+            return true;
+
+        }
+
+
+        /*
+         * Fallback for values such as:
+         *
+         * lipstick-liquid
+         * lipstick-matte
+         * eyeshadow-palette
+         *
+         */
+
+        const normalizedType =
+            normalize(
+                databaseProductType
+            );
+
+
+        const normalizedCategory =
+            normalize(
+                databaseCategory
+            );
+
+
+        const selectedNormalized =
+            normalize(
+                selectedCategory
+            );
+
+
+        if (
+            normalizedType.includes(
+                selectedNormalized
+            )
         ) {
 
             return true;
@@ -1530,64 +1492,9 @@ function initializeBeautyCategoryCards() {
 
 
         if (
-            filter === "eyeshadow"
-            &&
-            productType.includes("eyeshadow")
-        ) {
-
-            return true;
-
-        }
-
-
-        if (
-            filter === "blush"
-            &&
-            productType.includes("blush")
-        ) {
-
-            return true;
-
-        }
-
-
-        if (
-            filter === "eyeliner"
-            &&
-            productType.includes("eyeliner")
-        ) {
-
-            return true;
-
-        }
-
-
-        if (
-            filter === "mascara"
-            &&
-            productType.includes("mascara")
-        ) {
-
-            return true;
-
-        }
-
-
-        if (
-            filter === "foundation"
-            &&
-            productType.includes("foundation")
-        ) {
-
-            return true;
-
-        }
-
-
-        if (
-            filter === "highlighter"
-            &&
-            productType.includes("highlighter")
+            normalizedCategory.includes(
+                selectedNormalized
+            )
         ) {
 
             return true;
@@ -1600,136 +1507,534 @@ function initializeBeautyCategoryCards() {
     }
 
 
-    categoryCards.forEach(card => {
+    /*
+     * =====================================================
+     * SHOW / HIDE PRODUCTS
+     * =====================================================
+     */
 
-        card.addEventListener(
-            "click",
-            function () {
+    function filterProducts(
+        selectedCategory
+    ) {
 
-                const filter = normalize(
-                    this.dataset.filter
-                );
-
-
-                /* ---------------------------------------
-                   ACTIVE CATEGORY
-                   --------------------------------------- */
-
-                categoryCards.forEach(
-                    categoryCard => {
-
-                        categoryCard.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
+        let visibleCount = 0;
 
 
-                this.classList.add(
-                    "active"
-                );
+        productCards.forEach(
+            (product) => {
+
+                const showProduct =
+                    productMatchesCategory(
+                        product,
+                        selectedCategory
+                    );
 
 
-                /* ---------------------------------------
-                   FILTER PRODUCTS
-                   --------------------------------------- */
+                if (showProduct) {
 
-                let visibleCount = 0;
+                    product.style.display = "";
 
+                    product.classList.remove(
+                        "category-hidden"
+                    );
 
-                productCards.forEach(product => {
+                    product.classList.add(
+                        "category-visible"
+                    );
 
-                    const showProduct =
-                        matchesCategory(
-                            product,
-                            filter
-                        );
+                    visibleCount++;
 
+                }
 
-                    if (showProduct) {
+                else {
 
-                        product.style.display = "";
+                    product.style.display =
+                        "none";
 
-                        product.classList.remove(
-                            "category-hidden"
-                        );
+                    product.classList.remove(
+                        "category-visible"
+                    );
 
-                        visibleCount++;
-
-                    } else {
-
-                        product.style.display = "none";
-
-                        product.classList.add(
-                            "category-hidden"
-                        );
-
-                    }
-
-                });
-
-
-                console.log(
-                    "Glamora AR:",
-                    filter,
-                    "=>",
-                    visibleCount,
-                    "products"
-                );
-
-
-                /* ---------------------------------------
-                   SCROLL TO PRODUCT SECTION
-                   --------------------------------------- */
-
-                if (visibleCount > 0) {
-
-                    const productSection =
-                        document.getElementById(
-                            "products"
-                        );
-
-
-                    if (productSection) {
-
-                        setTimeout(() => {
-
-                            productSection.scrollIntoView({
-                                behavior: "smooth",
-                                block: "start"
-                            });
-
-                        }, 100);
-
-                    }
+                    product.classList.add(
+                        "category-hidden"
+                    );
 
                 }
 
             }
         );
 
-    });
+
+        console.log(
+            "Glamora AR category:",
+            selectedCategory,
+            "=>",
+            visibleCount,
+            "products"
+        );
 
 
-    /* -----------------------------------------------
-       DEBUG
-       ----------------------------------------------- */
+        /*
+         * If a category has no products,
+         * show the product section but
+         * do not create fake products.
+         */
+
+        if (
+            visibleCount === 0 &&
+            productGrid
+        ) {
+
+            productGrid.classList.add(
+                "category-empty"
+            );
+
+        }
+
+        else if (productGrid) {
+
+            productGrid.classList.remove(
+                "category-empty"
+            );
+
+        }
+
+
+        return visibleCount;
+
+    }
+
+
+    /*
+     * =====================================================
+     * UPDATE CATEGORY HEADING
+     * =====================================================
+     */
+
+    function updateCategoryHeading(
+        selectedCategory
+    ) {
+
+        const categoryLabel =
+            document.getElementById(
+                "selectedCategoryLabel"
+            );
+
+
+        const categoryDescription =
+            document.getElementById(
+                "selectedCategoryDescription"
+            );
+
+
+        if (categoryLabel) {
+
+            categoryLabel.textContent =
+                categoryNames[
+                    selectedCategory
+                ] ||
+                "BEAUTY";
+
+        }
+
+
+        if (categoryDescription) {
+
+            categoryDescription.textContent =
+                categoryDescriptions[
+                    selectedCategory
+                ] ||
+                "Explore our beauty collection.";
+
+        }
+
+    }
+
+
+    /*
+     * =====================================================
+     * CATEGORY CARD CLICK
+     * =====================================================
+     */
+
+    categoryCards.forEach(
+        (card) => {
+
+            card.addEventListener(
+                "click",
+                function () {
+
+                    const filter =
+                        getCanonicalCategory(
+                            this.getAttribute(
+                                "data-filter"
+                            )
+                        );
+
+
+                    console.log(
+                        "Glamora AR category card clicked:",
+                        filter
+                    );
+
+
+                    /*
+                     * Remove active
+                     * from every card.
+                     */
+
+                    categoryCards.forEach(
+                        (categoryCard) => {
+
+                            categoryCard.classList.remove(
+                                "active"
+                            );
+
+                        }
+                    );
+
+
+                    /*
+                     * Activate clicked card.
+                     */
+
+                    this.classList.add(
+                        "active"
+                    );
+
+
+                    /*
+                     * Filter products.
+                     */
+
+                    const visibleCount =
+                        filterProducts(
+                            filter
+                        );
+
+
+                    /*
+                     * Update heading.
+                     */
+
+                    updateCategoryHeading(
+                        filter
+                    );
+
+
+                    /*
+                     * Scroll to product section
+                     * only if products exist.
+                     */
+
+                    if (
+                        visibleCount > 0
+                    ) {
+
+                        const target =
+                            productSection ||
+                            productGrid;
+
+
+                        if (target) {
+
+                            setTimeout(
+                                () => {
+
+                                    target.scrollIntoView({
+                                        behavior:
+                                            "smooth",
+
+                                        block:
+                                            "start"
+                                    });
+
+                                },
+                                100
+                            );
+
+                        }
+
+                    }
+
+                    else {
+
+                        console.log(
+                            "Glamora AR: No products found for category:",
+                            filter
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+     * =====================================================
+     * INITIAL STATE
+     * =====================================================
+     *
+     * Show all products when Beauty page
+     * first loads.
+     */
+
+    let allCard = null;
+
+
+    categoryCards.forEach(
+        (card) => {
+
+            const filter =
+                getCanonicalCategory(
+                    card.getAttribute(
+                        "data-filter"
+                    )
+                );
+
+
+            if (
+                filter === "all"
+            ) {
+
+                allCard = card;
+
+            }
+
+        }
+    );
+
+
+    if (allCard) {
+
+        allCard.classList.add(
+            "active"
+        );
+
+    }
+
+
+    /*
+     * Show every product initially.
+     */
+
+    productCards.forEach(
+        (product) => {
+
+            product.style.display = "";
+
+            product.classList.remove(
+                "category-hidden"
+            );
+
+            product.classList.add(
+                "category-visible"
+            );
+
+        }
+    );
+
+
+    /*
+     * =====================================================
+     * DEBUG DATABASE PRODUCTS
+     * =====================================================
+     */
 
     console.log(
-        "Glamora AR products loaded:",
-        [...productCards].map(product => ({
+        "========================================"
+    );
 
-            id:
-                product.dataset.productId,
+    console.log(
+        "GLAMORA AR - PRODUCTS LOADED"
+    );
 
-            category:
-                product.dataset.category,
+    console.log(
+        "========================================"
+    );
 
-            type:
-                product.dataset.productType
 
-        }))
+    productCards.forEach(
+        (product) => {
+
+            console.log(
+                "PRODUCT:",
+                {
+                    id:
+                        product.getAttribute(
+                            "data-product-id"
+                        ),
+
+                    name:
+                        product.getAttribute(
+                            "data-product-name"
+                        ),
+
+                    category:
+                        product.getAttribute(
+                            "data-category"
+                        ),
+
+                    productType:
+                        product.getAttribute(
+                            "data-product-type"
+                        )
+                }
+            );
+
+        }
+    );
+
+
+    console.log(
+        "========================================"
+    );
+
+    console.log(
+        "Glamora AR: Beauty category cards initialized successfully."
+    );
+
+}
+
+
+/* =========================================================
+   PRODUCT DETAILS LINKS
+   =========================================================
+   
+   When an admin-added product is clicked,
+   the user should be taken to:
+   
+   /product/<product_id>
+   
+   The product ID comes from:
+   
+   data-product-id
+   
+   ========================================================= */
+
+function initializeProductDetailsLinks() {
+
+    const productCards =
+        document.querySelectorAll(
+            ".product-card[data-product-id]"
+        );
+
+
+    if (!productCards.length) {
+
+        return;
+
+    }
+
+
+    productCards.forEach(
+        (card) => {
+
+            /*
+             * If the card already contains
+             * a link to the product details,
+             * do not add another click handler.
+             */
+
+            const existingLink =
+                card.querySelector(
+                    'a[href*="/product/"]'
+                );
+
+
+            if (existingLink) {
+
+                return;
+
+            }
+
+
+            const productId =
+                card.getAttribute(
+                    "data-product-id"
+                );
+
+
+            if (!productId) {
+
+                return;
+
+            }
+
+
+            /*
+             * Do not redirect when the user
+             * clicks interactive buttons.
+             */
+
+            card.addEventListener(
+                "click",
+                (event) => {
+
+                    const clickedElement =
+                        event.target.closest(
+                            "button, a, input, select, textarea"
+                        );
+
+
+                    if (clickedElement) {
+
+                        return;
+
+                    }
+
+
+                    window.location.href =
+                        `/product/${productId}`;
+
+                }
+            );
+
+
+            /*
+             * Make the card keyboard accessible.
+             */
+
+            card.setAttribute(
+                "role",
+                "link"
+            );
+
+
+            card.setAttribute(
+                "tabindex",
+                "0"
+            );
+
+
+            card.addEventListener(
+                "keydown",
+                (event) => {
+
+                    if (
+                        event.key === "Enter" ||
+                        event.key === " "
+                    ) {
+
+                        event.preventDefault();
+
+                        window.location.href =
+                            `/product/${productId}`;
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    console.log(
+        "Glamora AR: Product detail links initialized."
     );
 
 }

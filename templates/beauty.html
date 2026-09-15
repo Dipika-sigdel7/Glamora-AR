@@ -76,20 +76,16 @@
     </div>
 
 
-
     <!-- =====================================================
          NAVBAR
          ===================================================== -->
 
     <header class="navbar">
 
-
-        <!-- =================================================
-             LOGO
-             ================================================= -->
+        <!-- LOGO -->
 
         <a
-            href="/"
+            href="{{ url_for('home') }}"
             class="logo"
             aria-label="Glamora AR Home"
         >
@@ -97,10 +93,7 @@
         </a>
 
 
-
-        <!-- =================================================
-             MAIN NAVIGATION
-             ================================================= -->
+        <!-- MAIN NAVIGATION -->
 
         <nav
             class="nav-links"
@@ -108,35 +101,31 @@
             aria-label="Main navigation"
         >
 
-            <a href="/">
+            <a href="{{ url_for('home') }}">
                 Home
             </a>
 
             <a
-                href="/beauty"
+                href="{{ url_for('beauty') }}"
                 class="active"
             >
                 Beauty
             </a>
 
-            <a href="/about">
+            <a href="{{ url_for('about') }}">
                 About
             </a>
 
-            <a href="/contact">
+            <a href="{{ url_for('contact') }}">
                 Contact
             </a>
 
         </nav>
 
 
-
-        <!-- =================================================
-             HEADER ACTIONS
-             ================================================= -->
+        <!-- HEADER ACTIONS -->
 
         <div class="nav-actions">
-
 
             <!-- SEARCH -->
 
@@ -151,7 +140,6 @@
             </button>
 
 
-
             <!-- WISHLIST -->
 
             <button
@@ -163,7 +151,6 @@
             >
                 ♡
             </button>
-
 
 
             <!-- SHOPPING BAG -->
@@ -190,7 +177,6 @@
             </button>
 
 
-
             <!-- LOGIN -->
 
             <a
@@ -211,7 +197,6 @@
             </a>
 
 
-
             <!-- MOBILE MENU -->
 
             <button
@@ -230,7 +215,6 @@
     </header>
 
 
-
     <!-- =====================================================
          BEAUTY HERO
          ===================================================== -->
@@ -240,10 +224,7 @@
         id="beauty-home"
     >
 
-
-        <!-- =================================================
-             HERO BACKGROUND
-             ================================================= -->
+        <!-- HERO BACKGROUND -->
 
         <div class="beauty-hero-background">
 
@@ -256,22 +237,13 @@
         </div>
 
 
-
-        <!-- =================================================
-             HERO CONTAINER
-             ================================================= -->
+        <!-- HERO CONTAINER -->
 
         <div class="beauty-hero-container">
 
-
-            <!-- =================================================
-                 HERO CONTENT
-                 ================================================= -->
+            <!-- HERO CONTENT -->
 
             <div class="beauty-hero-content reveal">
-
-
-                <!-- EYEBROW -->
 
                 <div class="eyebrow">
 
@@ -281,9 +253,6 @@
 
                 </div>
 
-
-
-                <!-- HERO TITLE -->
 
                 <h1>
 
@@ -295,9 +264,6 @@
 
                 </h1>
 
-
-
-                <!-- BEAUTY-SPECIFIC DESCRIPTION -->
 
                 <p>
 
@@ -311,21 +277,15 @@
             </div>
 
 
-
-            <!-- =================================================
-                 HERO VISUAL
-                 SAME STYLE AS HOME PAGE
-                 ================================================= -->
+            <!-- HERO VISUAL -->
 
             <div class="beauty-hero-visual reveal">
-
 
                 <!-- ORBITS -->
 
                 <div class="beauty-orbit beauty-orbit-one"></div>
 
                 <div class="beauty-orbit beauty-orbit-two"></div>
-
 
 
                 <!-- FLOATING LIPSTICK -->
@@ -351,7 +311,6 @@
                 </div>
 
 
-
                 <!-- FLOATING BLUSH -->
 
                 <div class="beauty-floating-product beauty-blush">
@@ -375,13 +334,11 @@
                 </div>
 
 
-
                 <!-- FACE CARD -->
 
                 <div class="beauty-face-card">
 
                     <div class="beauty-face-overlay"></div>
-
 
                     <div class="beauty-face-placeholder">
 
@@ -400,11 +357,9 @@
                     </div>
 
 
-
                     <!-- SCAN LINE -->
 
                     <div class="beauty-scan-line"></div>
-
 
 
                     <!-- AR STATUS -->
@@ -424,10 +379,7 @@
         </div>
 
 
-
-        <!-- =================================================
-             SCROLL INDICATOR
-             ================================================= -->
+        <!-- SCROLL INDICATOR -->
 
         <div class="scroll-indicator">
 
@@ -440,7 +392,6 @@
         </div>
 
     </section>
-
 
 
     <!-- =====================================================
@@ -480,13 +431,11 @@
         </div>
 
 
-
         <!-- =================================================
              CATEGORY GRID
              ================================================= -->
 
         <div class="beauty-category-grid">
-
 
             <!-- ALL -->
 
@@ -521,7 +470,6 @@
                 </div>
 
             </button>
-
 
 
             <!-- LIPSTICK -->
@@ -559,7 +507,6 @@
             </button>
 
 
-
             <!-- EYESHADOW -->
 
             <button
@@ -593,7 +540,6 @@
                 </div>
 
             </button>
-
 
 
             <!-- BLUSH -->
@@ -631,7 +577,6 @@
             </button>
 
 
-
             <!-- EYELINER -->
 
             <button
@@ -665,7 +610,6 @@
                 </div>
 
             </button>
-
 
 
             <!-- MASCARA -->
@@ -703,7 +647,6 @@
             </button>
 
 
-
             <!-- FOUNDATION -->
 
             <button
@@ -737,7 +680,6 @@
                 </div>
 
             </button>
-
 
 
             <!-- HIGHLIGHTER -->
@@ -779,7 +721,6 @@
     </section>
 
 
-
     <!-- =====================================================
          PRODUCTS
          ===================================================== -->
@@ -809,13 +750,31 @@
 
             </div>
 
-            <p>
-                Browse products added from your Glamora AR admin dashboard
-                and discover your next favorite.
+            <p
+                id="selectedCategoryDescription"
+            >
+                Explore our complete beauty collection.
             </p>
 
         </div>
 
+
+        <!-- =================================================
+             SELECTED CATEGORY LABEL
+             ================================================= -->
+
+        <div
+            class="selected-category-heading"
+            aria-live="polite"
+        >
+
+            <span
+                id="selectedCategoryLabel"
+            >
+                ALL BEAUTY
+            </span>
+
+        </div>
 
 
         <!-- =================================================
@@ -831,6 +790,10 @@
 
                 {% for product in products %}
 
+                    {# -----------------------------------------
+                       NORMALIZE PRODUCT TYPE
+                       ----------------------------------------- #}
+
                     {% set product_type =
                         (product.product_type or 'beauty')
                         |lower
@@ -839,6 +802,10 @@
                         |replace('_', '-')
                     %}
 
+
+                    {# -----------------------------------------
+                       NORMALIZE DATABASE CATEGORY
+                       ----------------------------------------- #}
 
                     {% set product_category =
                         (product.category_name or '')
@@ -849,16 +816,22 @@
                     %}
 
 
+                    <!-- =====================================
+                         PRODUCT CARD
+                         ===================================== -->
+
                     <article
-                        class="beauty-product-card reveal"
+                        class="beauty-product-card product-card reveal"
                         data-product-id="{{ product.id }}"
                         data-product-type="{{ product_type }}"
-                        data-category-id="{{ product.category_id or '' }}"
                         data-category="{{ product_category }}"
+                        data-category-id="{{ product.category_id or '' }}"
                     >
 
 
-                        <!-- PRODUCT IMAGE -->
+                        <!-- =================================
+                             PRODUCT IMAGE
+                             ================================= -->
 
                         <div class="beauty-product-image">
 
@@ -867,99 +840,63 @@
                                 <img
                                     src="{{ product.image_url }}"
                                     alt="{{ product.name }}"
+                                    class="product-real-image"
                                     loading="lazy"
                                     onerror="
-                                        this.style.display = 'none';
-                                        this.nextElementSibling.style.display = 'flex';
+                                        this.style.display='none';
+                                        if (this.nextElementSibling) {
+                                            this.nextElementSibling.style.display='flex';
+                                        }
                                     "
                                 >
 
-
-                                <div
-                                    class="product-placeholder"
-                                    style="display: none"
-                                >
-
-                                    {% if "lipstick" in product_type %}
-
-                                        💄
-
-                                    {% elif "eyeshadow" in product_type %}
-
-                                        🎨
-
-                                    {% elif "blush" in product_type %}
-
-                                        🌸
-
-                                    {% elif "eyeliner" in product_type %}
-
-                                        ✧
-
-                                    {% elif "mascara" in product_type %}
-
-                                        🖤
-
-                                    {% elif "foundation" in product_type %}
-
-                                        ✿
-
-                                    {% elif "highlighter" in product_type %}
-
-                                        ✨
-
-                                    {% else %}
-
-                                        💕
-
-                                    {% endif %}
-
-                                </div>
-
-
-                            {% else %}
-
-
-                                <div class="product-placeholder">
-
-                                    {% if "lipstick" in product_type %}
-
-                                        💄
-
-                                    {% elif "eyeshadow" in product_type %}
-
-                                        🎨
-
-                                    {% elif "blush" in product_type %}
-
-                                        🌸
-
-                                    {% elif "eyeliner" in product_type %}
-
-                                        ✧
-
-                                    {% elif "mascara" in product_type %}
-
-                                        🖤
-
-                                    {% elif "foundation" in product_type %}
-
-                                        ✿
-
-                                    {% elif "highlighter" in product_type %}
-
-                                        ✨
-
-                                    {% else %}
-
-                                        💕
-
-                                    {% endif %}
-
-                                </div>
-
                             {% endif %}
 
+
+                            <!-- FALLBACK PRODUCT VISUAL -->
+
+                            <div
+                                class="product-placeholder"
+                                {% if product.image_url %}
+                                    style="display:none"
+                                {% endif %}
+                            >
+
+                                {% if "lipstick" in product_type %}
+
+                                    💄
+
+                                {% elif "eyeshadow" in product_type %}
+
+                                    🎨
+
+                                {% elif "blush" in product_type %}
+
+                                    🌸
+
+                                {% elif "eyeliner" in product_type %}
+
+                                    ✧
+
+                                {% elif "mascara" in product_type %}
+
+                                    🖤
+
+                                {% elif "foundation" in product_type %}
+
+                                    ✿
+
+                                {% elif "highlighter" in product_type %}
+
+                                    ✨
+
+                                {% else %}
+
+                                    💕
+
+                                {% endif %}
+
+                            </div>
 
 
                             <!-- PRODUCT BADGE -->
@@ -971,12 +908,11 @@
                             </span>
 
 
-
                             <!-- QUICK TRY -->
 
                             <button
                                 type="button"
-                                class="quick-try-btn"
+                                class="quick-try-btn quick-try"
                                 data-product-id="{{ product.id }}"
                             >
 
@@ -987,8 +923,9 @@
                         </div>
 
 
-
-                        <!-- PRODUCT INFORMATION -->
+                        <!-- =================================
+                             PRODUCT INFORMATION
+                             ================================= -->
 
                         <div class="beauty-product-info">
 
@@ -1004,7 +941,7 @@
                                 </span>
 
 
-                                {% if product.stock and product.stock > 0 %}
+                                {% if product.stock is not none and product.stock|int > 0 %}
 
                                     <span class="stock-status">
                                         In Stock
@@ -1021,15 +958,13 @@
                             </div>
 
 
-
-                            <!-- NAME -->
+                            <!-- PRODUCT NAME -->
 
                             <h3 class="product-name">
 
                                 {{ product.name }}
 
                             </h3>
-
 
 
                             <!-- DESCRIPTION -->
@@ -1054,7 +989,6 @@
                             {% endif %}
 
 
-
                             <!-- SHADE -->
 
                             {% if product.shade %}
@@ -1072,7 +1006,6 @@
                                 </div>
 
                             {% endif %}
-
 
 
                             <!-- COLOR -->
@@ -1094,8 +1027,7 @@
                             {% endif %}
 
 
-
-                            <!-- PRICE / VIEW -->
+                            <!-- PRICE / VIEW PRODUCT -->
 
                             <div class="product-bottom">
 
@@ -1105,6 +1037,10 @@
 
                                 </span>
 
+
+                                <!-- =================================
+                                     PRODUCT DETAILS LINK
+                                     ================================= -->
 
                                 <a
                                     href="{{ url_for('product_details', product_id=product.id) }}"
@@ -1131,9 +1067,9 @@
             {% else %}
 
 
-                <!-- =================================================
+                <!-- =========================================
                      EMPTY PRODUCTS
-                     ================================================= -->
+                     ========================================= -->
 
                 <div class="empty-products">
 
@@ -1146,8 +1082,8 @@
                     </h3>
 
                     <p>
-                        Products added from the Admin Dashboard will
-                        appear here automatically.
+                        Products added from the Admin Dashboard
+                        will appear here automatically.
                     </p>
 
                     <a
@@ -1166,7 +1102,6 @@
     </section>
 
 
-
     <!-- =====================================================
          TRY ON
          ===================================================== -->
@@ -1179,9 +1114,7 @@
         <div class="tryon-container">
 
 
-            <!-- =================================================
-                 TRY-ON CONTENT
-                 ================================================= -->
+            <!-- TRY-ON CONTENT -->
 
             <div class="tryon-content reveal">
 
@@ -1210,7 +1143,6 @@
                 </p>
 
 
-
                 <!-- FEATURES -->
 
                 <div class="tryon-features">
@@ -1237,7 +1169,6 @@
                     </div>
 
 
-
                     <div class="tryon-feature">
 
                         <span>
@@ -1257,7 +1188,6 @@
                         </div>
 
                     </div>
-
 
 
                     <div class="tryon-feature">
@@ -1283,7 +1213,6 @@
                 </div>
 
 
-
                 <!-- BUTTON -->
 
                 <a
@@ -1302,10 +1231,7 @@
             </div>
 
 
-
-            <!-- =================================================
-                 TRY-ON VISUAL
-                 ================================================= -->
+            <!-- TRY-ON VISUAL -->
 
             <div class="tryon-visual reveal">
 
@@ -1350,7 +1276,6 @@
     </section>
 
 
-
     <!-- =====================================================
          FOOTER
          ===================================================== -->
@@ -1377,7 +1302,6 @@
                 </p>
 
             </div>
-
 
 
             <!-- FOOTER EXPLORE -->
@@ -1407,7 +1331,6 @@
             </div>
 
 
-
             <!-- FOOTER BEAUTY -->
 
             <div class="footer-column">
@@ -1433,7 +1356,6 @@
         </div>
 
 
-
         <!-- FOOTER BOTTOM -->
 
         <div class="footer-bottom">
@@ -1451,9 +1373,8 @@
     </footer>
 
 
-
     <!-- =====================================================
-         EXTERNAL JAVASCRIPT ONLY
+         JAVASCRIPT
          ===================================================== -->
 
     <script
