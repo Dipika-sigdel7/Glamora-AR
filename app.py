@@ -2,6 +2,7 @@ import os
 import uuid
 import re
 from decimal import Decimal, InvalidOperation
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
@@ -626,16 +627,94 @@ def contact():
     return render_template("contact.html")
 
 
+
 # =========================================================
-# LOGIN
+# USER LOGIN
 # =========================================================
 
-
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
 
-    return render_template("login.html")
+    if request.method == "POST":
 
+        # -------------------------------------------------
+        # GET FORM DATA
+        # -------------------------------------------------
+
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        # -------------------------------------------------
+        # BASIC VALIDATION
+        # -------------------------------------------------
+
+        if not email or not password:
+            flash("Please enter your email and password.", "error")
+            return redirect(url_for("login"))
+
+        # -------------------------------------------------
+        # FIND USER IN DATABASE
+        # -------------------------------------------------
+
+        conn = get_db_connection()
+
+        try:
+            cursor = conn.cursor(dictionary=True)
+
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    name,
+                    email,
+                    password
+                FROM users
+                WHERE LOWER(email) = %s
+                LIMIT 1
+                """,
+                (email,)
+            )
+
+            user = cursor.fetchone()
+
+        finally:
+            cursor.close()
+            conn.close()
+
+        # -------------------------------------------------
+        # CHECK USER + PASSWORD
+        # -------------------------------------------------
+
+        if not user:
+            flash("Invalid email or password.", "error")
+            return redirect(url_for("login"))
+
+        if not check_password_hash(user["password"], password):
+            flash("Invalid email or password.", "error")
+            return redirect(url_for("login"))
+
+        # -------------------------------------------------
+        # LOGIN SUCCESS
+        # -------------------------------------------------
+
+        session["user_id"] = user["id"]
+        session["user_name"] = user["name"]
+        session["user_email"] = user["email"]
+
+        # Optional: useful if you check login status elsewhere
+        session["logged_in"] = True
+
+        # -------------------------------------------------
+        # REDIRECT AFTER LOGIN
+        # -------------------------------------------------
+
+        return redirect(url_for("home"))
+
+    # -----------------------------------------------------
+    # GET REQUEST
+    # -----------------------------------------------------
+
+    return render_template("login.html")
 
 # =========================================================
 # REGISTER
