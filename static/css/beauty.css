@@ -6,7 +6,7 @@
    NO MARQUEE
 
    HERO VISUAL:
-   MOVED UP FOR BETTER BALANCE
+   HORIZONTALLY ALIGNED WITH HERO CONTENT
    ========================================================= */
 
 
@@ -54,7 +54,6 @@
     padding: 0;
 
     background: var(--beauty-bg);
-
     color: var(--beauty-text);
 
     font-family:
@@ -118,7 +117,6 @@
         serif;
 
     font-size: 32px;
-
     font-weight: 600;
 
     letter-spacing: 5px;
@@ -224,7 +222,6 @@
         serif;
 
     font-size: 24px;
-
     font-weight: 600;
 
     letter-spacing: 2px;
@@ -264,7 +261,6 @@
         var(--beauty-text-soft);
 
     font-size: 14px;
-
     font-weight: 600;
 
     transition:
@@ -332,7 +328,6 @@
     color: white;
 
     font-size: 12px;
-
     font-weight: 700;
 
     transition:
@@ -584,7 +579,6 @@
         var(--beauty-accent);
 
     font-size: 11px;
-
     font-weight: 700;
 
     letter-spacing: 3px;
@@ -653,19 +647,19 @@
 
 /* =========================================================
    HERO VISUAL
-   MOVED UP
+   DESKTOP — MOVED UP AND HORIZONTALLY ALIGNED
    ========================================================= */
 
 .beauty-hero-visual {
     position: absolute;
 
     /*
-       IMPORTANT:
-       Instead of moving only with translateY,
-       the actual top position is moved upward.
+       The visual is intentionally positioned higher
+       so its center aligns with the hero heading
+       and description instead of sitting too low.
     */
     top:
-        calc(50% - 65px);
+        calc(50% - 145px);
 
     right:
         -15px;
@@ -919,7 +913,6 @@
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
     color:
@@ -2907,15 +2900,16 @@
             repeat(4, 1fr);
     }
 
+    /*
+       Keep the visual beside the hero content
+       while moving it slightly upward.
+    */
     .beauty-hero-visual {
         right:
             -50px;
 
-        /*
-           Explicitly move visual upward
-        */
         top:
-            calc(50% - 55px);
+            calc(50% - 125px);
 
         transform:
             translateY(-50%)
@@ -2937,15 +2931,15 @@
         right:
             -90px;
 
-        /*
-           Keep visual higher on medium screens
-        */
         top:
-            calc(50% - 45px);
+            calc(50% - 105px);
 
         transform:
             translateY(-50%)
             scale(.82);
+
+        transform-origin:
+            center right;
     }
 
     .beauty-hero-content {
@@ -2995,6 +2989,10 @@
         justify-content: center;
     }
 
+    /*
+       From this size onward the visual moves below
+       the hero text instead of remaining beside it.
+    */
     .beauty-hero-visual {
         position: relative;
 
@@ -3004,11 +3002,8 @@
         width: 540px;
         height: 560px;
 
-        /*
-           Move visual upward after text
-        */
         margin:
-            -20px auto 0;
+            -55px auto 0;
 
         transform:
             none;
@@ -3100,9 +3095,6 @@
         height:
             520px;
 
-        /*
-           More upward positioning
-        */
         margin-top:
             -20px;
     }
@@ -3273,9 +3265,6 @@
         height:
             500px;
 
-        /*
-           Move the visual higher
-        */
         margin:
             -25px auto 0;
 
@@ -3461,9 +3450,6 @@
         height:
             470px;
 
-        /*
-           Keep the visual closer to the text
-        */
         margin-top:
             -30px;
 
@@ -3574,9 +3560,6 @@
         height:
             455px;
 
-        /*
-           Pull visual upward on very small screens
-        */
         margin-top:
             -35px;
 
