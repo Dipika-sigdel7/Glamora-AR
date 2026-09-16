@@ -1,15 +1,28 @@
+
 import os
 import uuid
 import re
 from decimal import Decimal, InvalidOperation
-from werkzeug.security import generate_password_hash, check_password_hash
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    flash
+)
 
-from werkzeug.security import check_password_hash
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
+
 from werkzeug.utils import secure_filename
 
 from database.db import get_db_connection
+
 
 # =========================================================
 # FLASK APPLICATION
@@ -24,7 +37,12 @@ app.secret_key = "glamora-ar-secret-key"
 # UPLOAD CONFIGURATION
 # =========================================================
 
-PRODUCT_UPLOAD_FOLDER = os.path.join(app.root_path, "static", "uploads", "products")
+PRODUCT_UPLOAD_FOLDER = os.path.join(
+    app.root_path,
+    "static",
+    "uploads",
+    "products"
+)
 
 os.makedirs(PRODUCT_UPLOAD_FOLDER, exist_ok=True)
 
@@ -33,7 +51,13 @@ app.config["PRODUCT_UPLOAD_FOLDER"] = PRODUCT_UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 
-ALLOWED_IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif"}
+ALLOWED_IMAGE_EXTENSIONS = {
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+    "gif"
+}
 
 MAX_IMAGE_SIZE = 5 * 1024 * 1024
 
@@ -41,12 +65,15 @@ MAX_IMAGE_SIZE = 5 * 1024 * 1024
 # =========================================================
 # BEAUTY PRODUCT TYPE MAPPING
 # =========================================================
+
 PRODUCT_TYPE_ALIASES = {
+
     # Lipstick
     "lipstick": "lipstick",
     "lipsticks": "lipstick",
     "lip stick": "lipstick",
     "lip sticks": "lipstick",
+
     # Eyeshadow
     "eyeshadow": "eyeshadow",
     "eyeshadows": "eyeshadow",
@@ -54,20 +81,25 @@ PRODUCT_TYPE_ALIASES = {
     "eye shadows": "eyeshadow",
     "eye-shadow": "eyeshadow",
     "eye-shadows": "eyeshadow",
+
     # Blush
     "blush": "blush",
     "blushes": "blush",
+
     # Eyeliner
     "eyeliner": "eyeliner",
     "eyeliners": "eyeliner",
     "eye liner": "eyeliner",
     "eye liners": "eyeliner",
+
     # Mascara
     "mascara": "mascara",
     "mascaras": "mascara",
+
     # Foundation
     "foundation": "foundation",
     "foundations": "foundation",
+
     # Highlighter
     "highlighter": "highlighter",
     "highlighters": "highlighter",
@@ -78,7 +110,6 @@ PRODUCT_TYPE_ALIASES = {
 # =========================================================
 # HELPER FUNCTIONS
 # =========================================================
-
 
 def allowed_image(filename):
 
@@ -109,86 +140,40 @@ def get_file_extension(filename):
 # NORMALIZE BEAUTY PRODUCT TYPE
 # =========================================================
 
-
 def normalize_product_type(product_type):
-    """
-    Converts the product type entered by the admin into
-    the exact category key used by the Beauty page.
-
-    Examples:
-
-        Lipstick       -> lipstick
-        LIPSTICK       -> lipstick
-        Lipsticks      -> lipstick
-        Lip Stick      -> lipstick
-
-        Eye Shadow     -> eyeshadow
-        Eye_Shadow     -> eyeshadow
-        eye-shadow     -> eyeshadow
-
-        Highlighters   -> highlighter
-    """
 
     if not product_type:
         return ""
 
-    # Convert to string
     value = str(product_type)
 
-    # Remove leading/trailing spaces
     value = value.strip().lower()
 
-    # Replace underscores with spaces
     value = value.replace("_", " ")
 
-    # Replace multiple spaces
     value = re.sub(r"\s+", " ", value)
 
-    # Remove spaces around hyphens
     value = re.sub(r"\s*-\s*", "-", value)
 
-    # Check aliases first
+    # Check aliases
     if value in PRODUCT_TYPE_ALIASES:
-
         return PRODUCT_TYPE_ALIASES[value]
 
-    # Remove hyphens for another alias check
+    # Check again after removing hyphens
     no_hyphen = value.replace("-", " ")
 
     if no_hyphen in PRODUCT_TYPE_ALIASES:
-
         return PRODUCT_TYPE_ALIASES[no_hyphen]
 
     # Generic fallback
-    #
-    # Example:
-    # "Lipstick" -> "lipstick"
-    #
-    normalized = value.replace(" ", "-")
-
-    return normalized
+    return value.replace(" ", "-")
 
 
 # =========================================================
-# ADD CATEGORY KEY TO PRODUCTS
+# PREPARE PRODUCTS
 # =========================================================
-
 
 def prepare_products(products):
-    """
-    Adds a normalized product_type_key to every product.
-
-    The original product_type is kept unchanged so that
-    the admin-entered value can still be displayed.
-
-    Example:
-
-        product_type:
-            "Lipsticks"
-
-        product_type_key:
-            "lipstick"
-    """
 
     for product in products:
 
@@ -202,7 +187,6 @@ def prepare_products(products):
 # =========================================================
 # GET CATEGORIES
 # =========================================================
-
 
 def get_categories():
 
@@ -243,9 +227,8 @@ def get_categories():
 
 
 # =========================================================
-# GET PRODUCT IMAGE
+# GET PRIMARY PRODUCT IMAGE
 # =========================================================
-
 
 def get_product_image(product_id):
 
@@ -270,14 +253,13 @@ def get_product_image(product_id):
                 is_primary DESC,
                 id ASC
             LIMIT 1
-        """,
-            (product_id,),
+            """,
+            (product_id,)
         )
 
         image = cursor.fetchone()
 
         if image:
-
             return image["image_url"]
 
         return None
@@ -300,7 +282,6 @@ def get_product_image(product_id):
 # ADMIN REQUIRED
 # =========================================================
 
-
 def admin_required():
 
     return bool(session.get("admin_id"))
@@ -309,7 +290,6 @@ def admin_required():
 # =========================================================
 # HOME
 # =========================================================
-
 
 @app.route("/")
 def home():
@@ -321,7 +301,6 @@ def home():
 # BEAUTY PAGE
 # =========================================================
 
-
 @app.route("/beauty")
 def beauty():
 
@@ -331,7 +310,11 @@ def beauty():
 
         flash("Database connection failed.", "error")
 
-        return render_template("beauty.html", products=[], categories=[])
+        return render_template(
+            "beauty.html",
+            products=[],
+            categories=[]
+        )
 
     cursor = None
 
@@ -340,7 +323,7 @@ def beauty():
         cursor = connection.cursor(dictionary=True)
 
         # =================================================
-        # LOAD AVAILABLE BEAUTY PRODUCTS
+        # LOAD AVAILABLE PRODUCTS
         # =================================================
 
         cursor.execute("""
@@ -358,7 +341,6 @@ def beauty():
 
                 c.name AS category_name,
 
-                /* Clean category name for JavaScript filtering */
                 LOWER(
                     REPLACE(
                         REPLACE(
@@ -371,7 +353,6 @@ def beauty():
                     )
                 ) AS category_slug,
 
-                /* Clean product type for JavaScript filtering */
                 LOWER(
                     REPLACE(
                         REPLACE(
@@ -407,6 +388,9 @@ def beauty():
 
         products = cursor.fetchall()
 
+        products = prepare_products(products)
+
+
         # =================================================
         # LOAD CATEGORIES
         # =================================================
@@ -437,6 +421,7 @@ def beauty():
 
         categories = cursor.fetchall()
 
+
         # =================================================
         # DEBUG
         # =================================================
@@ -445,6 +430,7 @@ def beauty():
         print("========================================")
         print("GLAMORA AR - BEAUTY PAGE")
         print("========================================")
+
         print("Products found:", len(products))
         print("Categories found:", len(categories))
 
@@ -457,22 +443,24 @@ def beauty():
                 product["name"],
                 "| CATEGORY:",
                 product["category_name"],
-                "| CATEGORY SLUG:",
-                product["category_slug"],
                 "| TYPE:",
                 product["product_type"],
-                "| TYPE SLUG:",
-                product["product_type_slug"],
-                "| AVAILABLE:",
-                product["is_available"],
+                "| TYPE KEY:",
+                product["product_type_key"],
                 "| IMAGE:",
-                product["image_url"],
+                product["image_url"]
             )
 
         print("========================================")
         print()
 
-        return render_template("beauty.html", products=products, categories=categories)
+
+        return render_template(
+            "beauty.html",
+            products=products,
+            categories=categories
+        )
+
 
     except Exception as error:
 
@@ -484,9 +472,17 @@ def beauty():
         print("========================================")
         print()
 
-        flash("Unable to load beauty products.", "error")
+        flash(
+            "Unable to load beauty products.",
+            "error"
+        )
 
-        return render_template("beauty.html", products=[], categories=[])
+        return render_template(
+            "beauty.html",
+            products=[],
+            categories=[]
+        )
+
 
     finally:
 
@@ -500,7 +496,6 @@ def beauty():
 # PRODUCT DETAILS
 # =========================================================
 
-
 @app.route("/product/<int:product_id>")
 def product_details(product_id):
 
@@ -508,9 +503,14 @@ def product_details(product_id):
 
     if connection is None:
 
-        flash("Database connection failed.", "error")
+        flash(
+            "Database connection failed.",
+            "error"
+        )
 
-        return redirect(url_for("beauty"))
+        return redirect(
+            url_for("beauty")
+        )
 
     cursor = None
 
@@ -518,8 +518,9 @@ def product_details(product_id):
 
         cursor = connection.cursor(dictionary=True)
 
+
         # =================================================
-        # PRODUCT
+        # GET SELECTED PRODUCT
         # =================================================
 
         cursor.execute(
@@ -546,17 +547,28 @@ def product_details(product_id):
             WHERE p.id = %s
 
             LIMIT 1
-        """,
-            (product_id,),
+            """,
+            (product_id,)
         )
 
         product = cursor.fetchone()
 
+
+        # =================================================
+        # PRODUCT NOT FOUND
+        # =================================================
+
         if not product:
 
-            flash("Product not found.", "error")
+            flash(
+                "Product not found.",
+                "error"
+            )
 
-            return redirect(url_for("beauty"))
+            return redirect(
+                url_for("beauty")
+            )
+
 
         # =================================================
         # NORMALIZED PRODUCT TYPE
@@ -566,8 +578,9 @@ def product_details(product_id):
             product.get("product_type")
         )
 
+
         # =================================================
-        # PRODUCT IMAGES
+        # GET ALL PRODUCT IMAGES
         # =================================================
 
         cursor.execute(
@@ -576,26 +589,87 @@ def product_details(product_id):
                 id,
                 image_url,
                 is_primary
+
             FROM product_images
+
             WHERE product_id = %s
+
             ORDER BY
                 is_primary DESC,
                 id ASC
-        """,
-            (product_id,),
+            """,
+            (product_id,)
         )
 
         images = cursor.fetchall()
 
-        return render_template("product_details.html", product=product, images=images)
+
+        # =================================================
+        # PRIMARY IMAGE
+        # =================================================
+
+        primary_image = None
+
+        if images:
+
+            primary_image = images[0]["image_url"]
+
+        product["image_url"] = primary_image
+
+
+        # =================================================
+        # DEBUG
+        # =================================================
+
+        print()
+        print("========================================")
+        print("GLAMORA AR - PRODUCT DETAILS")
+        print("========================================")
+
+        print("Product ID:", product["id"])
+        print("Product Name:", product["name"])
+        print("Product Type:", product["product_type"])
+        print("Product Type Key:", product["product_type_key"])
+        print("Category:", product["category_name"])
+        print("Price:", product["price"])
+        print("Stock:", product["stock"])
+        print("Primary Image:", primary_image)
+        print("Total Images:", len(images))
+
+        print("========================================")
+        print()
+
+
+        # =================================================
+        # SEND DATA TO TEMPLATE
+        # =================================================
+
+        return render_template(
+            "product_details.html",
+            product=product,
+            images=images
+        )
+
 
     except Exception as error:
 
-        print("PRODUCT DETAILS ERROR:", error)
+        print()
+        print("========================================")
+        print("PRODUCT DETAILS ERROR")
+        print("========================================")
+        print(error)
+        print("========================================")
+        print()
 
-        flash("Unable to load product.", "error")
+        flash(
+            "Unable to load product.",
+            "error"
+        )
 
-        return redirect(url_for("beauty"))
+        return redirect(
+            url_for("beauty")
+        )
+
 
     finally:
 
@@ -609,7 +683,6 @@ def product_details(product_id):
 # ABOUT
 # =========================================================
 
-
 @app.route("/about")
 def about():
 
@@ -620,12 +693,10 @@ def about():
 # CONTACT
 # =========================================================
 
-
 @app.route("/contact")
 def contact():
 
     return render_template("contact.html")
-
 
 
 # =========================================================
@@ -637,28 +708,47 @@ def login():
 
     if request.method == "POST":
 
-        # -------------------------------------------------
-        # GET FORM DATA
-        # -------------------------------------------------
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
 
-        email = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
+        password = request.form.get(
+            "password",
+            ""
+        )
 
-        # -------------------------------------------------
-        # BASIC VALIDATION
-        # -------------------------------------------------
 
         if not email or not password:
-            flash("Please enter your email and password.", "error")
-            return redirect(url_for("login"))
 
-        # -------------------------------------------------
-        # FIND USER IN DATABASE
-        # -------------------------------------------------
+            flash(
+                "Please enter your email and password.",
+                "error"
+            )
+
+            return redirect(
+                url_for("login")
+            )
+
 
         conn = get_db_connection()
 
+        if conn is None:
+
+            flash(
+                "Database connection failed.",
+                "error"
+            )
+
+            return redirect(
+                url_for("login")
+            )
+
+
+        cursor = None
+
         try:
+
             cursor = conn.cursor(dictionary=True)
 
             cursor.execute(
@@ -668,8 +758,11 @@ def login():
                     name,
                     email,
                     password
+
                 FROM users
+
                 WHERE LOWER(email) = %s
+
                 LIMIT 1
                 """,
                 (email,)
@@ -677,93 +770,144 @@ def login():
 
             user = cursor.fetchone()
 
+
+        except Exception as error:
+
+            print(
+                "USER LOGIN ERROR:",
+                error
+            )
+
+            user = None
+
+
         finally:
-            cursor.close()
+
+            if cursor:
+                cursor.close()
+
             conn.close()
 
-        # -------------------------------------------------
-        # CHECK USER + PASSWORD
-        # -------------------------------------------------
 
         if not user:
-            flash("Invalid email or password.", "error")
-            return redirect(url_for("login"))
 
-        if not check_password_hash(user["password"], password):
-            flash("Invalid email or password.", "error")
-            return redirect(url_for("login"))
+            flash(
+                "Invalid email or password.",
+                "error"
+            )
 
-        # -------------------------------------------------
+            return redirect(
+                url_for("login")
+            )
+
+
+        if not check_password_hash(
+            user["password"],
+            password
+        ):
+
+            flash(
+                "Invalid email or password.",
+                "error"
+            )
+
+            return redirect(
+                url_for("login")
+            )
+
+
+        # =================================================
         # LOGIN SUCCESS
-        # -------------------------------------------------
+        # =================================================
 
         session["user_id"] = user["id"]
         session["user_name"] = user["name"]
         session["user_email"] = user["email"]
-
-        # Optional: useful if you check login status elsewhere
         session["logged_in"] = True
 
-        # -------------------------------------------------
-        # REDIRECT AFTER LOGIN
-        # -------------------------------------------------
 
-        return redirect(url_for("home"))
+        return redirect(
+            url_for("home")
+        )
 
-    # -----------------------------------------------------
-    # GET REQUEST
-    # -----------------------------------------------------
 
-    return render_template("login.html")
+    return render_template(
+        "login.html"
+    )
+
 
 # =========================================================
 # REGISTER
 # =========================================================
 
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
-    return render_template("register.html")
+    return render_template(
+        "register.html"
+    )
 
 
 # =========================================================
 # ADMIN LOGIN
 # =========================================================
 
-
 @app.route("/admin", methods=["GET", "POST"])
 def admin_login():
 
     if session.get("admin_id"):
 
-        return redirect(url_for("admin_dashboard"))
+        return redirect(
+            url_for("admin_dashboard")
+        )
+
 
     if request.method == "POST":
 
-        email = request.form.get("email", "").strip().lower()
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
 
-        password = request.form.get("password", "")
+        password = request.form.get(
+            "password",
+            ""
+        )
+
 
         if not email or not password:
 
-            flash("Please enter your email and password.", "error")
+            flash(
+                "Please enter your email and password.",
+                "error"
+            )
 
-            return redirect(url_for("admin_login"))
+            return redirect(
+                url_for("admin_login")
+            )
+
 
         connection = get_db_connection()
 
         if connection is None:
 
-            flash("Database connection failed.", "error")
+            flash(
+                "Database connection failed.",
+                "error"
+            )
 
-            return redirect(url_for("admin_login"))
+            return redirect(
+                url_for("admin_login")
+            )
+
 
         cursor = None
 
         try:
 
-            cursor = connection.cursor(dictionary=True)
+            cursor = connection.cursor(
+                dictionary=True
+            )
 
             cursor.execute(
                 """
@@ -772,38 +916,66 @@ def admin_login():
                     name,
                     email,
                     password_hash
+
                 FROM admins
-                WHERE email = %s
+
+                WHERE LOWER(email) = %s
+
                 LIMIT 1
-            """,
-                (email,),
+                """,
+                (email,)
             )
 
             admin = cursor.fetchone()
 
-            if admin and check_password_hash(admin["password_hash"], password):
+
+            if admin and check_password_hash(
+                admin["password_hash"],
+                password
+            ):
 
                 session["admin_id"] = admin["id"]
-
                 session["admin_name"] = admin["name"]
-
                 session["admin_email"] = admin["email"]
 
-                flash(f"Welcome back, {admin['name']}!", "success")
 
-                return redirect(url_for("admin_dashboard"))
+                flash(
+                    f"Welcome back, {admin['name']}!",
+                    "success"
+                )
 
-            flash("Invalid admin email or password.", "error")
 
-            return redirect(url_for("admin_login"))
+                return redirect(
+                    url_for("admin_dashboard")
+                )
+
+
+            flash(
+                "Invalid admin email or password.",
+                "error"
+            )
+
+            return redirect(
+                url_for("admin_login")
+            )
+
 
         except Exception as error:
 
-            print("ADMIN LOGIN ERROR:", error)
+            print(
+                "ADMIN LOGIN ERROR:",
+                error
+            )
 
-            flash("Something went wrong while logging in.", "error")
+            flash(
+                "Something went wrong while logging in.",
+                "error"
+            )
 
-            return redirect(url_for("admin_login"))
+            return redirect(
+                url_for("admin_login")
+            )
+
 
         finally:
 
@@ -812,42 +984,57 @@ def admin_login():
 
             connection.close()
 
-    return render_template("admin/login.html")
+
+    return render_template(
+        "admin/login.html"
+    )
 
 
 # =========================================================
 # ADMIN DASHBOARD
 # =========================================================
 
-
 @app.route("/admin/dashboard")
 def admin_dashboard():
 
     if not admin_required():
 
-        return redirect(url_for("admin_login"))
+        return redirect(
+            url_for("admin_login")
+        )
+
 
     connection = get_db_connection()
 
     if connection is None:
 
-        flash("Database connection failed.", "error")
+        flash(
+            "Database connection failed.",
+            "error"
+        )
 
         return render_template(
             "admin/dashboard.html",
-            admin_name=session.get("admin_name", "Admin"),
+            admin_name=session.get(
+                "admin_name",
+                "Admin"
+            ),
             total_products=0,
             total_categories=0,
             total_users=0,
             available_products=0,
-            products=[],
+            products=[]
         )
+
 
     cursor = None
 
     try:
 
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
 
         # =================================================
         # TOTAL PRODUCTS
@@ -860,6 +1047,7 @@ def admin_dashboard():
 
         total_products = cursor.fetchone()["total"]
 
+
         # =================================================
         # TOTAL CATEGORIES
         # =================================================
@@ -870,6 +1058,7 @@ def admin_dashboard():
         """)
 
         total_categories = cursor.fetchone()["total"]
+
 
         # =================================================
         # TOTAL USERS
@@ -882,6 +1071,7 @@ def admin_dashboard():
 
         total_users = cursor.fetchone()["total"]
 
+
         # =================================================
         # AVAILABLE PRODUCTS
         # =================================================
@@ -893,6 +1083,7 @@ def admin_dashboard():
         """)
 
         available_products = cursor.fetchone()["total"]
+
 
         # =================================================
         # RECENT PRODUCTS
@@ -938,31 +1129,46 @@ def admin_dashboard():
 
         products = prepare_products(products)
 
+
         return render_template(
             "admin/dashboard.html",
-            admin_name=session.get("admin_name", "Admin"),
+            admin_name=session.get(
+                "admin_name",
+                "Admin"
+            ),
             total_products=total_products,
             total_categories=total_categories,
             total_users=total_users,
             available_products=available_products,
-            products=products,
+            products=products
         )
+
 
     except Exception as error:
 
-        print("DASHBOARD ERROR:", error)
+        print(
+            "DASHBOARD ERROR:",
+            error
+        )
 
-        flash("Unable to load dashboard data.", "error")
+        flash(
+            "Unable to load dashboard data.",
+            "error"
+        )
 
         return render_template(
             "admin/dashboard.html",
-            admin_name=session.get("admin_name", "Admin"),
+            admin_name=session.get(
+                "admin_name",
+                "Admin"
+            ),
             total_products=0,
             total_categories=0,
             total_users=0,
             available_products=0,
-            products=[],
+            products=[]
         )
+
 
     finally:
 
@@ -976,27 +1182,38 @@ def admin_dashboard():
 # ADMIN PRODUCTS
 # =========================================================
 
-
 @app.route("/admin/products")
 def admin_products():
 
     if not admin_required():
 
-        return redirect(url_for("admin_login"))
+        return redirect(
+            url_for("admin_login")
+        )
+
 
     connection = get_db_connection()
 
     if connection is None:
 
-        flash("Database connection failed.", "error")
+        flash(
+            "Database connection failed.",
+            "error"
+        )
 
-        return redirect(url_for("admin_dashboard"))
+        return redirect(
+            url_for("admin_dashboard")
+        )
+
 
     cursor = None
 
     try:
 
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
 
         cursor.execute("""
             SELECT
@@ -1033,23 +1250,38 @@ def admin_products():
                 p.id DESC
         """)
 
+
         products = cursor.fetchall()
 
         products = prepare_products(products)
 
+
         return render_template(
             "admin/products.html",
-            admin_name=session.get("admin_name", "Admin"),
-            products=products,
+            admin_name=session.get(
+                "admin_name",
+                "Admin"
+            ),
+            products=products
         )
+
 
     except Exception as error:
 
-        print("ADMIN PRODUCTS ERROR:", error)
+        print(
+            "ADMIN PRODUCTS ERROR:",
+            error
+        )
 
-        flash("Unable to load products.", "error")
+        flash(
+            "Unable to load products.",
+            "error"
+        )
 
-        return redirect(url_for("admin_dashboard"))
+        return redirect(
+            url_for("admin_dashboard")
+        )
+
 
     finally:
 
@@ -1063,28 +1295,44 @@ def admin_products():
 # ADMIN ADD PRODUCT
 # =========================================================
 
-
-@app.route("/admin/products/add", methods=["GET", "POST"])
+@app.route(
+    "/admin/products/add",
+    methods=["GET", "POST"]
+)
 def admin_add_product():
 
     if not admin_required():
 
-        return redirect(url_for("admin_login"))
+        return redirect(
+            url_for("admin_login")
+        )
+
 
     connection = get_db_connection()
 
     if connection is None:
 
-        flash("Database connection failed.", "error")
+        flash(
+            "Database connection failed.",
+            "error"
+        )
 
-        return redirect(url_for("admin_dashboard"))
+        return redirect(
+            url_for("admin_dashboard")
+        )
+
 
     cursor = None
+
     saved_files = []
+
 
     try:
 
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
 
         # =================================================
         # GET CATEGORIES
@@ -1095,45 +1343,82 @@ def admin_add_product():
                 id,
                 name,
                 description
+
             FROM categories
-            ORDER BY name ASC
+
+            ORDER BY
+                name ASC
         """)
 
         categories = cursor.fetchall()
 
+
         # =================================================
-        # GET
+        # GET REQUEST
         # =================================================
 
         if request.method == "GET":
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
-                categories=categories,
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
+                categories=categories
             )
+
 
         # =================================================
         # FORM VALUES
         # =================================================
 
-        name = request.form.get("name", "").strip()
+        name = request.form.get(
+            "name",
+            ""
+        ).strip()
 
-        description = request.form.get("description", "").strip()
+        description = request.form.get(
+            "description",
+            ""
+        ).strip()
 
-        category_id = request.form.get("category_id", "").strip()
+        category_id = request.form.get(
+            "category_id",
+            ""
+        ).strip()
 
-        product_type = request.form.get("product_type", "").strip()
+        product_type = request.form.get(
+            "product_type",
+            ""
+        ).strip()
 
-        shade = request.form.get("shade", "").strip()
+        shade = request.form.get(
+            "shade",
+            ""
+        ).strip()
 
-        color = request.form.get("color", "").strip()
+        color = request.form.get(
+            "color",
+            ""
+        ).strip()
 
-        price_value = request.form.get("price", "").strip()
+        price_value = request.form.get(
+            "price",
+            ""
+        ).strip()
 
-        stock_value = request.form.get("stock", "").strip()
+        stock_value = request.form.get(
+            "stock",
+            ""
+        ).strip()
 
-        is_available = 1 if request.form.get("is_available") else 0
+        is_available = (
+            1
+            if request.form.get("is_available")
+            else 0
+        )
+
 
         # =================================================
         # NAME
@@ -1141,13 +1426,20 @@ def admin_add_product():
 
         if not name:
 
-            flash("Product name is required.", "error")
+            flash(
+                "Product name is required.",
+                "error"
+            )
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
-                categories=categories,
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
+                categories=categories
             )
+
 
         # =================================================
         # CATEGORY
@@ -1155,41 +1447,61 @@ def admin_add_product():
 
         try:
 
-            category_id = int(category_id)
+            category_id = int(
+                category_id
+            )
 
         except (ValueError, TypeError):
 
-            flash("Please select a valid category.", "error")
+            flash(
+                "Please select a valid category.",
+                "error"
+            )
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
-                categories=categories,
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
+                categories=categories
             )
+
 
         cursor.execute(
             """
             SELECT
                 id,
                 name
+
             FROM categories
+
             WHERE id = %s
+
             LIMIT 1
-        """,
-            (category_id,),
+            """,
+            (category_id,)
         )
 
         selected_category = cursor.fetchone()
 
+
         if not selected_category:
 
-            flash("Selected category does not exist.", "error")
+            flash(
+                "Selected category does not exist.",
+                "error"
+            )
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
-                categories=categories,
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
+                categories=categories
             )
+
 
         # =================================================
         # PRODUCT TYPE
@@ -1197,23 +1509,25 @@ def admin_add_product():
 
         if not product_type:
 
-            flash("Please enter a product type.", "error")
+            flash(
+                "Please enter a product type.",
+                "error"
+            )
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
-                categories=categories,
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
+                categories=categories
             )
 
-        # =================================================
-        # NORMALIZE PRODUCT TYPE
-        # =================================================
 
-        product_type_key = normalize_product_type(product_type)
+        product_type_key = normalize_product_type(
+            product_type
+        )
 
-        print("ADMIN PRODUCT TYPE:", product_type)
-
-        print("NORMALIZED TYPE:", product_type_key)
 
         # =================================================
         # PRICE
@@ -1221,23 +1535,37 @@ def admin_add_product():
 
         try:
 
-            price = Decimal(price_value)
+            price = Decimal(
+                price_value
+            )
 
             if price < 0:
-
                 raise InvalidOperation
 
-            price = price.quantize(Decimal("0.01"))
+            price = price.quantize(
+                Decimal("0.01")
+            )
 
-        except (InvalidOperation, ValueError, TypeError):
+        except (
+            InvalidOperation,
+            ValueError,
+            TypeError
+        ):
 
-            flash("Please enter a valid price.", "error")
+            flash(
+                "Please enter a valid price.",
+                "error"
+            )
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
-                categories=categories,
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
+                categories=categories
             )
+
 
         # =================================================
         # STOCK
@@ -1245,77 +1573,121 @@ def admin_add_product():
 
         try:
 
-            stock = int(stock_value)
+            stock = int(
+                stock_value
+            )
 
             if stock < 0:
-
                 raise ValueError
 
-        except (ValueError, TypeError):
+        except (
+            ValueError,
+            TypeError
+        ):
 
-            flash("Please enter a valid stock quantity.", "error")
+            flash(
+                "Please enter a valid stock quantity.",
+                "error"
+            )
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
-                categories=categories,
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
+                categories=categories
             )
+
 
         # =================================================
         # IMAGES
         # =================================================
 
-        image_files = request.files.getlist("images")
+        image_files = request.files.getlist(
+            "images"
+        )
 
         valid_images = []
+
 
         for image in image_files:
 
             if not image or not image.filename:
                 continue
 
-            filename = secure_filename(image.filename)
+
+            filename = secure_filename(
+                image.filename
+            )
+
 
             if not filename:
                 continue
 
-            # =================================================
-            # IMAGE EXTENSION
-            # =================================================
 
-            if not allowed_image(filename):
+            if not allowed_image(
+                filename
+            ):
 
-                flash("Only JPG, JPEG, PNG, WEBP and GIF images are allowed.", "error")
+                flash(
+                    "Only JPG, JPEG, PNG, WEBP and GIF images are allowed.",
+                    "error"
+                )
 
                 return render_template(
                     "admin/add_product.html",
-                    admin_name=session.get("admin_name", "Admin"),
-                    categories=categories,
+                    admin_name=session.get(
+                        "admin_name",
+                        "Admin"
+                    ),
+                    categories=categories
                 )
 
-            extension = get_file_extension(filename)
+
+            extension = get_file_extension(
+                filename
+            )
+
 
             # =================================================
             # IMAGE SIZE
             # =================================================
 
-            image.seek(0, os.SEEK_END)
+            image.seek(
+                0,
+                os.SEEK_END
+            )
 
             file_size = image.tell()
 
             image.seek(0)
 
+
             if file_size > MAX_IMAGE_SIZE:
 
-                flash("Each product image must be smaller than 5 MB.", "error")
+                flash(
+                    "Each product image must be smaller than 5 MB.",
+                    "error"
+                )
 
                 return render_template(
                     "admin/add_product.html",
-                    admin_name=session.get("admin_name", "Admin"),
-                    categories=categories,
+                    admin_name=session.get(
+                        "admin_name",
+                        "Admin"
+                    ),
+                    categories=categories
                 )
 
-            valid_images.append((image, extension))
+
+            valid_images.append(
+                (
+                    image,
+                    extension
+                )
+            )
+
 
         # =================================================
         # REQUIRE IMAGE
@@ -1323,19 +1695,27 @@ def admin_add_product():
 
         if not valid_images:
 
-            flash("Please upload at least one product image.", "error")
+            flash(
+                "Please upload at least one product image.",
+                "error"
+            )
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
-                categories=categories,
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
+                categories=categories
             )
+
 
         # =================================================
         # DATABASE TRANSACTION
         # =================================================
 
         connection.start_transaction()
+
 
         # =================================================
         # INSERT PRODUCT
@@ -1355,6 +1735,7 @@ def admin_add_product():
                 product_type,
                 is_available
             )
+
             VALUES
             (
                 %s,
@@ -1376,38 +1757,67 @@ def admin_add_product():
                 stock,
                 shade,
                 color,
-                # Store normalized type
-                # so future filtering is consistent.
                 product_type_key,
-                is_available,
-            ),
+                is_available
+            )
         )
+
 
         product_id = cursor.lastrowid
 
+
         if not product_id:
 
-            raise Exception("Product ID was not generated.")
+            raise Exception(
+                "Product ID was not generated."
+            )
+
 
         # =================================================
         # SAVE PRODUCT IMAGES
         # =================================================
 
-        for index, (image, extension) in enumerate(valid_images):
+        for index, (
+            image,
+            extension
+        ) in enumerate(valid_images):
 
-            unique_filename = uuid.uuid4().hex + "." + extension
 
-            file_path = os.path.join(
-                app.config["PRODUCT_UPLOAD_FOLDER"], unique_filename
+            unique_filename = (
+                uuid.uuid4().hex
+                + "."
+                + extension
             )
 
-            image.save(file_path)
 
-            saved_files.append(file_path)
+            file_path = os.path.join(
+                app.config["PRODUCT_UPLOAD_FOLDER"],
+                unique_filename
+            )
 
-            image_url = "/static/uploads/products/" + unique_filename
 
-            is_primary = 1 if index == 0 else 0
+            image.save(
+                file_path
+            )
+
+
+            saved_files.append(
+                file_path
+            )
+
+
+            image_url = (
+                "/static/uploads/products/"
+                + unique_filename
+            )
+
+
+            is_primary = (
+                1
+                if index == 0
+                else 0
+            )
+
 
             cursor.execute(
                 """
@@ -1417,6 +1827,7 @@ def admin_add_product():
                     image_url,
                     is_primary
                 )
+
                 VALUES
                 (
                     %s,
@@ -1424,8 +1835,13 @@ def admin_add_product():
                     %s
                 )
                 """,
-                (product_id, image_url, is_primary),
+                (
+                    product_id,
+                    image_url,
+                    is_primary
+                )
             )
+
 
         # =================================================
         # COMMIT
@@ -1433,9 +1849,6 @@ def admin_add_product():
 
         connection.commit()
 
-        # =================================================
-        # DEBUG
-        # =================================================
 
         print()
         print("========================================")
@@ -1444,41 +1857,55 @@ def admin_add_product():
         print("Product ID:", product_id)
         print("Product:", name)
         print("Category:", selected_category["name"])
-        print("Original Product Type:", product_type)
-        print("Normalized Product Type:", product_type_key)
+        print("Product Type:", product_type_key)
         print("Images:", len(valid_images))
         print("Available:", is_available)
         print("========================================")
         print()
 
-        flash("Product added successfully!", "success")
 
-        return redirect(url_for("admin_products"))
+        flash(
+            "Product added successfully!",
+            "success"
+        )
+
+
+        return redirect(
+            url_for("admin_products")
+        )
+
 
     except Exception as error:
 
         try:
-
             connection.rollback()
-
         except Exception:
             pass
 
+
         # =================================================
-        # DELETE SAVED IMAGES IF DATABASE FAILED
+        # DELETE SAVED FILES IF DATABASE FAILED
         # =================================================
 
         for file_path in saved_files:
 
             try:
 
-                if os.path.exists(file_path):
+                if os.path.exists(
+                    file_path
+                ):
 
-                    os.remove(file_path)
+                    os.remove(
+                        file_path
+                    )
 
             except Exception as cleanup_error:
 
-                print("IMAGE CLEANUP ERROR:", cleanup_error)
+                print(
+                    "IMAGE CLEANUP ERROR:",
+                    cleanup_error
+                )
+
 
         print()
         print("========================================")
@@ -1488,9 +1915,17 @@ def admin_add_product():
         print("========================================")
         print()
 
-        flash("Unable to add product. Please try again.", "error")
 
-        return redirect(url_for("admin_add_product"))
+        flash(
+            "Unable to add product. Please try again.",
+            "error"
+        )
+
+
+        return redirect(
+            url_for("admin_add_product")
+        )
+
 
     finally:
 
@@ -1504,32 +1939,51 @@ def admin_add_product():
 # ADMIN LOGOUT
 # =========================================================
 
-
 @app.route("/admin/logout")
 def admin_logout():
 
-    session.pop("admin_id", None)
+    session.pop(
+        "admin_id",
+        None
+    )
 
-    session.pop("admin_name", None)
+    session.pop(
+        "admin_name",
+        None
+    )
 
-    session.pop("admin_email", None)
+    session.pop(
+        "admin_email",
+        None
+    )
 
-    flash("You have been logged out.", "success")
 
-    return redirect(url_for("admin_login"))
+    flash(
+        "You have been logged out.",
+        "success"
+    )
+
+
+    return redirect(
+        url_for("admin_login")
+    )
 
 
 # =========================================================
 # MAXIMUM UPLOAD ERROR
 # =========================================================
 
-
 @app.errorhandler(413)
 def request_entity_too_large(error):
 
-    flash("The uploaded files are too large. Please upload smaller images.", "error")
+    flash(
+        "The uploaded files are too large. Please upload smaller images.",
+        "error"
+    )
 
-    return redirect(url_for("admin_add_product"))
+    return redirect(
+        url_for("admin_add_product")
+    )
 
 
 # =========================================================
@@ -1538,4 +1992,9 @@ def request_entity_too_large(error):
 
 if __name__ == "__main__":
 
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    app.run(
+        debug=True,
+        host="127.0.0.1",
+        port=5000
+    )
+
