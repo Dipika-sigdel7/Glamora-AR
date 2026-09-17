@@ -755,64 +755,70 @@
 
                             {% if product.image_url %}
 
-                                <img
-                                    src="{{ product.image_url }}"
-                                    alt="{{ product.name }}"
-                                    class="product-real-image"
-                                    loading="lazy"
-                                    onerror="
-                                        this.style.display='none';
-                                        if (this.nextElementSibling) {
-                                            this.nextElementSibling.style.display='flex';
-                                        }
-                                    "
+                                <a
+                                    href="{{ url_for('product_details', product_id=product.id) }}"
+                                    class="product-image-link"
+                                    aria-label="View {{ product.name }}"
                                 >
 
+                                    <img
+                                        src="{{ product.image_url }}"
+                                        alt="{{ product.name }}"
+                                        class="product-real-image"
+                                        loading="lazy"
+                                    >
+
+                                </a>
+
+                            {% else %}
+
+                                <a
+                                    href="{{ url_for('product_details', product_id=product.id) }}"
+                                    class="product-image-link"
+                                    aria-label="View {{ product.name }}"
+                                >
+
+                                    <div class="product-placeholder">
+
+                                        {% if "lipstick" in product_type %}
+
+                                            💄
+
+                                        {% elif "eyeshadow" in product_type %}
+
+                                            🎨
+
+                                        {% elif "blush" in product_type %}
+
+                                            🌸
+
+                                        {% elif "eyeliner" in product_type %}
+
+                                            ✧
+
+                                        {% elif "mascara" in product_type %}
+
+                                            🖤
+
+                                        {% elif "foundation" in product_type %}
+
+                                            ✿
+
+                                        {% elif "highlighter" in product_type %}
+
+                                            ✨
+
+                                        {% else %}
+
+                                            💕
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </a>
+
                             {% endif %}
-
-
-                            <div
-                                class="product-placeholder"
-                                {% if product.image_url %}
-                                    style="display:none"
-                                {% endif %}
-                            >
-
-                                {% if "lipstick" in product_type %}
-
-                                    💄
-
-                                {% elif "eyeshadow" in product_type %}
-
-                                    🎨
-
-                                {% elif "blush" in product_type %}
-
-                                    🌸
-
-                                {% elif "eyeliner" in product_type %}
-
-                                    ✧
-
-                                {% elif "mascara" in product_type %}
-
-                                    🖤
-
-                                {% elif "foundation" in product_type %}
-
-                                    ✿
-
-                                {% elif "highlighter" in product_type %}
-
-                                    ✨
-
-                                {% else %}
-
-                                    💕
-
-                                {% endif %}
-
-                            </div>
 
 
                             <span class="product-badge">
@@ -826,7 +832,6 @@
                                 href="{{ url_for('product_details', product_id=product.id) }}"
                                 class="quick-try-btn quick-try"
                                 aria-label="Try {{ product.name }}"
-                                onclick="event.stopPropagation();"
                             >
                                 ✦ Quick Try-On
                             </a>
@@ -863,8 +868,18 @@
                             </div>
 
 
+                            <!-- =================================
+                                 PRODUCT NAME
+                                 ================================= -->
+
                             <h3 class="product-name">
-                                {{ product.name }}
+
+                                <a
+                                    href="{{ url_for('product_details', product_id=product.id) }}"
+                                >
+                                    {{ product.name }}
+                                </a>
+
                             </h3>
 
 
@@ -935,7 +950,6 @@
                                     href="{{ url_for('product_details', product_id=product.id) }}"
                                     class="product-view-btn"
                                     aria-label="View details for {{ product.name }}"
-                                    onclick="event.stopPropagation();"
                                 >
 
                                     View Product
@@ -1256,3 +1270,4 @@
 </body>
 
 </html>
+
