@@ -1,4 +1,3 @@
-
 import os
 import uuid
 import re
@@ -51,7 +50,6 @@ os.makedirs(
 
 app.config["PRODUCT_UPLOAD_FOLDER"] = PRODUCT_UPLOAD_FOLDER
 
-# Maximum complete request size
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 
@@ -343,10 +341,6 @@ def beauty():
             dictionary=True
         )
 
-        # =================================================
-        # LOAD AVAILABLE PRODUCTS
-        # =================================================
-
         cursor.execute("""
             SELECT
                 p.id,
@@ -413,10 +407,6 @@ def beauty():
             products
         )
 
-        # =================================================
-        # LOAD CATEGORIES
-        # =================================================
-
         cursor.execute("""
             SELECT
                 id,
@@ -442,10 +432,6 @@ def beauty():
         """)
 
         categories = cursor.fetchall()
-
-        # =================================================
-        # DEBUG
-        # =================================================
 
         print()
         print("========================================")
@@ -525,10 +511,6 @@ def product_details(product_id):
 
     connection = get_db_connection()
 
-    # =====================================================
-    # DATABASE CONNECTION CHECK
-    # =====================================================
-
     if connection is None:
 
         flash(
@@ -547,10 +529,6 @@ def product_details(product_id):
         cursor = connection.cursor(
             dictionary=True
         )
-
-        # =================================================
-        # GET PRODUCT
-        # =================================================
 
         cursor.execute(
             """
@@ -582,10 +560,6 @@ def product_details(product_id):
 
         product = cursor.fetchone()
 
-        # =================================================
-        # PRODUCT NOT FOUND
-        # =================================================
-
         if not product:
 
             flash(
@@ -597,17 +571,9 @@ def product_details(product_id):
                 url_for("beauty")
             )
 
-        # =================================================
-        # NORMALIZE PRODUCT TYPE
-        # =================================================
-
         product["product_type_key"] = normalize_product_type(
             product.get("product_type")
         )
-
-        # =================================================
-        # GET PRODUCT IMAGES
-        # =================================================
 
         cursor.execute(
             """
@@ -630,10 +596,6 @@ def product_details(product_id):
 
         images = cursor.fetchall()
 
-        # =================================================
-        # PRIMARY IMAGE
-        # =================================================
-
         if images:
 
             product["image_url"] = images[0].get(
@@ -643,12 +605,6 @@ def product_details(product_id):
         else:
 
             product["image_url"] = None
-
-        # =================================================
-        # GET PRODUCT REVIEWS
-        #
-        # This requires the product_reviews table.
-        # =================================================
 
         reviews = []
 
@@ -679,30 +635,13 @@ def product_details(product_id):
 
         except Exception as review_error:
 
-            # Reviews should not prevent the product
-            # details page from loading if the review
-            # table has not been created yet.
-
-            print()
-            print("========================================")
-            print("PRODUCT REVIEWS LOAD WARNING")
-            print("========================================")
             print(
-                "ERROR TYPE:",
-                type(review_error).__name__
-            )
-            print(
-                "ERROR MESSAGE:",
+                "PRODUCT REVIEWS LOAD WARNING:",
+                type(review_error).__name__,
                 str(review_error)
             )
-            print("========================================")
-            print()
 
             reviews = []
-
-        # =================================================
-        # REVIEW SUMMARY
-        # =================================================
 
         review_count = len(reviews)
 
@@ -722,60 +661,22 @@ def product_details(product_id):
 
             average_rating = 0
 
-        # =================================================
-        # DEBUG INFORMATION
-        # =================================================
-
         print()
         print("========================================")
         print("GLAMORA AR - PRODUCT DETAILS")
         print("========================================")
-        print(
-            "PRODUCT ID:",
-            product.get("id")
-        )
-        print(
-            "PRODUCT NAME:",
-            product.get("name")
-        )
-        print(
-            "CATEGORY:",
-            product.get("category_name")
-        )
-        print(
-            "PRODUCT TYPE:",
-            product.get("product_type")
-        )
-        print(
-            "PRODUCT TYPE KEY:",
-            product.get("product_type_key")
-        )
-        print(
-            "PRICE:",
-            product.get("price")
-        )
-        print(
-            "STOCK:",
-            product.get("stock")
-        )
-        print(
-            "IMAGE COUNT:",
-            len(images)
-        )
-        print(
-            "REVIEW COUNT:",
-            review_count
-        )
-        print(
-            "AVERAGE RATING:",
-            average_rating
-        )
+        print("PRODUCT ID:", product.get("id"))
+        print("PRODUCT NAME:", product.get("name"))
+        print("CATEGORY:", product.get("category_name"))
+        print("PRODUCT TYPE:", product.get("product_type"))
+        print("PRODUCT TYPE KEY:", product.get("product_type_key"))
+        print("PRICE:", product.get("price"))
+        print("STOCK:", product.get("stock"))
+        print("IMAGE COUNT:", len(images))
+        print("REVIEW COUNT:", review_count)
+        print("AVERAGE RATING:", average_rating)
         print("========================================")
         print()
-
-        # =================================================
-        # RENDER PRODUCT DETAILS PAGE
-        # =================================================
 
         return render_template(
             "product_details.html",
@@ -785,10 +686,6 @@ def product_details(product_id):
             review_count=review_count,
             average_rating=average_rating
         )
-
-    # =====================================================
-    # ERROR HANDLING
-    # =====================================================
 
     except Exception as error:
 
@@ -816,10 +713,6 @@ def product_details(product_id):
             url_for("beauty")
         )
 
-    # =====================================================
-    # CLOSE DATABASE RESOURCES
-    # =====================================================
-
     finally:
 
         if cursor is not None:
@@ -837,131 +730,10 @@ def product_details(product_id):
                 pass
 
 
-# ADD TO CART
-@app.route("/cart/add/<int:product_id>", methods=["POST"])
-def add_to_cart(product_id):
+# =========================================================
+# ADD PRODUCT REVIEW
+# =========================================================
 
-    if not session.get("user_id"):
-        flash("Please login to add products to your cart.", "error")
-        return redirect(url_for("login"))
-
-    connection = get_db_connection()
-
-    if connection is None:
-        flash("Database connection failed.", "error")
-        return redirect(url_for(
-            "product_details",
-            product_id=product_id
-        ))
-
-    cursor = None
-
-    try:
-
-        cursor = connection.cursor(dictionary=True)
-
-        cursor.execute("""
-            SELECT id, name, price, stock, is_available
-            FROM products
-            WHERE id = %s
-            LIMIT 1
-        """, (product_id,))
-
-        product = cursor.fetchone()
-
-        if not product:
-
-            flash("Product not found.", "error")
-
-            return redirect(url_for("beauty"))
-
-
-        if not product["is_available"] or product["stock"] <= 0:
-
-            flash("This product is currently out of stock.", "error")
-
-            return redirect(url_for(
-                "product_details",
-                product_id=product_id
-            ))
-
-
-        user_id = session["user_id"]
-
-
-        cursor.execute("""
-            SELECT id, quantity
-            FROM cart_items
-            WHERE user_id = %s
-              AND product_id = %s
-            LIMIT 1
-        """, (user_id, product_id))
-
-        existing = cursor.fetchone()
-
-
-        if existing:
-
-            new_quantity = existing["quantity"] + 1
-
-            if new_quantity > product["stock"]:
-                new_quantity = product["stock"]
-
-            cursor.execute("""
-                UPDATE cart_items
-                SET quantity = %s
-                WHERE id = %s
-            """, (new_quantity, existing["id"]))
-
-        else:
-
-            cursor.execute("""
-                INSERT INTO cart_items
-                (user_id, product_id, quantity)
-                VALUES (%s, %s, 1)
-            """, (user_id, product_id))
-
-
-        connection.commit()
-
-        flash(
-            f"{product['name']} added to your cart.",
-            "success"
-        )
-
-        return redirect(url_for(
-            "product_details",
-            product_id=product_id
-        ))
-
-
-    except Exception as error:
-
-        connection.rollback()
-
-        print("ADD TO CART ERROR:", error)
-
-        flash(
-            "Unable to add product to cart.",
-            "error"
-        )
-
-        return redirect(url_for(
-            "product_details",
-            product_id=product_id
-        ))
-
-
-    finally:
-
-        if cursor:
-            cursor.close()
-
-        connection.close()
-
-
-
-# ADD REVIEW WITH IMAGE
 @app.route(
     "/product/<int:product_id>/review",
     methods=["POST"]
@@ -975,16 +747,19 @@ def add_product_review(product_id):
             "error"
         )
 
-        return redirect(url_for("login"))
+        return redirect(
+            url_for("login")
+        )
 
-
-    rating_value = request.form.get("rating", "").strip()
+    rating_value = request.form.get(
+        "rating",
+        ""
+    ).strip()
 
     review_text = request.form.get(
         "review_text",
         ""
     ).strip()
-
 
     try:
 
@@ -993,18 +768,22 @@ def add_product_review(product_id):
         if rating < 1 or rating > 5:
             raise ValueError
 
-    except (ValueError, TypeError):
+    except (
+        ValueError,
+        TypeError
+    ):
 
         flash(
             "Please select a valid rating.",
             "error"
         )
 
-        return redirect(url_for(
-            "product_details",
-            product_id=product_id
-        ))
-
+        return redirect(
+            url_for(
+                "product_details",
+                product_id=product_id
+            )
+        )
 
     connection = get_db_connection()
 
@@ -1015,22 +794,21 @@ def add_product_review(product_id):
             "error"
         )
 
-        return redirect(url_for(
-            "product_details",
-            product_id=product_id
-        ))
-
+        return redirect(
+            url_for(
+                "product_details",
+                product_id=product_id
+            )
+        )
 
     cursor = None
     saved_file = None
 
-
     try:
 
-        cursor = connection.cursor(dictionary=True)
-
-
-        # CHECK PRODUCT
+        cursor = connection.cursor(
+            dictionary=True
+        )
 
         cursor.execute("""
             SELECT id
@@ -1041,7 +819,6 @@ def add_product_review(product_id):
 
         product = cursor.fetchone()
 
-
         if not product:
 
             flash(
@@ -1049,20 +826,20 @@ def add_product_review(product_id):
                 "error"
             )
 
-            return redirect(url_for("beauty"))
-
-
-        # GET USER
+            return redirect(
+                url_for("beauty")
+            )
 
         cursor.execute("""
-            SELECT id, name
+            SELECT
+                id,
+                name
             FROM users
             WHERE id = %s
             LIMIT 1
         """, (session["user_id"],))
 
         user = cursor.fetchone()
-
 
         if not user:
 
@@ -1073,15 +850,15 @@ def add_product_review(product_id):
                 "error"
             )
 
-            return redirect(url_for("login"))
-
-
-        # REVIEW IMAGE
+            return redirect(
+                url_for("login")
+            )
 
         review_image_url = None
 
-        image = request.files.get("review_image")
-
+        image = request.files.get(
+            "review_image"
+        )
 
         if image and image.filename:
 
@@ -1096,16 +873,16 @@ def add_product_review(product_id):
                     "error"
                 )
 
-                return redirect(url_for(
-                    "product_details",
-                    product_id=product_id
-                ))
-
+                return redirect(
+                    url_for(
+                        "product_details",
+                        product_id=product_id
+                    )
+                )
 
             extension = get_file_extension(
                 filename
             )
-
 
             unique_filename = (
                 "review_"
@@ -1113,7 +890,6 @@ def add_product_review(product_id):
                 + "."
                 + extension
             )
-
 
             review_folder = os.path.join(
                 app.root_path,
@@ -1127,23 +903,17 @@ def add_product_review(product_id):
                 exist_ok=True
             )
 
-
             saved_file = os.path.join(
                 review_folder,
                 unique_filename
             )
 
-
             image.save(saved_file)
-
 
             review_image_url = (
                 "/static/uploads/reviews/"
                 + unique_filename
             )
-
-
-        # INSERT REVIEW
 
         cursor.execute("""
             INSERT INTO product_reviews
@@ -1165,25 +935,26 @@ def add_product_review(product_id):
             review_image_url
         ))
 
-
         connection.commit()
-
 
         flash(
             "Thank you! Your review has been submitted.",
             "success"
         )
 
-
-        return redirect(url_for(
-            "product_details",
-            product_id=product_id
-        ))
-
+        return redirect(
+            url_for(
+                "product_details",
+                product_id=product_id
+            )
+        )
 
     except Exception as error:
 
-        connection.rollback()
+        try:
+            connection.rollback()
+        except Exception:
+            pass
 
         if saved_file and os.path.exists(saved_file):
 
@@ -1192,24 +963,23 @@ def add_product_review(product_id):
             except Exception:
                 pass
 
-
         print(
             "PRODUCT REVIEW ERROR:",
-            error
+            type(error).__name__,
+            str(error)
         )
-
 
         flash(
             "Unable to submit your review.",
             "error"
         )
 
-
-        return redirect(url_for(
-            "product_details",
-            product_id=product_id
-        ))
-
+        return redirect(
+            url_for(
+                "product_details",
+                product_id=product_id
+            )
+        )
 
     finally:
 
@@ -1304,11 +1074,8 @@ def login():
                     name,
                     email,
                     password
-
                 FROM users
-
                 WHERE LOWER(email) = %s
-
                 LIMIT 1
                 """,
                 (email,)
@@ -1387,7 +1154,293 @@ def register():
     )
 
 
+# =========================================================
+# ADD PRODUCT TO CART
+#
+# IMPORTANT:
+# THIS IS THE ONLY add_to_cart() FUNCTION.
+# =========================================================
 
+@app.route(
+    "/cart/add/<int:product_id>",
+    methods=["POST"]
+)
+def add_to_cart(product_id):
+
+    user_id = session.get(
+        "user_id"
+    )
+
+    # =====================================================
+    # USER LOGIN CHECK
+    # =====================================================
+
+    if not user_id:
+
+        flash(
+            "Please log in to add products to your cart.",
+            "error"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    connection = get_db_connection()
+
+    if connection is None:
+
+        flash(
+            "Database connection failed.",
+            "error"
+        )
+
+        return redirect(
+            url_for(
+                "product_details",
+                product_id=product_id
+            )
+        )
+
+    cursor = None
+
+    try:
+
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
+        # =================================================
+        # CHECK PRODUCT
+        # =================================================
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                name,
+                price,
+                stock,
+                is_available
+            FROM products
+            WHERE id = %s
+            LIMIT 1
+            """,
+            (product_id,)
+        )
+
+        product = cursor.fetchone()
+
+        if not product:
+
+            flash(
+                "Product not found.",
+                "error"
+            )
+
+            return redirect(
+                url_for("beauty")
+            )
+
+        # =================================================
+        # CHECK AVAILABILITY
+        # =================================================
+
+        if not product["is_available"]:
+
+            flash(
+                "This product is currently unavailable.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "product_details",
+                    product_id=product_id
+                )
+            )
+
+        # =================================================
+        # CHECK STOCK
+        # =================================================
+
+        if product["stock"] <= 0:
+
+            flash(
+                "This product is out of stock.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "product_details",
+                    product_id=product_id
+                )
+            )
+
+        # =================================================
+        # CHECK EXISTING CART ITEM
+        # =================================================
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                quantity
+            FROM cart_items
+            WHERE user_id = %s
+              AND product_id = %s
+            LIMIT 1
+            """,
+            (
+                user_id,
+                product_id
+            )
+        )
+
+        existing_item = cursor.fetchone()
+
+        # =================================================
+        # UPDATE EXISTING ITEM
+        # =================================================
+
+        if existing_item:
+
+            new_quantity = (
+                existing_item["quantity"] + 1
+            )
+
+            if new_quantity > product["stock"]:
+
+                flash(
+                    "You cannot add more than the available stock.",
+                    "error"
+                )
+
+                return redirect(
+                    url_for(
+                        "product_details",
+                        product_id=product_id
+                    )
+                )
+
+            cursor.execute(
+                """
+                UPDATE cart_items
+                SET quantity = %s
+                WHERE id = %s
+                  AND user_id = %s
+                """,
+                (
+                    new_quantity,
+                    existing_item["id"],
+                    user_id
+                )
+            )
+
+        # =================================================
+        # INSERT NEW ITEM
+        # =================================================
+
+        else:
+
+            cursor.execute(
+                """
+                INSERT INTO cart_items
+                (
+                    user_id,
+                    product_id,
+                    quantity
+                )
+                VALUES
+                (
+                    %s,
+                    %s,
+                    %s
+                )
+                """,
+                (
+                    user_id,
+                    product_id,
+                    1
+                )
+            )
+
+        # =================================================
+        # COMMIT
+        # =================================================
+
+        connection.commit()
+
+        flash(
+            f"{product['name']} has been added to your cart.",
+            "success"
+        )
+
+        return redirect(
+            url_for(
+                "product_details",
+                product_id=product_id
+            )
+        )
+
+    except Exception as error:
+
+        try:
+            connection.rollback()
+        except Exception:
+            pass
+
+        print()
+        print("========================================")
+        print("ADD TO CART ERROR")
+        print("========================================")
+        print(
+            "USER ID:",
+            user_id
+        )
+        print(
+            "PRODUCT ID:",
+            product_id
+        )
+        print(
+            "ERROR TYPE:",
+            type(error).__name__
+        )
+        print(
+            "ERROR MESSAGE:",
+            str(error)
+        )
+        print("========================================")
+        print()
+
+        flash(
+            "Unable to add product to cart.",
+            "error"
+        )
+
+        return redirect(
+            url_for(
+                "product_details",
+                product_id=product_id
+            )
+        )
+
+    finally:
+
+        if cursor is not None:
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
+
+        if connection is not None:
+
+            try:
+                connection.close()
+            except Exception:
+                pass
 
 
 # =========================================================
@@ -1457,11 +1510,8 @@ def admin_login():
                     name,
                     email,
                     password_hash
-
                 FROM admins
-
                 WHERE LOWER(email) = %s
-
                 LIMIT 1
                 """,
                 (email,)
@@ -1805,19 +1855,11 @@ def admin_products():
 )
 def admin_add_product():
 
-    # =====================================================
-    # ADMIN CHECK
-    # =====================================================
-
     if not admin_required():
 
         return redirect(
             url_for("admin_login")
         )
-
-    # =====================================================
-    # DATABASE CONNECTION
-    # =====================================================
 
     connection = get_db_connection()
 
@@ -1833,7 +1875,6 @@ def admin_add_product():
         )
 
     cursor = None
-
     saved_files = []
 
     try:
@@ -2036,7 +2077,6 @@ def admin_add_product():
             )
 
             if price < 0:
-
                 raise InvalidOperation
 
             price = price.quantize(
@@ -2074,7 +2114,6 @@ def admin_add_product():
             )
 
             if stock < 0:
-
                 raise ValueError
 
         except (
@@ -2121,10 +2160,6 @@ def admin_add_product():
             if not filename:
                 continue
 
-            # ---------------------------------------------
-            # EXTENSION
-            # ---------------------------------------------
-
             if not allowed_image(
                 filename
             ):
@@ -2146,10 +2181,6 @@ def admin_add_product():
             extension = get_file_extension(
                 filename
             )
-
-            # ---------------------------------------------
-            # FILE SIZE
-            # ---------------------------------------------
 
             image.seek(
                 0,
@@ -2317,14 +2348,10 @@ def admin_add_product():
             )
 
         # =================================================
-        # COMMIT EVERYTHING
+        # COMMIT
         # =================================================
 
         connection.commit()
-
-        # =================================================
-        # SUCCESS DEBUG
-        # =================================================
 
         print()
         print("========================================")
@@ -2360,15 +2387,7 @@ def admin_add_product():
             url_for("admin_products")
         )
 
-    # =====================================================
-    # ERROR HANDLING
-    # =====================================================
-
     except Exception as error:
-
-        # -------------------------------------------------
-        # ROLLBACK DATABASE
-        # -------------------------------------------------
 
         try:
 
@@ -2381,10 +2400,6 @@ def admin_add_product():
                 type(rollback_error).__name__,
                 str(rollback_error)
             )
-
-        # -------------------------------------------------
-        # DELETE SAVED IMAGES
-        # -------------------------------------------------
 
         for file_path in saved_files:
 
@@ -2406,10 +2421,6 @@ def admin_add_product():
                     str(cleanup_error)
                 )
 
-        # -------------------------------------------------
-        # PRINT REAL ERROR
-        # -------------------------------------------------
-
         print()
         print("========================================")
         print("ADD PRODUCT ERROR")
@@ -2428,10 +2439,6 @@ def admin_add_product():
         )
         print("========================================")
         print()
-
-        # -------------------------------------------------
-        # SHOW ACTUAL ERROR
-        # -------------------------------------------------
 
         flash(
             f"Unable to add product: {str(error)}",
@@ -2511,4 +2518,3 @@ if __name__ == "__main__":
         host="127.0.0.1",
         port=5000
     )
-
