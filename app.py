@@ -525,6 +525,10 @@ def product_details(product_id):
 
     connection = get_db_connection()
 
+    # =====================================================
+    # DATABASE CONNECTION CHECK
+    # =====================================================
+
     if connection is None:
 
         flash(
@@ -578,6 +582,10 @@ def product_details(product_id):
 
         product = cursor.fetchone()
 
+        # =================================================
+        # PRODUCT NOT FOUND
+        # =================================================
+
         if not product:
 
             flash(
@@ -590,7 +598,7 @@ def product_details(product_id):
             )
 
         # =================================================
-        # PRODUCT TYPE
+        # NORMALIZE PRODUCT TYPE
         # =================================================
 
         product["product_type_key"] = normalize_product_type(
@@ -598,13 +606,14 @@ def product_details(product_id):
         )
 
         # =================================================
-        # GET ALL IMAGES
+        # GET PRODUCT IMAGES
         # =================================================
 
         cursor.execute(
             """
             SELECT
                 id,
+                product_id,
                 image_url,
                 is_primary
 
@@ -625,17 +634,161 @@ def product_details(product_id):
         # PRIMARY IMAGE
         # =================================================
 
-        product["image_url"] = (
-            images[0]["image_url"]
-            if images
-            else None
+        if images:
+
+            product["image_url"] = images[0].get(
+                "image_url"
+            )
+
+        else:
+
+            product["image_url"] = None
+
+        # =================================================
+        # GET PRODUCT REVIEWS
+        #
+        # This requires the product_reviews table.
+        # =================================================
+
+        reviews = []
+
+        try:
+
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    customer_name,
+                    rating,
+                    review_text,
+                    review_image,
+                    created_at
+
+                FROM product_reviews
+
+                WHERE product_id = %s
+
+                ORDER BY
+                    created_at DESC,
+                    id DESC
+                """,
+                (product_id,)
+            )
+
+            reviews = cursor.fetchall()
+
+        except Exception as review_error:
+
+            # Reviews should not prevent the product
+            # details page from loading if the review
+            # table has not been created yet.
+
+            print()
+            print("========================================")
+            print("PRODUCT REVIEWS LOAD WARNING")
+            print("========================================")
+            print(
+                "ERROR TYPE:",
+                type(review_error).__name__
+            )
+            print(
+                "ERROR MESSAGE:",
+                str(review_error)
+            )
+            print("========================================")
+            print()
+
+            reviews = []
+
+        # =================================================
+        # REVIEW SUMMARY
+        # =================================================
+
+        review_count = len(reviews)
+
+        if review_count > 0:
+
+            total_rating = sum(
+                int(review.get("rating") or 0)
+                for review in reviews
+            )
+
+            average_rating = round(
+                total_rating / review_count,
+                1
+            )
+
+        else:
+
+            average_rating = 0
+
+        # =================================================
+        # DEBUG INFORMATION
+        # =================================================
+
+        print()
+        print("========================================")
+        print("GLAMORA AR - PRODUCT DETAILS")
+        print("========================================")
+        print(
+            "PRODUCT ID:",
+            product.get("id")
         )
+        print(
+            "PRODUCT NAME:",
+            product.get("name")
+        )
+        print(
+            "CATEGORY:",
+            product.get("category_name")
+        )
+        print(
+            "PRODUCT TYPE:",
+            product.get("product_type")
+        )
+        print(
+            "PRODUCT TYPE KEY:",
+            product.get("product_type_key")
+        )
+        print(
+            "PRICE:",
+            product.get("price")
+        )
+        print(
+            "STOCK:",
+            product.get("stock")
+        )
+        print(
+            "IMAGE COUNT:",
+            len(images)
+        )
+        print(
+            "REVIEW COUNT:",
+            review_count
+        )
+        print(
+            "AVERAGE RATING:",
+            average_rating
+        )
+        print("========================================")
+        print()
+
+        # =================================================
+        # RENDER PRODUCT DETAILS PAGE
+        # =================================================
 
         return render_template(
             "product_details.html",
             product=product,
-            images=images
+            images=images,
+            reviews=reviews,
+            review_count=review_count,
+            average_rating=average_rating
         )
+
+    # =====================================================
+    # ERROR HANDLING
+    # =====================================================
 
     except Exception as error:
 
@@ -663,12 +816,25 @@ def product_details(product_id):
             url_for("beauty")
         )
 
+    # =====================================================
+    # CLOSE DATABASE RESOURCES
+    # =====================================================
+
     finally:
 
-        if cursor:
-            cursor.close()
+        if cursor is not None:
 
-        connection.close()
+            try:
+                cursor.close()
+            except Exception:
+                pass
+
+        if connection is not None:
+
+            try:
+                connection.close()
+            except Exception:
+                pass
 
 
 # ADD TO CART
