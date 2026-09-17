@@ -671,6 +671,129 @@ def product_details(product_id):
         connection.close()
 
 
+
+@app.route("/cart/add/<int:product_id>", methods=["POST"])
+def add_to_cart(product_id):
+
+    if not session.get("user_id"):
+        flash("Please login to add products to your cart.", "error")
+        return redirect(url_for("login"))
+
+    connection = get_db_connection()
+
+    if connection is None:
+        flash("Database connection failed.", "error")
+        return redirect(url_for(
+            "product_details",
+            product_id=product_id
+        ))
+
+    cursor = None
+
+    try:
+
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT id, name, price, stock, is_available
+            FROM products
+            WHERE id = %s
+            LIMIT 1
+        """, (product_id,))
+
+        product = cursor.fetchone()
+
+        if not product:
+
+            flash("Product not found.", "error")
+
+            return redirect(url_for("beauty"))
+
+
+        if not product["is_available"] or product["stock"] <= 0:
+
+            flash("This product is currently out of stock.", "error")
+
+            return redirect(url_for(
+                "product_details",
+                product_id=product_id
+            ))
+
+
+        user_id = session["user_id"]
+
+
+        cursor.execute("""
+            SELECT id, quantity
+            FROM cart_items
+            WHERE user_id = %s
+              AND product_id = %s
+            LIMIT 1
+        """, (user_id, product_id))
+
+        existing = cursor.fetchone()
+
+
+        if existing:
+
+            new_quantity = existing["quantity"] + 1
+
+            if new_quantity > product["stock"]:
+                new_quantity = product["stock"]
+
+            cursor.execute("""
+                UPDATE cart_items
+                SET quantity = %s
+                WHERE id = %s
+            """, (new_quantity, existing["id"]))
+
+        else:
+
+            cursor.execute("""
+                INSERT INTO cart_items
+                (user_id, product_id, quantity)
+                VALUES (%s, %s, 1)
+            """, (user_id, product_id))
+
+
+        connection.commit()
+
+        flash(
+            f"{product['name']} added to your cart.",
+            "success"
+        )
+
+        return redirect(url_for(
+            "product_details",
+            product_id=product_id
+        ))
+
+
+    except Exception as error:
+
+        connection.rollback()
+
+        print("ADD TO CART ERROR:", error)
+
+        flash(
+            "Unable to add product to cart.",
+            "error"
+        )
+
+        return redirect(url_for(
+            "product_details",
+            product_id=product_id
+        ))
+
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        connection.close()
+
+
 # =========================================================
 # ABOUT
 # =========================================================
