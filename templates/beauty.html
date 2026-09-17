@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 
@@ -810,253 +809,251 @@
 
 
                     <!-- =====================================
-                         CLICKABLE PRODUCT CARD
+                         PRODUCT CARD
                          ===================================== -->
 
-                    <a
-                        href="{{ url_for('product_details', product_id=product.id) }}"
-                        class="product-card-link"
-                        aria-label="View details for {{ product.name }}"
+                    <article
+                        class="beauty-product-card product-card reveal"
+                        data-product-id="{{ product.id }}"
+                        data-product-type="{{ product_type }}"
+                        data-category="{{ product_category }}"
+                        data-category-id="{{ product.category_id or '' }}"
                     >
 
-                        <article
-                            class="beauty-product-card product-card reveal"
-                            data-product-id="{{ product.id }}"
-                            data-product-type="{{ product_type }}"
-                            data-category="{{ product_category }}"
-                            data-category-id="{{ product.category_id or '' }}"
-                        >
+
+                        <!-- =================================
+                             PRODUCT IMAGE
+                             ================================= -->
+
+                        <div class="beauty-product-image">
+
+                            {% if product.image_url %}
+
+                                <img
+                                    src="{{ product.image_url }}"
+                                    alt="{{ product.name }}"
+                                    class="product-real-image"
+                                    loading="lazy"
+                                    onerror="
+                                        this.style.display='none';
+                                        if (this.nextElementSibling) {
+                                            this.nextElementSibling.style.display='flex';
+                                        }
+                                    "
+                                >
+
+                            {% endif %}
 
 
-                            <!-- =================================
-                                 PRODUCT IMAGE
-                                 ================================= -->
+                            <!-- FALLBACK PRODUCT VISUAL -->
 
-                            <div class="beauty-product-image">
-
+                            <div
+                                class="product-placeholder"
                                 {% if product.image_url %}
+                                    style="display:none"
+                                {% endif %}
+                            >
 
-                                    <img
-                                        src="{{ product.image_url }}"
-                                        alt="{{ product.name }}"
-                                        class="product-real-image"
-                                        loading="lazy"
-                                        onerror="
-                                            this.style.display='none';
-                                            if (this.nextElementSibling) {
-                                                this.nextElementSibling.style.display='flex';
-                                            }
-                                        "
-                                    >
+                                {% if "lipstick" in product_type %}
+
+                                    💄
+
+                                {% elif "eyeshadow" in product_type %}
+
+                                    🎨
+
+                                {% elif "blush" in product_type %}
+
+                                    🌸
+
+                                {% elif "eyeliner" in product_type %}
+
+                                    ✧
+
+                                {% elif "mascara" in product_type %}
+
+                                    🖤
+
+                                {% elif "foundation" in product_type %}
+
+                                    ✿
+
+                                {% elif "highlighter" in product_type %}
+
+                                    ✨
+
+                                {% else %}
+
+                                    💕
 
                                 {% endif %}
 
-
-                                <!-- FALLBACK PRODUCT VISUAL -->
-
-                                <div
-                                    class="product-placeholder"
-                                    {% if product.image_url %}
-                                        style="display:none"
-                                    {% endif %}
-                                >
-
-                                    {% if "lipstick" in product_type %}
-
-                                        💄
-
-                                    {% elif "eyeshadow" in product_type %}
-
-                                        🎨
-
-                                    {% elif "blush" in product_type %}
-
-                                        🌸
-
-                                    {% elif "eyeliner" in product_type %}
-
-                                        ✧
-
-                                    {% elif "mascara" in product_type %}
-
-                                        🖤
-
-                                    {% elif "foundation" in product_type %}
-
-                                        ✿
-
-                                    {% elif "highlighter" in product_type %}
-
-                                        ✨
-
-                                    {% else %}
-
-                                        💕
-
-                                    {% endif %}
-
-                                </div>
+                            </div>
 
 
-                                <!-- PRODUCT BADGE -->
+                            <!-- PRODUCT BADGE -->
 
-                                <span class="product-badge">
+                            <span class="product-badge">
 
-                                    {{ product.product_type or 'BEAUTY' }}
+                                {{ product.product_type or 'BEAUTY' }}
+
+                            </span>
+
+
+                            <!-- QUICK TRY -->
+
+                            <button
+                                type="button"
+                                class="quick-try-btn quick-try"
+                                data-product-id="{{ product.id }}"
+                                onclick="event.stopPropagation();"
+                            >
+
+                                ✦ Quick Try-On
+
+                            </button>
+
+                        </div>
+
+
+                        <!-- =================================
+                             PRODUCT INFORMATION
+                             ================================= -->
+
+                        <div class="beauty-product-info">
+
+
+                            <!-- CATEGORY / STOCK -->
+
+                            <div class="product-category-row">
+
+                                <span class="product-category">
+
+                                    {{ product.category_name or 'Beauty' }}
 
                                 </span>
 
 
-                                <!-- QUICK TRY -->
+                                {% if product.stock is not none and product.stock|int > 0 %}
 
-                                <button
-                                    type="button"
-                                    class="quick-try-btn quick-try"
-                                    data-product-id="{{ product.id }}"
-                                    onclick="event.preventDefault(); event.stopPropagation();"
-                                >
-
-                                    ✦ Quick Try-On
-
-                                </button>
-
-                            </div>
-
-
-                            <!-- =================================
-                                 PRODUCT INFORMATION
-                                 ================================= -->
-
-                            <div class="beauty-product-info">
-
-
-                                <!-- CATEGORY / STOCK -->
-
-                                <div class="product-category-row">
-
-                                    <span class="product-category">
-
-                                        {{ product.category_name or 'Beauty' }}
-
+                                    <span class="stock-status">
+                                        In Stock
                                     </span>
-
-
-                                    {% if product.stock is not none and product.stock|int > 0 %}
-
-                                        <span class="stock-status">
-                                            In Stock
-                                        </span>
-
-                                    {% else %}
-
-                                        <span class="stock-status out-stock">
-                                            Out of Stock
-                                        </span>
-
-                                    {% endif %}
-
-                                </div>
-
-
-                                <!-- PRODUCT NAME -->
-
-                                <h3 class="product-name">
-
-                                    {{ product.name }}
-
-                                </h3>
-
-
-                                <!-- DESCRIPTION -->
-
-                                {% if product.description %}
-
-                                    <p class="product-description">
-
-                                        {{ product.description }}
-
-                                    </p>
 
                                 {% else %}
 
-                                    <p class="product-description">
-
-                                        Discover this beautiful Glamora AR
-                                        beauty product.
-
-                                    </p>
-
-                                {% endif %}
-
-
-                                <!-- SHADE -->
-
-                                {% if product.shade %}
-
-                                    <div class="product-detail">
-
-                                        <span>
-                                            Shade
-                                        </span>
-
-                                        <strong>
-                                            {{ product.shade }}
-                                        </strong>
-
-                                    </div>
-
-                                {% endif %}
-
-
-                                <!-- COLOR -->
-
-                                {% if product.color %}
-
-                                    <div class="product-detail">
-
-                                        <span>
-                                            Color
-                                        </span>
-
-                                        <strong>
-                                            {{ product.color }}
-                                        </strong>
-
-                                    </div>
-
-                                {% endif %}
-
-
-                                <!-- PRICE / VIEW PRODUCT -->
-
-                                <div class="product-bottom">
-
-                                    <span class="product-price">
-
-                                        ${{ "%.2f"|format(product.price|float) }}
-
+                                    <span class="stock-status out-stock">
+                                        Out of Stock
                                     </span>
 
-
-                                    <!-- PRODUCT DETAILS -->
-
-                                    <span class="product-view-btn">
-
-                                        View Product
-
-                                        <span>
-                                            →
-                                        </span>
-
-                                    </span>
-
-                                </div>
+                                {% endif %}
 
                             </div>
 
-                        </article>
 
-                    </a>
+                            <!-- PRODUCT NAME -->
+
+                            <h3 class="product-name">
+
+                                {{ product.name }}
+
+                            </h3>
+
+
+                            <!-- DESCRIPTION -->
+
+                            {% if product.description %}
+
+                                <p class="product-description">
+
+                                    {{ product.description }}
+
+                                </p>
+
+                            {% else %}
+
+                                <p class="product-description">
+
+                                    Discover this beautiful Glamora AR
+                                    beauty product.
+
+                                </p>
+
+                            {% endif %}
+
+
+                            <!-- SHADE -->
+
+                            {% if product.shade %}
+
+                                <div class="product-detail">
+
+                                    <span>
+                                        Shade
+                                    </span>
+
+                                    <strong>
+                                        {{ product.shade }}
+                                    </strong>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- COLOR -->
+
+                            {% if product.color %}
+
+                                <div class="product-detail">
+
+                                    <span>
+                                        Color
+                                    </span>
+
+                                    <strong>
+                                        {{ product.color }}
+                                    </strong>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- PRICE / VIEW PRODUCT -->
+
+                            <div class="product-bottom">
+
+                                <span class="product-price">
+
+                                    ${{ "%.2f"|format(product.price|float) }}
+
+                                </span>
+
+
+                                <!-- =================================
+                                     PRODUCT DETAILS LINK
+                                     ================================= -->
+
+                                <a
+                                    href="{{ url_for('product_details', product_id=product.id) }}"
+                                    class="product-view-btn"
+                                    aria-label="View details for {{ product.name }}"
+                                >
+
+                                    View Product
+
+                                    <span>
+                                        →
+                                    </span>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </article>
 
                 {% endfor %}
 
@@ -1382,4 +1379,3 @@
 </body>
 
 </html>
-
