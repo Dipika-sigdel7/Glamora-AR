@@ -671,7 +671,7 @@ def product_details(product_id):
         connection.close()
 
 
-
+# ADD TO CART
 @app.route("/cart/add/<int:product_id>", methods=["POST"])
 def add_to_cart(product_id):
 
@@ -779,6 +779,265 @@ def add_to_cart(product_id):
             "Unable to add product to cart.",
             "error"
         )
+
+        return redirect(url_for(
+            "product_details",
+            product_id=product_id
+        ))
+
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        connection.close()
+
+
+
+# ADD REVIEW WITH IMAGE
+@app.route(
+    "/product/<int:product_id>/review",
+    methods=["POST"]
+)
+def add_product_review(product_id):
+
+    if not session.get("user_id"):
+
+        flash(
+            "Please login to submit a review.",
+            "error"
+        )
+
+        return redirect(url_for("login"))
+
+
+    rating_value = request.form.get("rating", "").strip()
+
+    review_text = request.form.get(
+        "review_text",
+        ""
+    ).strip()
+
+
+    try:
+
+        rating = int(rating_value)
+
+        if rating < 1 or rating > 5:
+            raise ValueError
+
+    except (ValueError, TypeError):
+
+        flash(
+            "Please select a valid rating.",
+            "error"
+        )
+
+        return redirect(url_for(
+            "product_details",
+            product_id=product_id
+        ))
+
+
+    connection = get_db_connection()
+
+    if connection is None:
+
+        flash(
+            "Database connection failed.",
+            "error"
+        )
+
+        return redirect(url_for(
+            "product_details",
+            product_id=product_id
+        ))
+
+
+    cursor = None
+    saved_file = None
+
+
+    try:
+
+        cursor = connection.cursor(dictionary=True)
+
+
+        # CHECK PRODUCT
+
+        cursor.execute("""
+            SELECT id
+            FROM products
+            WHERE id = %s
+            LIMIT 1
+        """, (product_id,))
+
+        product = cursor.fetchone()
+
+
+        if not product:
+
+            flash(
+                "Product not found.",
+                "error"
+            )
+
+            return redirect(url_for("beauty"))
+
+
+        # GET USER
+
+        cursor.execute("""
+            SELECT id, name
+            FROM users
+            WHERE id = %s
+            LIMIT 1
+        """, (session["user_id"],))
+
+        user = cursor.fetchone()
+
+
+        if not user:
+
+            session.clear()
+
+            flash(
+                "Please login again.",
+                "error"
+            )
+
+            return redirect(url_for("login"))
+
+
+        # REVIEW IMAGE
+
+        review_image_url = None
+
+        image = request.files.get("review_image")
+
+
+        if image and image.filename:
+
+            filename = secure_filename(
+                image.filename
+            )
+
+            if not allowed_image(filename):
+
+                flash(
+                    "Only JPG, JPEG, PNG, WEBP and GIF images are allowed.",
+                    "error"
+                )
+
+                return redirect(url_for(
+                    "product_details",
+                    product_id=product_id
+                ))
+
+
+            extension = get_file_extension(
+                filename
+            )
+
+
+            unique_filename = (
+                "review_"
+                + uuid.uuid4().hex
+                + "."
+                + extension
+            )
+
+
+            review_folder = os.path.join(
+                app.root_path,
+                "static",
+                "uploads",
+                "reviews"
+            )
+
+            os.makedirs(
+                review_folder,
+                exist_ok=True
+            )
+
+
+            saved_file = os.path.join(
+                review_folder,
+                unique_filename
+            )
+
+
+            image.save(saved_file)
+
+
+            review_image_url = (
+                "/static/uploads/reviews/"
+                + unique_filename
+            )
+
+
+        # INSERT REVIEW
+
+        cursor.execute("""
+            INSERT INTO product_reviews
+            (
+                product_id,
+                user_id,
+                customer_name,
+                rating,
+                review_text,
+                review_image
+            )
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+            product_id,
+            session["user_id"],
+            user["name"],
+            rating,
+            review_text,
+            review_image_url
+        ))
+
+
+        connection.commit()
+
+
+        flash(
+            "Thank you! Your review has been submitted.",
+            "success"
+        )
+
+
+        return redirect(url_for(
+            "product_details",
+            product_id=product_id
+        ))
+
+
+    except Exception as error:
+
+        connection.rollback()
+
+        if saved_file and os.path.exists(saved_file):
+
+            try:
+                os.remove(saved_file)
+            except Exception:
+                pass
+
+
+        print(
+            "PRODUCT REVIEW ERROR:",
+            error
+        )
+
+
+        flash(
+            "Unable to submit your review.",
+            "error"
+        )
+
 
         return redirect(url_for(
             "product_details",
