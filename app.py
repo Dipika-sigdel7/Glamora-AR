@@ -1,3 +1,4 @@
+
 import os
 import uuid
 import re
@@ -63,7 +64,6 @@ os.makedirs(
 app.config["PRODUCT_UPLOAD_FOLDER"] = PRODUCT_UPLOAD_FOLDER
 app.config["REVIEW_UPLOAD_FOLDER"] = REVIEW_UPLOAD_FOLDER
 
-# Maximum complete request size
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 
@@ -560,15 +560,33 @@ def product_details(product_id):
 
     connection = get_db_connection()
 
+    # =====================================================
+    # DATABASE CONNECTION CHECK
+    # =====================================================
+
     if connection is None:
+
+        print()
+        print("========================================")
+        print("PRODUCT DETAILS DATABASE ERROR")
+        print("========================================")
+        print("PRODUCT ID:", product_id)
+        print("Database connection returned None.")
+        print("========================================")
+        print()
 
         flash(
             "Database connection failed.",
             "error"
         )
 
-        return redirect(
-            url_for("beauty")
+        return render_template(
+            "product_details.html",
+            product=None,
+            images=[],
+            reviews=[],
+            review_count=0,
+            average_rating=0
         )
 
     cursor = None
@@ -613,15 +631,32 @@ def product_details(product_id):
 
         product = cursor.fetchone()
 
+        # =================================================
+        # PRODUCT NOT FOUND
+        # =================================================
+
         if not product:
+
+            print()
+            print("========================================")
+            print("PRODUCT NOT FOUND")
+            print("========================================")
+            print("REQUESTED PRODUCT ID:", product_id)
+            print("========================================")
+            print()
 
             flash(
                 "Product not found.",
                 "error"
             )
 
-            return redirect(
-                url_for("beauty")
+            return render_template(
+                "product_details.html",
+                product=None,
+                images=[],
+                reviews=[],
+                review_count=0,
+                average_rating=0
             )
 
         # =================================================
@@ -656,6 +691,10 @@ def product_details(product_id):
         )
 
         images = cursor.fetchall()
+
+        # =================================================
+        # PRIMARY IMAGE
+        # =================================================
 
         if images:
 
@@ -760,6 +799,10 @@ def product_details(product_id):
         print("========================================")
         print()
 
+        # =================================================
+        # RENDER PRODUCT DETAILS PAGE
+        # =================================================
+
         return render_template(
             "product_details.html",
             product=product,
@@ -771,10 +814,15 @@ def product_details(product_id):
 
     except Exception as error:
 
+        # =================================================
+        # REAL ERROR
+        # =================================================
+
         print()
         print("========================================")
         print("PRODUCT DETAILS ERROR")
         print("========================================")
+        print("PRODUCT ID:", product_id)
         print(
             "ERROR TYPE:",
             type(error).__name__
@@ -783,16 +831,29 @@ def product_details(product_id):
             "ERROR MESSAGE:",
             str(error)
         )
+        print(
+            "ERROR REPR:",
+            repr(error)
+        )
         print("========================================")
         print()
 
         flash(
-            "Unable to load product.",
+            f"Unable to load product: {str(error)}",
             "error"
         )
 
-        return redirect(
-            url_for("beauty")
+        # IMPORTANT:
+        # Do NOT redirect to /beauty here.
+        # This allows us to see the actual problem.
+
+        return render_template(
+            "product_details.html",
+            product=None,
+            images=[],
+            reviews=[],
+            review_count=0,
+            average_rating=0
         )
 
     finally:
@@ -996,9 +1057,9 @@ def add_product_review(product_id):
                     )
                 )
 
-            # -------------------------------------------------
+            # =================================================
             # CHECK FILE SIZE
-            # -------------------------------------------------
+            # =================================================
 
             image.seek(
                 0,
@@ -1342,10 +1403,6 @@ def register():
 )
 def add_to_cart(product_id):
 
-    # =====================================================
-    # USER LOGIN CHECK
-    # =====================================================
-
     user_id = session.get(
         "user_id"
     )
@@ -1528,10 +1585,6 @@ def add_to_cart(product_id):
                     user_id
                 )
             )
-
-        # =================================================
-        # INSERT NEW ITEM
-        # =================================================
 
         else:
 
@@ -2075,10 +2128,6 @@ def admin_products():
 )
 def admin_add_product():
 
-    # =====================================================
-    # ADMIN CHECK
-    # =====================================================
-
     if not admin_required():
 
         return redirect(
@@ -2183,10 +2232,6 @@ def admin_add_product():
             "stock",
             ""
         ).strip()
-
-        # Checkbox:
-        # checked = available
-        # unchecked = unavailable
 
         is_available = (
             1
@@ -2439,10 +2484,6 @@ def admin_add_product():
             if not filename:
                 continue
 
-            # -------------------------------------------------
-            # CHECK EXTENSION
-            # -------------------------------------------------
-
             if not allowed_image(
                 filename
             ):
@@ -2480,10 +2521,6 @@ def admin_add_product():
                     ),
                     categories=categories
                 )
-
-            # -------------------------------------------------
-            # CHECK FILE SIZE
-            # -------------------------------------------------
 
             image.seek(
                 0,
@@ -2739,10 +2776,6 @@ def admin_add_product():
 
     except Exception as error:
 
-        # =================================================
-        # ROLLBACK
-        # =================================================
-
         try:
 
             connection.rollback()
@@ -2879,3 +2912,4 @@ if __name__ == "__main__":
         host="127.0.0.1",
         port=5000
     )
+
