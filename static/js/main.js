@@ -992,6 +992,69 @@ function randomizeEyeliner() {
 }
 
 
+
+/* =========================================================
+   LOGIN POPUP — ADD TO CART
+   ========================================================= */
+
+function showLoginPopup() {
+    const popup = document.getElementById("loginPopup");
+
+    if (!popup) {
+        return;
+    }
+
+    popup.classList.add("show");
+
+    document.body.style.overflow = "hidden";
+}
+
+
+function closeLoginPopup(event) {
+
+    if (event && event.target !== event.currentTarget) {
+        return;
+    }
+
+    const popup = document.getElementById("loginPopup");
+
+    if (!popup) {
+        return;
+    }
+
+    popup.classList.remove("show");
+
+    document.body.style.overflow = "";
+}
+
+
+function goToLogin() {
+
+    window.location.href = "/login";
+
+}
+
+
+/* ESC KEY */
+
+document.addEventListener("keydown", function (event) {
+
+    if (event.key !== "Escape") {
+        return;
+    }
+
+    const popup = document.getElementById("loginPopup");
+
+    if (!popup) {
+        return;
+    }
+
+    popup.classList.remove("show");
+
+    document.body.style.overflow = "";
+
+});
+
 /* =========================================================
    GLOBAL BEAUTY PRODUCT FILTER
    ========================================================= */
