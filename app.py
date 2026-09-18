@@ -111,7 +111,7 @@ PRODUCT_TYPE_ALIASES = {
 
     "highlighter": "highlighter",
     "highlighters": "highlighter",
-    "highlight": "highlighter",
+    "highlight": "highlighter"
 }
 
 
@@ -216,54 +216,6 @@ def prepare_products(products):
         )
 
     return products
-
-
-# =========================================================
-# GET CATEGORIES
-# =========================================================
-
-def get_categories():
-
-    connection = get_db_connection()
-
-    if connection is None:
-        return []
-
-    cursor = None
-
-    try:
-
-        cursor = connection.cursor(
-            dictionary=True
-        )
-
-        cursor.execute("""
-            SELECT
-                id,
-                name,
-                description
-            FROM categories
-            ORDER BY name ASC
-        """)
-
-        return cursor.fetchall()
-
-    except Exception as error:
-
-        print(
-            "CATEGORY ERROR:",
-            type(error).__name__,
-            str(error)
-        )
-
-        return []
-
-    finally:
-
-        safe_close(
-            cursor,
-            connection
-        )
 
 
 # =========================================================
@@ -550,13 +502,8 @@ def product_details(product_id):
                 "error"
             )
 
-            return render_template(
-                "product_details.html",
-                product=None,
-                images=[],
-                reviews=[],
-                review_count=0,
-                average_rating=0
+            return redirect(
+                url_for("beauty")
             )
 
         product["product_type_key"] = normalize_product_type(
@@ -624,7 +571,7 @@ def product_details(product_id):
         except Exception as review_error:
 
             print(
-                "PRODUCT REVIEWS LOAD WARNING:",
+                "PRODUCT REVIEWS WARNING:",
                 type(review_error).__name__,
                 str(review_error)
             )
@@ -633,7 +580,7 @@ def product_details(product_id):
 
         review_count = len(reviews)
 
-        if review_count > 0:
+        if review_count:
 
             total_rating = sum(
                 int(review.get("rating") or 0)
@@ -648,21 +595,6 @@ def product_details(product_id):
         else:
 
             average_rating = 0
-
-        print()
-        print("========================================")
-        print("GLAMORA AR - PRODUCT DETAILS")
-        print("========================================")
-        print("PRODUCT ID:", product.get("id"))
-        print("PRODUCT NAME:", product.get("name"))
-        print("CATEGORY:", product.get("category_name"))
-        print("PRODUCT TYPE:", product.get("product_type"))
-        print("PRICE:", product.get("price"))
-        print("STOCK:", product.get("stock"))
-        print("IMAGE COUNT:", len(images))
-        print("REVIEW COUNT:", review_count)
-        print("========================================")
-        print()
 
         return render_template(
             "product_details.html",
@@ -853,21 +785,7 @@ def add_product_review(product_id):
                 image.filename
             )
 
-            if not filename:
-
-                flash(
-                    "Invalid review image.",
-                    "error"
-                )
-
-                return redirect(
-                    url_for(
-                        "product_details",
-                        product_id=product_id
-                    )
-                )
-
-            if not allowed_image(filename):
+            if not filename or not allowed_image(filename):
 
                 flash(
                     "Only JPG, JPEG, PNG, WEBP and GIF images are allowed.",
@@ -982,9 +900,7 @@ def add_product_review(product_id):
         except Exception:
             pass
 
-        if saved_file and os.path.exists(
-            saved_file
-        ):
+        if saved_file and os.path.exists(saved_file):
 
             try:
                 os.remove(saved_file)
@@ -1088,7 +1004,6 @@ def login():
             )
 
         cursor = None
-        user = None
 
         try:
 
@@ -1122,6 +1037,8 @@ def login():
                 type(error).__name__,
                 str(error)
             )
+
+            user = None
 
         finally:
 
@@ -1168,6 +1085,10 @@ def login():
             return redirect(
                 url_for("login")
             )
+
+        # =================================================
+        # USER SESSION
+        # =================================================
 
         session["user_id"] = user["id"]
         session["user_name"] = user["name"]
@@ -1325,7 +1246,7 @@ def add_to_cart(product_id):
             )
 
         # =================================================
-        # CHECK EXISTING CART ITEM
+        # EXISTING CART ITEM
         # =================================================
 
         cursor.execute(
@@ -1350,7 +1271,7 @@ def add_to_cart(product_id):
         existing_item = cursor.fetchone()
 
         # =================================================
-        # EXISTING ITEM
+        # UPDATE EXISTING
         # =================================================
 
         if existing_item:
@@ -1394,7 +1315,7 @@ def add_to_cart(product_id):
             )
 
         # =================================================
-        # NEW ITEM
+        # INSERT NEW
         # =================================================
 
         else:
@@ -1422,19 +1343,12 @@ def add_to_cart(product_id):
                 )
             )
 
-        # =================================================
-        # COMMIT
-        # =================================================
-
         connection.commit()
 
         flash(
             f"{product['name']} has been added to your cart.",
             "success"
         )
-
-        # IMPORTANT:
-        # Stay on the product page after adding to cart.
 
         return redirect(
             url_for(
@@ -1458,7 +1372,6 @@ def add_to_cart(product_id):
         print("PRODUCT ID:", product_id)
         print("ERROR TYPE:", type(error).__name__)
         print("ERROR MESSAGE:", str(error))
-        print("ERROR REPR:", repr(error))
         print("========================================")
         print()
 
@@ -1503,9 +1416,7 @@ def buy_now(product_id):
             url_for("login")
         )
 
-    return add_to_cart(
-        product_id
-    )
+    return add_to_cart(product_id)
 
 
 # =========================================================
@@ -1587,6 +1498,8 @@ def admin_login():
 
             admin = cursor.fetchone()
 
+            password_valid = False
+
             if admin:
 
                 try:
@@ -1599,10 +1512,6 @@ def admin_login():
                 except Exception:
 
                     password_valid = False
-
-            else:
-
-                password_valid = False
 
             if admin and password_valid:
 
@@ -2045,10 +1954,7 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get(
-                    "admin_name",
-                    "Admin"
-                ),
+                admin_name=session.get("admin_name", "Admin"),
                 categories=categories
             )
 
@@ -2070,10 +1976,7 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get(
-                    "admin_name",
-                    "Admin"
-                ),
+                admin_name=session.get("admin_name", "Admin"),
                 categories=categories
             )
 
@@ -2103,10 +2006,7 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get(
-                    "admin_name",
-                    "Admin"
-                ),
+                admin_name=session.get("admin_name", "Admin"),
                 categories=categories
             )
 
@@ -2119,10 +2019,7 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get(
-                    "admin_name",
-                    "Admin"
-                ),
+                admin_name=session.get("admin_name", "Admin"),
                 categories=categories
             )
 
@@ -2130,25 +2027,10 @@ def admin_add_product():
             product_type
         )
 
-        if not product_type_key:
-
-            flash(
-                "Invalid product type.",
-                "error"
-            )
-
-            return render_template(
-                "admin/add_product.html",
-                admin_name=session.get(
-                    "admin_name",
-                    "Admin"
-                ),
-                categories=categories
-            )
-
         try:
 
             if not price_value:
+
                 raise InvalidOperation
 
             price = Decimal(
@@ -2156,6 +2038,7 @@ def admin_add_product():
             )
 
             if price < Decimal("0"):
+
                 raise InvalidOperation
 
             price = price.quantize(
@@ -2175,23 +2058,18 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get(
-                    "admin_name",
-                    "Admin"
-                ),
+                admin_name=session.get("admin_name", "Admin"),
                 categories=categories
             )
 
         try:
-
-            if not stock_value:
-                raise ValueError
 
             stock = int(
                 stock_value
             )
 
             if stock < 0:
+
                 raise ValueError
 
         except (
@@ -2206,10 +2084,7 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get(
-                    "admin_name",
-                    "Admin"
-                ),
+                admin_name=session.get("admin_name", "Admin"),
                 categories=categories
             )
 
@@ -2221,20 +2096,14 @@ def admin_add_product():
 
         for image in image_files:
 
-            if image is None:
-                continue
-
-            if not image.filename:
+            if not image or not image.filename:
                 continue
 
             filename = secure_filename(
                 image.filename
             )
 
-            if not filename:
-                continue
-
-            if not allowed_image(filename):
+            if not filename or not allowed_image(filename):
 
                 flash(
                     "Only JPG, JPEG, PNG, WEBP and GIF images are allowed.",
@@ -2243,32 +2112,13 @@ def admin_add_product():
 
                 return render_template(
                     "admin/add_product.html",
-                    admin_name=session.get(
-                        "admin_name",
-                        "Admin"
-                    ),
+                    admin_name=session.get("admin_name", "Admin"),
                     categories=categories
                 )
 
             extension = get_file_extension(
                 filename
             )
-
-            if not extension:
-
-                flash(
-                    "Invalid image file.",
-                    "error"
-                )
-
-                return render_template(
-                    "admin/add_product.html",
-                    admin_name=session.get(
-                        "admin_name",
-                        "Admin"
-                    ),
-                    categories=categories
-                )
 
             image.seek(
                 0,
@@ -2288,10 +2138,7 @@ def admin_add_product():
 
                 return render_template(
                     "admin/add_product.html",
-                    admin_name=session.get(
-                        "admin_name",
-                        "Admin"
-                    ),
+                    admin_name=session.get("admin_name", "Admin"),
                     categories=categories
                 )
 
@@ -2304,10 +2151,7 @@ def admin_add_product():
 
                 return render_template(
                     "admin/add_product.html",
-                    admin_name=session.get(
-                        "admin_name",
-                        "Admin"
-                    ),
+                    admin_name=session.get("admin_name", "Admin"),
                     categories=categories
                 )
 
@@ -2327,10 +2171,7 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get(
-                    "admin_name",
-                    "Admin"
-                ),
+                admin_name=session.get("admin_name", "Admin"),
                 categories=categories
             )
 
@@ -2384,7 +2225,7 @@ def admin_add_product():
         if product_id is None:
 
             raise RuntimeError(
-                "Database did not return a product ID."
+                "Database did not return product ID."
             )
 
         # =================================================
@@ -2540,7 +2381,7 @@ def admin_logout():
 
 
 # =========================================================
-# MAXIMUM UPLOAD ERROR
+# UPLOAD ERROR
 # =========================================================
 
 @app.errorhandler(413)
@@ -2557,7 +2398,7 @@ def request_entity_too_large(error):
 
 
 # =========================================================
-# RUN APPLICATION
+# RUN
 # =========================================================
 
 if __name__ == "__main__":
