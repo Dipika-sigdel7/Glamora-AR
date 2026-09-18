@@ -1,6 +1,7 @@
 import os
 import uuid
 import re
+
 from decimal import Decimal, InvalidOperation
 
 from flask import (
@@ -29,7 +30,20 @@ from database.db import get_db_connection
 
 app = Flask(__name__)
 
-app.secret_key = "glamora-ar-secret-key"
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "glamora-ar-secret-key"
+)
+
+# Keep users logged in for 30 days
+app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 30
+
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+# False is required for local HTTP development.
+# Change to True when deployed with HTTPS.
+app.config["SESSION_COOKIE_SECURE"] = False
 
 
 # =========================================================
@@ -132,7 +146,10 @@ def allowed_image(filename):
     if "." not in filename:
         return False
 
-    extension = filename.rsplit(".", 1)[1].lower()
+    extension = filename.rsplit(
+        ".",
+        1
+    )[1].lower()
 
     return extension in ALLOWED_IMAGE_EXTENSIONS
 
@@ -147,7 +164,10 @@ def get_file_extension(filename):
     if "." not in filename:
         return ""
 
-    return filename.rsplit(".", 1)[1].lower()
+    return filename.rsplit(
+        ".",
+        1
+    )[1].lower()
 
 
 def safe_close(cursor=None, connection=None):
@@ -176,9 +196,14 @@ def normalize_product_type(product_type):
     if not product_type:
         return ""
 
-    value = str(product_type).strip().lower()
+    value = str(
+        product_type
+    ).strip().lower()
 
-    value = value.replace("_", " ")
+    value = value.replace(
+        "_",
+        " "
+    )
 
     value = re.sub(
         r"\s+",
@@ -195,12 +220,18 @@ def normalize_product_type(product_type):
     if value in PRODUCT_TYPE_ALIASES:
         return PRODUCT_TYPE_ALIASES[value]
 
-    no_hyphen = value.replace("-", " ")
+    no_hyphen = value.replace(
+        "-",
+        " "
+    )
 
     if no_hyphen in PRODUCT_TYPE_ALIASES:
         return PRODUCT_TYPE_ALIASES[no_hyphen]
 
-    return value.replace(" ", "-")
+    return value.replace(
+        " ",
+        "-"
+    )
 
 
 # =========================================================
@@ -211,8 +242,10 @@ def prepare_products(products):
 
     for product in products:
 
-        product["product_type_key"] = normalize_product_type(
-            product.get("product_type")
+        product["product_type_key"] = (
+            normalize_product_type(
+                product.get("product_type")
+            )
         )
 
     return products
@@ -256,6 +289,9 @@ def get_bag_count():
 
         result = cursor.fetchone()
 
+        if not result:
+            return 0
+
         return int(
             result.get("bag_count") or 0
         )
@@ -276,6 +312,18 @@ def get_bag_count():
             cursor,
             connection
         )
+
+
+# =========================================================
+# MAKE BAG COUNT AVAILABLE TO ALL TEMPLATES
+# =========================================================
+
+@app.context_processor
+def inject_bag_count():
+
+    return {
+        "bag_count": get_bag_count()
+    }
 
 
 # =========================================================
@@ -332,7 +380,8 @@ def beauty():
             dictionary=True
         )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 p.id,
                 p.name,
@@ -390,7 +439,8 @@ def beauty():
 
             ORDER BY
                 p.id DESC
-        """)
+            """
+        )
 
         products = cursor.fetchall()
 
@@ -398,7 +448,8 @@ def beauty():
             products
         )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 id,
                 name,
@@ -420,7 +471,8 @@ def beauty():
 
             ORDER BY
                 name ASC
-        """)
+            """
+        )
 
         categories = cursor.fetchall()
 
@@ -430,9 +482,18 @@ def beauty():
         print("========================================")
         print("GLAMORA AR - BEAUTY PAGE")
         print("========================================")
-        print("Products found:", len(products))
-        print("Categories found:", len(categories))
-        print("Bag count:", bag_count)
+        print(
+            "Products found:",
+            len(products)
+        )
+        print(
+            "Categories found:",
+            len(categories)
+        )
+        print(
+            "Bag count:",
+            bag_count
+        )
 
         for product in products:
 
@@ -573,8 +634,10 @@ def product_details(product_id):
                 url_for("beauty")
             )
 
-        product["product_type_key"] = normalize_product_type(
-            product.get("product_type")
+        product["product_type_key"] = (
+            normalize_product_type(
+                product.get("product_type")
+            )
         )
 
         cursor.execute(
@@ -600,8 +663,8 @@ def product_details(product_id):
 
         if images:
 
-            product["image_url"] = images[0].get(
-                "image_url"
+            product["image_url"] = (
+                images[0].get("image_url")
             )
 
         else:
@@ -650,7 +713,9 @@ def product_details(product_id):
         if review_count:
 
             total_rating = sum(
-                int(review.get("rating") or 0)
+                int(
+                    review.get("rating") or 0
+                )
                 for review in reviews
             )
 
@@ -679,26 +744,32 @@ def product_details(product_id):
         print("========================================")
         print("PRODUCT DETAILS ERROR")
         print("========================================")
-        print("PRODUCT ID:", product_id)
-        print("ERROR TYPE:", type(error).__name__)
-        print("ERROR MESSAGE:", str(error))
-        print("ERROR REPR:", repr(error))
+        print(
+            "PRODUCT ID:",
+            product_id
+        )
+        print(
+            "ERROR TYPE:",
+            type(error).__name__
+        )
+        print(
+            "ERROR MESSAGE:",
+            str(error)
+        )
+        print(
+            "ERROR REPR:",
+            repr(error)
+        )
         print("========================================")
         print()
 
         flash(
-            f"Unable to load product: {str(error)}",
+            "Unable to load product.",
             "error"
         )
 
-        return render_template(
-            "product_details.html",
-            product=None,
-            images=[],
-            reviews=[],
-            review_count=0,
-            average_rating=0,
-            bag_count=get_bag_count()
+        return redirect(
+            url_for("beauty")
         )
 
     finally:
@@ -727,7 +798,13 @@ def add_product_review(product_id):
         )
 
         return redirect(
-            url_for("login")
+            url_for(
+                "login",
+                next=url_for(
+                    "product_details",
+                    product_id=product_id
+                )
+            )
         )
 
     rating_value = request.form.get(
@@ -742,7 +819,9 @@ def add_product_review(product_id):
 
     try:
 
-        rating = int(rating_value)
+        rating = int(
+            rating_value
+        )
 
         if rating < 1 or rating > 5:
             raise ValueError
@@ -791,9 +870,13 @@ def add_product_review(product_id):
 
         cursor.execute(
             """
-            SELECT id
+            SELECT
+                id
+
             FROM products
+
             WHERE id = %s
+
             LIMIT 1
             """,
             (product_id,)
@@ -854,7 +937,10 @@ def add_product_review(product_id):
                 image.filename
             )
 
-            if not filename or not allowed_image(filename):
+            if (
+                not filename
+                or not allowed_image(filename)
+            ):
 
                 flash(
                     "Only JPG, JPEG, PNG, WEBP and GIF images are allowed.",
@@ -969,7 +1055,10 @@ def add_product_review(product_id):
         except Exception:
             pass
 
-        if saved_file and os.path.exists(saved_file):
+        if (
+            saved_file
+            and os.path.exists(saved_file)
+        ):
 
             try:
                 os.remove(saved_file)
@@ -1036,6 +1125,25 @@ def contact():
 )
 def login():
 
+    # Already logged in
+    if session.get("user_id"):
+
+        next_page = request.args.get(
+            "next"
+        )
+
+        if (
+            next_page
+            and next_page.startswith("/")
+        ):
+            return redirect(
+                next_page
+            )
+
+        return redirect(
+            url_for("beauty")
+        )
+
     if request.method == "POST":
 
         email = request.form.get(
@@ -1048,6 +1156,11 @@ def login():
             ""
         )
 
+        next_page = request.form.get(
+            "next",
+            ""
+        ).strip()
+
         if not email or not password:
 
             flash(
@@ -1056,7 +1169,10 @@ def login():
             )
 
             return redirect(
-                url_for("login")
+                url_for(
+                    "login",
+                    next=next_page
+                )
             )
 
         connection = get_db_connection()
@@ -1069,10 +1185,14 @@ def login():
             )
 
             return redirect(
-                url_for("login")
+                url_for(
+                    "login",
+                    next=next_page
+                )
             )
 
         cursor = None
+        user = None
 
         try:
 
@@ -1107,7 +1227,17 @@ def login():
                 str(error)
             )
 
-            user = None
+            flash(
+                "Unable to login. Please try again.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "login",
+                    next=next_page
+                )
+            )
 
         finally:
 
@@ -1124,13 +1254,34 @@ def login():
             )
 
             return redirect(
-                url_for("login")
+                url_for(
+                    "login",
+                    next=next_page
+                )
+            )
+
+        stored_password = user.get(
+            "password"
+        )
+
+        if not stored_password:
+
+            flash(
+                "Invalid email or password.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "login",
+                    next=next_page
+                )
             )
 
         try:
 
             password_valid = check_password_hash(
-                user["password"],
+                stored_password,
                 password
             )
 
@@ -1152,17 +1303,40 @@ def login():
             )
 
             return redirect(
-                url_for("login")
+                url_for(
+                    "login",
+                    next=next_page
+                )
             )
 
         # =================================================
-        # USER SESSION
+        # CREATE PERMANENT USER SESSION
         # =================================================
+
+        session.permanent = True
 
         session["user_id"] = user["id"]
         session["user_name"] = user["name"]
         session["user_email"] = user["email"]
         session["logged_in"] = True
+
+        flash(
+            f"Welcome back, {user['name']}!",
+            "success"
+        )
+
+        # =================================================
+        # RETURN TO REQUESTED PAGE
+        # =================================================
+
+        if (
+            next_page
+            and next_page.startswith("/")
+        ):
+
+            return redirect(
+                next_page
+            )
 
         return redirect(
             url_for("beauty")
@@ -1174,7 +1348,7 @@ def login():
 
 
 # =========================================================
-# REGISTER
+# USER REGISTER
 # =========================================================
 
 @app.route(
@@ -1183,8 +1357,388 @@ def login():
 )
 def register():
 
+    # Already logged in
+    if session.get("user_id"):
+
+        return redirect(
+            url_for("beauty")
+        )
+
+    if request.method == "POST":
+
+        name = request.form.get(
+            "name",
+            ""
+        ).strip()
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        confirm_password = request.form.get(
+            "confirm_password",
+            ""
+        )
+
+        # =================================================
+        # BASIC VALIDATION
+        # =================================================
+
+        if not name:
+
+            flash(
+                "Please enter your name.",
+                "error"
+            )
+
+            return redirect(
+                url_for("register")
+            )
+
+        if not email:
+
+            flash(
+                "Please enter your email address.",
+                "error"
+            )
+
+            return redirect(
+                url_for("register")
+            )
+
+        # Simple email validation
+        email_pattern = (
+            r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+        )
+
+        if not re.match(
+            email_pattern,
+            email
+        ):
+
+            flash(
+                "Please enter a valid email address.",
+                "error"
+            )
+
+            return redirect(
+                url_for("register")
+            )
+
+        if not password:
+
+            flash(
+                "Please enter a password.",
+                "error"
+            )
+
+            return redirect(
+                url_for("register")
+            )
+
+        if len(password) < 6:
+
+            flash(
+                "Password must contain at least 6 characters.",
+                "error"
+            )
+
+            return redirect(
+                url_for("register")
+            )
+
+        if password != confirm_password:
+
+            flash(
+                "Passwords do not match.",
+                "error"
+            )
+
+            return redirect(
+                url_for("register")
+            )
+
+        connection = get_db_connection()
+
+        if connection is None:
+
+            flash(
+                "Database connection failed.",
+                "error"
+            )
+
+            return redirect(
+                url_for("register")
+            )
+
+        cursor = None
+
+        try:
+
+            cursor = connection.cursor(
+                dictionary=True
+            )
+
+            # =================================================
+            # CHECK WHETHER EMAIL ALREADY EXISTS
+            # =================================================
+
+            cursor.execute(
+                """
+                SELECT
+                    id
+
+                FROM users
+
+                WHERE LOWER(email) = %s
+
+                LIMIT 1
+                """,
+                (email,)
+            )
+
+            existing_user = cursor.fetchone()
+
+            if existing_user:
+
+                flash(
+                    "An account with this email already exists. Please login.",
+                    "error"
+                )
+
+                return redirect(
+                    url_for("login")
+                )
+
+            # =================================================
+            # HASH PASSWORD
+            # =================================================
+
+            hashed_password = (
+                generate_password_hash(
+                    password
+                )
+            )
+
+            # =================================================
+            # INSERT USER
+            # =================================================
+
+            cursor.execute(
+                """
+                INSERT INTO users
+                (
+                    name,
+                    email,
+                    password
+                )
+
+                VALUES
+                (
+                    %s,
+                    %s,
+                    %s
+                )
+                """,
+                (
+                    name,
+                    email,
+                    hashed_password
+                )
+            )
+
+            connection.commit()
+
+            flash(
+                "Account created successfully. Please login.",
+                "success"
+            )
+
+            return redirect(
+                url_for("login")
+            )
+
+        except Exception as error:
+
+            try:
+                connection.rollback()
+            except Exception:
+                pass
+
+            print()
+            print("========================================")
+            print("REGISTER ERROR")
+            print("========================================")
+            print(
+                "ERROR TYPE:",
+                type(error).__name__
+            )
+            print(
+                "ERROR MESSAGE:",
+                str(error)
+            )
+            print(
+                "ERROR REPR:",
+                repr(error)
+            )
+            print("========================================")
+            print()
+
+            flash(
+                "Unable to create your account. Please try again.",
+                "error"
+            )
+
+            return redirect(
+                url_for("register")
+            )
+
+        finally:
+
+            safe_close(
+                cursor,
+                connection
+            )
+
     return render_template(
         "register.html"
+    )
+
+
+# =========================================================
+# USER PROFILE
+# =========================================================
+
+@app.route("/profile")
+def profile():
+
+    user_id = session.get(
+        "user_id"
+    )
+
+    if not user_id:
+
+        flash(
+            "Please login to view your profile.",
+            "error"
+        )
+
+        return redirect(
+            url_for(
+                "login",
+                next=url_for("profile")
+            )
+        )
+
+    connection = get_db_connection()
+
+    if connection is None:
+
+        flash(
+            "Database connection failed.",
+            "error"
+        )
+
+        return redirect(
+            url_for("beauty")
+        )
+
+    cursor = None
+
+    try:
+
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                name,
+                email
+
+            FROM users
+
+            WHERE id = %s
+
+            LIMIT 1
+            """,
+            (user_id,)
+        )
+
+        user = cursor.fetchone()
+
+        if not user:
+
+            session.clear()
+
+            flash(
+                "Your account could not be found. Please login again.",
+                "error"
+            )
+
+            return redirect(
+                url_for("login")
+            )
+
+        # Keep session name/email synchronized
+        session["user_name"] = user["name"]
+        session["user_email"] = user["email"]
+
+        return render_template(
+            "profile.html",
+            user=user,
+            bag_count=get_bag_count()
+        )
+
+    except Exception as error:
+
+        print(
+            "PROFILE ERROR:",
+            type(error).__name__,
+            str(error)
+        )
+
+        flash(
+            "Unable to load your profile.",
+            "error"
+        )
+
+        return redirect(
+            url_for("beauty")
+        )
+
+    finally:
+
+        safe_close(
+            cursor,
+            connection
+        )
+
+
+# =========================================================
+# USER LOGOUT
+# =========================================================
+
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    flash(
+        "You have been logged out successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("home")
     )
 
 
@@ -1198,21 +1752,29 @@ def register():
 )
 def add_to_cart(product_id):
 
+    user_id = session.get(
+        "user_id"
+    )
+
     # =====================================================
     # SERVER-SIDE LOGIN CHECK
     # =====================================================
 
-    user_id = session.get("user_id")
-
     if not user_id:
 
         flash(
-            "Please log in to add products to your bag.",
+            "Please login to add products to your bag.",
             "error"
         )
 
         return redirect(
-            url_for("login")
+            url_for(
+                "login",
+                next=url_for(
+                    "product_details",
+                    product_id=product_id
+                )
+            )
         )
 
     connection = get_db_connection()
@@ -1278,7 +1840,9 @@ def add_to_cart(product_id):
         # CHECK AVAILABILITY
         # =================================================
 
-        if not product.get("is_available"):
+        if not product.get(
+            "is_available"
+        ):
 
             flash(
                 "This product is currently unavailable.",
@@ -1346,7 +1910,9 @@ def add_to_cart(product_id):
         if existing_item:
 
             current_quantity = int(
-                existing_item.get("quantity") or 0
+                existing_item.get(
+                    "quantity"
+                ) or 0
             )
 
             new_quantity = (
@@ -1414,19 +1980,12 @@ def add_to_cart(product_id):
 
         connection.commit()
 
-        # =================================================
-        # SUCCESS MESSAGE
-        # =================================================
-
         flash(
             f"{product['name']} has been added to your bag.",
             "success"
         )
 
-        # =================================================
-        # OPEN BAG AFTER ADDING
-        # =================================================
-
+        # Open bag after adding
         return redirect(
             url_for("cart")
         )
@@ -1442,10 +2001,22 @@ def add_to_cart(product_id):
         print("========================================")
         print("ADD TO BAG ERROR")
         print("========================================")
-        print("USER ID:", user_id)
-        print("PRODUCT ID:", product_id)
-        print("ERROR TYPE:", type(error).__name__)
-        print("ERROR MESSAGE:", str(error))
+        print(
+            "USER ID:",
+            user_id
+        )
+        print(
+            "PRODUCT ID:",
+            product_id
+        )
+        print(
+            "ERROR TYPE:",
+            type(error).__name__
+        )
+        print(
+            "ERROR MESSAGE:",
+            str(error)
+        )
         print("========================================")
         print()
 
@@ -1470,13 +2041,15 @@ def add_to_cart(product_id):
 
 
 # =========================================================
-# BAG PAGE
+# SHOPPING BAG
 # =========================================================
 
 @app.route("/cart")
 def cart():
 
-    user_id = session.get("user_id")
+    user_id = session.get(
+        "user_id"
+    )
 
     if not user_id:
 
@@ -1486,7 +2059,10 @@ def cart():
         )
 
         return redirect(
-            url_for("login")
+            url_for(
+                "login",
+                next=url_for("cart")
+            )
         )
 
     connection = get_db_connection()
@@ -1512,10 +2088,6 @@ def cart():
         cursor = connection.cursor(
             dictionary=True
         )
-
-        # =================================================
-        # GET BAG ITEMS
-        # =================================================
 
         cursor.execute(
             """
@@ -1554,12 +2126,16 @@ def cart():
 
         cart_items = cursor.fetchall()
 
-        subtotal = Decimal("0.00")
+        subtotal = Decimal(
+            "0.00"
+        )
 
         for item in cart_items:
 
             price = Decimal(
-                str(item.get("price") or 0)
+                str(
+                    item.get("price") or 0
+                )
             )
 
             quantity = int(
@@ -1570,10 +2146,14 @@ def cart():
                 price * quantity
             )
 
-            subtotal += item["item_total"]
+            subtotal += item[
+                "item_total"
+            ]
 
         bag_count = sum(
-            int(item.get("quantity") or 0)
+            int(
+                item.get("quantity") or 0
+            )
             for item in cart_items
         )
 
@@ -1590,9 +2170,18 @@ def cart():
         print("========================================")
         print("BAG PAGE ERROR")
         print("========================================")
-        print("USER ID:", user_id)
-        print("ERROR TYPE:", type(error).__name__)
-        print("ERROR MESSAGE:", str(error))
+        print(
+            "USER ID:",
+            user_id
+        )
+        print(
+            "ERROR TYPE:",
+            type(error).__name__
+        )
+        print(
+            "ERROR MESSAGE:",
+            str(error)
+        )
         print("========================================")
         print()
 
@@ -1626,7 +2215,9 @@ def cart():
 )
 def remove_from_cart(cart_item_id):
 
-    user_id = session.get("user_id")
+    user_id = session.get(
+        "user_id"
+    )
 
     if not user_id:
 
@@ -1713,6 +2304,208 @@ def remove_from_cart(cart_item_id):
 
 
 # =========================================================
+# UPDATE BAG QUANTITY
+# =========================================================
+
+@app.route(
+    "/cart/update/<int:cart_item_id>",
+    methods=["POST"]
+)
+def update_cart_quantity(cart_item_id):
+
+    user_id = session.get(
+        "user_id"
+    )
+
+    if not user_id:
+
+        flash(
+            "Please login to manage your bag.",
+            "error"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    quantity_value = request.form.get(
+        "quantity",
+        ""
+    ).strip()
+
+    try:
+
+        quantity = int(
+            quantity_value
+        )
+
+    except (
+        ValueError,
+        TypeError
+    ):
+
+        flash(
+            "Invalid quantity.",
+            "error"
+        )
+
+        return redirect(
+            url_for("cart")
+        )
+
+    if quantity <= 0:
+
+        return redirect(
+            url_for(
+                "remove_from_cart",
+                cart_item_id=cart_item_id
+            )
+        )
+
+    connection = get_db_connection()
+
+    if connection is None:
+
+        flash(
+            "Database connection failed.",
+            "error"
+        )
+
+        return redirect(
+            url_for("cart")
+        )
+
+    cursor = None
+
+    try:
+
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
+        cursor.execute(
+            """
+            SELECT
+                ci.id,
+                ci.quantity,
+                p.stock,
+                p.is_available
+
+            FROM cart_items ci
+
+            INNER JOIN products p
+                ON p.id = ci.product_id
+
+            WHERE ci.id = %s
+              AND ci.user_id = %s
+
+            LIMIT 1
+            """,
+            (
+                cart_item_id,
+                user_id
+            )
+        )
+
+        item = cursor.fetchone()
+
+        if not item:
+
+            flash(
+                "Bag item not found.",
+                "error"
+            )
+
+            return redirect(
+                url_for("cart")
+            )
+
+        stock = int(
+            item.get("stock") or 0
+        )
+
+        if not item.get(
+            "is_available"
+        ):
+
+            flash(
+                "This product is currently unavailable.",
+                "error"
+            )
+
+            return redirect(
+                url_for("cart")
+            )
+
+        if quantity > stock:
+
+            flash(
+                f"Only {stock} item(s) are available.",
+                "error"
+            )
+
+            return redirect(
+                url_for("cart")
+            )
+
+        cursor.execute(
+            """
+            UPDATE cart_items
+
+            SET quantity = %s
+
+            WHERE id = %s
+              AND user_id = %s
+            """,
+            (
+                quantity,
+                cart_item_id,
+                user_id
+            )
+        )
+
+        connection.commit()
+
+        flash(
+            "Bag quantity updated.",
+            "success"
+        )
+
+        return redirect(
+            url_for("cart")
+        )
+
+    except Exception as error:
+
+        try:
+            connection.rollback()
+        except Exception:
+            pass
+
+        print(
+            "UPDATE BAG ERROR:",
+            type(error).__name__,
+            str(error)
+        )
+
+        flash(
+            "Unable to update your bag.",
+            "error"
+        )
+
+        return redirect(
+            url_for("cart")
+        )
+
+    finally:
+
+        safe_close(
+            cursor,
+            connection
+        )
+
+
+# =========================================================
 # BUY NOW
 # =========================================================
 
@@ -1722,18 +2515,28 @@ def remove_from_cart(cart_item_id):
 )
 def buy_now(product_id):
 
-    if not session.get("user_id"):
+    if not session.get(
+        "user_id"
+    ):
 
         flash(
-            "Please log in to purchase this product.",
+            "Please login to purchase this product.",
             "error"
         )
 
         return redirect(
-            url_for("login")
+            url_for(
+                "login",
+                next=url_for(
+                    "product_details",
+                    product_id=product_id
+                )
+            )
         )
 
-    return add_to_cart(product_id)
+    return add_to_cart(
+        product_id
+    )
 
 
 # =========================================================
@@ -1746,10 +2549,14 @@ def buy_now(product_id):
 )
 def admin_login():
 
-    if session.get("admin_id"):
+    if session.get(
+        "admin_id"
+    ):
 
         return redirect(
-            url_for("admin_dashboard")
+            url_for(
+                "admin_dashboard"
+            )
         )
 
     if request.method == "POST":
@@ -1821,9 +2628,11 @@ def admin_login():
 
                 try:
 
-                    password_valid = check_password_hash(
-                        admin["password_hash"],
-                        password
+                    password_valid = (
+                        check_password_hash(
+                            admin["password_hash"],
+                            password
+                        )
                     )
 
                 except Exception:
@@ -1831,6 +2640,8 @@ def admin_login():
                     password_valid = False
 
             if admin and password_valid:
+
+                session.permanent = True
 
                 session["admin_id"] = admin["id"]
                 session["admin_name"] = admin["name"]
@@ -1842,7 +2653,9 @@ def admin_login():
                 )
 
                 return redirect(
-                    url_for("admin_dashboard")
+                    url_for(
+                        "admin_dashboard"
+                    )
                 )
 
             flash(
@@ -1926,36 +2739,53 @@ def admin_dashboard():
             dictionary=True
         )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT COUNT(*) AS total
             FROM products
-        """)
+            """
+        )
 
-        total_products = cursor.fetchone()["total"]
+        total_products = (
+            cursor.fetchone()["total"]
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT COUNT(*) AS total
             FROM categories
-        """)
+            """
+        )
 
-        total_categories = cursor.fetchone()["total"]
+        total_categories = (
+            cursor.fetchone()["total"]
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT COUNT(*) AS total
             FROM users
-        """)
+            """
+        )
 
-        total_users = cursor.fetchone()["total"]
+        total_users = (
+            cursor.fetchone()["total"]
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT COUNT(*) AS total
             FROM products
             WHERE is_available = 1
-        """)
+            """
+        )
 
-        available_products = cursor.fetchone()["total"]
+        available_products = (
+            cursor.fetchone()["total"]
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 p.id,
                 p.name,
@@ -1989,7 +2819,8 @@ def admin_dashboard():
                 p.id DESC
 
             LIMIT 10
-        """)
+            """
+        )
 
         products = cursor.fetchall()
 
@@ -2078,7 +2909,8 @@ def admin_products():
             dictionary=True
         )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 p.id,
                 p.name,
@@ -2111,7 +2943,8 @@ def admin_products():
 
             ORDER BY
                 p.id DESC
-        """)
+            """
+        )
 
         products = cursor.fetchall()
 
@@ -2191,7 +3024,8 @@ def admin_add_product():
             dictionary=True
         )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 id,
                 name,
@@ -2201,7 +3035,8 @@ def admin_add_product():
 
             ORDER BY
                 name ASC
-        """)
+            """
+        )
 
         categories = cursor.fetchall()
 
@@ -2258,9 +3093,15 @@ def admin_add_product():
 
         is_available = (
             1
-            if request.form.get("is_available")
+            if request.form.get(
+                "is_available"
+            )
             else 0
         )
+
+        # =================================================
+        # NAME
+        # =================================================
 
         if not name:
 
@@ -2277,6 +3118,10 @@ def admin_add_product():
                 ),
                 categories=categories
             )
+
+        # =================================================
+        # CATEGORY
+        # =================================================
 
         try:
 
@@ -2318,7 +3163,9 @@ def admin_add_product():
             (category_id,)
         )
 
-        selected_category = cursor.fetchone()
+        selected_category = (
+            cursor.fetchone()
+        )
 
         if not selected_category:
 
@@ -2336,6 +3183,10 @@ def admin_add_product():
                 categories=categories
             )
 
+        # =================================================
+        # PRODUCT TYPE
+        # =================================================
+
         if not product_type:
 
             flash(
@@ -2352,14 +3203,19 @@ def admin_add_product():
                 categories=categories
             )
 
-        product_type_key = normalize_product_type(
-            product_type
+        product_type_key = (
+            normalize_product_type(
+                product_type
+            )
         )
+
+        # =================================================
+        # PRICE
+        # =================================================
 
         try:
 
             if not price_value:
-
                 raise InvalidOperation
 
             price = Decimal(
@@ -2367,7 +3223,6 @@ def admin_add_product():
             )
 
             if price < Decimal("0"):
-
                 raise InvalidOperation
 
             price = price.quantize(
@@ -2394,6 +3249,10 @@ def admin_add_product():
                 categories=categories
             )
 
+        # =================================================
+        # STOCK
+        # =================================================
+
         try:
 
             stock = int(
@@ -2401,7 +3260,6 @@ def admin_add_product():
             )
 
             if stock < 0:
-
                 raise ValueError
 
         except (
@@ -2423,6 +3281,10 @@ def admin_add_product():
                 categories=categories
             )
 
+        # =================================================
+        # IMAGES
+        # =================================================
+
         image_files = request.files.getlist(
             "images"
         )
@@ -2431,14 +3293,20 @@ def admin_add_product():
 
         for image in image_files:
 
-            if not image or not image.filename:
+            if (
+                not image
+                or not image.filename
+            ):
                 continue
 
             filename = secure_filename(
                 image.filename
             )
 
-            if not filename or not allowed_image(filename):
+            if (
+                not filename
+                or not allowed_image(filename)
+            ):
 
                 flash(
                     "Only JPG, JPEG, PNG, WEBP and GIF images are allowed.",
@@ -2592,7 +3460,9 @@ def admin_add_product():
             )
 
             file_path = os.path.join(
-                app.config["PRODUCT_UPLOAD_FOLDER"],
+                app.config[
+                    "PRODUCT_UPLOAD_FOLDER"
+                ],
                 unique_filename
             )
 
@@ -2648,7 +3518,9 @@ def admin_add_product():
         )
 
         return redirect(
-            url_for("admin_products")
+            url_for(
+                "admin_products"
+            )
         )
 
     except Exception as error:
@@ -2662,8 +3534,12 @@ def admin_add_product():
 
             try:
 
-                if os.path.exists(file_path):
-                    os.remove(file_path)
+                if os.path.exists(
+                    file_path
+                ):
+                    os.remove(
+                        file_path
+                    )
 
             except Exception:
                 pass
@@ -2672,9 +3548,18 @@ def admin_add_product():
         print("========================================")
         print("ADD PRODUCT ERROR")
         print("========================================")
-        print("ERROR TYPE:", type(error).__name__)
-        print("ERROR MESSAGE:", str(error))
-        print("ERROR REPR:", repr(error))
+        print(
+            "ERROR TYPE:",
+            type(error).__name__
+        )
+        print(
+            "ERROR MESSAGE:",
+            str(error)
+        )
+        print(
+            "ERROR REPR:",
+            repr(error)
+        )
         print("========================================")
         print()
 
@@ -2684,7 +3569,9 @@ def admin_add_product():
         )
 
         return redirect(
-            url_for("admin_add_product")
+            url_for(
+                "admin_add_product"
+            )
         )
 
     finally:
@@ -2745,7 +3632,7 @@ def request_entity_too_large(error):
 
 
 # =========================================================
-# RUN
+# RUN APPLICATION
 # =========================================================
 
 if __name__ == "__main__":
