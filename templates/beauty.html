@@ -122,7 +122,9 @@
         <div class="nav-actions">
 
 
-            <!-- SEARCH -->
+            <!-- =================================================
+                 SEARCH
+                 ================================================= -->
 
             <button
                 class="icon-btn"
@@ -135,7 +137,9 @@
             </button>
 
 
-            <!-- WISHLIST -->
+            <!-- =================================================
+                 WISHLIST
+                 ================================================= -->
 
             <button
                 class="icon-btn wishlist-btn"
@@ -148,12 +152,14 @@
             </button>
 
 
-            <!-- SHOPPING BAG -->
+            <!-- =================================================
+                 SHOPPING BAG
+                 ================================================= -->
 
-            <button
+            <a
+                href="{{ url_for('cart') }}"
                 class="cart-btn"
                 id="cartBtn"
-                type="button"
                 aria-label="Shopping bag"
                 title="Shopping bag"
             >
@@ -166,33 +172,60 @@
                     class="cart-count"
                     id="cartCount"
                 >
-                    0
-                </span>
-
-            </button>
-
-
-            <!-- LOGIN -->
-
-            <a
-                href="{{ url_for('login') }}"
-                class="login-btn"
-                id="loginBtn"
-                aria-label="Login to Glamora AR"
-            >
-
-                <span class="login-icon">
-                    ♙
-                </span>
-
-                <span>
-                    Login
+                    {{ bag_count|default(0) }}
                 </span>
 
             </a>
 
 
-            <!-- MENU -->
+            <!-- =================================================
+                 LOGIN
+                 ================================================= -->
+
+            {% if session.get('user_id') %}
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="login-btn"
+                    id="loginBtn"
+                    aria-label="Logout from Glamora AR"
+                >
+
+                    <span class="login-icon">
+                        ♙
+                    </span>
+
+                    <span>
+                        Logout
+                    </span>
+
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{{ url_for('login') }}"
+                    class="login-btn"
+                    id="loginBtn"
+                    aria-label="Login to Glamora AR"
+                >
+
+                    <span class="login-icon">
+                        ♙
+                    </span>
+
+                    <span>
+                        Login
+                    </span>
+
+                </a>
+
+            {% endif %}
+
+
+            <!-- =================================================
+                 MENU
+                 ================================================= -->
 
             <button
                 class="menu-btn"
@@ -403,7 +436,9 @@
         <div class="beauty-category-grid">
 
 
-            <!-- ALL -->
+            <!-- =================================================
+                 ALL
+                 ================================================= -->
 
             <button
                 type="button"
@@ -438,7 +473,9 @@
             </button>
 
 
-            <!-- LIPSTICK -->
+            <!-- =================================================
+                 LIPSTICK
+                 ================================================= -->
 
             <button
                 type="button"
@@ -473,7 +510,9 @@
             </button>
 
 
-            <!-- EYESHADOW -->
+            <!-- =================================================
+                 EYESHADOW
+                 ================================================= -->
 
             <button
                 type="button"
@@ -508,7 +547,9 @@
             </button>
 
 
-            <!-- BLUSH -->
+            <!-- =================================================
+                 BLUSH
+                 ================================================= -->
 
             <button
                 type="button"
@@ -543,7 +584,9 @@
             </button>
 
 
-            <!-- EYELINER -->
+            <!-- =================================================
+                 EYELINER
+                 ================================================= -->
 
             <button
                 type="button"
@@ -578,7 +621,9 @@
             </button>
 
 
-            <!-- MASCARA -->
+            <!-- =================================================
+                 MASCARA
+                 ================================================= -->
 
             <button
                 type="button"
@@ -613,7 +658,9 @@
             </button>
 
 
-            <!-- FOUNDATION -->
+            <!-- =================================================
+                 FOUNDATION
+                 ================================================= -->
 
             <button
                 type="button"
@@ -648,7 +695,9 @@
             </button>
 
 
-            <!-- HIGHLIGHTER -->
+            <!-- =================================================
+                 HIGHLIGHTER
+                 ================================================= -->
 
             <button
                 type="button"
@@ -770,6 +819,8 @@
                     <article
                         class="beauty-product-card product-card reveal"
                         data-product-id="{{ product.id }}"
+                        data-product-name="{{ product.name }}"
+                        data-product-price="{{ product.price }}"
                         data-product-type="{{ product_type }}"
                         data-category="{{ product_category }}"
                         data-category-id="{{ product.category_id or '' }}"
@@ -909,6 +960,7 @@
 
                                 <a
                                     href="{{ url_for('product_details', product_id=product.id) }}"
+                                    aria-label="View {{ product.name }}"
                                 >
                                     {{ product.name }}
                                 </a>
@@ -1020,8 +1072,18 @@
                                                     +
                                                 </span>
 
-                                                <span>
-                                                    Add to Bag
+                                                <span class="add-to-bag-text">
+
+                                                    {% if product.stock is none or product.stock|int <= 0 %}
+
+                                                        Out of Stock
+
+                                                    {% else %}
+
+                                                        Add to Bag
+
+                                                    {% endif %}
+
                                                 </span>
 
                                             </button>
@@ -1050,7 +1112,17 @@
                                             </span>
 
                                             <span>
-                                                Add to Bag
+
+                                                {% if product.stock is none or product.stock|int <= 0 %}
+
+                                                    Out of Stock
+
+                                                {% else %}
+
+                                                    Add to Bag
+
+                                                {% endif %}
+
                                             </span>
 
                                         </button>
@@ -1123,6 +1195,32 @@
                 </div>
 
             {% endif %}
+
+
+            <!-- =============================================
+                 CATEGORY EMPTY STATE
+                 Created/controlled by main.js
+                 ============================================= -->
+
+            <div
+                class="category-empty-state"
+                style="display: none;"
+            >
+
+                <div class="category-empty-icon">
+                    ♡
+                </div>
+
+                <h3>
+                    No products in this category yet
+                </h3>
+
+                <p>
+                    Products added by the admin
+                    will appear here automatically.
+                </p>
+
+            </div>
 
         </div>
 
