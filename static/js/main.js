@@ -10,7 +10,6 @@
    ========================================================= */
 
 let lastLipstickIndex = -1;
-let lipstickHoverTimer = null;
 
 
 /* =========================================================
@@ -37,15 +36,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initializeBeautyCategoryCards();
 
+    initializeLoginPopup();
+
     randomizeLipstick();
 
     randomizeEyeliner();
+
 
     /*
      * Rotate lipstick appearance every 5 seconds.
      */
     setInterval(() => {
+
         randomizeLipstick();
+
     }, 5000);
 
 });
@@ -57,7 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function initializeLoader() {
 
-    const loader = document.getElementById("loader");
+    const loader =
+        document.getElementById("loader");
 
     if (!loader) {
         return;
@@ -90,41 +95,44 @@ function initializeRevealAnimations() {
         return;
     }
 
-    /*
-     * Fallback for browsers where IntersectionObserver
-     * is not available.
-     */
     if (!("IntersectionObserver" in window)) {
 
         revealElements.forEach(element => {
+
             element.classList.add("visible");
+
         });
 
         return;
     }
 
 
-    const observer = new IntersectionObserver(
-        (entries, observerInstance) => {
+    const observer =
+        new IntersectionObserver(
+            (entries, observerInstance) => {
 
-            entries.forEach(entry => {
+                entries.forEach(entry => {
 
-                if (!entry.isIntersecting) {
-                    return;
-                }
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
 
-                entry.target.classList.add("visible");
+                    entry.target.classList.add(
+                        "visible"
+                    );
 
-                observerInstance.unobserve(entry.target);
+                    observerInstance.unobserve(
+                        entry.target
+                    );
 
-            });
+                });
 
-        },
-        {
-            threshold: 0.12,
-            rootMargin: "0px 0px -40px 0px"
-        }
-    );
+            },
+            {
+                threshold: 0.12,
+                rootMargin: "0px 0px -40px 0px"
+            }
+        );
 
 
     revealElements.forEach(element => {
@@ -142,10 +150,17 @@ function initializeRevealAnimations() {
 function initializeActiveNavigation() {
 
     const currentPath =
-        window.location.pathname.replace(/\/+$/, "") || "/";
+        window.location.pathname.replace(
+            /\/+$/,
+            ""
+        ) || "/";
+
 
     const navLinks =
-        document.querySelectorAll(".nav-links a");
+        document.querySelectorAll(
+            ".nav-links a"
+        );
+
 
     navLinks.forEach(link => {
 
@@ -156,6 +171,7 @@ function initializeActiveNavigation() {
             return;
         }
 
+
         let linkPath = "";
 
         try {
@@ -164,11 +180,15 @@ function initializeActiveNavigation() {
                 new URL(
                     href,
                     window.location.origin
-                ).pathname.replace(/\/+$/, "") || "/";
+                ).pathname.replace(
+                    /\/+$/,
+                    ""
+                ) || "/";
 
         } catch (error) {
 
             return;
+
         }
 
 
@@ -201,19 +221,27 @@ function initializeMakeupOptions() {
         return;
     }
 
+
     makeupOptions.forEach(option => {
 
-        option.addEventListener("click", () => {
+        option.addEventListener(
+            "click",
+            () => {
 
-            makeupOptions.forEach(item => {
+                makeupOptions.forEach(item => {
 
-                item.classList.remove("active");
+                    item.classList.remove(
+                        "active"
+                    );
 
-            });
+                });
 
-            option.classList.add("active");
+                option.classList.add(
+                    "active"
+                );
 
-        });
+            }
+        );
 
     });
 }
@@ -234,28 +262,35 @@ function initializeHeroParallax() {
         return;
     }
 
-    /*
-     * Disable effect on smaller screens.
-     */
+
     if (window.innerWidth <= 768) {
         return;
     }
+
 
     let ticking = false;
 
 
     function updateHeroParallax() {
 
-        const scrollY = window.scrollY;
+        const scrollY =
+            window.scrollY;
+
+
+        const movement =
+            Math.min(
+                scrollY * 0.08,
+                35
+            );
+
 
         /*
-         * Keep the movement subtle.
+         * Do not use this effect on the
+         * product cards.
          */
-        const movement =
-            Math.min(scrollY * 0.08, 35);
-
         heroVisual.style.transform =
             `translate3d(0, ${movement}px, 0)`;
+
 
         ticking = false;
     }
@@ -272,6 +307,7 @@ function initializeHeroParallax() {
                 );
 
                 ticking = true;
+
             }
 
         },
@@ -289,52 +325,77 @@ function initializeHeroParallax() {
 function initializeMobileMenu() {
 
     const menuButton =
-        document.getElementById("menuBtn");
+        document.getElementById(
+            "menuBtn"
+        );
+
 
     const navLinks =
-        document.querySelector(".nav-links");
+        document.querySelector(
+            ".nav-links"
+        );
+
 
     if (!menuButton || !navLinks) {
         return;
     }
 
 
-    menuButton.addEventListener("click", () => {
+    menuButton.addEventListener(
+        "click",
+        () => {
 
-        navLinks.classList.toggle("open");
+            navLinks.classList.toggle(
+                "open"
+            );
 
-        menuButton.classList.toggle("active");
-
-        const isOpen =
-            navLinks.classList.contains("open");
-
-        menuButton.setAttribute(
-            "aria-expanded",
-            isOpen ? "true" : "false"
-        );
-
-    });
+            menuButton.classList.toggle(
+                "active"
+            );
 
 
-    /*
-     * Close mobile menu after clicking a link.
-     */
-    navLinks.querySelectorAll("a").forEach(link => {
+            const isOpen =
+                navLinks.classList.contains(
+                    "open"
+                );
 
-        link.addEventListener("click", () => {
-
-            navLinks.classList.remove("open");
-
-            menuButton.classList.remove("active");
 
             menuButton.setAttribute(
                 "aria-expanded",
-                "false"
+                isOpen
+                    ? "true"
+                    : "false"
             );
 
-        });
+        }
+    );
 
-    });
+
+    navLinks.querySelectorAll("a").forEach(
+        link => {
+
+            link.addEventListener(
+                "click",
+                () => {
+
+                    navLinks.classList.remove(
+                        "open"
+                    );
+
+                    menuButton.classList.remove(
+                        "active"
+                    );
+
+                    menuButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                }
+            );
+
+        }
+    );
 }
 
 
@@ -344,14 +405,11 @@ function initializeMobileMenu() {
 
 function initializeProductHover() {
 
-    /*
-     * IMPORTANT:
-     * Beauty page uses .beauty-product-card.
-     */
     const productCards =
         document.querySelectorAll(
             ".beauty-product-card, .product-card"
         );
+
 
     if (!productCards.length) {
         return;
@@ -360,18 +418,28 @@ function initializeProductHover() {
 
     productCards.forEach(card => {
 
-        card.addEventListener("mouseenter", () => {
+        card.addEventListener(
+            "mouseenter",
+            () => {
 
-            card.classList.add("hovered");
+                card.classList.add(
+                    "hovered"
+                );
 
-        });
+            }
+        );
 
 
-        card.addEventListener("mouseleave", () => {
+        card.addEventListener(
+            "mouseleave",
+            () => {
 
-            card.classList.remove("hovered");
+                card.classList.remove(
+                    "hovered"
+                );
 
-        });
+            }
+        );
 
     });
 }
@@ -383,110 +451,65 @@ function initializeProductHover() {
 
 function initializeCartDemo() {
 
-    const cartButtons =
-        document.querySelectorAll(
-            ".cart-btn"
-        );
+    /*
+     * IMPORTANT:
+     *
+     * Do NOT intercept the real
+     * Add to Cart form.
+     *
+     * Flask must receive:
+     *
+     * POST /cart/add/<product_id>
+     */
 
     const quickTryButtons =
         document.querySelectorAll(
             ".quick-try, .quick-try-btn"
         );
 
-    const cartCount =
-        document.querySelector(
-            "#cart-count, .cart-count"
-        );
-
-    let count = 0;
-
 
     /*
-     * Cart button itself.
+     * Quick Try buttons.
      */
-    cartButtons.forEach(button => {
 
-        button.addEventListener("click", event => {
-
-            /*
-             * If the cart button is a link,
-             * allow the browser to follow it.
-             */
-            if (
-                button.tagName.toLowerCase() === "a" &&
-                button.getAttribute("href") &&
-                button.getAttribute("href") !== "#"
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            count++;
-
-            updateCartCount();
-
-        });
-
-    });
-
-
-    /*
-     * Quick try buttons.
-     */
     quickTryButtons.forEach(button => {
 
-        button.addEventListener("click", event => {
+        button.addEventListener(
+            "click",
+            event => {
 
-            event.preventDefault();
+                event.preventDefault();
 
-            event.stopPropagation();
+                event.stopPropagation();
 
-            /*
-             * Find the product card.
-             */
-            const productCard =
-                button.closest(
-                    ".beauty-product-card, .product-card"
-                );
 
-            if (productCard) {
+                const productCard =
+                    button.closest(
+                        ".beauty-product-card, .product-card"
+                    );
 
-                productCard.classList.add(
-                    "quick-try-active"
-                );
 
-                setTimeout(() => {
+                if (productCard) {
 
-                    productCard.classList.remove(
+                    productCard.classList.add(
                         "quick-try-active"
                     );
 
-                }, 900);
+
+                    setTimeout(() => {
+
+                        productCard.classList.remove(
+                            "quick-try-active"
+                        );
+
+                    }, 900);
+
+                }
 
             }
-
-        });
+        );
 
     });
-
-
-    function updateCartCount() {
-
-        if (!cartCount) {
-            return;
-        }
-
-        cartCount.textContent = count;
-
-        cartCount.classList.add("cart-bump");
-
-        setTimeout(() => {
-
-            cartCount.classList.remove("cart-bump");
-
-        }, 300);
-    }
 }
 
 
@@ -500,11 +523,15 @@ function normalizeBeautyCategory(value) {
         return "";
     }
 
+
     let category =
         String(value)
             .toLowerCase()
             .trim()
-            .replace(/[\s_]+/g, "-");
+            .replace(
+                /[\s_]+/g,
+                "-"
+            );
 
 
     const aliases = {
@@ -543,19 +570,21 @@ function normalizeBeautyCategory(value) {
     }
 
 
-    /*
-     * Safe fallback for simple plural values.
-     */
     if (category.endsWith("s")) {
 
         const singular =
-            category.slice(0, -1);
+            category.slice(
+                0,
+                -1
+            );
+
 
         if (aliases[singular]) {
 
             return aliases[singular];
 
         }
+
     }
 
 
@@ -574,32 +603,23 @@ function initializeBeautyCategoryCards() {
             ".beauty-category-card"
         );
 
+
     const productGrid =
         document.getElementById(
             "productGrid"
         );
 
 
-    /*
-     * If we are not on the Beauty page,
-     * simply stop here.
-     */
-    if (!categoryCards.length || !productGrid) {
+    if (
+        !categoryCards.length ||
+        !productGrid
+    ) {
 
         return;
 
     }
 
 
-    /*
-     * IMPORTANT:
-     *
-     * The Beauty page uses:
-     *
-     * .beauty-product-card
-     *
-     * NOT just .product-card.
-     */
     const productCards =
         Array.from(
             productGrid.querySelectorAll(
@@ -607,10 +627,6 @@ function initializeBeautyCategoryCards() {
             )
         );
 
-
-    /* =====================================================
-       EMPTY CATEGORY MESSAGE
-       ===================================================== */
 
     let emptyMessage =
         productGrid.querySelector(
@@ -621,10 +637,14 @@ function initializeBeautyCategoryCards() {
     if (!emptyMessage) {
 
         emptyMessage =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         emptyMessage.className =
             "category-empty-state";
+
 
         emptyMessage.innerHTML = `
             <div class="category-empty-icon">
@@ -636,23 +656,22 @@ function initializeBeautyCategoryCards() {
             </h3>
 
             <p>
-                Products added by the admin will appear here
-                automatically.
+                Products added by the admin
+                will appear here automatically.
             </p>
         `;
+
 
         emptyMessage.style.display =
             "none";
 
+
         productGrid.appendChild(
             emptyMessage
         );
+
     }
 
-
-    /* =====================================================
-       PRODUCT CATEGORY MATCHING
-       ===================================================== */
 
     function productMatchesCategory(
         product,
@@ -665,36 +684,17 @@ function initializeBeautyCategoryCards() {
             );
 
 
-        /*
-         * All Beauty shows everything.
-         */
         if (selected === "all") {
-
             return true;
-
         }
 
 
-        /*
-         * Product type is the PRIMARY category.
-         *
-         * Example:
-         *
-         * data-product-type="lipstick"
-         */
         const productType =
             normalizeBeautyCategory(
                 product.dataset.productType
             );
 
 
-        /*
-         * Category name is a FALLBACK.
-         *
-         * Example:
-         *
-         * data-category="lipsticks"
-         */
         const productCategory =
             normalizeBeautyCategory(
                 product.dataset.category
@@ -707,10 +707,6 @@ function initializeBeautyCategoryCards() {
         );
     }
 
-
-    /* =====================================================
-       SHOW CATEGORY
-       ===================================================== */
 
     function showBeautyCategory(
         selectedCategory,
@@ -726,9 +722,6 @@ function initializeBeautyCategoryCards() {
         let visibleProducts = 0;
 
 
-        /*
-         * Filter products.
-         */
         productCards.forEach(product => {
 
             const matches =
@@ -740,15 +733,11 @@ function initializeBeautyCategoryCards() {
 
             if (matches) {
 
-                product.style.display = "";
+                product.style.display =
+                    "";
 
                 visibleProducts++;
 
-
-                /*
-                 * Make sure filtered products
-                 * are visible after filtering.
-                 */
                 product.classList.add(
                     "visible"
                 );
@@ -763,10 +752,6 @@ function initializeBeautyCategoryCards() {
         });
 
 
-        /* =================================================
-           EMPTY STATE
-           ================================================= */
-
         if (visibleProducts === 0) {
 
             emptyMessage.style.display =
@@ -779,10 +764,6 @@ function initializeBeautyCategoryCards() {
 
         }
 
-
-        /* =================================================
-           ACTIVE CATEGORY
-           ================================================= */
 
         categoryCards.forEach(card => {
 
@@ -799,25 +780,6 @@ function initializeBeautyCategoryCards() {
 
         });
 
-
-        /*
-         * Debug information.
-         * Helpful if another category problem occurs.
-         */
-        console.log(
-            "Beauty category:",
-            selected
-        );
-
-        console.log(
-            "Visible products:",
-            visibleProducts
-        );
-
-
-        /* =================================================
-           SCROLL TO PRODUCT SECTION
-           ================================================= */
 
         if (shouldScroll) {
 
@@ -837,20 +799,16 @@ function initializeBeautyCategoryCards() {
                     });
 
                 }, 100);
+
             }
+
         }
+
     }
 
 
-    /* =====================================================
-       CATEGORY CARD CLICK
-       ===================================================== */
-
     categoryCards.forEach(card => {
 
-        /*
-         * Make keyboard interaction accessible.
-         */
         card.setAttribute(
             "role",
             "button"
@@ -870,12 +828,8 @@ function initializeBeautyCategoryCards() {
 
                 if (!selectedCategory) {
 
-                    console.warn(
-                        "Category card has no data-filter:",
-                        card
-                    );
-
                     return;
+
                 }
 
 
@@ -890,15 +844,10 @@ function initializeBeautyCategoryCards() {
     });
 
 
-    /* =====================================================
-       INITIAL STATE
-       ===================================================== */
-
     showBeautyCategory(
         "all",
         false
     );
-
 }
 
 
@@ -913,14 +862,12 @@ function randomizeLipstick() {
             ".lipstick-visual, .lipstick-card"
         );
 
+
     if (!lipstickVisuals.length) {
         return;
     }
 
 
-    /*
-     * Avoid selecting the same lipstick twice.
-     */
     let newIndex =
         Math.floor(
             Math.random() *
@@ -936,6 +883,7 @@ function randomizeLipstick() {
         newIndex =
             (newIndex + 1) %
             lipstickVisuals.length;
+
     }
 
 
@@ -957,7 +905,7 @@ function randomizeLipstick() {
 
 
 /* =========================================================
-   RANDOM EYELINER / LASHES
+   RANDOM EYELINER
    ========================================================= */
 
 function randomizeEyeliner() {
@@ -966,6 +914,7 @@ function randomizeEyeliner() {
         document.querySelectorAll(
             ".eyeliner-visual, .eyeliner-card"
         );
+
 
     if (!eyelinerVisuals.length) {
         return;
@@ -992,68 +941,157 @@ function randomizeEyeliner() {
 }
 
 
+/* =========================================================
+   LOGIN POPUP
+   ========================================================= */
+
+function initializeLoginPopup() {
+
+    const popup =
+        document.getElementById(
+            "loginPopup"
+        );
+
+
+    if (!popup) {
+        return;
+    }
+
+
+    /*
+     * Clicking the dark background
+     * closes the popup.
+     */
+
+    popup.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target === popup
+            ) {
+
+                closeLoginPopup();
+
+            }
+
+        }
+    );
+
+
+    /*
+     * ESC closes popup.
+     */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Escape" &&
+                !popup.hidden
+            ) {
+
+                closeLoginPopup();
+
+            }
+
+        }
+    );
+
+}
+
 
 /* =========================================================
-   LOGIN POPUP — ADD TO CART
+   SHOW LOGIN POPUP
    ========================================================= */
 
 function showLoginPopup() {
-    const popup = document.getElementById("loginPopup");
+
+    const popup =
+        document.getElementById(
+            "loginPopup"
+        );
+
 
     if (!popup) {
         return;
     }
 
-    popup.classList.add("show");
 
-    document.body.style.overflow = "hidden";
+    popup.hidden = false;
+
+    document.body.classList.add(
+        "login-popup-open"
+    );
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    /*
+     * Focus OK button for accessibility.
+     */
+
+    const okButton =
+        popup.querySelector(
+            ".login-popup-ok"
+        );
+
+
+    if (okButton) {
+
+        setTimeout(() => {
+
+            okButton.focus();
+
+        }, 50);
+
+    }
+
 }
 
 
-function closeLoginPopup(event) {
+/* =========================================================
+   CLOSE LOGIN POPUP
+   ========================================================= */
 
-    if (event && event.target !== event.currentTarget) {
-        return;
-    }
+function closeLoginPopup() {
 
-    const popup = document.getElementById("loginPopup");
+    const popup =
+        document.getElementById(
+            "loginPopup"
+        );
+
 
     if (!popup) {
         return;
     }
 
-    popup.classList.remove("show");
 
-    document.body.style.overflow = "";
+    popup.hidden = true;
+
+    document.body.classList.remove(
+        "login-popup-open"
+    );
+
+    document.body.style.overflow =
+        "";
+
 }
 
+
+/* =========================================================
+   GO TO LOGIN
+   ========================================================= */
 
 function goToLogin() {
 
-    window.location.href = "/login";
+    window.location.href =
+        "/login";
 
 }
 
-
-/* ESC KEY */
-
-document.addEventListener("keydown", function (event) {
-
-    if (event.key !== "Escape") {
-        return;
-    }
-
-    const popup = document.getElementById("loginPopup");
-
-    if (!popup) {
-        return;
-    }
-
-    popup.classList.remove("show");
-
-    document.body.style.overflow = "";
-
-});
 
 /* =========================================================
    GLOBAL BEAUTY PRODUCT FILTER
@@ -1087,7 +1125,9 @@ window.filterBeautyProducts =
                 );
 
 
-            if (cardCategory === selected) {
+            if (
+                cardCategory === selected
+            ) {
 
                 card.click();
 
@@ -1096,94 +1136,3 @@ window.filterBeautyProducts =
         });
 
     };
-
-
-        //  LOGIN POPUP JAVASCRIPT
-  
-
-        function showLoginPopup() {
-
-            const popup =
-                document.getElementById("loginPopup");
-
-            if (!popup) {
-                return;
-            }
-
-            popup.hidden = false;
-
-            document.body.classList.add(
-                "login-popup-open"
-            );
-
-        }
-
-
-        function closeLoginPopup() {
-
-            const popup =
-                document.getElementById("loginPopup");
-
-            if (!popup) {
-                return;
-            }
-
-            popup.hidden = true;
-
-            document.body.classList.remove(
-                "login-popup-open"
-            );
-
-        }
-
-
-        function goToLogin() {
-
-            window.location.href =
-                "{{ url_for('login') }}";
-
-        }
-
-
-        /* =========================================
-           CLOSE POPUP WHEN CLICKING OUTSIDE
-           ========================================= */
-
-        document.addEventListener(
-            "click",
-            function(event) {
-
-                const popup =
-                    document.getElementById("loginPopup");
-
-                if (
-                    popup &&
-                    !popup.hidden &&
-                    event.target === popup
-                ) {
-
-                    closeLoginPopup();
-
-                }
-
-            }
-        );
-
-
-        /* =========================================
-           CLOSE POPUP WITH ESC
-           ========================================= */
-
-        document.addEventListener(
-            "keydown",
-            function(event) {
-
-                if (event.key === "Escape") {
-
-                    closeLoginPopup();
-
-                }
-
-            }
-        );
-
