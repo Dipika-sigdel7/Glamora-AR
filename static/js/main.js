@@ -1096,3 +1096,94 @@ window.filterBeautyProducts =
         });
 
     };
+
+
+        //  LOGIN POPUP JAVASCRIPT
+  
+
+        function showLoginPopup() {
+
+            const popup =
+                document.getElementById("loginPopup");
+
+            if (!popup) {
+                return;
+            }
+
+            popup.hidden = false;
+
+            document.body.classList.add(
+                "login-popup-open"
+            );
+
+        }
+
+
+        function closeLoginPopup() {
+
+            const popup =
+                document.getElementById("loginPopup");
+
+            if (!popup) {
+                return;
+            }
+
+            popup.hidden = true;
+
+            document.body.classList.remove(
+                "login-popup-open"
+            );
+
+        }
+
+
+        function goToLogin() {
+
+            window.location.href =
+                "{{ url_for('login') }}";
+
+        }
+
+
+        /* =========================================
+           CLOSE POPUP WHEN CLICKING OUTSIDE
+           ========================================= */
+
+        document.addEventListener(
+            "click",
+            function(event) {
+
+                const popup =
+                    document.getElementById("loginPopup");
+
+                if (
+                    popup &&
+                    !popup.hidden &&
+                    event.target === popup
+                ) {
+
+                    closeLoginPopup();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           CLOSE POPUP WITH ESC
+           ========================================= */
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Escape") {
+
+                    closeLoginPopup();
+
+                }
+
+            }
+        );
+

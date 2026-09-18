@@ -121,6 +121,8 @@
 
         <div class="nav-actions">
 
+            <!-- SEARCH -->
+
             <button
                 class="icon-btn"
                 id="searchBtn"
@@ -132,6 +134,8 @@
             </button>
 
 
+            <!-- WISHLIST -->
+
             <button
                 class="icon-btn wishlist-btn"
                 id="wishlistBtn"
@@ -142,6 +146,8 @@
                 ♡
             </button>
 
+
+            <!-- CART -->
 
             <button
                 class="cart-btn"
@@ -165,6 +171,8 @@
             </button>
 
 
+            <!-- LOGIN -->
+
             <a
                 href="{{ url_for('login') }}"
                 class="login-btn"
@@ -182,6 +190,8 @@
 
             </a>
 
+
+            <!-- MENU -->
 
             <button
                 class="menu-btn"
@@ -392,6 +402,8 @@
         <div class="beauty-category-grid">
 
 
+            <!-- ALL -->
+
             <button
                 type="button"
                 class="beauty-category-card active reveal"
@@ -424,6 +436,8 @@
 
             </button>
 
+
+            <!-- LIPSTICK -->
 
             <button
                 type="button"
@@ -458,6 +472,8 @@
             </button>
 
 
+            <!-- EYESHADOW -->
+
             <button
                 type="button"
                 class="beauty-category-card reveal"
@@ -490,6 +506,8 @@
 
             </button>
 
+
+            <!-- BLUSH -->
 
             <button
                 type="button"
@@ -524,6 +542,8 @@
             </button>
 
 
+            <!-- EYELINER -->
+
             <button
                 type="button"
                 class="beauty-category-card reveal"
@@ -556,6 +576,8 @@
 
             </button>
 
+
+            <!-- MASCARA -->
 
             <button
                 type="button"
@@ -590,6 +612,8 @@
             </button>
 
 
+            <!-- FOUNDATION -->
+
             <button
                 type="button"
                 class="beauty-category-card reveal"
@@ -622,6 +646,8 @@
 
             </button>
 
+
+            <!-- HIGHLIGHTER -->
 
             <button
                 type="button"
@@ -717,6 +743,7 @@
 
                 {% for product in products %}
 
+
                     {% set product_type =
                         (product.product_type or 'beauty')
                         |lower
@@ -754,6 +781,7 @@
 
                         <div class="beauty-product-image">
 
+
                             {% if product.image_url %}
 
                                 <a
@@ -771,7 +799,9 @@
 
                                 </a>
 
+
                             {% else %}
+
 
                                 <a
                                     href="{{ url_for('product_details', product_id=product.id) }}"
@@ -781,33 +811,41 @@
 
                                     <div class="product-placeholder">
 
+
                                         {% if "lipstick" in product_type %}
 
                                             💄
+
 
                                         {% elif "eyeshadow" in product_type %}
 
                                             🎨
 
+
                                         {% elif "blush" in product_type %}
 
                                             🌸
+
 
                                         {% elif "eyeliner" in product_type %}
 
                                             ✧
 
+
                                         {% elif "mascara" in product_type %}
 
                                             🖤
+
 
                                         {% elif "foundation" in product_type %}
 
                                             ✿
 
+
                                         {% elif "highlighter" in product_type %}
 
                                             ✨
+
 
                                         {% else %}
 
@@ -945,28 +983,34 @@
 
 
                             <!-- =================================
-                                 PRICE
+                                 PRICE + CART
                                  ================================= -->
 
                             <div class="product-bottom">
 
+
+                                <!-- PRICE -->
+
                                 <span class="product-price">
+
                                     ${{ "%.2f"|format(product.price|float) }}
+
                                 </span>
 
 
                                 <!-- =================================
-                                     PRODUCT ACTION BUTTONS
+                                     ACTION BUTTONS
                                      ================================= -->
 
                                 <div class="product-action-buttons">
 
 
-                                    <!-- =================================
-                                         ADD TO CART
-                                         ================================= -->
-
                                     {% if session.get('logged_in') %}
+
+
+                                        <!-- =================================
+                                             LOGGED-IN USER
+                                             ================================= -->
 
                                         <form
                                             action="{{ url_for('cart_add', product_id=product.id) }}"
@@ -977,7 +1021,7 @@
                                             <button
                                                 type="submit"
                                                 class="add-to-cart-btn"
-                                                {% if not product.stock or product.stock|int <= 0 %}
+                                                {% if product.stock is none or product.stock|int <= 0 %}
                                                     disabled
                                                 {% endif %}
                                             >
@@ -998,7 +1042,9 @@
                                     {% else %}
 
 
-                                        <!-- LOGIN REQUIRED -->
+                                        <!-- =================================
+                                             NOT LOGGED-IN USER
+                                             ================================= -->
 
                                         <button
                                             type="button"
@@ -1039,6 +1085,7 @@
 
                                     </a>
 
+
                                 </div>
 
                             </div>
@@ -1055,7 +1102,7 @@
 
 
                 <!-- =========================================
-                     EMPTY PRODUCTS
+                     NO PRODUCTS
                      ========================================= -->
 
                 <div class="empty-products">
@@ -1382,7 +1429,7 @@
             <!-- TITLE -->
 
             <h3 id="loginPopupTitle">
-                Login Required
+                Please Login
             </h3>
 
 
@@ -1390,7 +1437,7 @@
 
             <p>
                 Please login to your account before adding
-                products to your shopping bag.
+                this product to your shopping bag.
             </p>
 
 
@@ -1416,6 +1463,7 @@
     <script
         src="{{ url_for('static', filename='js/main.js') }}"
     ></script>
+
 
 
 </body>
