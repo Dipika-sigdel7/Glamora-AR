@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 
@@ -749,7 +748,9 @@
                     >
 
 
-                        <!-- PRODUCT IMAGE -->
+                        <!-- =================================
+                             PRODUCT IMAGE
+                             ================================= -->
 
                         <div class="beauty-product-image">
 
@@ -821,6 +822,8 @@
                             {% endif %}
 
 
+                            <!-- PRODUCT BADGE -->
+
                             <span class="product-badge">
                                 {{ product.product_type or 'BEAUTY' }}
                             </span>
@@ -839,10 +842,14 @@
                         </div>
 
 
-                        <!-- PRODUCT INFORMATION -->
+                        <!-- =================================
+                             PRODUCT INFORMATION
+                             ================================= -->
 
                         <div class="beauty-product-info">
 
+
+                            <!-- CATEGORY + STOCK -->
 
                             <div class="product-category-row">
 
@@ -868,9 +875,7 @@
                             </div>
 
 
-                            <!-- =================================
-                                 PRODUCT NAME
-                                 ================================= -->
+                            <!-- PRODUCT NAME -->
 
                             <h3 class="product-name">
 
@@ -882,6 +887,8 @@
 
                             </h3>
 
+
+                            <!-- DESCRIPTION -->
 
                             {% if product.description %}
 
@@ -898,6 +905,8 @@
 
                             {% endif %}
 
+
+                            <!-- SHADE -->
 
                             {% if product.shade %}
 
@@ -916,6 +925,8 @@
                             {% endif %}
 
 
+                            <!-- COLOR -->
+
                             {% if product.color %}
 
                                 <div class="product-detail">
@@ -933,7 +944,9 @@
                             {% endif %}
 
 
-                            <!-- PRICE / VIEW PRODUCT -->
+                            <!-- =================================
+                                 PRICE
+                                 ================================= -->
 
                             <div class="product-bottom">
 
@@ -943,24 +956,93 @@
 
 
                                 <!-- =================================
-                                     PRODUCT DETAILS LINK
+                                     PRODUCT ACTION BUTTONS
                                      ================================= -->
 
-                                <a
-                                    href="{{ url_for('product_details', product_id=product.id) }}"
-                                    class="product-view-btn"
-                                    aria-label="View details for {{ product.name }}"
-                                >
+                                <div class="product-action-buttons">
 
-                                    View Product
 
-                                    <span>
-                                        →
-                                    </span>
+                                    <!-- =================================
+                                         ADD TO CART
+                                         ================================= -->
 
-                                </a>
+                                    {% if session.get('logged_in') %}
+
+                                        <form
+                                            action="{{ url_for('cart_add', product_id=product.id) }}"
+                                            method="POST"
+                                            class="add-to-cart-form"
+                                        >
+
+                                            <button
+                                                type="submit"
+                                                class="add-to-cart-btn"
+                                                {% if not product.stock or product.stock|int <= 0 %}
+                                                    disabled
+                                                {% endif %}
+                                            >
+
+                                                <span class="cart-plus">
+                                                    +
+                                                </span>
+
+                                                <span>
+                                                    Add to Cart
+                                                </span>
+
+                                            </button>
+
+                                        </form>
+
+
+                                    {% else %}
+
+
+                                        <!-- LOGIN REQUIRED -->
+
+                                        <button
+                                            type="button"
+                                            class="add-to-cart-btn"
+                                            onclick="showLoginPopup()"
+                                        >
+
+                                            <span class="cart-plus">
+                                                +
+                                            </span>
+
+                                            <span>
+                                                Add to Cart
+                                            </span>
+
+                                        </button>
+
+                                    {% endif %}
+
+
+                                    <!-- =================================
+                                         VIEW PRODUCT
+                                         ================================= -->
+
+                                    <a
+                                        href="{{ url_for('product_details', product_id=product.id) }}"
+                                        class="product-view-btn"
+                                        aria-label="View details for {{ product.name }}"
+                                    >
+
+                                        <span>
+                                            View Product
+                                        </span>
+
+                                        <span>
+                                            →
+                                        </span>
+
+                                    </a>
+
+                                </div>
 
                             </div>
+
 
                         </div>
 
@@ -971,6 +1053,10 @@
 
             {% else %}
 
+
+                <!-- =========================================
+                     EMPTY PRODUCTS
+                     ========================================= -->
 
                 <div class="empty-products">
 
@@ -1259,6 +1345,71 @@
 
 
     <!-- =====================================================
+         LOGIN REQUIRED POPUP
+         ===================================================== -->
+
+    <div
+        class="login-popup-overlay"
+        id="loginPopup"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="loginPopupTitle"
+    >
+
+        <div class="login-popup">
+
+
+            <!-- CLOSE -->
+
+            <button
+                type="button"
+                class="login-popup-close"
+                onclick="closeLoginPopup()"
+                aria-label="Close popup"
+            >
+                ×
+            </button>
+
+
+            <!-- ICON -->
+
+            <div class="login-popup-icon">
+                ♡
+            </div>
+
+
+            <!-- TITLE -->
+
+            <h3 id="loginPopupTitle">
+                Login Required
+            </h3>
+
+
+            <!-- MESSAGE -->
+
+            <p>
+                Please login to your account before adding
+                products to your shopping bag.
+            </p>
+
+
+            <!-- OK -->
+
+            <button
+                type="button"
+                class="login-popup-ok"
+                onclick="goToLogin()"
+            >
+                OK
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
          MAIN JAVASCRIPT
          ===================================================== -->
 
@@ -1270,4 +1421,3 @@
 </body>
 
 </html>
-

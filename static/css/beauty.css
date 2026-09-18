@@ -3634,6 +3634,379 @@
 
 
 
+/* =========================================================
+   PRODUCT BOTTOM
+   ========================================================= */
+
+.product-bottom {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(128, 107, 114, 0.15);
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+
+/* =========================================================
+   PRODUCT PRICE
+   ========================================================= */
+
+.product-price {
+    display: block;
+    font-family: "Playfair Display", serif;
+    font-size: 25px;
+    font-weight: 500;
+    color: #c85f7a;
+}
+
+
+/* =========================================================
+   PRODUCT ACTION BUTTONS
+   ========================================================= */
+
+.product-action-buttons {
+    width: 100%;
+
+    display: flex;
+    align-items: stretch;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   ADD TO CART FORM
+   ========================================================= */
+
+.add-to-cart-form {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   ADD TO CART BUTTON
+   ========================================================= */
+
+.add-to-cart-btn {
+    width: 100%;
+    min-height: 48px;
+
+    padding: 10px 12px;
+
+    border: none;
+    border-radius: 14px;
+
+    background: #c85f7a;
+    color: #ffffff;
+
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.add-to-cart-btn:hover {
+    background: #a74360;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(167, 67, 96, 0.18);
+}
+
+
+.add-to-cart-btn:active {
+    transform: translateY(0);
+}
+
+
+.add-to-cart-btn:disabled {
+    background: #d8c7cc;
+    color: #ffffff;
+
+    cursor: not-allowed;
+
+    transform: none;
+    box-shadow: none;
+}
+
+
+.cart-plus {
+    font-size: 17px;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   VIEW PRODUCT BUTTON
+   ========================================================= */
+
+.product-view-btn {
+    flex: 1;
+
+    min-height: 48px;
+
+    padding: 10px 12px;
+
+    border-radius: 14px;
+
+    background: #fdecef;
+    color: #26191d;
+
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+.product-view-btn:hover {
+    background: #f3b8c6;
+
+    transform: translateY(-2px);
+}
+
+
+.product-view-btn span:last-child {
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   LOGIN POPUP
+   ========================================================= */
+
+.login-popup-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(38, 25, 29, 0.45);
+
+    backdrop-filter: blur(7px);
+}
+
+
+.login-popup-overlay[hidden] {
+    display: none;
+}
+
+
+.login-popup {
+    position: relative;
+
+    width: min(100%, 380px);
+
+    padding: 38px 28px 30px;
+
+    border-radius: 24px;
+
+    background: #fff5f7;
+
+    text-align: center;
+
+    box-shadow:
+        0 25px 70px rgba(164, 73, 98, 0.25);
+
+    animation:
+        loginPopupIn 0.25s ease;
+}
+
+
+@keyframes loginPopupIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   POPUP CLOSE
+   ========================================================= */
+
+.login-popup-close {
+    position: absolute;
+
+    top: 12px;
+    right: 15px;
+
+    width: 34px;
+    height: 34px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #806b72;
+
+    font-size: 27px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    border-radius: 50%;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.login-popup-close:hover {
+    background: #fdecef;
+    color: #a74360;
+}
+
+
+/* =========================================================
+   POPUP ICON
+   ========================================================= */
+
+.login-popup-icon {
+    margin-bottom: 10px;
+
+    color: #c85f7a;
+
+    font-size: 36px;
+}
+
+
+/* =========================================================
+   POPUP TITLE
+   ========================================================= */
+
+.login-popup h3 {
+    margin: 0 0 10px;
+
+    color: #26191d;
+
+    font-family: "Playfair Display", serif;
+
+    font-size: 27px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   POPUP MESSAGE
+   ========================================================= */
+
+.login-popup p {
+    margin: 0 auto 24px;
+
+    max-width: 310px;
+
+    color: #806b72;
+
+    font-family: "DM Sans", sans-serif;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   POPUP OK BUTTON
+   ========================================================= */
+
+.login-popup-ok {
+    width: 100%;
+
+    min-height: 48px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: #c85f7a;
+    color: #ffffff;
+
+    font-family: "DM Sans", sans-serif;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+.login-popup-ok:hover {
+    background: #a74360;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 500px) {
+
+    .product-action-buttons {
+        flex-direction: column;
+    }
+
+    .add-to-cart-form,
+    .add-to-cart-btn,
+    .product-view-btn {
+        width: 100%;
+    }
+
+}
+
+
 
 /* =========================================================
    CLICKABLE PRODUCT CARDS
