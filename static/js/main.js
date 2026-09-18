@@ -32,11 +32,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initializeProductHover();
 
-    initializeCartDemo();
-
     initializeBeautyCategoryCards();
 
     initializeLoginPopup();
+
+    initializeAddToBag();
 
     randomizeLipstick();
 
@@ -95,6 +95,11 @@ function initializeRevealAnimations() {
         return;
     }
 
+
+    /*
+     * Browser does not support IntersectionObserver.
+     * Show everything normally.
+     */
     if (!("IntersectionObserver" in window)) {
 
         revealElements.forEach(element => {
@@ -173,6 +178,7 @@ function initializeActiveNavigation() {
 
 
         let linkPath = "";
+
 
         try {
 
@@ -263,6 +269,9 @@ function initializeHeroParallax() {
     }
 
 
+    /*
+     * Disable parallax on smaller screens.
+     */
     if (window.innerWidth <= 768) {
         return;
     }
@@ -285,8 +294,9 @@ function initializeHeroParallax() {
 
 
         /*
-         * Do not use this effect on the
-         * product cards.
+         * Only move the hero visual.
+         *
+         * Product cards are NOT affected.
          */
         heroVisual.style.transform =
             `translate3d(0, ${movement}px, 0)`;
@@ -341,6 +351,12 @@ function initializeMobileMenu() {
     }
 
 
+    menuButton.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+
     menuButton.addEventListener(
         "click",
         () => {
@@ -371,6 +387,10 @@ function initializeMobileMenu() {
     );
 
 
+    /*
+     * Close mobile menu after
+     * selecting a navigation link.
+     */
     navLinks.querySelectorAll("a").forEach(
         link => {
 
@@ -446,63 +466,104 @@ function initializeProductHover() {
 
 
 /* =========================================================
-   CART DEMO
+   ADD TO BAG
    ========================================================= */
 
-function initializeCartDemo() {
+function initializeAddToBag() {
 
-    /*
-     * IMPORTANT:
-     *
-     * Do NOT intercept the real
-     * Add to Cart form.
-     *
-     * Flask must receive:
-     *
-     * POST /cart/add/<product_id>
-     */
-
-    const quickTryButtons =
+    const addToBagForms =
         document.querySelectorAll(
-            ".quick-try, .quick-try-btn"
+            ".add-to-cart-form"
         );
 
 
-    /*
-     * Quick Try buttons.
-     */
+    if (!addToBagForms.length) {
+        return;
+    }
 
-    quickTryButtons.forEach(button => {
 
-        button.addEventListener(
-            "click",
+    addToBagForms.forEach(form => {
+
+        form.addEventListener(
+            "submit",
             event => {
 
-                event.preventDefault();
-
-                event.stopPropagation();
-
-
-                const productCard =
-                    button.closest(
-                        ".beauty-product-card, .product-card"
+                const button =
+                    form.querySelector(
+                        ".add-to-cart-btn"
                     );
 
 
-                if (productCard) {
+                if (!button) {
+                    return;
+                }
 
-                    productCard.classList.add(
-                        "quick-try-active"
+
+                /*
+                 * Prevent multiple clicks while
+                 * Flask is processing the request.
+                 *
+                 * IMPORTANT:
+                 * We do NOT call preventDefault().
+                 *
+                 * The form must be submitted normally
+                 * to Flask.
+                 */
+                if (
+                    button.dataset.submitting === "true"
+                ) {
+
+                    event.preventDefault();
+
+                    return;
+
+                }
+
+
+                button.dataset.submitting =
+                    "true";
+
+
+                button.disabled = true;
+
+
+                button.classList.add(
+                    "adding"
+                );
+
+
+                const text =
+                    button.querySelector(
+                        ".add-to-bag-text"
                     );
 
 
-                    setTimeout(() => {
+                if (text) {
 
-                        productCard.classList.remove(
-                            "quick-try-active"
+                    text.textContent =
+                        "Adding...";
+
+                } else {
+
+                    /*
+                     * Fallback for existing HTML
+                     * where the text is inside
+                     * the last span.
+                     */
+                    const spans =
+                        button.querySelectorAll(
+                            "span"
                         );
 
-                    }, 900);
+
+                    if (spans.length) {
+
+                        spans[
+                            spans.length - 1
+                        ].textContent =
+                            "Adding...";
+
+                    }
 
                 }
 
@@ -544,12 +605,16 @@ function normalizeBeautyCategory(value) {
 
         "eyeshadow": "eyeshadow",
         "eyeshadows": "eyeshadow",
+        "eye-shadow": "eyeshadow",
+        "eye-shadows": "eyeshadow",
 
         "blush": "blush",
         "blushes": "blush",
 
         "eyeliner": "eyeliner",
         "eyeliners": "eyeliner",
+        "eye-liner": "eyeliner",
+        "eye-liners": "eyeliner",
 
         "mascara": "mascara",
         "mascaras": "mascara",
@@ -558,7 +623,8 @@ function normalizeBeautyCategory(value) {
         "foundations": "foundation",
 
         "highlighter": "highlighter",
-        "highlighters": "highlighter"
+        "highlighters": "highlighter",
+        "highlight": "highlighter"
 
     };
 
@@ -570,6 +636,9 @@ function normalizeBeautyCategory(value) {
     }
 
 
+    /*
+     * Try singular form.
+     */
     if (category.endsWith("s")) {
 
         const singular =
@@ -628,6 +697,10 @@ function initializeBeautyCategoryCards() {
         );
 
 
+    /*
+     * Create empty category message
+     * if it does not already exist.
+     */
     let emptyMessage =
         productGrid.querySelector(
             ".category-empty-state"
@@ -673,6 +746,10 @@ function initializeBeautyCategoryCards() {
     }
 
 
+    /* =====================================================
+       CHECK PRODUCT CATEGORY
+       ===================================================== */
+
     function productMatchesCategory(
         product,
         selectedCategory
@@ -684,8 +761,13 @@ function initializeBeautyCategoryCards() {
             );
 
 
+        /*
+         * "All" shows every product.
+         */
         if (selected === "all") {
+
             return true;
+
         }
 
 
@@ -701,12 +783,23 @@ function initializeBeautyCategoryCards() {
             );
 
 
+        /*
+         * A product can match either:
+         *
+         * product type
+         * OR
+         * database category.
+         */
         return (
             productType === selected ||
             productCategory === selected
         );
     }
 
+
+    /* =====================================================
+       SHOW SELECTED CATEGORY
+       ===================================================== */
 
     function showBeautyCategory(
         selectedCategory,
@@ -747,11 +840,19 @@ function initializeBeautyCategoryCards() {
                 product.style.display =
                     "none";
 
+                product.classList.remove(
+                    "visible"
+                );
+
             }
 
         });
 
 
+        /*
+         * Show empty state if no products
+         * match selected category.
+         */
         if (visibleProducts === 0) {
 
             emptyMessage.style.display =
@@ -765,6 +866,9 @@ function initializeBeautyCategoryCards() {
         }
 
 
+        /*
+         * Update active category card.
+         */
         categoryCards.forEach(card => {
 
             const cardCategory =
@@ -781,6 +885,9 @@ function initializeBeautyCategoryCards() {
         });
 
 
+        /*
+         * Scroll to products section.
+         */
         if (shouldScroll) {
 
             const productsSection =
@@ -807,11 +914,21 @@ function initializeBeautyCategoryCards() {
     }
 
 
+    /* =====================================================
+       CATEGORY CLICK
+       ===================================================== */
+
     categoryCards.forEach(card => {
 
         card.setAttribute(
             "role",
             "button"
+        );
+
+
+        card.setAttribute(
+            "tabindex",
+            "0"
         );
 
 
@@ -827,9 +944,7 @@ function initializeBeautyCategoryCards() {
 
 
                 if (!selectedCategory) {
-
                     return;
-
                 }
 
 
@@ -841,9 +956,37 @@ function initializeBeautyCategoryCards() {
             }
         );
 
+
+        /*
+         * Keyboard accessibility.
+         */
+        card.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key !== "Enter" &&
+                    event.key !== " "
+                ) {
+
+                    return;
+
+                }
+
+
+                event.preventDefault();
+
+                card.click();
+
+            }
+        );
+
     });
 
 
+    /*
+     * Show all products initially.
+     */
     showBeautyCategory(
         "all",
         false
@@ -875,6 +1018,10 @@ function randomizeLipstick() {
         );
 
 
+    /*
+     * Avoid showing the same lipstick twice
+     * in a row when there are multiple options.
+     */
     if (
         lipstickVisuals.length > 1 &&
         newIndex === lastLipstickIndex
@@ -959,10 +1106,22 @@ function initializeLoginPopup() {
 
 
     /*
+     * Make sure the popup starts hidden.
+     */
+    if (
+        !popup.hasAttribute("hidden") &&
+        !popup.classList.contains("show")
+    ) {
+
+        popup.hidden = true;
+
+    }
+
+
+    /*
      * Clicking the dark background
      * closes the popup.
      */
-
     popup.addEventListener(
         "click",
         event => {
@@ -982,7 +1141,6 @@ function initializeLoginPopup() {
     /*
      * ESC closes popup.
      */
-
     document.addEventListener(
         "keydown",
         event => {
@@ -1021,9 +1179,11 @@ function showLoginPopup() {
 
     popup.hidden = false;
 
+
     document.body.classList.add(
         "login-popup-open"
     );
+
 
     document.body.style.overflow =
         "hidden";
@@ -1032,7 +1192,6 @@ function showLoginPopup() {
     /*
      * Focus OK button for accessibility.
      */
-
     const okButton =
         popup.querySelector(
             ".login-popup-ok"
@@ -1071,9 +1230,11 @@ function closeLoginPopup() {
 
     popup.hidden = true;
 
+
     document.body.classList.remove(
         "login-popup-open"
     );
+
 
     document.body.style.overflow =
         "";
