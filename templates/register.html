@@ -74,7 +74,7 @@
                 <!-- BRAND -->
 
                 <a
-                    href="/"
+                    href="{{ url_for('home') }}"
                     class="register-brand"
                     aria-label="Glamora AR Home"
                 >
@@ -154,7 +154,9 @@
                 <div class="register-form-wrapper">
 
 
-                    <!-- HEADING -->
+                    <!-- =================================================
+                         HEADING
+                         ================================================= -->
 
                     <div class="register-heading">
 
@@ -177,7 +179,51 @@
 
 
 
-                    <!-- ERROR MESSAGE -->
+                    <!-- =================================================
+                         FLASK FLASH MESSAGES
+                         ================================================= -->
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+
+                        {% if messages %}
+
+                            {% for category, message in messages %}
+
+                                {% if category == 'success' %}
+
+                                    <div
+                                        class="register-success"
+                                        id="registerSuccess"
+                                        role="status"
+                                        aria-live="polite"
+                                    >
+                                        {{ message }}
+                                    </div>
+
+                                {% else %}
+
+                                    <div
+                                        class="register-error"
+                                        id="registerError"
+                                        role="alert"
+                                        aria-live="polite"
+                                    >
+                                        {{ message }}
+                                    </div>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        {% endif %}
+
+                    {% endwith %}
+
+
+
+                    <!-- =================================================
+                         JAVASCRIPT ERROR MESSAGE
+                         ================================================= -->
 
                     <div
                         class="register-error"
@@ -188,7 +234,9 @@
 
 
 
-                    <!-- SUCCESS MESSAGE -->
+                    <!-- =================================================
+                         JAVASCRIPT SUCCESS MESSAGE
+                         ================================================= -->
 
                     <div
                         class="register-success"
@@ -211,7 +259,9 @@
                     >
 
 
-                        <!-- NAME -->
+                        <!-- =================================================
+                             NAME
+                             ================================================= -->
 
                         <div class="form-group">
 
@@ -229,6 +279,7 @@
                                     placeholder="Enter your full name"
                                     autocomplete="name"
                                     maxlength="100"
+                                    value="{{ request.form.get('name', '') }}"
                                     required
                                 >
 
@@ -238,7 +289,9 @@
 
 
 
-                        <!-- EMAIL -->
+                        <!-- =================================================
+                             EMAIL
+                             ================================================= -->
 
                         <div class="form-group">
 
@@ -256,6 +309,7 @@
                                     placeholder="Enter your email"
                                     autocomplete="email"
                                     maxlength="150"
+                                    value="{{ request.form.get('email', '') }}"
                                     required
                                 >
 
@@ -265,7 +319,9 @@
 
 
 
-                        <!-- PASSWORD -->
+                        <!-- =================================================
+                             PASSWORD
+                             ================================================= -->
 
                         <div class="form-group">
 
@@ -302,7 +358,9 @@
 
 
 
-                        <!-- CONFIRM PASSWORD -->
+                        <!-- =================================================
+                             CONFIRM PASSWORD
+                             ================================================= -->
 
                         <div class="form-group">
 
@@ -339,7 +397,9 @@
 
 
 
-                        <!-- TERMS -->
+                        <!-- =================================================
+                             TERMS
+                             ================================================= -->
 
                         <label class="terms">
 
@@ -347,16 +407,25 @@
                                 type="checkbox"
                                 id="terms"
                                 name="terms"
+                                value="accepted"
                                 required
                             >
 
                             <span>
                                 I agree to the
-                                <a href="#" class="terms-link">
+                                <a
+                                    href="#"
+                                    class="terms-link"
+                                    onclick="return false;"
+                                >
                                     Terms &amp; Conditions
                                 </a>
                                 and
-                                <a href="#" class="terms-link">
+                                <a
+                                    href="#"
+                                    class="terms-link"
+                                    onclick="return false;"
+                                >
                                     Privacy Policy
                                 </a>.
                             </span>
@@ -365,7 +434,9 @@
 
 
 
-                        <!-- CREATE ACCOUNT BUTTON -->
+                        <!-- =================================================
+                             CREATE ACCOUNT BUTTON
+                             ================================================= -->
 
                         <button
                             type="submit"
@@ -396,7 +467,9 @@
 
 
 
-                    <!-- LOGIN -->
+                    <!-- =================================================
+                         LOGIN
+                         ================================================= -->
 
                     <p class="login-text">
 
@@ -410,11 +483,13 @@
 
 
 
-                    <!-- BACK HOME -->
+                    <!-- =================================================
+                         BACK HOME
+                         ================================================= -->
 
                     <div class="back-home">
 
-                        <a href="/">
+                        <a href="{{ url_for('home') }}">
                             ← Back to Glamora AR
                         </a>
 
