@@ -219,6 +219,66 @@ def prepare_products(products):
 
 
 # =========================================================
+# GET BAG COUNT
+# =========================================================
+
+def get_bag_count():
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return 0
+
+    connection = get_db_connection()
+
+    if connection is None:
+        return 0
+
+    cursor = None
+
+    try:
+
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
+        cursor.execute(
+            """
+            SELECT
+                COALESCE(SUM(quantity), 0) AS bag_count
+
+            FROM cart_items
+
+            WHERE user_id = %s
+            """,
+            (user_id,)
+        )
+
+        result = cursor.fetchone()
+
+        return int(
+            result.get("bag_count") or 0
+        )
+
+    except Exception as error:
+
+        print(
+            "BAG COUNT ERROR:",
+            type(error).__name__,
+            str(error)
+        )
+
+        return 0
+
+    finally:
+
+        safe_close(
+            cursor,
+            connection
+        )
+
+
+# =========================================================
 # ADMIN REQUIRED
 # =========================================================
 
@@ -260,7 +320,8 @@ def beauty():
         return render_template(
             "beauty.html",
             products=[],
-            categories=[]
+            categories=[],
+            bag_count=0
         )
 
     cursor = None
@@ -363,12 +424,15 @@ def beauty():
 
         categories = cursor.fetchall()
 
+        bag_count = get_bag_count()
+
         print()
         print("========================================")
         print("GLAMORA AR - BEAUTY PAGE")
         print("========================================")
         print("Products found:", len(products))
         print("Categories found:", len(categories))
+        print("Bag count:", bag_count)
 
         for product in products:
 
@@ -393,7 +457,8 @@ def beauty():
         return render_template(
             "beauty.html",
             products=products,
-            categories=categories
+            categories=categories,
+            bag_count=bag_count
         )
 
     except Exception as error:
@@ -421,7 +486,8 @@ def beauty():
         return render_template(
             "beauty.html",
             products=[],
-            categories=[]
+            categories=[],
+            bag_count=0
         )
 
     finally:
@@ -454,7 +520,8 @@ def product_details(product_id):
             images=[],
             reviews=[],
             review_count=0,
-            average_rating=0
+            average_rating=0,
+            bag_count=0
         )
 
     cursor = None
@@ -602,7 +669,8 @@ def product_details(product_id):
             images=images,
             reviews=reviews,
             review_count=review_count,
-            average_rating=average_rating
+            average_rating=average_rating,
+            bag_count=get_bag_count()
         )
 
     except Exception as error:
@@ -629,7 +697,8 @@ def product_details(product_id):
             images=[],
             reviews=[],
             review_count=0,
-            average_rating=0
+            average_rating=0,
+            bag_count=get_bag_count()
         )
 
     finally:
@@ -1096,7 +1165,7 @@ def login():
         session["logged_in"] = True
 
         return redirect(
-            url_for("home")
+            url_for("beauty")
         )
 
     return render_template(
@@ -1120,7 +1189,7 @@ def register():
 
 
 # =========================================================
-# ADD TO CART
+# ADD TO BAG
 # =========================================================
 
 @app.route(
@@ -1138,7 +1207,7 @@ def add_to_cart(product_id):
     if not user_id:
 
         flash(
-            "Please log in to add products to your cart.",
+            "Please log in to add products to your bag.",
             "error"
         )
 
@@ -1246,7 +1315,7 @@ def add_to_cart(product_id):
             )
 
         # =================================================
-        # EXISTING CART ITEM
+        # CHECK EXISTING BAG ITEM
         # =================================================
 
         cursor.execute(
@@ -1271,7 +1340,7 @@ def add_to_cart(product_id):
         existing_item = cursor.fetchone()
 
         # =================================================
-        # UPDATE EXISTING
+        # UPDATE EXISTING ITEM
         # =================================================
 
         if existing_item:
@@ -1315,7 +1384,7 @@ def add_to_cart(product_id):
             )
 
         # =================================================
-        # INSERT NEW
+        # INSERT NEW BAG ITEM
         # =================================================
 
         else:
@@ -1345,16 +1414,21 @@ def add_to_cart(product_id):
 
         connection.commit()
 
+        # =================================================
+        # SUCCESS MESSAGE
+        # =================================================
+
         flash(
-            f"{product['name']} has been added to your cart.",
+            f"{product['name']} has been added to your bag.",
             "success"
         )
 
+        # =================================================
+        # OPEN BAG AFTER ADDING
+        # =================================================
+
         return redirect(
-            url_for(
-                "product_details",
-                product_id=product_id
-            )
+            url_for("cart")
         )
 
     except Exception as error:
@@ -1366,7 +1440,7 @@ def add_to_cart(product_id):
 
         print()
         print("========================================")
-        print("ADD TO CART ERROR")
+        print("ADD TO BAG ERROR")
         print("========================================")
         print("USER ID:", user_id)
         print("PRODUCT ID:", product_id)
@@ -1376,7 +1450,7 @@ def add_to_cart(product_id):
         print()
 
         flash(
-            "Unable to add product to cart.",
+            "Unable to add product to your bag.",
             "error"
         )
 
@@ -1385,6 +1459,249 @@ def add_to_cart(product_id):
                 "product_details",
                 product_id=product_id
             )
+        )
+
+    finally:
+
+        safe_close(
+            cursor,
+            connection
+        )
+
+
+# =========================================================
+# BAG PAGE
+# =========================================================
+
+@app.route("/cart")
+def cart():
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+
+        flash(
+            "Please login to view your bag.",
+            "error"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    connection = get_db_connection()
+
+    if connection is None:
+
+        flash(
+            "Database connection failed.",
+            "error"
+        )
+
+        return render_template(
+            "cart.html",
+            cart_items=[],
+            bag_count=0,
+            subtotal=Decimal("0.00")
+        )
+
+    cursor = None
+
+    try:
+
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
+        # =================================================
+        # GET BAG ITEMS
+        # =================================================
+
+        cursor.execute(
+            """
+            SELECT
+                ci.id AS cart_item_id,
+                ci.product_id,
+                ci.quantity,
+
+                p.name,
+                p.price,
+                p.stock,
+                p.is_available,
+
+                (
+                    SELECT pi.image_url
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id
+                    ORDER BY
+                        pi.is_primary DESC,
+                        pi.id ASC
+                    LIMIT 1
+                ) AS image_url
+
+            FROM cart_items ci
+
+            INNER JOIN products p
+                ON p.id = ci.product_id
+
+            WHERE ci.user_id = %s
+
+            ORDER BY
+                ci.id DESC
+            """,
+            (user_id,)
+        )
+
+        cart_items = cursor.fetchall()
+
+        subtotal = Decimal("0.00")
+
+        for item in cart_items:
+
+            price = Decimal(
+                str(item.get("price") or 0)
+            )
+
+            quantity = int(
+                item.get("quantity") or 0
+            )
+
+            item["item_total"] = (
+                price * quantity
+            )
+
+            subtotal += item["item_total"]
+
+        bag_count = sum(
+            int(item.get("quantity") or 0)
+            for item in cart_items
+        )
+
+        return render_template(
+            "cart.html",
+            cart_items=cart_items,
+            bag_count=bag_count,
+            subtotal=subtotal
+        )
+
+    except Exception as error:
+
+        print()
+        print("========================================")
+        print("BAG PAGE ERROR")
+        print("========================================")
+        print("USER ID:", user_id)
+        print("ERROR TYPE:", type(error).__name__)
+        print("ERROR MESSAGE:", str(error))
+        print("========================================")
+        print()
+
+        flash(
+            "Unable to load your bag.",
+            "error"
+        )
+
+        return render_template(
+            "cart.html",
+            cart_items=[],
+            bag_count=0,
+            subtotal=Decimal("0.00")
+        )
+
+    finally:
+
+        safe_close(
+            cursor,
+            connection
+        )
+
+
+# =========================================================
+# REMOVE ITEM FROM BAG
+# =========================================================
+
+@app.route(
+    "/cart/remove/<int:cart_item_id>",
+    methods=["POST"]
+)
+def remove_from_cart(cart_item_id):
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+
+        flash(
+            "Please login to manage your bag.",
+            "error"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    connection = get_db_connection()
+
+    if connection is None:
+
+        flash(
+            "Database connection failed.",
+            "error"
+        )
+
+        return redirect(
+            url_for("cart")
+        )
+
+    cursor = None
+
+    try:
+
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            DELETE FROM cart_items
+
+            WHERE id = %s
+              AND user_id = %s
+            """,
+            (
+                cart_item_id,
+                user_id
+            )
+        )
+
+        connection.commit()
+
+        flash(
+            "Product removed from your bag.",
+            "success"
+        )
+
+        return redirect(
+            url_for("cart")
+        )
+
+    except Exception as error:
+
+        try:
+            connection.rollback()
+        except Exception:
+            pass
+
+        print(
+            "REMOVE BAG ITEM ERROR:",
+            type(error).__name__,
+            str(error)
+        )
+
+        flash(
+            "Unable to remove the product from your bag.",
+            "error"
+        )
+
+        return redirect(
+            url_for("cart")
         )
 
     finally:
@@ -1954,7 +2271,10 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
                 categories=categories
             )
 
@@ -1976,7 +2296,10 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
                 categories=categories
             )
 
@@ -2006,7 +2329,10 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
                 categories=categories
             )
 
@@ -2019,7 +2345,10 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
                 categories=categories
             )
 
@@ -2058,7 +2387,10 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
                 categories=categories
             )
 
@@ -2084,7 +2416,10 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
                 categories=categories
             )
 
@@ -2112,7 +2447,10 @@ def admin_add_product():
 
                 return render_template(
                     "admin/add_product.html",
-                    admin_name=session.get("admin_name", "Admin"),
+                    admin_name=session.get(
+                        "admin_name",
+                        "Admin"
+                    ),
                     categories=categories
                 )
 
@@ -2138,7 +2476,10 @@ def admin_add_product():
 
                 return render_template(
                     "admin/add_product.html",
-                    admin_name=session.get("admin_name", "Admin"),
+                    admin_name=session.get(
+                        "admin_name",
+                        "Admin"
+                    ),
                     categories=categories
                 )
 
@@ -2151,7 +2492,10 @@ def admin_add_product():
 
                 return render_template(
                     "admin/add_product.html",
-                    admin_name=session.get("admin_name", "Admin"),
+                    admin_name=session.get(
+                        "admin_name",
+                        "Admin"
+                    ),
                     categories=categories
                 )
 
@@ -2171,7 +2515,10 @@ def admin_add_product():
 
             return render_template(
                 "admin/add_product.html",
-                admin_name=session.get("admin_name", "Admin"),
+                admin_name=session.get(
+                    "admin_name",
+                    "Admin"
+                ),
                 categories=categories
             )
 
