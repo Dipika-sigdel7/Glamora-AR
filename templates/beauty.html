@@ -121,6 +121,7 @@
 
         <div class="nav-actions">
 
+
             <!-- SEARCH -->
 
             <button
@@ -147,7 +148,7 @@
             </button>
 
 
-            <!-- CART -->
+            <!-- SHOPPING BAG -->
 
             <button
                 class="cart-btn"
@@ -781,7 +782,6 @@
 
                         <div class="beauty-product-image">
 
-
                             {% if product.image_url %}
 
                                 <a
@@ -799,9 +799,7 @@
 
                                 </a>
 
-
                             {% else %}
-
 
                                 <a
                                     href="{{ url_for('product_details', product_id=product.id) }}"
@@ -811,41 +809,33 @@
 
                                     <div class="product-placeholder">
 
-
                                         {% if "lipstick" in product_type %}
 
                                             💄
-
 
                                         {% elif "eyeshadow" in product_type %}
 
                                             🎨
 
-
                                         {% elif "blush" in product_type %}
 
                                             🌸
-
 
                                         {% elif "eyeliner" in product_type %}
 
                                             ✧
 
-
                                         {% elif "mascara" in product_type %}
 
                                             🖤
-
 
                                         {% elif "foundation" in product_type %}
 
                                             ✿
 
-
                                         {% elif "highlighter" in product_type %}
 
                                             ✨
-
 
                                         {% else %}
 
@@ -983,7 +973,7 @@
 
 
                             <!-- =================================
-                                 PRICE + CART
+                                 PRICE + BAG
                                  ================================= -->
 
                             <div class="product-bottom">
@@ -1005,7 +995,7 @@
                                 <div class="product-action-buttons">
 
 
-                                    {% if session.get('logged_in') %}
+                                    {% if session.get('user_id') %}
 
 
                                         <!-- =================================
@@ -1013,7 +1003,7 @@
                                              ================================= -->
 
                                         <form
-                                            action="{{ url_for('cart_add', product_id=product.id) }}"
+                                            action="{{ url_for('add_to_cart', product_id=product.id) }}"
                                             method="POST"
                                             class="add-to-cart-form"
                                         >
@@ -1031,7 +1021,7 @@
                                                 </span>
 
                                                 <span>
-                                                    Add to Cart
+                                                    Add to Bag
                                                 </span>
 
                                             </button>
@@ -1050,6 +1040,9 @@
                                             type="button"
                                             class="add-to-cart-btn"
                                             onclick="showLoginPopup()"
+                                            {% if product.stock is none or product.stock|int <= 0 %}
+                                                disabled
+                                            {% endif %}
                                         >
 
                                             <span class="cart-plus">
@@ -1057,7 +1050,7 @@
                                             </span>
 
                                             <span>
-                                                Add to Cart
+                                                Add to Bag
                                             </span>
 
                                         </button>
@@ -1463,7 +1456,6 @@
     <script
         src="{{ url_for('static', filename='js/main.js') }}"
     ></script>
-
 
 
 </body>
