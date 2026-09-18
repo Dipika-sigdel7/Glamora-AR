@@ -1,4 +1,3 @@
-
 import os
 import uuid
 import re
@@ -268,64 +267,6 @@ def get_categories():
 
 
 # =========================================================
-# GET PRIMARY PRODUCT IMAGE
-# =========================================================
-
-def get_product_image(product_id):
-
-    connection = get_db_connection()
-
-    if connection is None:
-        return None
-
-    cursor = None
-
-    try:
-
-        cursor = connection.cursor(
-            dictionary=True
-        )
-
-        cursor.execute(
-            """
-            SELECT
-                image_url
-            FROM product_images
-            WHERE product_id = %s
-            ORDER BY
-                is_primary DESC,
-                id ASC
-            LIMIT 1
-            """,
-            (product_id,)
-        )
-
-        image = cursor.fetchone()
-
-        if image:
-            return image.get("image_url")
-
-        return None
-
-    except Exception as error:
-
-        print(
-            "PRODUCT IMAGE ERROR:",
-            type(error).__name__,
-            str(error)
-        )
-
-        return None
-
-    finally:
-
-        safe_close(
-            cursor,
-            connection
-        )
-
-
-# =========================================================
 # ADMIN REQUIRED
 # =========================================================
 
@@ -377,10 +318,6 @@ def beauty():
         cursor = connection.cursor(
             dictionary=True
         )
-
-        # =================================================
-        # LOAD AVAILABLE PRODUCTS
-        # =================================================
 
         cursor.execute("""
             SELECT
@@ -448,10 +385,6 @@ def beauty():
             products
         )
 
-        # =================================================
-        # LOAD CATEGORIES
-        # =================================================
-
         cursor.execute("""
             SELECT
                 id,
@@ -477,10 +410,6 @@ def beauty():
         """)
 
         categories = cursor.fetchall()
-
-        # =================================================
-        # DEBUG
-        # =================================================
 
         print()
         print("========================================")
@@ -560,20 +489,7 @@ def product_details(product_id):
 
     connection = get_db_connection()
 
-    # =====================================================
-    # DATABASE CONNECTION CHECK
-    # =====================================================
-
     if connection is None:
-
-        print()
-        print("========================================")
-        print("PRODUCT DETAILS DATABASE ERROR")
-        print("========================================")
-        print("PRODUCT ID:", product_id)
-        print("Database connection returned None.")
-        print("========================================")
-        print()
 
         flash(
             "Database connection failed.",
@@ -596,10 +512,6 @@ def product_details(product_id):
         cursor = connection.cursor(
             dictionary=True
         )
-
-        # =================================================
-        # GET PRODUCT
-        # =================================================
 
         cursor.execute(
             """
@@ -631,19 +543,7 @@ def product_details(product_id):
 
         product = cursor.fetchone()
 
-        # =================================================
-        # PRODUCT NOT FOUND
-        # =================================================
-
         if not product:
-
-            print()
-            print("========================================")
-            print("PRODUCT NOT FOUND")
-            print("========================================")
-            print("REQUESTED PRODUCT ID:", product_id)
-            print("========================================")
-            print()
 
             flash(
                 "Product not found.",
@@ -659,17 +559,9 @@ def product_details(product_id):
                 average_rating=0
             )
 
-        # =================================================
-        # NORMALIZE PRODUCT TYPE
-        # =================================================
-
         product["product_type_key"] = normalize_product_type(
             product.get("product_type")
         )
-
-        # =================================================
-        # GET PRODUCT IMAGES
-        # =================================================
 
         cursor.execute(
             """
@@ -692,10 +584,6 @@ def product_details(product_id):
 
         images = cursor.fetchall()
 
-        # =================================================
-        # PRIMARY IMAGE
-        # =================================================
-
         if images:
 
             product["image_url"] = images[0].get(
@@ -705,10 +593,6 @@ def product_details(product_id):
         else:
 
             product["image_url"] = None
-
-        # =================================================
-        # GET REVIEWS
-        # =================================================
 
         reviews = []
 
@@ -739,26 +623,13 @@ def product_details(product_id):
 
         except Exception as review_error:
 
-            print()
-            print("========================================")
-            print("PRODUCT REVIEWS LOAD WARNING")
-            print("========================================")
             print(
-                "ERROR TYPE:",
-                type(review_error).__name__
-            )
-            print(
-                "ERROR MESSAGE:",
+                "PRODUCT REVIEWS LOAD WARNING:",
+                type(review_error).__name__,
                 str(review_error)
             )
-            print("========================================")
-            print()
 
             reviews = []
-
-        # =================================================
-        # REVIEW SUMMARY
-        # =================================================
 
         review_count = len(reviews)
 
@@ -778,10 +649,6 @@ def product_details(product_id):
 
             average_rating = 0
 
-        # =================================================
-        # DEBUG
-        # =================================================
-
         print()
         print("========================================")
         print("GLAMORA AR - PRODUCT DETAILS")
@@ -790,18 +657,12 @@ def product_details(product_id):
         print("PRODUCT NAME:", product.get("name"))
         print("CATEGORY:", product.get("category_name"))
         print("PRODUCT TYPE:", product.get("product_type"))
-        print("PRODUCT TYPE KEY:", product.get("product_type_key"))
         print("PRICE:", product.get("price"))
         print("STOCK:", product.get("stock"))
         print("IMAGE COUNT:", len(images))
         print("REVIEW COUNT:", review_count)
-        print("AVERAGE RATING:", average_rating)
         print("========================================")
         print()
-
-        # =================================================
-        # RENDER PRODUCT DETAILS PAGE
-        # =================================================
 
         return render_template(
             "product_details.html",
@@ -814,27 +675,14 @@ def product_details(product_id):
 
     except Exception as error:
 
-        # =================================================
-        # REAL ERROR
-        # =================================================
-
         print()
         print("========================================")
         print("PRODUCT DETAILS ERROR")
         print("========================================")
         print("PRODUCT ID:", product_id)
-        print(
-            "ERROR TYPE:",
-            type(error).__name__
-        )
-        print(
-            "ERROR MESSAGE:",
-            str(error)
-        )
-        print(
-            "ERROR REPR:",
-            repr(error)
-        )
+        print("ERROR TYPE:", type(error).__name__)
+        print("ERROR MESSAGE:", str(error))
+        print("ERROR REPR:", repr(error))
         print("========================================")
         print()
 
@@ -842,10 +690,6 @@ def product_details(product_id):
             f"Unable to load product: {str(error)}",
             "error"
         )
-
-        # IMPORTANT:
-        # Do NOT redirect to /beauty here.
-        # This allows us to see the actual problem.
 
         return render_template(
             "product_details.html",
@@ -895,10 +739,6 @@ def add_product_review(product_id):
         ""
     ).strip()
 
-    # =====================================================
-    # VALIDATE RATING
-    # =====================================================
-
     try:
 
         rating = int(rating_value)
@@ -922,10 +762,6 @@ def add_product_review(product_id):
                 product_id=product_id
             )
         )
-
-    # =====================================================
-    # DATABASE
-    # =====================================================
 
     connection = get_db_connection()
 
@@ -952,10 +788,6 @@ def add_product_review(product_id):
             dictionary=True
         )
 
-        # =================================================
-        # CHECK PRODUCT
-        # =================================================
-
         cursor.execute(
             """
             SELECT id
@@ -978,10 +810,6 @@ def add_product_review(product_id):
             return redirect(
                 url_for("beauty")
             )
-
-        # =================================================
-        # GET USER
-        # =================================================
 
         cursor.execute(
             """
@@ -1012,10 +840,6 @@ def add_product_review(product_id):
             return redirect(
                 url_for("login")
             )
-
-        # =================================================
-        # REVIEW IMAGE
-        # =================================================
 
         review_image_url = None
 
@@ -1056,10 +880,6 @@ def add_product_review(product_id):
                         product_id=product_id
                     )
                 )
-
-            # =================================================
-            # CHECK FILE SIZE
-            # =================================================
 
             image.seek(
                 0,
@@ -1108,10 +928,6 @@ def add_product_review(product_id):
                 "/static/uploads/reviews/"
                 + unique_filename
             )
-
-        # =================================================
-        # INSERT REVIEW
-        # =================================================
 
         cursor.execute(
             """
@@ -1171,26 +987,15 @@ def add_product_review(product_id):
         ):
 
             try:
-                os.remove(
-                    saved_file
-                )
+                os.remove(saved_file)
             except Exception:
                 pass
 
-        print()
-        print("========================================")
-        print("PRODUCT REVIEW ERROR")
-        print("========================================")
         print(
-            "ERROR TYPE:",
-            type(error).__name__
-        )
-        print(
-            "ERROR MESSAGE:",
+            "PRODUCT REVIEW ERROR:",
+            type(error).__name__,
             str(error)
         )
-        print("========================================")
-        print()
 
         flash(
             "Unable to submit your review.",
@@ -1394,7 +1199,7 @@ def register():
 
 
 # =========================================================
-# ADD PRODUCT TO CART
+# ADD TO CART
 # =========================================================
 
 @app.route(
@@ -1403,9 +1208,11 @@ def register():
 )
 def add_to_cart(product_id):
 
-    user_id = session.get(
-        "user_id"
-    )
+    # =====================================================
+    # SERVER-SIDE LOGIN CHECK
+    # =====================================================
+
+    user_id = session.get("user_id")
 
     if not user_id:
 
@@ -1443,7 +1250,7 @@ def add_to_cart(product_id):
         )
 
         # =================================================
-        # CHECK PRODUCT
+        # GET PRODUCT
         # =================================================
 
         cursor.execute(
@@ -1478,7 +1285,7 @@ def add_to_cart(product_id):
             )
 
         # =================================================
-        # AVAILABILITY
+        # CHECK AVAILABILITY
         # =================================================
 
         if not product.get("is_available"):
@@ -1496,7 +1303,7 @@ def add_to_cart(product_id):
             )
 
         # =================================================
-        # STOCK
+        # CHECK STOCK
         # =================================================
 
         stock = int(
@@ -1543,7 +1350,7 @@ def add_to_cart(product_id):
         existing_item = cursor.fetchone()
 
         # =================================================
-        # UPDATE EXISTING ITEM
+        # EXISTING ITEM
         # =================================================
 
         if existing_item:
@@ -1586,6 +1393,10 @@ def add_to_cart(product_id):
                 )
             )
 
+        # =================================================
+        # NEW ITEM
+        # =================================================
+
         else:
 
             cursor.execute(
@@ -1622,6 +1433,9 @@ def add_to_cart(product_id):
             "success"
         )
 
+        # IMPORTANT:
+        # Stay on the product page after adding to cart.
+
         return redirect(
             url_for(
                 "product_details",
@@ -1642,14 +1456,9 @@ def add_to_cart(product_id):
         print("========================================")
         print("USER ID:", user_id)
         print("PRODUCT ID:", product_id)
-        print(
-            "ERROR TYPE:",
-            type(error).__name__
-        )
-        print(
-            "ERROR MESSAGE:",
-            str(error)
-        )
+        print("ERROR TYPE:", type(error).__name__)
+        print("ERROR MESSAGE:", str(error))
+        print("ERROR REPR:", repr(error))
         print("========================================")
         print()
 
@@ -2156,10 +1965,6 @@ def admin_add_product():
             dictionary=True
         )
 
-        # =================================================
-        # LOAD CATEGORIES
-        # =================================================
-
         cursor.execute("""
             SELECT
                 id,
@@ -2174,10 +1979,6 @@ def admin_add_product():
 
         categories = cursor.fetchall()
 
-        # =================================================
-        # GET REQUEST
-        # =================================================
-
         if request.method == "GET":
 
             return render_template(
@@ -2188,10 +1989,6 @@ def admin_add_product():
                 ),
                 categories=categories
             )
-
-        # =================================================
-        # FORM DATA
-        # =================================================
 
         name = request.form.get(
             "name",
@@ -2239,29 +2036,6 @@ def admin_add_product():
             else 0
         )
 
-        # =================================================
-        # DEBUG FORM DATA
-        # =================================================
-
-        print()
-        print("========================================")
-        print("ADMIN ADD PRODUCT REQUEST")
-        print("========================================")
-        print("NAME:", name)
-        print("CATEGORY ID:", category_id_value)
-        print("PRODUCT TYPE:", product_type)
-        print("SHADE:", shade)
-        print("COLOR:", color)
-        print("PRICE:", price_value)
-        print("STOCK:", stock_value)
-        print("AVAILABLE:", is_available)
-        print("========================================")
-        print()
-
-        # =================================================
-        # VALIDATE NAME
-        # =================================================
-
         if not name:
 
             flash(
@@ -2277,10 +2051,6 @@ def admin_add_product():
                 ),
                 categories=categories
             )
-
-        # =================================================
-        # VALIDATE CATEGORY
-        # =================================================
 
         try:
 
@@ -2340,10 +2110,6 @@ def admin_add_product():
                 categories=categories
             )
 
-        # =================================================
-        # VALIDATE PRODUCT TYPE
-        # =================================================
-
         if not product_type:
 
             flash(
@@ -2380,14 +2146,9 @@ def admin_add_product():
                 categories=categories
             )
 
-        # =================================================
-        # VALIDATE PRICE
-        # =================================================
-
         try:
 
             if not price_value:
-
                 raise InvalidOperation
 
             price = Decimal(
@@ -2395,7 +2156,6 @@ def admin_add_product():
             )
 
             if price < Decimal("0"):
-
                 raise InvalidOperation
 
             price = price.quantize(
@@ -2422,14 +2182,9 @@ def admin_add_product():
                 categories=categories
             )
 
-        # =================================================
-        # VALIDATE STOCK
-        # =================================================
-
         try:
 
             if not stock_value:
-
                 raise ValueError
 
             stock = int(
@@ -2437,7 +2192,6 @@ def admin_add_product():
             )
 
             if stock < 0:
-
                 raise ValueError
 
         except (
@@ -2458,10 +2212,6 @@ def admin_add_product():
                 ),
                 categories=categories
             )
-
-        # =================================================
-        # GET PRODUCT IMAGES
-        # =================================================
 
         image_files = request.files.getlist(
             "images"
@@ -2484,9 +2234,7 @@ def admin_add_product():
             if not filename:
                 continue
 
-            if not allowed_image(
-                filename
-            ):
+            if not allowed_image(filename):
 
                 flash(
                     "Only JPG, JPEG, PNG, WEBP and GIF images are allowed.",
@@ -2570,10 +2318,6 @@ def admin_add_product():
                 )
             )
 
-        # =================================================
-        # REQUIRE AT LEAST ONE IMAGE
-        # =================================================
-
         if not valid_images:
 
             flash(
@@ -2593,10 +2337,6 @@ def admin_add_product():
         # =================================================
         # INSERT PRODUCT
         # =================================================
-
-        print()
-        print("INSERTING PRODUCT...")
-        print()
 
         cursor.execute(
             """
@@ -2641,19 +2381,14 @@ def admin_add_product():
 
         product_id = cursor.lastrowid
 
-        print(
-            "GENERATED PRODUCT ID:",
-            product_id
-        )
-
         if product_id is None:
 
             raise RuntimeError(
-                "Database did not return a product ID after inserting the product."
+                "Database did not return a product ID."
             )
 
         # =================================================
-        # SAVE PRODUCT IMAGES
+        # SAVE IMAGES
         # =================================================
 
         for index, (
@@ -2694,11 +2429,6 @@ def admin_add_product():
                 else 0
             )
 
-            print(
-                "SAVED IMAGE:",
-                image_url
-            )
-
             cursor.execute(
                 """
                 INSERT INTO product_images
@@ -2722,48 +2452,7 @@ def admin_add_product():
                 )
             )
 
-        # =================================================
-        # COMMIT
-        # =================================================
-
-        print(
-            "COMMITTING DATABASE TRANSACTION..."
-        )
-
         connection.commit()
-
-        print()
-        print("========================================")
-        print("PRODUCT ADDED SUCCESSFULLY")
-        print("========================================")
-        print("PRODUCT ID:", product_id)
-        print("PRODUCT:", name)
-        print(
-            "CATEGORY:",
-            selected_category["name"]
-        )
-        print(
-            "PRODUCT TYPE:",
-            product_type_key
-        )
-        print(
-            "PRICE:",
-            price
-        )
-        print(
-            "STOCK:",
-            stock
-        )
-        print(
-            "IMAGES:",
-            len(valid_images)
-        )
-        print(
-            "AVAILABLE:",
-            is_available
-        )
-        print("========================================")
-        print()
 
         flash(
             "Product added successfully!",
@@ -2777,61 +2466,27 @@ def admin_add_product():
     except Exception as error:
 
         try:
-
             connection.rollback()
-
-        except Exception as rollback_error:
-
-            print(
-                "ROLLBACK ERROR:",
-                type(rollback_error).__name__,
-                str(rollback_error)
-            )
-
-        # =================================================
-        # REMOVE UPLOADED FILES
-        # =================================================
+        except Exception:
+            pass
 
         for file_path in saved_files:
 
             try:
 
-                if os.path.exists(
-                    file_path
-                ):
+                if os.path.exists(file_path):
+                    os.remove(file_path)
 
-                    os.remove(
-                        file_path
-                    )
-
-            except Exception as cleanup_error:
-
-                print(
-                    "IMAGE CLEANUP ERROR:",
-                    type(cleanup_error).__name__,
-                    str(cleanup_error)
-                )
-
-        # =================================================
-        # PRINT REAL ERROR
-        # =================================================
+            except Exception:
+                pass
 
         print()
         print("========================================")
         print("ADD PRODUCT ERROR")
         print("========================================")
-        print(
-            "ERROR TYPE:",
-            type(error).__name__
-        )
-        print(
-            "ERROR MESSAGE:",
-            str(error)
-        )
-        print(
-            "ERROR REPR:",
-            repr(error)
-        )
+        print("ERROR TYPE:", type(error).__name__)
+        print("ERROR MESSAGE:", str(error))
+        print("ERROR REPR:", repr(error))
         print("========================================")
         print()
 
@@ -2912,4 +2567,3 @@ if __name__ == "__main__":
         host="127.0.0.1",
         port=5000
     )
-
