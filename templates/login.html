@@ -74,7 +74,7 @@
                 <!-- BRAND -->
 
                 <a
-                    href="{{ url_for('home') }}"
+                    href="{{ url_for('index') }}"
                     class="login-brand"
                     aria-label="Glamora AR Home"
                 >
@@ -211,6 +211,13 @@
                         method="POST"
                         action="{{ url_for('login') }}"
                     >
+
+                        <!-- Keep the requested destination -->
+                        <input
+                            type="hidden"
+                            name="next"
+                            value="{{ request.args.get('next', '') }}"
+                        >
 
 
                         <!-- =================================================
@@ -361,7 +368,7 @@
                         Don't have an account?
 
                         <a
-                            href="{{ url_for('register') }}"
+                            href="{{ url_for('register', next=request.args.get('next', '')) }}"
                             class="register-link"
                         >
                             Create account
@@ -377,7 +384,7 @@
 
                     <div class="back-home">
 
-                        <a href="{{ url_for('home') }}">
+                        <a href="{{ url_for('index') }}">
                             ← Back to Glamora AR
                         </a>
 
