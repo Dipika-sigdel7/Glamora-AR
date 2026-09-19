@@ -73,8 +73,9 @@
                 <!-- BRAND -->
 
                 <a
-                    href="{{ url_for('home') }}"
+                    href="{{ url_for('index') }}"
                     class="register-brand"
+                    aria-label="Glamora AR Home"
                 >
                     GLAMORA <span>AR</span>
                 </a>
@@ -210,6 +211,14 @@
                         action="{{ url_for('register') }}"
                         novalidate
                     >
+
+                        <!-- Preserve redirect destination -->
+
+                        <input
+                            type="hidden"
+                            name="next"
+                            value="{{ next_page }}"
+                        >
 
 
                         <!-- =================================
@@ -424,7 +433,7 @@
                     <div class="back-home">
 
                         <a
-                            href="{{ url_for('home') }}"
+                            href="{{ url_for('index') }}"
                         >
                             ← Back to Glamora AR
                         </a>

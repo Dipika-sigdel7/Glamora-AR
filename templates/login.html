@@ -167,7 +167,7 @@
                          FLASK FLASH MESSAGES
                          ================================================= -->
 
-                    {% with messages = get_flashed_messages() %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
 
                         {% if messages %}
 
@@ -177,7 +177,7 @@
                                 style="display: block;"
                             >
 
-                                {% for message in messages %}
+                                {% for category, message in messages %}
 
                                     <p>
                                         {{ message }}
@@ -213,6 +213,7 @@
                     >
 
                         <!-- Keep the requested destination -->
+
                         <input
                             type="hidden"
                             name="next"
@@ -276,6 +277,7 @@
                                     class="password-toggle"
                                     id="passwordToggle"
                                     aria-label="Show password"
+                                    title="Show password"
                                 >
                                     ◉
                                 </button>
