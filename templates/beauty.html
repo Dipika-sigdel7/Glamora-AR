@@ -83,7 +83,7 @@
     <header class="navbar">
 
         <a
-            href="{{ url_for('home') }}"
+            href="{{ url_for('index') }}"
             class="logo"
             aria-label="Glamora AR Home"
         >
@@ -97,7 +97,7 @@
             aria-label="Main navigation"
         >
 
-            <a href="{{ url_for('home') }}">
+            <a href="{{ url_for('index') }}">
                 Home
             </a>
 
@@ -179,7 +179,7 @@
 
 
             <!-- =================================================
-                 LOGIN
+                 LOGIN / LOGOUT
                  ================================================= -->
 
             {% if session.get('user_id') %}
@@ -842,7 +842,7 @@
                                 >
 
                                     <img
-                                        src="{{ product.image_url }}"
+                                        src="{{ url_for('static', filename=product.image_url) }}"
                                         alt="{{ product.name }}"
                                         class="product-real-image"
                                         loading="lazy"
@@ -1186,7 +1186,7 @@
                     </p>
 
                     <a
-                        href="{{ url_for('home') }}"
+                        href="{{ url_for('index') }}"
                         class="secondary-btn"
                     >
                         Back Home
@@ -1405,7 +1405,7 @@
             <div class="footer-brand">
 
                 <a
-                    href="{{ url_for('home') }}"
+                    href="{{ url_for('index') }}"
                     class="footer-logo"
                 >
                     GLAMORA <span>AR</span>
@@ -1425,7 +1425,7 @@
                     Explore
                 </h4>
 
-                <a href="{{ url_for('home') }}">
+                <a href="{{ url_for('index') }}">
                     Home
                 </a>
 
