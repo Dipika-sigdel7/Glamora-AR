@@ -2,6 +2,7 @@ import os
 import uuid
 import re
 
+from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 
 from flask import (
@@ -35,13 +36,23 @@ app.secret_key = os.environ.get(
     "glamora-ar-secret-key"
 )
 
-# Keep users logged in for 30 days
-app.config["PERMANENT_SESSION_LIFETIME"] = 60 * 60 * 24 * 30
 
+# =========================================================
+# SESSION CONFIGURATION
+# =========================================================
+
+# Keep logged-in users for 30 days.
+# The session is refreshed while the user is active.
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(
+    days=30
+)
+
+# Make the session cookie persistent.
 app.config["SESSION_COOKIE_HTTPONLY"] = True
+
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
-# False is required for local HTTP development.
+# False for local HTTP development.
 # Change to True when deployed with HTTPS.
 app.config["SESSION_COOKIE_SECURE"] = False
 
@@ -257,7 +268,9 @@ def prepare_products(products):
 
 def get_bag_count():
 
-    user_id = session.get("user_id")
+    user_id = session.get(
+        "user_id"
+    )
 
     if not user_id:
         return 0
@@ -315,15 +328,51 @@ def get_bag_count():
 
 
 # =========================================================
-# MAKE BAG COUNT AVAILABLE TO ALL TEMPLATES
+# MAKE BAG COUNT AND USER AVAILABLE TO ALL TEMPLATES
 # =========================================================
 
 @app.context_processor
-def inject_bag_count():
+def inject_global_data():
+
+    user_id = session.get(
+        "user_id"
+    )
+
+    current_user = None
+
+    if user_id:
+
+        current_user = {
+            "id": user_id,
+            "name": session.get(
+                "user_name",
+                ""
+            ),
+            "email": session.get(
+                "user_email",
+                ""
+            )
+        }
 
     return {
-        "bag_count": get_bag_count()
+        "bag_count": get_bag_count(),
+        "current_user": current_user,
+        "is_logged_in": bool(user_id)
     }
+
+
+# =========================================================
+# REFRESH USER SESSION
+# =========================================================
+
+@app.before_request
+def refresh_user_session():
+
+    # Only refresh the USER session.
+    # Admin session is handled separately.
+    if session.get("user_id"):
+
+        session.permanent = True
 
 
 # =========================================================
@@ -1125,24 +1174,36 @@ def contact():
 )
 def login():
 
-    # Already logged in
+    # =====================================================
+    # ALREADY LOGGED IN
+    # =====================================================
+
     if session.get("user_id"):
 
         next_page = request.args.get(
-            "next"
-        )
+            "next",
+            ""
+        ).strip()
 
         if (
             next_page
             and next_page.startswith("/")
         ):
+
             return redirect(
                 next_page
             )
 
+        # IMPORTANT:
+        # If user clicks Login while already logged in,
+        # open the profile page instead.
         return redirect(
-            url_for("beauty")
+            url_for("profile")
         )
+
+    # =====================================================
+    # LOGIN POST
+    # =====================================================
 
     if request.method == "POST":
 
@@ -1160,6 +1221,10 @@ def login():
             "next",
             ""
         ).strip()
+
+        # Only allow local redirects.
+        if not next_page.startswith("/"):
+            next_page = ""
 
         if not email or not password:
 
@@ -1316,8 +1381,11 @@ def login():
         session.permanent = True
 
         session["user_id"] = user["id"]
+
         session["user_name"] = user["name"]
+
         session["user_email"] = user["email"]
+
         session["logged_in"] = True
 
         flash(
@@ -1342,9 +1410,16 @@ def login():
             url_for("beauty")
         )
 
+    # =====================================================
+    # LOGIN PAGE
+    # =====================================================
+
     return render_template(
         "login.html",
-        next_page=request.args.get("next", "").strip()
+        next_page=request.args.get(
+            "next",
+            ""
+        ).strip()
     )
 
 
@@ -1358,11 +1433,17 @@ def login():
 )
 def register():
 
-    # Keep the page the user originally wanted to visit.
-    next_page = request.args.get("next", "").strip()
+    next_page = request.args.get(
+        "next",
+        ""
+    ).strip()
 
     if request.method == "POST":
-        next_page = request.form.get("next", next_page).strip()
+
+        next_page = request.form.get(
+            "next",
+            next_page
+        ).strip()
 
     # Only allow local paths.
     if not next_page.startswith("/"):
@@ -1370,60 +1451,159 @@ def register():
 
     # Already logged in.
     if session.get("user_id"):
+
         if next_page:
-            return redirect(next_page)
-        return redirect(url_for("beauty"))
+            return redirect(
+                next_page
+            )
+
+        return redirect(
+            url_for("profile")
+        )
 
     if request.method == "POST":
 
-        name = request.form.get("name", "").strip()
-        email = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
-        confirm_password = request.form.get("confirm_password", "")
+        name = request.form.get(
+            "name",
+            ""
+        ).strip()
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        confirm_password = request.form.get(
+            "confirm_password",
+            ""
+        )
 
         if not name:
-            flash("Please enter your name.", "error")
-            return redirect(url_for("register", next=next_page))
+
+            flash(
+                "Please enter your name.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "register",
+                    next=next_page
+                )
+            )
 
         if not email:
-            flash("Please enter your email address.", "error")
-            return redirect(url_for("register", next=next_page))
+
+            flash(
+                "Please enter your email address.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "register",
+                    next=next_page
+                )
+            )
 
         email_pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 
-        if not re.match(email_pattern, email):
-            flash("Please enter a valid email address.", "error")
-            return redirect(url_for("register", next=next_page))
+        if not re.match(
+            email_pattern,
+            email
+        ):
+
+            flash(
+                "Please enter a valid email address.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "register",
+                    next=next_page
+                )
+            )
 
         if not password:
-            flash("Please enter a password.", "error")
-            return redirect(url_for("register", next=next_page))
+
+            flash(
+                "Please enter a password.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "register",
+                    next=next_page
+                )
+            )
 
         if len(password) < 6:
-            flash("Password must contain at least 6 characters.", "error")
-            return redirect(url_for("register", next=next_page))
+
+            flash(
+                "Password must contain at least 6 characters.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "register",
+                    next=next_page
+                )
+            )
 
         if password != confirm_password:
-            flash("Passwords do not match.", "error")
-            return redirect(url_for("register", next=next_page))
+
+            flash(
+                "Passwords do not match.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "register",
+                    next=next_page
+                )
+            )
 
         connection = get_db_connection()
 
         if connection is None:
-            flash("Database connection failed.", "error")
-            return redirect(url_for("register", next=next_page))
+
+            flash(
+                "Database connection failed.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "register",
+                    next=next_page
+                )
+            )
 
         cursor = None
 
         try:
-            cursor = connection.cursor(dictionary=True)
 
-            # Check the same email that login will use.
+            cursor = connection.cursor(
+                dictionary=True
+            )
+
             cursor.execute(
                 """
                 SELECT id
+
                 FROM users
+
                 WHERE LOWER(email) = %s
+
                 LIMIT 1
                 """,
                 (email,)
@@ -1432,22 +1612,44 @@ def register():
             existing_user = cursor.fetchone()
 
             if existing_user:
+
                 flash(
                     "An account with this email already exists. Please login.",
                     "error"
                 )
-                return redirect(url_for("login", next=next_page))
 
-            # IMPORTANT: store a hash, never the plain-text password.
-            hashed_password = generate_password_hash(password)
+                return redirect(
+                    url_for(
+                        "login",
+                        next=next_page
+                    )
+                )
+
+            hashed_password = generate_password_hash(
+                password
+            )
 
             cursor.execute(
                 """
                 INSERT INTO users
-                (name, email, password)
-                VALUES (%s, %s, %s)
+                (
+                    name,
+                    email,
+                    password
+                )
+
+                VALUES
+                (
+                    %s,
+                    %s,
+                    %s
+                )
                 """,
-                (name, email, hashed_password)
+                (
+                    name,
+                    email,
+                    hashed_password
+                )
             )
 
             connection.commit()
@@ -1457,10 +1659,17 @@ def register():
                 "success"
             )
 
+            if next_page:
+
+                return redirect(
+                    url_for(
+                        "login",
+                        next=next_page
+                    )
+                )
+
             return redirect(
-                url_for("login", next=next_page)
-                if next_page
-                else url_for("login")
+                url_for("login")
             )
 
         except Exception as error:
@@ -1474,9 +1683,18 @@ def register():
             print("========================================")
             print("REGISTER ERROR")
             print("========================================")
-            print("ERROR TYPE:", type(error).__name__)
-            print("ERROR MESSAGE:", str(error))
-            print("ERROR REPR:", repr(error))
+            print(
+                "ERROR TYPE:",
+                type(error).__name__
+            )
+            print(
+                "ERROR MESSAGE:",
+                str(error)
+            )
+            print(
+                "ERROR REPR:",
+                repr(error)
+            )
             print("========================================")
             print()
 
@@ -1485,10 +1703,19 @@ def register():
                 "error"
             )
 
-            return redirect(url_for("register", next=next_page))
+            return redirect(
+                url_for(
+                    "register",
+                    next=next_page
+                )
+            )
 
         finally:
-            safe_close(cursor, connection)
+
+            safe_close(
+                cursor,
+                connection
+            )
 
     return render_template(
         "register.html",
@@ -1506,6 +1733,10 @@ def profile():
     user_id = session.get(
         "user_id"
     )
+
+    # =====================================================
+    # USER NOT LOGGED IN
+    # =====================================================
 
     if not user_id:
 
@@ -1560,6 +1791,10 @@ def profile():
 
         user = cursor.fetchone()
 
+        # =================================================
+        # USER NO LONGER EXISTS
+        # =================================================
+
         if not user:
 
             session.clear()
@@ -1573,9 +1808,23 @@ def profile():
                 url_for("login")
             )
 
-        # Keep session name/email synchronized
+        # =================================================
+        # SYNCHRONIZE SESSION DATA
+        # =================================================
+
+        session.permanent = True
+
+        session["user_id"] = user["id"]
+
         session["user_name"] = user["name"]
+
         session["user_email"] = user["email"]
+
+        session["logged_in"] = True
+
+        # =================================================
+        # PROFILE PAGE
+        # =================================================
 
         return render_template(
             "profile.html",
@@ -1615,7 +1864,26 @@ def profile():
 @app.route("/logout")
 def logout():
 
-    session.clear()
+    # Explicit logout removes the user session.
+    session.pop(
+        "user_id",
+        None
+    )
+
+    session.pop(
+        "user_name",
+        None
+    )
+
+    session.pop(
+        "user_email",
+        None
+    )
+
+    session.pop(
+        "logged_in",
+        None
+    )
 
     flash(
         "You have been logged out successfully.",
@@ -1640,10 +1908,6 @@ def add_to_cart(product_id):
     user_id = session.get(
         "user_id"
     )
-
-    # =====================================================
-    # SERVER-SIDE LOGIN CHECK
-    # =====================================================
 
     if not user_id:
 
@@ -1686,10 +1950,6 @@ def add_to_cart(product_id):
             dictionary=True
         )
 
-        # =================================================
-        # GET PRODUCT
-        # =================================================
-
         cursor.execute(
             """
             SELECT
@@ -1721,10 +1981,6 @@ def add_to_cart(product_id):
                 url_for("beauty")
             )
 
-        # =================================================
-        # CHECK AVAILABILITY
-        # =================================================
-
         if not product.get(
             "is_available"
         ):
@@ -1740,10 +1996,6 @@ def add_to_cart(product_id):
                     product_id=product_id
                 )
             )
-
-        # =================================================
-        # CHECK STOCK
-        # =================================================
 
         stock = int(
             product.get("stock") or 0
@@ -1762,10 +2014,6 @@ def add_to_cart(product_id):
                     product_id=product_id
                 )
             )
-
-        # =================================================
-        # CHECK EXISTING BAG ITEM
-        # =================================================
 
         cursor.execute(
             """
@@ -1787,10 +2035,6 @@ def add_to_cart(product_id):
         )
 
         existing_item = cursor.fetchone()
-
-        # =================================================
-        # UPDATE EXISTING ITEM
-        # =================================================
 
         if existing_item:
 
@@ -1834,10 +2078,6 @@ def add_to_cart(product_id):
                 )
             )
 
-        # =================================================
-        # INSERT NEW BAG ITEM
-        # =================================================
-
         else:
 
             cursor.execute(
@@ -1870,7 +2110,6 @@ def add_to_cart(product_id):
             "success"
         )
 
-        # Open bag after adding
         return redirect(
             url_for("cart")
         )
@@ -2529,7 +2768,9 @@ def admin_login():
                 session.permanent = True
 
                 session["admin_id"] = admin["id"]
+
                 session["admin_name"] = admin["name"]
+
                 session["admin_email"] = admin["email"]
 
                 flash(
@@ -2984,10 +3225,6 @@ def admin_add_product():
             else 0
         )
 
-        # =================================================
-        # NAME
-        # =================================================
-
         if not name:
 
             flash(
@@ -3003,10 +3240,6 @@ def admin_add_product():
                 ),
                 categories=categories
             )
-
-        # =================================================
-        # CATEGORY
-        # =================================================
 
         try:
 
@@ -3068,10 +3301,6 @@ def admin_add_product():
                 categories=categories
             )
 
-        # =================================================
-        # PRODUCT TYPE
-        # =================================================
-
         if not product_type:
 
             flash(
@@ -3093,10 +3322,6 @@ def admin_add_product():
                 product_type
             )
         )
-
-        # =================================================
-        # PRICE
-        # =================================================
 
         try:
 
@@ -3134,10 +3359,6 @@ def admin_add_product():
                 categories=categories
             )
 
-        # =================================================
-        # STOCK
-        # =================================================
-
         try:
 
             stock = int(
@@ -3165,10 +3386,6 @@ def admin_add_product():
                 ),
                 categories=categories
             )
-
-        # =================================================
-        # IMAGES
-        # =================================================
 
         image_files = request.files.getlist(
             "images"
@@ -3275,10 +3492,6 @@ def admin_add_product():
                 categories=categories
             )
 
-        # =================================================
-        # INSERT PRODUCT
-        # =================================================
-
         cursor.execute(
             """
             INSERT INTO products
@@ -3327,10 +3540,6 @@ def admin_add_product():
             raise RuntimeError(
                 "Database did not return product ID."
             )
-
-        # =================================================
-        # SAVE IMAGES
-        # =================================================
 
         for index, (
             image,
