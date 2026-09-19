@@ -1343,7 +1343,8 @@ def login():
         )
 
     return render_template(
-        "login.html"
+        "login.html",
+        next_page=request.args.get("next", "").strip()
     )
 
 
@@ -1357,147 +1358,72 @@ def login():
 )
 def register():
 
-    # Already logged in
-    if session.get("user_id"):
+    # Keep the page the user originally wanted to visit.
+    next_page = request.args.get("next", "").strip()
 
-        return redirect(
-            url_for("beauty")
-        )
+    if request.method == "POST":
+        next_page = request.form.get("next", next_page).strip()
+
+    # Only allow local paths.
+    if not next_page.startswith("/"):
+        next_page = ""
+
+    # Already logged in.
+    if session.get("user_id"):
+        if next_page:
+            return redirect(next_page)
+        return redirect(url_for("beauty"))
 
     if request.method == "POST":
 
-        name = request.form.get(
-            "name",
-            ""
-        ).strip()
-
-        email = request.form.get(
-            "email",
-            ""
-        ).strip().lower()
-
-        password = request.form.get(
-            "password",
-            ""
-        )
-
-        confirm_password = request.form.get(
-            "confirm_password",
-            ""
-        )
-
-        # =================================================
-        # BASIC VALIDATION
-        # =================================================
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
 
         if not name:
-
-            flash(
-                "Please enter your name.",
-                "error"
-            )
-
-            return redirect(
-                url_for("register")
-            )
+            flash("Please enter your name.", "error")
+            return redirect(url_for("register", next=next_page))
 
         if not email:
+            flash("Please enter your email address.", "error")
+            return redirect(url_for("register", next=next_page))
 
-            flash(
-                "Please enter your email address.",
-                "error"
-            )
+        email_pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 
-            return redirect(
-                url_for("register")
-            )
-
-        # Simple email validation
-        email_pattern = (
-            r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
-        )
-
-        if not re.match(
-            email_pattern,
-            email
-        ):
-
-            flash(
-                "Please enter a valid email address.",
-                "error"
-            )
-
-            return redirect(
-                url_for("register")
-            )
+        if not re.match(email_pattern, email):
+            flash("Please enter a valid email address.", "error")
+            return redirect(url_for("register", next=next_page))
 
         if not password:
-
-            flash(
-                "Please enter a password.",
-                "error"
-            )
-
-            return redirect(
-                url_for("register")
-            )
+            flash("Please enter a password.", "error")
+            return redirect(url_for("register", next=next_page))
 
         if len(password) < 6:
-
-            flash(
-                "Password must contain at least 6 characters.",
-                "error"
-            )
-
-            return redirect(
-                url_for("register")
-            )
+            flash("Password must contain at least 6 characters.", "error")
+            return redirect(url_for("register", next=next_page))
 
         if password != confirm_password:
-
-            flash(
-                "Passwords do not match.",
-                "error"
-            )
-
-            return redirect(
-                url_for("register")
-            )
+            flash("Passwords do not match.", "error")
+            return redirect(url_for("register", next=next_page))
 
         connection = get_db_connection()
 
         if connection is None:
-
-            flash(
-                "Database connection failed.",
-                "error"
-            )
-
-            return redirect(
-                url_for("register")
-            )
+            flash("Database connection failed.", "error")
+            return redirect(url_for("register", next=next_page))
 
         cursor = None
 
         try:
+            cursor = connection.cursor(dictionary=True)
 
-            cursor = connection.cursor(
-                dictionary=True
-            )
-
-            # =================================================
-            # CHECK WHETHER EMAIL ALREADY EXISTS
-            # =================================================
-
+            # Check the same email that login will use.
             cursor.execute(
                 """
-                SELECT
-                    id
-
+                SELECT id
                 FROM users
-
                 WHERE LOWER(email) = %s
-
                 LIMIT 1
                 """,
                 (email,)
@@ -1506,62 +1432,35 @@ def register():
             existing_user = cursor.fetchone()
 
             if existing_user:
-
                 flash(
                     "An account with this email already exists. Please login.",
                     "error"
                 )
+                return redirect(url_for("login", next=next_page))
 
-                return redirect(
-                    url_for("login")
-                )
-
-            # =================================================
-            # HASH PASSWORD
-            # =================================================
-
-            hashed_password = (
-                generate_password_hash(
-                    password
-                )
-            )
-
-            # =================================================
-            # INSERT USER
-            # =================================================
+            # IMPORTANT: store a hash, never the plain-text password.
+            hashed_password = generate_password_hash(password)
 
             cursor.execute(
                 """
                 INSERT INTO users
-                (
-                    name,
-                    email,
-                    password
-                )
-
-                VALUES
-                (
-                    %s,
-                    %s,
-                    %s
-                )
+                (name, email, password)
+                VALUES (%s, %s, %s)
                 """,
-                (
-                    name,
-                    email,
-                    hashed_password
-                )
+                (name, email, hashed_password)
             )
 
             connection.commit()
 
             flash(
-                "Account created successfully. Please login.",
+                "Account created successfully. Please login with the same email and password.",
                 "success"
             )
 
             return redirect(
-                url_for("login")
+                url_for("login", next=next_page)
+                if next_page
+                else url_for("login")
             )
 
         except Exception as error:
@@ -1575,18 +1474,9 @@ def register():
             print("========================================")
             print("REGISTER ERROR")
             print("========================================")
-            print(
-                "ERROR TYPE:",
-                type(error).__name__
-            )
-            print(
-                "ERROR MESSAGE:",
-                str(error)
-            )
-            print(
-                "ERROR REPR:",
-                repr(error)
-            )
+            print("ERROR TYPE:", type(error).__name__)
+            print("ERROR MESSAGE:", str(error))
+            print("ERROR REPR:", repr(error))
             print("========================================")
             print()
 
@@ -1595,19 +1485,14 @@ def register():
                 "error"
             )
 
-            return redirect(
-                url_for("register")
-            )
+            return redirect(url_for("register", next=next_page))
 
         finally:
-
-            safe_close(
-                cursor,
-                connection
-            )
+            safe_close(cursor, connection)
 
     return render_template(
-        "register.html"
+        "register.html",
+        next_page=next_page
     )
 
 
