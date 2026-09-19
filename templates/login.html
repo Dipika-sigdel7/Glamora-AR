@@ -75,7 +75,7 @@
                 <!-- BRAND -->
 
                 <a
-                    href="/"
+                    href="{{ url_for('home') }}"
                     class="login-brand"
                     aria-label="Glamora AR Home"
                 >
@@ -162,13 +162,41 @@
 
 
 
-                    <!-- ERROR MESSAGE -->
+                    <!-- =================================================
+                         FLASK FLASH MESSAGES
+                         ================================================= -->
 
-                    <div
-                        class="login-error"
-                        id="loginError"
-                    >
-                    </div>
+                    {% with messages = get_flashed_messages() %}
+
+                        {% if messages %}
+
+                            <div
+                                class="login-error"
+                                id="loginError"
+                                style="display: block;"
+                            >
+
+                                {% for message in messages %}
+
+                                    <p>
+                                        {{ message }}
+                                    </p>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% else %}
+
+                            <div
+                                class="login-error"
+                                id="loginError"
+                            >
+                            </div>
+
+                        {% endif %}
+
+                    {% endwith %}
 
 
 
@@ -320,7 +348,10 @@
 
                         Don't have an account?
 
-                        <a href="/register">
+                        <a
+                            href="{{ url_for('register') }}"
+                            class="register-link"
+                        >
                             Create account
                         </a>
 
@@ -334,7 +365,7 @@
 
                     <div class="back-home">
 
-                        <a href="/">
+                        <a href="{{ url_for('home') }}">
                             ← Back to Glamora AR
                         </a>
 
@@ -363,3 +394,4 @@
 </body>
 
 </html>
+
