@@ -26,22 +26,11 @@
 
   <!-- =====================================================
        MAIN WEBSITE CSS
-       SAME CSS USED BY HOME PAGE
        ===================================================== -->
 
   <link
     rel="stylesheet"
     href="{{ url_for('static', filename='css/style.css') }}"
-  >
-
-
-  <!-- =====================================================
-       BEAUTY CSS
-       ===================================================== -->
-
-  <link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='css/beauty.css') }}"
   >
 
 
@@ -57,6 +46,11 @@
 
     * {
       box-sizing: border-box;
+    }
+
+
+    html {
+      scroll-behavior: smooth;
     }
 
 
@@ -76,22 +70,10 @@
        HOME PAGE HEADER COMPATIBILITY
        ===================================================== */
 
-    /*
-       The navbar uses the SAME classes as the Home page.
-
-       Do not change these class names because style.css
-       controls the main Glamora AR header appearance.
-    */
-
     .product-details-navbar {
       width: 100%;
     }
 
-
-    /*
-       Make sure the product page does not accidentally
-       change the Home navbar appearance.
-    */
 
     .product-details-navbar .logo {
       text-decoration: none;
@@ -114,9 +96,9 @@
 
 
 
-    /* =================================================
-       PAGE
-       ================================================= */
+    /* =====================================================
+       PRODUCT DETAILS PAGE
+       ===================================================== */
 
     .product-details-page {
       min-height: 100vh;
@@ -145,9 +127,9 @@
 
 
 
-    /* =================================================
+    /* =====================================================
        IMAGE AREA
-       ================================================= */
+       ===================================================== */
 
     .details-gallery {
       display: grid;
@@ -251,9 +233,9 @@
 
 
 
-    /* =================================================
+    /* =====================================================
        THUMBNAILS
-       ================================================= */
+       ===================================================== */
 
     .thumbnail-gallery {
       display: flex;
@@ -316,9 +298,9 @@
 
 
 
-    /* =================================================
+    /* =====================================================
        PRODUCT INFORMATION
-       ================================================= */
+       ===================================================== */
 
     .details-info {
       padding-top: 20px;
@@ -376,9 +358,9 @@
 
 
 
-    /* =================================================
+    /* =====================================================
        META INFORMATION
-       ================================================= */
+       ===================================================== */
 
     .details-meta {
       border-top: 1px solid #efdce1;
@@ -427,9 +409,9 @@
 
 
 
-    /* =================================================
-       ACTION BUTTONS
-       ================================================= */
+    /* =====================================================
+       PRODUCT ACTION BUTTONS
+       ===================================================== */
 
     .product-actions {
       display: flex;
@@ -520,9 +502,9 @@
 
 
 
-    /* =================================================
+    /* =====================================================
        FLASH MESSAGES
-       ================================================= */
+       ===================================================== */
 
     .flash-wrapper {
       max-width: 1200px;
@@ -561,9 +543,9 @@
 
 
 
-    /* =================================================
+    /* =====================================================
        REVIEWS SECTION
-       ================================================= */
+       ===================================================== */
 
     .reviews-section {
       max-width: 1200px;
@@ -632,9 +614,9 @@
 
 
 
-    /* =================================================
+    /* =====================================================
        REVIEW FORM
-       ================================================= */
+       ===================================================== */
 
     .review-form-card {
       background: #ffffff;
@@ -771,9 +753,9 @@
 
 
 
-    /* =================================================
+    /* =====================================================
        EXISTING REVIEWS
-       ================================================= */
+       ===================================================== */
 
     .reviews-list {
       display: grid;
@@ -875,9 +857,9 @@
 
 
 
-    /* =================================================
+    /* =====================================================
        CONTINUE SHOPPING
-       ================================================= */
+       ===================================================== */
 
     .continue-shopping {
       text-align: center;
@@ -903,9 +885,485 @@
 
 
 
-    /* =================================================
+    /* =====================================================
+       TRY-ON MODAL
+       ===================================================== */
+
+    .tryon-modal {
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 9999;
+
+      display: none;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 25px;
+
+      background:
+        rgba(38, 25, 29, 0.78);
+
+      backdrop-filter: blur(8px);
+
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+
+    .tryon-modal.active {
+      display: flex;
+    }
+
+
+    .tryon-modal-content {
+      position: relative;
+
+      width: min(900px, 100%);
+
+      max-height: 94vh;
+
+      overflow: hidden;
+
+      background: #fff5f7;
+
+      border-radius: 30px;
+
+      box-shadow:
+        0 35px 100px rgba(38, 25, 29, 0.35);
+
+      display: flex;
+
+      flex-direction: column;
+
+      animation: tryOnModalIn 0.3s ease;
+    }
+
+
+    @keyframes tryOnModalIn {
+
+      from {
+        opacity: 0;
+
+        transform: translateY(25px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+      }
+
+    }
+
+
+    .tryon-modal-header {
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 20px;
+
+      padding: 22px 25px;
+
+      background: #ffffff;
+
+      border-bottom: 1px solid #efdce1;
+    }
+
+
+    .tryon-modal-heading {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 4px;
+    }
+
+
+    .tryon-eyebrow {
+      font-size: 10px;
+
+      letter-spacing: 2px;
+
+      text-transform: uppercase;
+
+      color: #c85f7a;
+
+      font-weight: 700;
+    }
+
+
+    .tryon-modal-title {
+      margin: 0;
+
+      font-family: "Playfair Display", serif;
+
+      font-size: 28px;
+
+      color: #2b1b20;
+    }
+
+
+    .tryon-product-name {
+      font-size: 13px;
+
+      color: #806d73;
+
+      margin-top: 2px;
+    }
+
+
+    .tryon-close {
+      width: 42px;
+
+      height: 42px;
+
+      flex: 0 0 42px;
+
+      border: 1px solid #ead7dc;
+
+      border-radius: 50%;
+
+      background: #fff5f7;
+
+      color: #2b1b20;
+
+      font-size: 23px;
+
+      line-height: 1;
+
+      cursor: pointer;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      transition: 0.25s ease;
+    }
+
+
+    .tryon-close:hover {
+      background: #26191d;
+
+      color: #ffffff;
+
+      border-color: #26191d;
+
+      transform: rotate(90deg);
+    }
+
+
+
+    /* =====================================================
+       TRY-ON VIEW
+       ===================================================== */
+
+    .tryon-stage {
+      position: relative;
+
+      width: 100%;
+
+      height: min(62vh, 560px);
+
+      min-height: 350px;
+
+      background: #26191d;
+
+      overflow: hidden;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+    }
+
+
+    .tryon-video,
+    .tryon-image {
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: cover;
+
+      display: none;
+    }
+
+
+    .tryon-video.active,
+    .tryon-image.active {
+      display: block;
+    }
+
+
+    .tryon-video.mirrored {
+      transform: scaleX(-1);
+    }
+
+
+    .tryon-image {
+      object-fit: contain;
+
+      background: #26191d;
+    }
+
+
+    .tryon-placeholder {
+      width: 100%;
+
+      max-width: 420px;
+
+      padding: 35px;
+
+      text-align: center;
+
+      color: #ffffff;
+    }
+
+
+    .tryon-placeholder-icon {
+      width: 80px;
+
+      height: 80px;
+
+      margin: 0 auto 20px;
+
+      border-radius: 50%;
+
+      background: rgba(255, 255, 255, 0.12);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-size: 36px;
+    }
+
+
+    .tryon-placeholder h3 {
+      margin: 0 0 10px;
+
+      font-family: "Playfair Display", serif;
+
+      font-size: 27px;
+    }
+
+
+    .tryon-placeholder p {
+      margin: 0;
+
+      color: rgba(255, 255, 255, 0.72);
+
+      font-size: 14px;
+
+      line-height: 1.7;
+    }
+
+
+
+    /* =====================================================
+       CAMERA STATUS
+       ===================================================== */
+
+    .tryon-status {
+      position: absolute;
+
+      left: 18px;
+
+      bottom: 18px;
+
+      z-index: 3;
+
+      display: none;
+
+      align-items: center;
+
+      gap: 8px;
+
+      padding: 9px 13px;
+
+      border-radius: 50px;
+
+      background: rgba(38, 25, 29, 0.72);
+
+      color: #ffffff;
+
+      font-size: 12px;
+
+      backdrop-filter: blur(6px);
+
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+
+    .tryon-status.active {
+      display: inline-flex;
+    }
+
+
+    .tryon-status-dot {
+      width: 8px;
+
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: #ef8ca5;
+    }
+
+
+
+    /* =====================================================
+       TRY-ON CONTROLS
+       ===================================================== */
+
+    .tryon-controls {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 12px;
+
+      padding: 20px 25px;
+
+      background: #ffffff;
+
+      border-top: 1px solid #efdce1;
+    }
+
+
+    .tryon-control-btn {
+      min-height: 48px;
+
+      padding: 12px 21px;
+
+      border-radius: 50px;
+
+      border: 1px solid #e6cbd2;
+
+      background: #fff5f7;
+
+      color: #2b1b20;
+
+      font-family: "DM Sans", sans-serif;
+
+      font-size: 13px;
+
+      font-weight: 600;
+
+      cursor: pointer;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 8px;
+
+      transition: 0.25s ease;
+    }
+
+
+    .tryon-control-btn:hover {
+      border-color: #c85f7a;
+
+      color: #c85f7a;
+
+      transform: translateY(-2px);
+    }
+
+
+    .tryon-control-btn.primary {
+      background: #26191d;
+
+      color: #ffffff;
+
+      border-color: #26191d;
+    }
+
+
+    .tryon-control-btn.primary:hover {
+      background: #c85f7a;
+
+      border-color: #c85f7a;
+
+      color: #ffffff;
+    }
+
+
+    .tryon-control-btn.hidden {
+      display: none;
+    }
+
+
+    .tryon-upload-input {
+      display: none;
+    }
+
+
+    .tryon-hint {
+      width: 100%;
+
+      text-align: center;
+
+      margin: 0;
+
+      color: #806d73;
+
+      font-size: 12px;
+    }
+
+
+
+    /* =====================================================
+       TRY-ON ERROR
+       ===================================================== */
+
+    .tryon-error {
+      display: none;
+
+      margin: 0;
+
+      padding: 12px 20px;
+
+      text-align: center;
+
+      background: #fff0f3;
+
+      color: #a74360;
+
+      border-top: 1px solid #efdce1;
+
+      font-size: 13px;
+
+      line-height: 1.6;
+    }
+
+
+    .tryon-error.active {
+      display: block;
+    }
+
+
+
+    /* =====================================================
        TABLET
-       ================================================= */
+       ===================================================== */
 
     @media (max-width: 900px) {
 
@@ -935,13 +1393,25 @@
         grid-template-columns: 1fr;
       }
 
+
+      .tryon-modal {
+        padding: 15px;
+      }
+
+
+      .tryon-stage {
+        height: 55vh;
+
+        min-height: 320px;
+      }
+
     }
 
 
 
-    /* =================================================
+    /* =====================================================
        MOBILE
-       ================================================= */
+       ===================================================== */
 
     @media (max-width: 600px) {
 
@@ -1004,6 +1474,62 @@
         gap: 8px;
       }
 
+
+      .tryon-modal {
+        padding: 0;
+
+        align-items: flex-end;
+      }
+
+
+      .tryon-modal-content {
+        width: 100%;
+
+        max-height: 96vh;
+
+        border-radius: 28px 28px 0 0;
+      }
+
+
+      .tryon-modal-header {
+        padding: 18px 18px;
+      }
+
+
+      .tryon-modal-title {
+        font-size: 24px;
+      }
+
+
+      .tryon-stage {
+        height: 58vh;
+
+        min-height: 300px;
+      }
+
+
+      .tryon-controls {
+        padding: 15px;
+
+        gap: 8px;
+      }
+
+
+      .tryon-control-btn {
+        flex: 1;
+
+        min-width: 130px;
+
+        padding: 11px 14px;
+
+        font-size: 12px;
+      }
+
+
+      .tryon-hint {
+        font-size: 11px;
+      }
+
     }
 
   </style>
@@ -1016,18 +1542,16 @@
 
   <!-- =====================================================
        NAVBAR
-       EXACT SAME STRUCTURE AS HOME PAGE
+       SAME STRUCTURE AS HOME PAGE
        ===================================================== -->
 
   <header class="navbar product-details-navbar">
 
 
-    <!-- =================================================
-         LOGO
-         ================================================= -->
+    <!-- LOGO -->
 
     <a
-      href="/"
+      href="{{ url_for('index') }}"
       class="logo"
       aria-label="Glamora AR Home"
     >
@@ -1036,9 +1560,7 @@
 
 
 
-    <!-- =================================================
-         MAIN NAVIGATION
-         ================================================= -->
+    <!-- MAIN NAVIGATION -->
 
     <nav
       class="nav-links"
@@ -1046,19 +1568,19 @@
       aria-label="Main navigation"
     >
 
-      <a href="/">
+      <a href="{{ url_for('index') }}">
         Home
       </a>
 
-      <a href="/beauty">
+      <a href="{{ url_for('beauty') }}">
         Beauty
       </a>
 
-      <a href="/about">
+      <a href="{{ url_for('about') }}">
         About
       </a>
 
-      <a href="/contact">
+      <a href="{{ url_for('contact') }}">
         Contact
       </a>
 
@@ -1066,9 +1588,7 @@
 
 
 
-    <!-- =================================================
-         HEADER ACTIONS
-         ================================================= -->
+    <!-- HEADER ACTIONS -->
 
     <div class="nav-actions">
 
@@ -1129,7 +1649,7 @@
       <!-- LOGIN -->
 
       <a
-        href="/login"
+        href="{{ url_for('login') }}"
         class="login-btn"
         id="loginBtn"
         aria-label="Login to Glamora AR"
@@ -1212,7 +1732,7 @@
         <!-- BACK TO BEAUTY -->
 
         <a
-          href="/beauty"
+          href="{{ url_for('beauty') }}"
           class="back-beauty"
         >
           ← Back to Beauty
@@ -1220,9 +1740,7 @@
 
 
 
-        <!-- =================================================
-             MAIN PRODUCT IMAGE
-             ================================================= -->
+        <!-- MAIN PRODUCT IMAGE -->
 
         <div class="main-product-image">
 
@@ -1253,9 +1771,7 @@
 
 
 
-        <!-- =================================================
-             PRODUCT THUMBNAILS
-             ================================================= -->
+        <!-- PRODUCT THUMBNAILS -->
 
         {% if images %}
 
@@ -1340,9 +1856,7 @@
 
 
 
-        <!-- =================================================
-             PRODUCT META
-             ================================================= -->
+        <!-- PRODUCT META -->
 
         <div class="details-meta">
 
@@ -1439,20 +1953,22 @@
 
 
             <!-- =================================================
-                 TRY ON
+                 TRY ON BUTTON
                  ================================================= -->
 
-            <a
-              href="/beauty#tryon"
+            <button
+              type="button"
               class="product-btn product-btn-secondary"
+              id="tryOnBtn"
             >
+
               Try On
 
               <span>
                 →
               </span>
 
-            </a>
+            </button>
 
 
 
@@ -1472,6 +1988,7 @@
                   type="submit"
                   class="product-btn product-btn-primary"
                 >
+
                   Add to Cart
 
                   <span>
@@ -1484,8 +2001,7 @@
 
             {% else %}
 
-          
-
+         
             {% endif %}
 
 
@@ -1506,6 +2022,7 @@
                   type="submit"
                   class="product-btn product-btn-secondary"
                 >
+
                   Place Order
 
                   <span>
@@ -1519,7 +2036,7 @@
             {% else %}
 
               <a
-                href="/login"
+                href="{{ url_for('login') }}"
                 class="product-btn product-btn-secondary"
               >
                 Login to Purchase
@@ -1551,17 +2068,13 @@
     <section class="reviews-section">
 
 
-      <!-- =================================================
-           REVIEWS HEADING
-           ================================================= -->
+      <!-- REVIEWS HEADING -->
 
       <div class="reviews-heading">
-
 
         <span class="reviews-eyebrow">
           Customer Feedback
         </span>
-
 
         <h2>
           Reviews
@@ -1592,24 +2105,18 @@
 
 
 
-      <!-- =================================================
-           REVIEWS LAYOUT
-           ================================================= -->
+      <!-- REVIEWS LAYOUT -->
 
       <div class="reviews-layout">
 
 
-        <!-- =================================================
-             REVIEW FORM
-             ================================================= -->
+        <!-- REVIEW FORM -->
 
         <div class="review-form-card">
-
 
           <h3>
             Write a Review
           </h3>
-
 
 
           {% if session.get("user_id") %}
@@ -1736,7 +2243,7 @@
 
               Please
 
-              <a href="/login">
+              <a href="{{ url_for('login') }}">
                 log in
               </a>
 
@@ -1751,9 +2258,7 @@
 
 
 
-        <!-- =================================================
-             EXISTING REVIEWS
-             ================================================= -->
+        <!-- EXISTING REVIEWS -->
 
         <div class="reviews-list">
 
@@ -1790,11 +2295,9 @@
 
                   <div class="review-stars">
 
-
                     {% for star in range(review.rating|int) %}
                       ★
                     {% endfor %}
-
 
                     {% for star in range(5 - (review.rating|int)) %}
                       ☆
@@ -1859,13 +2362,11 @@
 
 
 
-      <!-- =================================================
-           CONTINUE SHOPPING
-           ================================================= -->
+      <!-- CONTINUE SHOPPING -->
 
       <div class="continue-shopping">
 
-        <a href="/beauty">
+        <a href="{{ url_for('beauty') }}">
           ← Continue Shopping
         </a>
 
@@ -1878,13 +2379,1000 @@
 
 
   <!-- =====================================================
-       JAVASCRIPT
-       SAME JS AS HOME PAGE
+       TRY-ON MODAL
+       ===================================================== -->
+
+  <div
+    class="tryon-modal"
+    id="tryOnModal"
+    aria-hidden="true"
+  >
+
+
+    <div
+      class="tryon-modal-content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tryOnModalTitle"
+    >
+
+
+      <!-- =================================================
+           MODAL HEADER
+           ================================================= -->
+
+      <div class="tryon-modal-header">
+
+
+        <div class="tryon-modal-heading">
+
+          <span class="tryon-eyebrow">
+            Glamora AR
+          </span>
+
+          <h2
+            class="tryon-modal-title"
+            id="tryOnModalTitle"
+          >
+            Virtual Try-On
+          </h2>
+
+          <div class="tryon-product-name">
+            Trying: {{ product.name }}
+          </div>
+
+        </div>
+
+
+
+        <button
+          type="button"
+          class="tryon-close"
+          id="tryOnClose"
+          aria-label="Close Try-On"
+          title="Close"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+
+      <!-- =================================================
+           TRY-ON STAGE
+           ================================================= -->
+
+      <div class="tryon-stage">
+
+
+        <!-- LIVE CAMERA -->
+
+        <video
+          id="tryOnVideo"
+          class="tryon-video"
+          autoplay
+          playsinline
+          muted
+        ></video>
+
+
+
+        <!-- UPLOADED IMAGE -->
+
+        <img
+          id="tryOnImage"
+          class="tryon-image"
+          alt="Your selected try-on image"
+        >
+
+
+
+        <!-- PLACEHOLDER -->
+
+        <div
+          class="tryon-placeholder"
+          id="tryOnPlaceholder"
+        >
+
+          <div class="tryon-placeholder-icon">
+            ✨
+          </div>
+
+          <h3>
+            See Yourself With Glamora AR
+          </h3>
+
+          <p>
+            Use your camera for a live preview or
+            upload a photo to start your virtual
+            try-on experience.
+          </p>
+
+        </div>
+
+
+
+        <!-- CAMERA STATUS -->
+
+        <div
+          class="tryon-status"
+          id="tryOnStatus"
+        >
+
+          <span class="tryon-status-dot"></span>
+
+          <span id="tryOnStatusText">
+            Camera active
+          </span>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           ERROR MESSAGE
+           ================================================= -->
+
+      <div
+        class="tryon-error"
+        id="tryOnError"
+      ></div>
+
+
+
+      <!-- =================================================
+           TRY-ON CONTROLS
+           ================================================= -->
+
+      <div class="tryon-controls">
+
+
+        <!-- USE CAMERA -->
+
+        <button
+          type="button"
+          class="tryon-control-btn primary"
+          id="startCameraBtn"
+        >
+
+          📷
+
+          <span>
+            Use Camera
+          </span>
+
+        </button>
+
+
+
+        <!-- UPLOAD IMAGE -->
+
+        <button
+          type="button"
+          class="tryon-control-btn"
+          id="uploadImageBtn"
+        >
+
+          🖼️
+
+          <span>
+            Upload Image
+          </span>
+
+        </button>
+
+
+        <input
+          type="file"
+          id="tryOnImageInput"
+          class="tryon-upload-input"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+        >
+
+
+
+        <!-- SWITCH CAMERA -->
+
+        <button
+          type="button"
+          class="tryon-control-btn"
+          id="switchCameraBtn"
+          hidden
+        >
+
+          🔄
+
+          <span>
+            Switch Camera
+          </span>
+
+        </button>
+
+
+
+        <!-- STOP CAMERA -->
+
+        <button
+          type="button"
+          class="tryon-control-btn"
+          id="stopCameraBtn"
+          hidden
+        >
+
+          ⏹
+
+          <span>
+            Stop Camera
+          </span>
+
+        </button>
+
+
+
+        <!-- HINT -->
+
+        <p class="tryon-hint">
+
+          Camera access may require permission from
+          your browser.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       MAIN WEBSITE JAVASCRIPT
        ===================================================== -->
 
   <script
     src="{{ url_for('static', filename='js/main.js') }}"
   ></script>
+
+
+
+  <!-- =====================================================
+       TRY-ON JAVASCRIPT
+       ===================================================== -->
+
+  <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+
+      /* ===================================================
+         ELEMENTS
+         =================================================== */
+
+      const tryOnBtn =
+        document.getElementById("tryOnBtn");
+
+      const tryOnModal =
+        document.getElementById("tryOnModal");
+
+      const tryOnClose =
+        document.getElementById("tryOnClose");
+
+      const startCameraBtn =
+        document.getElementById("startCameraBtn");
+
+      const uploadImageBtn =
+        document.getElementById("uploadImageBtn");
+
+      const imageInput =
+        document.getElementById("tryOnImageInput");
+
+      const switchCameraBtn =
+        document.getElementById("switchCameraBtn");
+
+      const stopCameraBtn =
+        document.getElementById("stopCameraBtn");
+
+      const video =
+        document.getElementById("tryOnVideo");
+
+      const uploadedImage =
+        document.getElementById("tryOnImage");
+
+      const placeholder =
+        document.getElementById("tryOnPlaceholder");
+
+      const status =
+        document.getElementById("tryOnStatus");
+
+      const statusText =
+        document.getElementById("tryOnStatusText");
+
+      const errorBox =
+        document.getElementById("tryOnError");
+
+
+
+      /* ===================================================
+         CAMERA VARIABLES
+         =================================================== */
+
+      let cameraStream = null;
+
+      let currentCamera = "user";
+
+
+
+      /* ===================================================
+         OPEN TRY-ON MODAL
+         =================================================== */
+
+      function openTryOn() {
+
+        if (!tryOnModal) {
+          return;
+        }
+
+
+        tryOnModal.classList.add("active");
+
+        tryOnModal.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+
+        document.body.style.overflow = "hidden";
+
+
+        clearTryOnError();
+
+
+        /*
+         * Reset the previous image when opening.
+         */
+
+        uploadedImage.classList.remove("active");
+
+        uploadedImage.removeAttribute("src");
+
+
+        video.classList.remove("active");
+
+
+        placeholder.style.display = "flex";
+
+
+        status.classList.remove("active");
+
+
+        stopCameraBtn.hidden = true;
+
+        switchCameraBtn.hidden = true;
+
+
+        /*
+         * Do not automatically start the camera.
+         *
+         * The user chooses "Use Camera".
+         */
+
+      }
+
+
+
+      /* ===================================================
+         CLOSE TRY-ON MODAL
+         =================================================== */
+
+      function closeTryOn() {
+
+        stopCamera();
+
+
+        if (tryOnModal) {
+
+          tryOnModal.classList.remove("active");
+
+          tryOnModal.setAttribute(
+            "aria-hidden",
+            "true"
+          );
+
+        }
+
+
+        document.body.style.overflow = "";
+
+
+        clearTryOnError();
+
+      }
+
+
+
+      /* ===================================================
+         CLEAR ERROR
+         =================================================== */
+
+      function clearTryOnError() {
+
+        errorBox.textContent = "";
+
+        errorBox.classList.remove("active");
+
+      }
+
+
+
+      /* ===================================================
+         SHOW ERROR
+         =================================================== */
+
+      function showTryOnError(message) {
+
+        errorBox.textContent = message;
+
+        errorBox.classList.add("active");
+
+      }
+
+
+
+      /* ===================================================
+         START CAMERA
+         =================================================== */
+
+      async function startCamera() {
+
+        clearTryOnError();
+
+
+        /*
+         * Check browser support.
+         */
+
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.getUserMedia
+        ) {
+
+          showTryOnError(
+            "Your browser does not support camera access. Please use a modern browser or upload an image instead."
+          );
+
+          return;
+
+        }
+
+
+
+        /*
+         * Stop an existing camera first.
+         */
+
+        stopCamera();
+
+
+
+        try {
+
+
+          /*
+           * Request the user's camera.
+           *
+           * First preference:
+           * front-facing camera.
+           */
+
+          const constraints = {
+
+            video: {
+
+              facingMode: {
+                ideal: currentCamera
+              },
+
+              width: {
+                ideal: 1280
+              },
+
+              height: {
+                ideal: 720
+              }
+
+            },
+
+            audio: false
+
+          };
+
+
+          cameraStream =
+            await navigator.mediaDevices.getUserMedia(
+              constraints
+            );
+
+
+
+          /*
+           * Attach camera stream to video.
+           */
+
+          video.srcObject = cameraStream;
+
+
+          video.classList.add("active");
+
+
+          uploadedImage.classList.remove("active");
+
+
+          placeholder.style.display = "none";
+
+
+          status.classList.add("active");
+
+
+          statusText.textContent =
+            "Camera active";
+
+
+          stopCameraBtn.hidden = false;
+
+
+          switchCameraBtn.hidden = false;
+
+
+
+          /*
+           * Mirror the front camera.
+           */
+
+          if (currentCamera === "user") {
+
+            video.classList.add("mirrored");
+
+          } else {
+
+            video.classList.remove("mirrored");
+
+          }
+
+
+
+          /*
+           * Make sure the video starts.
+           */
+
+          try {
+
+            await video.play();
+
+          } catch (playError) {
+
+            /*
+             * Some browsers handle autoplay
+             * automatically.
+             */
+
+          }
+
+        } catch (error) {
+
+
+          console.error(
+            "Camera error:",
+            error
+          );
+
+
+          let message =
+            "Unable to access your camera.";
+
+
+          if (error.name === "NotAllowedError") {
+
+            message =
+              "Camera permission was denied. Please allow camera access in your browser settings, then try again.";
+
+          } else if (
+            error.name === "NotFoundError"
+          ) {
+
+            message =
+              "No camera was found on this device. You can upload an image instead.";
+
+          } else if (
+            error.name === "NotReadableError"
+          ) {
+
+            message =
+              "Your camera is already being used by another application. Close it and try again.";
+
+          } else if (
+            error.name === "SecurityError"
+          ) {
+
+            message =
+              "Camera access was blocked for security reasons. Use HTTPS or localhost.";
+
+          }
+
+
+          showTryOnError(message);
+
+
+          status.classList.remove("active");
+
+          stopCameraBtn.hidden = true;
+
+          switchCameraBtn.hidden = true;
+
+        }
+
+      }
+
+
+
+      /* ===================================================
+         STOP CAMERA
+         =================================================== */
+
+      function stopCamera() {
+
+        if (cameraStream) {
+
+
+          cameraStream
+            .getTracks()
+            .forEach(function (track) {
+
+              track.stop();
+
+            });
+
+
+          cameraStream = null;
+
+        }
+
+
+        video.pause();
+
+        video.srcObject = null;
+
+        video.classList.remove("active");
+
+        video.classList.remove("mirrored");
+
+
+        status.classList.remove("active");
+
+
+        stopCameraBtn.hidden = true;
+
+        switchCameraBtn.hidden = true;
+
+
+        /*
+         * Only show placeholder if no uploaded image
+         * is currently displayed.
+         */
+
+        if (
+          !uploadedImage.classList.contains("active")
+        ) {
+
+          placeholder.style.display = "flex";
+
+        }
+
+      }
+
+
+
+      /* ===================================================
+         UPLOAD IMAGE
+         =================================================== */
+
+      function openImagePicker() {
+
+        clearTryOnError();
+
+        imageInput.click();
+
+      }
+
+
+
+      /* ===================================================
+         HANDLE SELECTED IMAGE
+         =================================================== */
+
+      function handleImageUpload(event) {
+
+        clearTryOnError();
+
+
+        const file =
+          event.target.files &&
+          event.target.files[0];
+
+
+        if (!file) {
+          return;
+        }
+
+
+
+        /*
+         * Make sure the selected file is an image.
+         */
+
+        if (!file.type.startsWith("image/")) {
+
+          showTryOnError(
+            "Please select a valid image file."
+          );
+
+          imageInput.value = "";
+
+          return;
+
+        }
+
+
+
+        /*
+         * Limit very large images on the client side.
+         */
+
+        const maxSize =
+          10 * 1024 * 1024;
+
+
+        if (file.size > maxSize) {
+
+          showTryOnError(
+            "Please choose an image smaller than 10 MB."
+          );
+
+          imageInput.value = "";
+
+          return;
+
+        }
+
+
+
+        /*
+         * Stop camera before showing uploaded image.
+         */
+
+        stopCamera();
+
+
+
+        const reader =
+          new FileReader();
+
+
+        reader.onload = function (e) {
+
+
+          uploadedImage.src =
+            e.target.result;
+
+
+          uploadedImage.classList.add(
+            "active"
+          );
+
+
+          video.classList.remove(
+            "active"
+          );
+
+
+          placeholder.style.display =
+            "none";
+
+
+          status.classList.remove(
+            "active"
+          );
+
+
+        };
+
+
+        reader.onerror = function () {
+
+          showTryOnError(
+            "Unable to read this image. Please choose another image."
+          );
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+      }
+
+
+
+      /* ===================================================
+         SWITCH CAMERA
+         =================================================== */
+
+      async function switchCamera() {
+
+        if (!cameraStream) {
+
+          return;
+
+        }
+
+
+        if (currentCamera === "user") {
+
+          currentCamera = "environment";
+
+        } else {
+
+          currentCamera = "user";
+
+        }
+
+
+        await startCamera();
+
+      }
+
+
+
+      /* ===================================================
+         BUTTON EVENTS
+         =================================================== */
+
+      if (tryOnBtn) {
+
+        tryOnBtn.addEventListener(
+          "click",
+          openTryOn
+        );
+
+      }
+
+
+      if (tryOnClose) {
+
+        tryOnClose.addEventListener(
+          "click",
+          closeTryOn
+        );
+
+      }
+
+
+      if (startCameraBtn) {
+
+        startCameraBtn.addEventListener(
+          "click",
+          startCamera
+        );
+
+      }
+
+
+      if (uploadImageBtn) {
+
+        uploadImageBtn.addEventListener(
+          "click",
+          openImagePicker
+        );
+
+      }
+
+
+      if (imageInput) {
+
+        imageInput.addEventListener(
+          "change",
+          handleImageUpload
+        );
+
+      }
+
+
+      if (switchCameraBtn) {
+
+        switchCameraBtn.addEventListener(
+          "click",
+          switchCamera
+        );
+
+      }
+
+
+      if (stopCameraBtn) {
+
+        stopCameraBtn.addEventListener(
+          "click",
+          stopCamera
+        );
+
+      }
+
+
+
+      /* ===================================================
+         CLOSE WHEN CLICKING OUTSIDE MODAL
+         =================================================== */
+
+      if (tryOnModal) {
+
+        tryOnModal.addEventListener(
+          "click",
+          function (event) {
+
+            if (
+              event.target === tryOnModal
+            ) {
+
+              closeTryOn();
+
+            }
+
+          }
+        );
+
+      }
+
+
+
+      /* ===================================================
+         ESCAPE KEY
+         =================================================== */
+
+      document.addEventListener(
+        "keydown",
+        function (event) {
+
+          if (
+            event.key === "Escape" &&
+            tryOnModal.classList.contains("active")
+          ) {
+
+            closeTryOn();
+
+          }
+
+        }
+      );
+
+
+
+      /* ===================================================
+         CLEAN UP CAMERA WHEN LEAVING PAGE
+         =================================================== */
+
+      window.addEventListener(
+        "beforeunload",
+        function () {
+
+          stopCamera();
+
+        }
+      );
+
+    });
+
+  </script>
 
 
 </body>
