@@ -1,665 +1,1035 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-    <title>Glamora AR — Manage Products</title>
-
-
-    <!-- =====================================================
-         GOOGLE FONTS
-         ===================================================== -->
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+  <title>Glamora AR — Virtual Beauty Experience</title>
 
 
-    <!-- =====================================================
-         MAIN WEBSITE CSS
-         ===================================================== -->
+  <!-- =====================================================
+       GOOGLE FONTS
+       ===================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
 
 
-    <!-- =====================================================
-         ADMIN CSS
-         ===================================================== -->
+  <!-- =====================================================
+       MAIN CSS
+       ===================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/admin.css') }}"
-    >
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}"
+  >
 
 </head>
 
 
-<body class="admin-page">
+<body>
 
 
-    <!-- =====================================================
-         WEBSITE HEADER
-         ===================================================== -->
+  <!-- =====================================================
+       PRELOADER
+       ===================================================== -->
 
-    <header class="navbar">
+  <div
+    class="loader"
+    id="loader"
+  >
+
+    <div class="loader-logo">
+      GLAMORA <span>AR</span>
+    </div>
+
+    <div class="loader-line">
+      <div></div>
+    </div>
+
+  </div>
 
 
-        <!-- =================================================
-             LOGO
-             ================================================= -->
 
-        <a
-            href="{{ url_for('index') }}"
-            class="logo"
-            aria-label="Glamora AR Home"
+  <!-- =====================================================
+       NAVBAR
+       ===================================================== -->
+
+  <header class="navbar">
+
+
+    <!-- ===================================================
+         LOGO
+         =================================================== -->
+
+    <a
+      href="/"
+      class="logo"
+      aria-label="Glamora AR Home"
+    >
+      GLAMORA <span>AR</span>
+    </a>
+
+
+
+    <!-- ===================================================
+         MAIN NAVIGATION
+         =================================================== -->
+
+    <nav
+      class="nav-links"
+      id="navLinks"
+      aria-label="Main navigation"
+    >
+
+      <!-- HOME -->
+
+      <a
+        href="/"
+        class="active"
+      >
+        Home
+      </a>
+
+
+      <!-- BEAUTY -->
+
+      <a href="/beauty">
+        Beauty
+      </a>
+
+
+      <!-- ABOUT -->
+
+      <a href="/about">
+        About
+      </a>
+
+
+      <!-- CONTACT -->
+
+      <a href="/contact">
+        Contact
+      </a>
+
+    </nav>
+
+
+
+    <!-- ===================================================
+         HEADER ACTIONS
+         =================================================== -->
+
+    <div class="nav-actions">
+
+
+      <!-- =================================================
+           SEARCH
+           ================================================= -->
+
+      <button
+        class="icon-btn"
+        id="searchBtn"
+        type="button"
+        aria-label="Search"
+        title="Search"
+      >
+        ⌕
+      </button>
+
+
+
+      <!-- =================================================
+           WISHLIST
+           ================================================= -->
+
+      <button
+        class="icon-btn wishlist-btn"
+        id="wishlistBtn"
+        type="button"
+        aria-label="Wishlist"
+        title="Wishlist"
+      >
+        ♡
+      </button>
+
+
+
+      <!-- =================================================
+           SHOPPING BAG
+           ================================================= -->
+
+      <a
+        href="/cart"
+        class="cart-btn"
+        id="cartBtn"
+        aria-label="Shopping bag"
+        title="Shopping bag"
+      >
+
+        <span>
+          Bag
+        </span>
+
+        <span
+          class="cart-count"
+          id="cartCount"
         >
-            GLAMORA <span>AR</span>
-        </a>
+          {{ bag_count or 0 }}
+        </span>
+
+      </a>
 
 
 
-        <!-- =================================================
-             MAIN NAVIGATION
-             ================================================= -->
+      <!-- =================================================
+           LOGIN
+           ================================================= -->
 
-        <nav
-            class="nav-links"
-            id="navLinks"
-            aria-label="Main navigation"
-        >
+      <a
+        href="/login"
+        class="login-btn"
+        id="loginBtn"
+        aria-label="Login to Glamora AR"
+      >
 
-            <!-- HOME -->
-            <a href="{{ url_for('index') }}">
-                <strong>Home</strong>
-            </a>
+        <span class="login-icon">
+          ♙
+        </span>
 
+        <span>
+          Login
+        </span>
 
-            <!-- BEAUTY -->
-            <a href="{{ url_for('beauty') }}">
-                <strong>Beauty</strong>
-            </a>
-
-
-            <!-- ABOUT -->
-            <a href="{{ url_for('about') }}">
-                <strong>About</strong>
-            </a>
-
-
-            <!-- CONTACT -->
-            <a href="{{ url_for('contact') }}">
-                <strong>Contact</strong>
-            </a>
-
-        </nav>
+      </a>
 
 
 
-        <!-- =================================================
-             HEADER ACTIONS
-             ================================================= -->
+      <!-- =================================================
+           MOBILE MENU
+           ================================================= -->
 
-        <div class="nav-actions">
+      <button
+        class="menu-btn"
+        id="menuBtn"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        aria-controls="navLinks"
+      >
+        ☰
+      </button>
 
+    </div>
 
-            <!-- =================================================
-                 SEARCH
-                 ================================================= -->
-
-            <button
-                class="icon-btn"
-                id="searchBtn"
-                type="button"
-                aria-label="Search"
-                title="Search"
-            >
-                ⌕
-            </button>
+  </header>
 
 
 
-            <!-- =================================================
-                 WISHLIST
-                 ================================================= -->
+  <!-- =====================================================
+       MAIN
+       ================================================= -->
 
-            <button
-                class="icon-btn wishlist-btn"
-                id="wishlistBtn"
-                type="button"
-                aria-label="Wishlist"
-                title="Wishlist"
-            >
-                ♡
-            </button>
+  <main>
 
 
+    <!-- ===================================================
+         HERO
+         =================================================== -->
 
-            <!-- =================================================
-                 SHOPPING BAG
-                 ================================================= -->
+    <section
+      class="hero"
+      id="home"
+    >
 
-            <a
-                href="{{ url_for('cart') }}"
-                class="cart-btn"
-                id="cartBtn"
-                aria-label="Shopping bag"
-                title="Shopping bag"
-            >
 
-                <span>
-                    Bag
-                </span>
+      <!-- =================================================
+           HERO BACKGROUND
+           ================================================= -->
 
-                <span
-                    class="cart-count"
-                    id="cartCount"
-                >
-                    {{ bag_count or 0 }}
-                </span>
+      <div class="hero-background">
 
-            </a>
+        <div class="glow glow-one"></div>
+
+        <div class="glow glow-two"></div>
+
+        <div class="glow glow-three"></div>
+
+      </div>
 
 
 
-            <!-- =================================================
-                 LOGIN
-                 ================================================= -->
+      <!-- =================================================
+           HERO CONTENT
+           ================================================= -->
 
-            <a
-                href="{{ url_for('login') }}"
-                class="login-btn"
-                id="loginBtn"
-                aria-label="Login to Glamora AR"
-            >
-
-                <span class="login-icon">
-                    ♙
-                </span>
-
-                <span>
-                    Login
-                </span>
-
-            </a>
+      <div class="hero-content">
 
 
+        <!-- EYEBROW -->
 
-            <!-- =================================================
-                 MOBILE MENU
-                 ================================================= -->
+        <div class="eyebrow reveal">
 
-            <button
-                class="menu-btn"
-                id="menuBtn"
-                type="button"
-                aria-label="Open navigation menu"
-                aria-expanded="false"
-                aria-controls="navLinks"
-            >
-                ☰
-            </button>
+          <span class="eyebrow-line"></span>
+
+          BEAUTY MEETS TECHNOLOGY
 
         </div>
 
-    </header>
+
+
+        <!-- TITLE -->
+
+        <h1 class="hero-title reveal">
+
+          Discover
+
+          <span>
+            Your
+          </span>
+
+          <em>
+            Perfect Look.
+          </em>
+
+        </h1>
 
 
 
-    <!-- =====================================================
-         ADMIN LAYOUT
-         ===================================================== -->
+        <!-- DESCRIPTION -->
 
-    <div class="admin-layout">
+        <p class="hero-description reveal">
+
+          Experience the future of beauty.
+
+          Try makeup virtually on your own face
+
+          before you buy it.
+
+        </p>
+
 
 
         <!-- =================================================
-             ADMIN SIDEBAR
+             HERO BUTTONS
              ================================================= -->
 
-        <aside class="admin-sidebar">
+        <div class="hero-buttons reveal">
+
+
+          <!-- TRY VIRTUALLY -->
+
+          <a
+            href="/beauty#tryon"
+            class="primary-btn"
+          >
+
+            <span>
+              ✦
+            </span>
+
+            Try Virtually
+
+            <span class="arrow">
+              →
+            </span>
+
+          </a>
+
+
+
+          <!-- EXPLORE MAKEUP -->
+
+          <a
+            href="/beauty#categories"
+            class="secondary-btn"
+          >
+
+            Explore Makeup
+
+          </a>
+
+        </div>
+
+
+
+        <!-- =================================================
+             HERO STATS
+             ================================================= -->
+
+        <div class="hero-stats reveal">
+
+
+          <div>
+
+            <strong>
+              100+
+            </strong>
+
+            <span>
+              Beauty Products
+            </span>
+
+          </div>
+
+
+          <div>
+
+            <strong>
+              AR
+            </strong>
+
+            <span>
+              Virtual Try-On
+            </span>
+
+          </div>
+
+
+          <div>
+
+            <strong>
+              ∞
+            </strong>
+
+            <span>
+              Looks to Try
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           HERO VISUAL
+           ================================================= -->
+
+      <div class="hero-visual">
+
+
+        <div class="orbit orbit-one"></div>
+
+        <div class="orbit orbit-two"></div>
+
+
+
+        <!-- =================================================
+             FLOATING LIPSTICK
+             ================================================= -->
+
+        <div class="floating-product lipstick">
+
+          <div class="product-icon">
+            💄
+          </div>
+
+          <div>
+
+            <small>
+              TRY
+            </small>
+
+            <strong>
+              Lip Color
+            </strong>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             FLOATING BLUSH
+             ================================================= -->
+
+        <div class="floating-product blush">
+
+          <div class="product-icon">
+            🌸
+          </div>
+
+          <div>
+
+            <small>
+              NEW
+            </small>
+
+            <strong>
+              Rose Blush
+            </strong>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             FACE CARD
+             ================================================= -->
+
+        <div class="face-card">
+
+          <div class="face-overlay"></div>
+
+          <div class="face-placeholder">
+
+            <div class="face-circle">
+
+              <span>
+                ✦
+              </span>
+
+            </div>
+
+            <p>
+              Virtual Beauty
+            </p>
+
+          </div>
+
+
+          <div class="scan-line"></div>
+
+
+          <div class="face-label">
+
+            <span class="status-dot"></span>
+
+            AR READY
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           SCROLL INDICATOR
+           ================================================= -->
+
+      <div class="scroll-indicator">
+
+        <span>
+          SCROLL TO EXPLORE
+        </span>
+
+        <div class="scroll-line"></div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         MARQUEE
+         =================================================== -->
+
+    <section class="marquee-section">
+
+      <div class="marquee">
+
+        <span>
+          VIRTUAL BEAUTY
+        </span>
+
+        <i>
+          ✦
+        </i>
+
+        <span>
+          TRY BEFORE YOU BUY
+        </span>
+
+        <i>
+          ✦
+        </i>
+
+        <span>
+          BEAUTY WITHOUT LIMITS
+        </span>
+
+        <i>
+          ✦
+        </i>
+
+        <span>
+          VIRTUAL BEAUTY
+        </span>
+
+        <i>
+          ✦
+        </i>
+
+        <span>
+          TRY BEFORE YOU BUY
+        </span>
+
+        <i>
+          ✦
+        </i>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         PRODUCTS
+         =================================================== -->
+
+    <section
+      class="products section"
+      id="products"
+    >
+
+
+      <!-- =================================================
+           PRODUCTS HEADING
+           ================================================= -->
+
+      <div class="section-heading reveal">
+
+
+        <div>
+
+          <span class="section-label">
+            SHOP THE LOOK
+          </span>
+
+          <h2>
+
+            Beauty
+
+            <em>
+              favorites.
+            </em>
+
+          </h2>
+
+        </div>
+
+
+
+        <a
+          href="/beauty"
+          class="view-all"
+        >
+
+          View all products →
+
+        </a>
+
+      </div>
+
+
+
+      <!-- =================================================
+           PRODUCT GRID
+           ================================================= -->
+
+      <div class="product-grid">
+
+
+        <!-- =================================================
+             PRODUCT 1 — INTERACTIVE LIPSTICK
+             ================================================= -->
+
+        <article
+          class="product-card lipstick-card reveal"
+        >
+
+
+          <!-- PRODUCT IMAGE -->
+
+          <div class="product-image pink-bg">
+
+
+            <!-- BADGE -->
+
+            <span class="product-badge">
+              BESTSELLER
+            </span>
+
 
 
             <!-- =================================================
-                 SIDEBAR LOGO
+                 LIPSTICK
                  ================================================= -->
 
-            <div class="admin-sidebar-logo">
+            <div class="lipstick-product">
 
-                <a href="{{ url_for('index') }}">
-                    GLAMORA <span>AR</span>
-                </a>
 
-                <small>
-                    ADMIN PANEL
-                </small>
+              <!-- LIPSTICK BODY -->
+
+              <div class="lipstick-body">
+
+                <div class="lipstick-bottom"></div>
+
+              </div>
+
+
+
+              <!-- LIPSTICK COLOR TOP -->
+
+              <div class="lipstick-top"></div>
 
             </div>
 
 
 
             <!-- =================================================
-                 ADMIN NAVIGATION
+                 CURRENT SHADE
                  ================================================= -->
 
-            <nav class="admin-navigation">
+            <div class="lipstick-shade">
 
+              <span>
+                CURRENT SHADE
+              </span>
 
-                <!-- DASHBOARD -->
+              <strong id="lipstickShade">
+                Ruby Red
+              </strong>
 
-                <a
-                    href="{{ url_for('admin_dashboard') }}"
-                    class="admin-nav-item"
-                >
-
-                    <span>
-                        ⌂
-                    </span>
-
-                    <span>
-                        Dashboard
-                    </span>
-
-                </a>
-
-
-
-                <!-- PRODUCTS -->
-
-                <a
-                    href="{{ url_for('admin_products') }}"
-                    class="admin-nav-item active"
-                >
-
-                    <span>
-                        ✦
-                    </span>
-
-                    <span>
-                        Products
-                    </span>
-
-                </a>
-
-
-
-                <!-- ADD PRODUCT -->
-
-                <a
-                    href="{{ url_for('admin_add_product') }}"
-                    class="admin-nav-item"
-                >
-
-                    <span>
-                        ＋
-                    </span>
-
-                    <span>
-                        Add Product
-                    </span>
-
-                </a>
-
-
-
-                <!-- VIEW WEBSITE -->
-
-                <a
-                    href="{{ url_for('index') }}"
-                    class="admin-nav-item"
-                >
-
-                    <span>
-                        ↗
-                    </span>
-
-                    <span>
-                        View Website
-                    </span>
-
-                </a>
-
-            </nav>
+            </div>
 
 
 
             <!-- =================================================
-                 SIDEBAR BOTTOM
+                 TRY AR
                  ================================================= -->
 
-            <div class="admin-sidebar-bottom">
+            <a
+              href="/beauty#tryon"
+              class="quick-try"
+            >
+              Try AR
+            </a>
 
-
-                <!-- ADMIN USER -->
-
-                <div class="admin-user-mini">
-
-                    <div class="admin-avatar">
-                        {{ admin_name[0]|upper }}
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            {{ admin_name }}
-                        </strong>
-
-                        <small>
-                            Administrator
-                        </small>
-
-                    </div>
-
-                </div>
+          </div>
 
 
 
-                <!-- LOGOUT -->
+          <!-- =================================================
+               PRODUCT INFORMATION
+               ================================================= -->
 
-                <a
-                    href="{{ url_for('admin_logout') }}"
-                    class="admin-logout"
-                >
-                    Logout
-                </a>
+          <div class="product-info">
+
+
+            <div>
+
+              <span>
+                LIPSTICK
+              </span>
+
+              <h3>
+                Rose Velvet
+              </h3>
 
             </div>
 
-        </aside>
+
+            <strong>
+              $24
+            </strong>
+
+          </div>
+
+        </article>
 
 
 
         <!-- =================================================
-             ADMIN MAIN
+             PRODUCT 2
              ================================================= -->
 
-        <main class="admin-main">
+        <article
+          class="product-card reveal"
+        >
 
+          <div class="product-image nude-bg">
 
-            <!-- =================================================
-                 ADMIN PAGE HEADER
-                 ================================================= -->
 
-            <header class="admin-topbar">
+            <span class="product-badge">
+              NEW
+            </span>
 
-                <div>
 
-                    <span class="admin-eyebrow">
-                        CATALOG
-                    </span>
+            <div class="product-placeholder">
+              🎨
+            </div>
 
-                    <h1>
-                        Products
-                    </h1>
 
-                    <p class="admin-welcome">
-                        Manage the products displayed on Glamora AR.
-                    </p>
+            <a
+              href="/beauty#tryon"
+              class="quick-try"
+            >
+              Try AR
+            </a>
 
-                </div>
+          </div>
 
 
-                <a
-                    href="{{ url_for('admin_add_product') }}"
-                    class="admin-primary-button"
-                >
-                    + Add Product
-                </a>
 
-            </header>
+          <div class="product-info">
 
 
+            <div>
 
-            <!-- =================================================
-                 FLASH MESSAGES
-                 ================================================= -->
+              <span>
+                EYESHADOW
+              </span>
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
+              <h3>
+                Sunset Palette
+              </h3>
 
-                {% if messages %}
+            </div>
 
-                    <div class="flash-messages">
 
-                        {% for category, message in messages %}
+            <strong>
+              $38
+            </strong>
 
-                            <div class="flash-message {{ category }}">
-                                {{ message }}
-                            </div>
+          </div>
 
-                        {% endfor %}
+        </article>
 
-                    </div>
 
-                {% endif %}
 
-            {% endwith %}
+        <!-- =================================================
+             PRODUCT 3
+             ================================================= -->
 
+        <article
+          class="product-card reveal"
+        >
 
+          <div class="product-image rose-bg">
 
-            <!-- =================================================
-                 PRODUCT CATALOG
-                 ================================================= -->
 
-            <section class="admin-content-card">
+            <div class="product-placeholder">
+              🌸
+            </div>
 
 
-                <!-- =================================================
-                     SECTION HEADER
-                     ================================================= -->
+            <a
+              href="/beauty#tryon"
+              class="quick-try"
+            >
+              Try AR
+            </a>
 
-                <div class="admin-section-header">
+          </div>
 
-                    <div>
 
-                        <p class="admin-eyebrow">
-                            PRODUCT CATALOG
-                        </p>
 
-                        <h2>
-                            All Products
-                        </h2>
+          <div class="product-info">
 
-                    </div>
 
-                </div>
+            <div>
 
+              <span>
+                BLUSH
+              </span>
 
+              <h3>
+                Soft Rose
+              </h3>
 
-                <!-- =================================================
-                     PRODUCTS
-                     ================================================= -->
+            </div>
 
-                {% if products %}
 
-                    <div class="admin-product-grid">
+            <strong>
+              $19
+            </strong>
 
+          </div>
 
-                        {% for product in products %}
+        </article>
 
-                            <article class="admin-product-card">
+      </div>
 
+    </section>
 
-                                <!-- =================================================
-                                     PRODUCT IMAGE
-                                     ================================================= -->
+  </main>
 
-                                <div class="admin-product-image">
 
-                                    {% if product.image_url %}
 
-                                        <img
-                                            src="{{ product.image_url }}"
-                                            alt="{{ product.name }}"
-                                            loading="lazy"
-                                        >
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
 
-                                    {% else %}
+  <footer>
 
-                                        <div class="admin-product-placeholder">
-                                            ✦
-                                        </div>
 
-                                    {% endif %}
+    <!-- =================================================
+         FOOTER TOP
+         ================================================= -->
 
-                                </div>
+    <div class="footer-top">
 
 
+      <!-- =================================================
+           FOOTER BRAND
+           ================================================= -->
 
-                                <!-- =================================================
-                                     PRODUCT CONTENT
-                                     ================================================= -->
+      <div class="footer-brand">
 
-                                <div class="admin-product-card-content">
+        <a
+          href="/"
+          class="logo"
+          aria-label="Glamora AR Home"
+        >
+          GLAMORA <span>AR</span>
+        </a>
 
 
-                                    <!-- CATEGORY -->
+        <p>
+          Beauty technology designed for everyone.
+        </p>
 
-                                    <span class="product-category">
-                                        {{ product.category_name or 'Uncategorized' }}
-                                    </span>
+      </div>
 
 
 
-                                    <!-- NAME -->
+      <!-- =================================================
+           FOOTER LINKS
+           ================================================= -->
 
-                                    <h3>
-                                        {{ product.name }}
-                                    </h3>
+      <div class="footer-links">
 
 
+        <!-- =================================================
+             EXPLORE
+             ================================================= -->
 
-                                    <!-- TYPE -->
+        <div>
 
-                                    {% if product.product_type %}
+          <span>
+            EXPLORE
+          </span>
 
-                                        <small>
-                                            {{ product.product_type }}
-                                        </small>
+          <a href="/">
+            Home
+          </a>
 
-                                    {% endif %}
+          <a href="/beauty">
+            Beauty
+          </a>
 
+          <a href="/about">
+            About
+          </a>
 
+          <a href="/contact">
+            Contact
+          </a>
 
-                                    <!-- DESCRIPTION -->
+        </div>
 
-                                    <p>
-                                        {{ product.description or 'No description available.' }}
-                                    </p>
 
 
+        <!-- =================================================
+             GLAMORA AR
+             ================================================= -->
 
-                                    <!-- SHADE -->
+        <div>
 
-                                    {% if product.shade %}
+          <span>
+            GLAMORA AR
+          </span>
 
-                                        <p>
-                                            Shade: {{ product.shade }}
-                                        </p>
+          <a href="/beauty#tryon">
+            Virtual Try-On
+          </a>
 
-                                    {% endif %}
+          <a href="/beauty#categories">
+            Products
+          </a>
 
+        </div>
 
 
-                                    <!-- PRICE AND STOCK -->
 
-                                    <div class="product-meta">
+        <!-- =================================================
+             FOLLOW
+             ================================================= -->
 
-                                        <strong>
-                                            ${{ "%.2f"|format(product.price) }}
-                                        </strong>
+        <div>
 
-                                        <span>
-                                            Stock: {{ product.stock }}
-                                        </span>
+          <span>
+            FOLLOW
+          </span>
 
-                                    </div>
+          <a href="#">
+            Instagram
+          </a>
 
+          <a href="#">
+            TikTok
+          </a>
 
+          <a href="#">
+            Pinterest
+          </a>
 
-                                    <!-- AVAILABILITY -->
+        </div>
 
-                                    {% if product.is_available %}
-
-                                        <span class="status available">
-                                            Available
-                                        </span>
-
-                                    {% else %}
-
-                                        <span class="status unavailable">
-                                            Unavailable
-                                        </span>
-
-                                    {% endif %}
-
-                                </div>
-
-                            </article>
-
-                        {% endfor %}
-
-                    </div>
-
-
-                {% else %}
-
-
-                    <!-- =================================================
-                         EMPTY STATE
-                         ================================================= -->
-
-                    <div class="admin-empty-state">
-
-                        <div class="empty-icon">
-                            ✦
-                        </div>
-
-                        <h3>
-                            Your catalog is empty
-                        </h3>
-
-                        <p>
-                            Products added here will automatically become
-                            available on the Glamora AR Beauty page.
-                        </p>
-
-                        <a
-                            href="{{ url_for('admin_add_product') }}"
-                            class="admin-primary-button"
-                        >
-                            + Add Product
-                        </a>
-
-                    </div>
-
-                {% endif %}
-
-            </section>
-
-        </main>
+      </div>
 
     </div>
 
 
 
-    <!-- =====================================================
-         JAVASCRIPT
-         ===================================================== -->
+    <!-- =================================================
+         FOOTER BOTTOM
+         ================================================= -->
 
-    <script
-        src="{{ url_for('static', filename='js/main.js') }}"
-    ></script>
+    <div class="footer-bottom">
+
+      <span>
+        © 2026 Glamora AR
+      </span>
+
+      <span>
+        Made for the future of beauty ✦
+      </span>
+
+    </div>
+
+  </footer>
+
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+       ===================================================== -->
+
+  <script
+    src="{{ url_for('static', filename='js/main.js') }}"
+  ></script>
+
 
 </body>
 
