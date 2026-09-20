@@ -232,7 +232,7 @@ def prepare_products(products):
         )
 
         # -------------------------------------------------
-        # Category slug
+        # CATEGORY SLUG
         # -------------------------------------------------
 
         category_name = product.get(
@@ -254,7 +254,7 @@ def prepare_products(products):
             product["category_slug"] = ""
 
         # -------------------------------------------------
-        # Product type slug
+        # PRODUCT TYPE SLUG
         # -------------------------------------------------
 
         product["product_type_slug"] = (
@@ -430,18 +430,6 @@ def index():
 # =========================================================
 # HOME COMPATIBILITY ROUTE
 # =========================================================
-#
-# This keeps older templates using:
-#
-#     url_for('home')
-#
-# from producing a BuildError.
-#
-# The main homepage endpoint remains:
-#
-#     url_for('index')
-#
-# =========================================================
 
 @app.route("/home")
 def home():
@@ -468,10 +456,6 @@ def beauty():
         cursor = connection.cursor(
             dictionary=True
         )
-
-        # -------------------------------------------------
-        # GET AVAILABLE PRODUCTS
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -517,10 +501,6 @@ def beauty():
             products
         )
 
-        # -------------------------------------------------
-        # GET CATEGORIES
-        # -------------------------------------------------
-
         cursor.execute(
             """
             SELECT
@@ -532,10 +512,6 @@ def beauty():
         )
 
         categories = cursor.fetchall() or []
-
-        # -------------------------------------------------
-        # DEBUG
-        # -------------------------------------------------
 
         print("\n")
         print("=" * 60)
@@ -667,10 +643,6 @@ def register():
             ""
         )
 
-        # -------------------------------------------------
-        # VALIDATION
-        # -------------------------------------------------
-
         if not name:
 
             flash(
@@ -742,10 +714,6 @@ def register():
                 dictionary=True
             )
 
-            # -------------------------------------------------
-            # CHECK EXISTING USER
-            # -------------------------------------------------
-
             cursor.execute(
                 """
                 SELECT
@@ -771,17 +739,9 @@ def register():
                     next=next_url
                 )
 
-            # -------------------------------------------------
-            # HASH PASSWORD
-            # -------------------------------------------------
-
             password_hash = generate_password_hash(
                 password
             )
-
-            # -------------------------------------------------
-            # CREATE USER
-            # -------------------------------------------------
 
             cursor.execute(
                 """
@@ -982,20 +942,12 @@ def login():
                     next=next_url
                 )
 
-            # -------------------------------------------------
-            # SESSION
-            # -------------------------------------------------
-
             session.permanent = True
 
             session["user_id"] = user["id"]
             session["user_name"] = user["name"]
             session["user_email"] = user["email"]
             session["logged_in"] = True
-
-            # -------------------------------------------------
-            # REDIRECT
-            # -------------------------------------------------
 
             if next_url:
 
@@ -1118,16 +1070,6 @@ def profile():
 
 # =========================================================
 # PRODUCT DETAILS
-# =========================================================
-#
-# IMPORTANT:
-#
-# This route does NOT redirect to /beauty simply because
-# product_images or product_reviews has an error.
-#
-# Only a missing product or a genuine page-level error
-# redirects to beauty.
-#
 # =========================================================
 
 @app.route(
@@ -1255,7 +1197,6 @@ def product_details(product_id):
                 repr(image_error)
             )
 
-            # Do NOT redirect to beauty.
             images = []
 
         # =================================================
@@ -1320,7 +1261,6 @@ def product_details(product_id):
                 repr(review_error)
             )
 
-            # Do NOT redirect to beauty.
             reviews = []
 
         # =================================================
@@ -1400,7 +1340,7 @@ def product_details(product_id):
     except Exception as error:
 
         # =================================================
-        # IMPORTANT ERROR OUTPUT
+        # ERROR OUTPUT ONLY
         # =================================================
 
         print("\n")
@@ -1418,10 +1358,9 @@ def product_details(product_id):
         print("!" * 60)
         print("\n")
 
-        flash(
-            "Unable to load product details. Please check the server console.",
-            "error"
-        )
+        # -------------------------------------------------
+        # NO FLASH MESSAGE HERE
+        # -------------------------------------------------
 
         return redirect(
             url_for("beauty")
@@ -1501,7 +1440,6 @@ def add_review(product_id):
 
     connection = None
     cursor = None
-
     saved_review_file = None
 
     try:
@@ -1511,10 +1449,6 @@ def add_review(product_id):
         cursor = connection.cursor(
             dictionary=True
         )
-
-        # -------------------------------------------------
-        # GET USER
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -1540,10 +1474,6 @@ def add_review(product_id):
             return redirect(
                 url_for("login")
             )
-
-        # -------------------------------------------------
-        # REVIEW IMAGE
-        # -------------------------------------------------
 
         review_image_url = None
 
@@ -1623,10 +1553,6 @@ def add_review(product_id):
                 "uploads/reviews/"
                 + unique_filename
             )
-
-        # -------------------------------------------------
-        # INSERT REVIEW
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -1758,10 +1684,6 @@ def add_to_cart(product_id):
             dictionary=True
         )
 
-        # -------------------------------------------------
-        # GET PRODUCT
-        # -------------------------------------------------
-
         cursor.execute(
             """
             SELECT
@@ -1790,10 +1712,6 @@ def add_to_cart(product_id):
                 url_for("beauty")
             )
 
-        # -------------------------------------------------
-        # CHECK AVAILABILITY
-        # -------------------------------------------------
-
         if not product.get(
             "is_available"
         ):
@@ -1809,10 +1727,6 @@ def add_to_cart(product_id):
                     product_id=product_id
                 )
             )
-
-        # -------------------------------------------------
-        # CHECK STOCK
-        # -------------------------------------------------
 
         stock = int(
             product.get(
@@ -1834,10 +1748,6 @@ def add_to_cart(product_id):
                     product_id=product_id
                 )
             )
-
-        # -------------------------------------------------
-        # CHECK EXISTING CART ITEM
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -1991,10 +1901,6 @@ def buy_now(product_id):
             dictionary=True
         )
 
-        # -------------------------------------------------
-        # GET PRODUCT
-        # -------------------------------------------------
-
         cursor.execute(
             """
             SELECT
@@ -2059,10 +1965,6 @@ def buy_now(product_id):
                     product_id=product_id
                 )
             )
-
-        # -------------------------------------------------
-        # CHECK EXISTING ITEM
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -2535,10 +2437,6 @@ def admin_dashboard():
             dictionary=True
         )
 
-        # -------------------------------------------------
-        # PRODUCT COUNT
-        # -------------------------------------------------
-
         cursor.execute(
             """
             SELECT COUNT(*) AS total
@@ -2554,10 +2452,6 @@ def admin_dashboard():
                 0
             ) or 0
         )
-
-        # -------------------------------------------------
-        # CATEGORY COUNT
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -2575,10 +2469,6 @@ def admin_dashboard():
             ) or 0
         )
 
-        # -------------------------------------------------
-        # USER COUNT
-        # -------------------------------------------------
-
         cursor.execute(
             """
             SELECT COUNT(*) AS total
@@ -2594,10 +2484,6 @@ def admin_dashboard():
                 0
             ) or 0
         )
-
-        # -------------------------------------------------
-        # AVAILABLE PRODUCT COUNT
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -2615,10 +2501,6 @@ def admin_dashboard():
                 0
             ) or 0
         )
-
-        # -------------------------------------------------
-        # RECENT PRODUCTS
-        # -------------------------------------------------
 
         cursor.execute(
             """
