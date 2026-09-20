@@ -24,7 +24,7 @@
 
         <div class="admin-sidebar-logo">
 
-            <a href="{{ url_for('home') }}">
+            <a href="{{ url_for('index') }}">
                 GLAMORA <span>AR</span>
             </a>
 
@@ -65,7 +65,7 @@
 
 
             <a
-                href="{{ url_for('home') }}"
+                href="{{ url_for('index') }}"
                 class="admin-nav-item"
             >
                 <span>↗</span>
@@ -80,12 +80,12 @@
             <div class="admin-user-mini">
 
                 <div class="admin-avatar">
-                    {{ admin_name[0]|upper }}
+                    {{ session.get('admin_name', 'Admin')[0]|upper }}
                 </div>
 
                 <div>
                     <strong>
-                        {{ admin_name }}
+                        {{ session.get('admin_name', 'Admin') }}
                     </strong>
 
                     <small>
@@ -123,7 +123,7 @@
                 </h1>
 
                 <p class="admin-welcome">
-                    Welcome back, {{ admin_name }}.
+                    Welcome back, {{ session.get('admin_name', 'Admin') }}.
                 </p>
 
             </div>
