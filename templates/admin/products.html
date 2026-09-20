@@ -56,9 +56,7 @@
     <header class="navbar">
 
 
-        <!-- =================================================
-             LOGO
-             ================================================= -->
+        <!-- LOGO -->
 
         <a
             href="{{ url_for('index') }}"
@@ -70,9 +68,7 @@
 
 
 
-        <!-- =================================================
-             MAIN NAVIGATION
-             ================================================= -->
+        <!-- MAIN NAVIGATION -->
 
         <nav
             class="nav-links"
@@ -100,9 +96,7 @@
 
 
 
-        <!-- =================================================
-             HEADER ACTIONS
-             ================================================= -->
+        <!-- HEADER ACTIONS -->
 
         <div class="nav-actions">
 
@@ -160,45 +154,24 @@
 
 
 
-            <!-- LOGIN / ADMIN -->
+            <!-- LOGIN -->
 
-            {% if session.get('admin_id') %}
+            <a
+                href="{{ url_for('login') }}"
+                class="login-btn"
+                id="loginBtn"
+                aria-label="Login to Glamora AR"
+            >
 
-                <a
-                    href="{{ url_for('admin_dashboard') }}"
-                    class="login-btn"
-                    aria-label="Admin dashboard"
-                >
+                <span class="login-icon">
+                    ♙
+                </span>
 
-                    <span class="login-icon">
-                        ♙
-                    </span>
+                <span>
+                    Login
+                </span>
 
-                    <span>
-                        Admin
-                    </span>
-
-                </a>
-
-            {% else %}
-
-                <a
-                    href="{{ url_for('login') }}"
-                    class="login-btn"
-                    aria-label="Login to Glamora AR"
-                >
-
-                    <span class="login-icon">
-                        ♙
-                    </span>
-
-                    <span>
-                        Login
-                    </span>
-
-                </a>
-
-            {% endif %}
+            </a>
 
 
 
@@ -222,7 +195,7 @@
 
 
     <!-- =====================================================
-         ADMIN CONTENT AREA
+         ADMIN LAYOUT
          ===================================================== -->
 
     <div class="admin-layout">
@@ -344,11 +317,8 @@
                 <div class="admin-user-mini">
 
                     <div class="admin-avatar">
-
                         {{ admin_name[0]|upper }}
-
                     </div>
-
 
                     <div>
 
@@ -382,7 +352,7 @@
 
 
         <!-- =================================================
-             MAIN ADMIN CONTENT
+             ADMIN MAIN
              ================================================= -->
 
         <main class="admin-main">
@@ -476,7 +446,7 @@
 
 
                 <!-- =================================================
-                     PRODUCTS EXIST
+                     PRODUCTS
                      ================================================= -->
 
                 {% if products %}
@@ -513,7 +483,7 @@
 
 
 
-                                <!-- PRODUCT INFORMATION -->
+                                <!-- PRODUCT CONTENT -->
 
                                 <div class="admin-product-card-content">
 
@@ -521,31 +491,25 @@
                                     <!-- CATEGORY -->
 
                                     <span class="product-category">
-
                                         {{ product.category_name or 'Uncategorized' }}
-
                                     </span>
 
 
 
-                                    <!-- PRODUCT NAME -->
+                                    <!-- NAME -->
 
                                     <h3>
-
                                         {{ product.name }}
-
                                     </h3>
 
 
 
-                                    <!-- PRODUCT TYPE -->
+                                    <!-- TYPE -->
 
                                     {% if product.product_type %}
 
                                         <small>
-
                                             {{ product.product_type }}
-
                                         </small>
 
                                     {% endif %}
@@ -555,9 +519,7 @@
                                     <!-- DESCRIPTION -->
 
                                     <p>
-
                                         {{ product.description or 'No description available.' }}
-
                                     </p>
 
 
@@ -567,31 +529,23 @@
                                     {% if product.shade %}
 
                                         <p>
-
                                             Shade: {{ product.shade }}
-
                                         </p>
 
                                     {% endif %}
 
 
 
-                                    <!-- PRICE / STOCK -->
+                                    <!-- PRICE AND STOCK -->
 
                                     <div class="product-meta">
 
-
                                         <strong>
-
                                             ${{ "%.2f"|format(product.price) }}
-
                                         </strong>
 
-
                                         <span>
-
                                             Stock: {{ product.stock }}
-
                                         </span>
 
                                     </div>
@@ -603,21 +557,16 @@
                                     {% if product.is_available %}
 
                                         <span class="status available">
-
                                             Available
-
                                         </span>
 
                                     {% else %}
 
                                         <span class="status unavailable">
-
                                             Unavailable
-
                                         </span>
 
                                     {% endif %}
-
 
                                 </div>
 
@@ -625,69 +574,57 @@
 
                         {% endfor %}
 
-
                     </div>
 
 
-                <!-- =================================================
-                     NO PRODUCTS
-                     ================================================= -->
-
                 {% else %}
 
-                    <div class="admin-empty-state">
 
+                    <!-- =================================================
+                         EMPTY STATE
+                         ================================================= -->
+
+                    <div class="admin-empty-state">
 
                         <div class="empty-icon">
                             ✦
                         </div>
 
-
                         <h3>
                             Your catalog is empty
                         </h3>
 
-
                         <p>
-
                             Products added here will automatically become
                             available on the Glamora AR Beauty page.
-
                         </p>
-
 
                         <a
                             href="{{ url_for('admin_add_product') }}"
                             class="admin-primary-button"
                         >
-
                             + Add Product
-
                         </a>
 
                     </div>
 
                 {% endif %}
 
-
             </section>
 
-
         </main>
-
 
     </div>
 
 
 
     <!-- =====================================================
-         MAIN WEBSITE JAVASCRIPT
+         JAVASCRIPT
          ===================================================== -->
 
     <script
         src="{{ url_for('static', filename='js/main.js') }}"
     ></script>
-
 
 </body>
 
