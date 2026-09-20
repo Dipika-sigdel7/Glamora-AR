@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,13 +51,14 @@
 
     <!-- =====================================================
          WEBSITE HEADER
-         SAME HEADER AS HOME PAGE
          ===================================================== -->
 
     <header class="navbar">
 
 
-        <!-- LOGO -->
+        <!-- =================================================
+             LOGO
+             ================================================= -->
 
         <a
             href="{{ url_for('index') }}"
@@ -68,7 +70,9 @@
 
 
 
-        <!-- MAIN NAVIGATION -->
+        <!-- =================================================
+             MAIN NAVIGATION
+             ================================================= -->
 
         <nav
             class="nav-links"
@@ -76,32 +80,43 @@
             aria-label="Main navigation"
         >
 
+            <!-- HOME -->
             <a href="{{ url_for('index') }}">
-                Home
+                <strong>Home</strong>
             </a>
 
+
+            <!-- BEAUTY -->
             <a href="{{ url_for('beauty') }}">
-                Beauty
+                <strong>Beauty</strong>
             </a>
 
+
+            <!-- ABOUT -->
             <a href="{{ url_for('about') }}">
-                About
+                <strong>About</strong>
             </a>
 
+
+            <!-- CONTACT -->
             <a href="{{ url_for('contact') }}">
-                Contact
+                <strong>Contact</strong>
             </a>
 
         </nav>
 
 
 
-        <!-- HEADER ACTIONS -->
+        <!-- =================================================
+             HEADER ACTIONS
+             ================================================= -->
 
         <div class="nav-actions">
 
 
-            <!-- SEARCH -->
+            <!-- =================================================
+                 SEARCH
+                 ================================================= -->
 
             <button
                 class="icon-btn"
@@ -115,7 +130,9 @@
 
 
 
-            <!-- WISHLIST -->
+            <!-- =================================================
+                 WISHLIST
+                 ================================================= -->
 
             <button
                 class="icon-btn wishlist-btn"
@@ -129,12 +146,14 @@
 
 
 
-            <!-- SHOPPING BAG -->
+            <!-- =================================================
+                 SHOPPING BAG
+                 ================================================= -->
 
-            <button
+            <a
+                href="{{ url_for('cart') }}"
                 class="cart-btn"
                 id="cartBtn"
-                type="button"
                 aria-label="Shopping bag"
                 title="Shopping bag"
             >
@@ -150,11 +169,13 @@
                     {{ bag_count or 0 }}
                 </span>
 
-            </button>
+            </a>
 
 
 
-            <!-- LOGIN -->
+            <!-- =================================================
+                 LOGIN
+                 ================================================= -->
 
             <a
                 href="{{ url_for('login') }}"
@@ -175,7 +196,9 @@
 
 
 
-            <!-- MOBILE MENU -->
+            <!-- =================================================
+                 MOBILE MENU
+                 ================================================= -->
 
             <button
                 class="menu-btn"
@@ -208,7 +231,9 @@
         <aside class="admin-sidebar">
 
 
-            <!-- SIDEBAR LOGO -->
+            <!-- =================================================
+                 SIDEBAR LOGO
+                 ================================================= -->
 
             <div class="admin-sidebar-logo">
 
@@ -224,7 +249,9 @@
 
 
 
-            <!-- ADMIN NAVIGATION -->
+            <!-- =================================================
+                 ADMIN NAVIGATION
+                 ================================================= -->
 
             <nav class="admin-navigation">
 
@@ -307,7 +334,9 @@
 
 
 
-            <!-- SIDEBAR BOTTOM -->
+            <!-- =================================================
+                 SIDEBAR BOTTOM
+                 ================================================= -->
 
             <div class="admin-sidebar-bottom">
 
@@ -425,7 +454,9 @@
             <section class="admin-content-card">
 
 
-                <!-- SECTION HEADER -->
+                <!-- =================================================
+                     SECTION HEADER
+                     ================================================= -->
 
                 <div class="admin-section-header">
 
@@ -459,7 +490,9 @@
                             <article class="admin-product-card">
 
 
-                                <!-- PRODUCT IMAGE -->
+                                <!-- =================================================
+                                     PRODUCT IMAGE
+                                     ================================================= -->
 
                                 <div class="admin-product-image">
 
@@ -483,7 +516,9 @@
 
 
 
-                                <!-- PRODUCT CONTENT -->
+                                <!-- =================================================
+                                     PRODUCT CONTENT
+                                     ================================================= -->
 
                                 <div class="admin-product-card-content">
 
@@ -629,3 +664,4 @@
 </body>
 
 </html>
+
