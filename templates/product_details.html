@@ -45,7 +45,22 @@
 </head>
 
 
-<body>
+<!-- =========================================================
+     BODY
+     
+     PRODUCT DATA IS PASSED TO THE EXTERNAL JAVASCRIPT
+     USING DATA ATTRIBUTES.
+
+     THERE IS NO INLINE JAVASCRIPT IN THIS HTML FILE.
+     ========================================================= -->
+
+<body
+  data-product-id="{{ product.id }}"
+  data-product-name="{{ product.name|e }}"
+  data-product-type="{{ product.product_type|default('', true)|e }}"
+  data-product-shade="{{ product.shade|default('', true)|e }}"
+  data-product-color="{{ product.color|default('', true)|e }}"
+>
 
 
   <!-- =====================================================
@@ -55,19 +70,25 @@
   <header class="navbar product-details-navbar">
 
 
-    <!-- LOGO -->
+    <!-- =================================================
+         LOGO
+         ================================================= -->
 
     <a
       href="{{ url_for('index') }}"
       class="logo"
       aria-label="Glamora AR Home"
     >
+
       GLAMORA <span>AR</span>
+
     </a>
 
 
 
-    <!-- MAIN NAVIGATION -->
+    <!-- =================================================
+         MAIN NAVIGATION
+         ================================================= -->
 
     <nav
       class="nav-links"
@@ -95,7 +116,9 @@
 
 
 
-    <!-- HEADER ACTIONS -->
+    <!-- =================================================
+         HEADER ACTIONS
+         ================================================= -->
 
     <div class="nav-actions">
 
@@ -153,7 +176,9 @@
 
 
 
-      <!-- LOGIN / PROFILE -->
+      <!-- =================================================
+           LOGIN / PROFILE
+           ================================================= -->
 
       {% if session.get("user_id") %}
 
@@ -197,7 +222,9 @@
 
 
 
-      <!-- MOBILE MENU -->
+      <!-- =================================================
+           MOBILE MENU
+           ================================================= -->
 
       <button
         class="menu-btn"
@@ -270,7 +297,9 @@
 
 
 
-        <!-- MAIN PRODUCT IMAGE -->
+        <!-- =================================================
+             MAIN PRODUCT IMAGE
+             ================================================= -->
 
         <div class="main-product-image">
 
@@ -301,7 +330,9 @@
 
 
 
-        <!-- PRODUCT THUMBNAILS -->
+        <!-- =================================================
+             PRODUCT THUMBNAILS
+             ================================================= -->
 
         {% if images %}
 
@@ -386,10 +417,14 @@
 
 
 
-        <!-- PRODUCT META -->
+        <!-- =================================================
+             PRODUCT META
+             ================================================= -->
 
         <div class="details-meta">
 
+
+          <!-- CATEGORY -->
 
           {% if product.category_name %}
 
@@ -409,6 +444,8 @@
 
 
 
+          <!-- SHADE -->
+
           {% if product.shade %}
 
             <div class="meta-row">
@@ -427,6 +464,8 @@
 
 
 
+          <!-- COLOR -->
+
           {% if product.color %}
 
             <div class="meta-row">
@@ -444,6 +483,8 @@
           {% endif %}
 
 
+
+          <!-- AVAILABILITY -->
 
           <div class="meta-row">
 
@@ -482,7 +523,9 @@
           {% if product.is_available and product.stock > 0 %}
 
 
-            <!-- TRY ON -->
+            <!-- =================================================
+                 TRY ON BUTTON
+                 ================================================= -->
 
             <button
               type="button"
@@ -500,7 +543,9 @@
 
 
 
-            <!-- ADD TO CART -->
+            <!-- =================================================
+                 ADD TO CART
+                 ================================================= -->
 
             {% if session.get("user_id") %}
 
@@ -527,7 +572,16 @@
 
             {% else %}
 
-              <!-- <button
+              <!--
+              LOGIN TO ADD TO CART
+
+              Kept disabled/hidden exactly as in your current
+              product details page.
+              -->
+
+              <!--
+
+              <button
                 type="button"
                 class="product-btn product-btn-primary"
                 id="loginToCartBtn"
@@ -539,13 +593,17 @@
                   +
                 </span>
 
-              </button> -->
+              </button>
+
+              -->
 
             {% endif %}
 
 
 
-            <!-- PLACE ORDER -->
+            <!-- =================================================
+                 PLACE ORDER
+                 ================================================= -->
 
             {% if session.get("user_id") %}
 
@@ -576,7 +634,9 @@
                 href="{{ url_for('login', next=request.path) }}"
                 class="product-btn product-btn-secondary"
               >
+
                 Login to Purchase
+
               </a>
 
             {% endif %}
@@ -584,9 +644,13 @@
 
           {% else %}
 
+
+            <!-- OUT OF STOCK -->
+
             <span class="product-btn product-btn-disabled">
               Out of Stock
             </span>
+
 
           {% endif %}
 
@@ -605,7 +669,9 @@
     <section class="reviews-section">
 
 
-      <!-- REVIEWS HEADING -->
+      <!-- =================================================
+           REVIEWS HEADING
+           ================================================= -->
 
       <div class="reviews-heading">
 
@@ -642,12 +708,16 @@
 
 
 
-      <!-- REVIEWS LAYOUT -->
+      <!-- =================================================
+           REVIEWS LAYOUT
+           ================================================= -->
 
       <div class="reviews-layout">
 
 
-        <!-- REVIEW FORM -->
+        <!-- =================================================
+             REVIEW FORM
+             ================================================= -->
 
         <div class="review-form-card">
 
@@ -666,7 +736,9 @@
             >
 
 
-              <!-- RATING -->
+              <!-- =================================================
+                   RATING
+                   ================================================= -->
 
               <div class="review-field">
 
@@ -711,7 +783,9 @@
 
 
 
-              <!-- REVIEW TEXT -->
+              <!-- =================================================
+                   REVIEW TEXT
+                   ================================================= -->
 
               <div class="review-field">
 
@@ -730,7 +804,9 @@
 
 
 
-              <!-- REVIEW IMAGE -->
+              <!-- =================================================
+                   REVIEW IMAGE
+                   ================================================= -->
 
               <div class="review-field">
 
@@ -756,13 +832,17 @@
 
 
 
-              <!-- SUBMIT -->
+              <!-- =================================================
+                   SUBMIT REVIEW
+                   ================================================= -->
 
               <button
                 type="submit"
                 class="review-submit"
               >
+
                 Submit Review
+
               </button>
 
             </form>
@@ -771,11 +851,15 @@
           {% else %}
 
 
+            <!-- LOGIN MESSAGE -->
+
             <p class="review-login-message">
 
               Please
 
-              <a href="{{ url_for('login', next=request.path) }}">
+              <a
+                href="{{ url_for('login', next=request.path) }}"
+              >
                 log in
               </a>
 
@@ -790,7 +874,9 @@
 
 
 
-        <!-- EXISTING REVIEWS -->
+        <!-- =================================================
+             EXISTING REVIEWS
+             ================================================= -->
 
         <div class="reviews-list">
 
@@ -802,6 +888,8 @@
 
               <article class="review-card">
 
+
+                <!-- REVIEW TOP -->
 
                 <div class="review-top">
 
@@ -825,14 +913,20 @@
 
 
 
+                  <!-- REVIEW STARS -->
+
                   <div class="review-stars">
 
                     {% for star in range(review.rating|int) %}
+
                       ★
+
                     {% endfor %}
 
                     {% for star in range(5 - (review.rating|int)) %}
+
                       ☆
+
                     {% endfor %}
 
                   </div>
@@ -840,6 +934,8 @@
                 </div>
 
 
+
+                <!-- REVIEW TEXT -->
 
                 {% if review.review_text %}
 
@@ -850,6 +946,8 @@
                 {% endif %}
 
 
+
+                <!-- REVIEW IMAGE -->
 
                 {% if review.review_image %}
 
@@ -877,6 +975,8 @@
           {% else %}
 
 
+            <!-- NO REVIEWS -->
+
             <div class="no-reviews">
 
               No reviews yet.
@@ -894,7 +994,9 @@
 
 
 
-      <!-- CONTINUE SHOPPING -->
+      <!-- =================================================
+           CONTINUE SHOPPING
+           ================================================= -->
 
       <div class="continue-shopping">
 
@@ -957,6 +1059,8 @@
 
 
 
+        <!-- CLOSE -->
+
         <button
           type="button"
           class="tryon-close"
@@ -978,7 +1082,9 @@
       <div class="tryon-stage">
 
 
-        <!-- LIVE CAMERA -->
+        <!-- =================================================
+             LIVE CAMERA
+             ================================================= -->
 
         <video
           id="tryOnVideo"
@@ -990,7 +1096,9 @@
 
 
 
-        <!-- CAMERA / IMAGE OVERLAY CANVAS -->
+        <!-- =================================================
+             AR MAKEUP CANVAS
+             ================================================= -->
 
         <canvas
           id="tryOnCanvas"
@@ -999,7 +1107,9 @@
 
 
 
-        <!-- UPLOADED IMAGE -->
+        <!-- =================================================
+             UPLOADED IMAGE
+             ================================================= -->
 
         <img
           id="tryOnImage"
@@ -1009,7 +1119,9 @@
 
 
 
-        <!-- PLACEHOLDER -->
+        <!-- =================================================
+             PLACEHOLDER
+             ================================================= -->
 
         <div
           class="tryon-placeholder"
@@ -1034,7 +1146,9 @@
 
 
 
-        <!-- CAMERA STATUS -->
+        <!-- =================================================
+             CAMERA STATUS
+             ================================================= -->
 
         <div
           class="tryon-status"
@@ -1053,9 +1167,9 @@
 
 
 
-      <!-- =================================================
+      <!-- =====================================================
            ERROR MESSAGE
-           ================================================= -->
+           ===================================================== -->
 
       <div
         class="tryon-error"
@@ -1064,14 +1178,16 @@
 
 
 
-      <!-- =================================================
+      <!-- =====================================================
            TRY-ON CONTROLS
-           ================================================= -->
+           ===================================================== -->
 
       <div class="tryon-controls">
 
 
-        <!-- USE CAMERA -->
+        <!-- =================================================
+             USE CAMERA
+             ================================================= -->
 
         <button
           type="button"
@@ -1089,7 +1205,9 @@
 
 
 
-        <!-- UPLOAD IMAGE -->
+        <!-- =================================================
+             UPLOAD IMAGE
+             ================================================= -->
 
         <button
           type="button"
@@ -1106,6 +1224,8 @@
         </button>
 
 
+        <!-- HIDDEN FILE INPUT -->
+
         <input
           type="file"
           id="tryOnImageInput"
@@ -1115,7 +1235,9 @@
 
 
 
-        <!-- SWITCH CAMERA -->
+        <!-- =================================================
+             SWITCH CAMERA
+             ================================================= -->
 
         <button
           type="button"
@@ -1134,7 +1256,9 @@
 
 
 
-        <!-- STOP CAMERA -->
+        <!-- =================================================
+             STOP CAMERA
+             ================================================= -->
 
         <button
           type="button"
@@ -1153,11 +1277,15 @@
 
 
 
-        <!-- HINT -->
+        <!-- =================================================
+             HINT
+             ================================================= -->
 
         <p class="tryon-hint">
+
           Allow camera permission when your browser asks.
           Your selected product will be applied to your face.
+
         </p>
 
       </div>
@@ -1169,21 +1297,9 @@
 
 
   <!-- =====================================================
-       PRODUCT DATA FOR AR
-       ===================================================== -->
-
-<body
-    data-product-id="{{ product.id }}"
-    data-product-name="{{ product.name|e }}"
-    data-product-type="{{ product.product_type|default('', true)|e }}"
-    data-product-shade="{{ product.shade|default('', true)|e }}"
-    data-product-color="{{ product.color|default('', true)|e }}"
->
-
-
-
-  <!-- =====================================================
        MAIN WEBSITE JAVASCRIPT
+
+       This file handles your existing website functionality.
        ===================================================== -->
 
   <script
@@ -1193,7 +1309,10 @@
 
 
   <!-- =====================================================
-       TRY-ON JAVASCRIPT
+       PRODUCT DETAILS / AR JAVASCRIPT
+
+       IMPORTANT:
+       This is the ONLY file that handles the AR logic.
        ===================================================== -->
 
   <script
