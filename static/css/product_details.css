@@ -30,6 +30,15 @@ body {
 
 
 /* =========================================================
+   PREVENT PAGE SCROLL WHEN TRY-ON IS OPEN
+   ========================================================= */
+
+body.tryon-open {
+  overflow: hidden;
+}
+
+
+/* =========================================================
    NAVBAR COMPATIBILITY
    ========================================================= */
 
@@ -1047,11 +1056,59 @@ body {
 
 
 /* =========================================================
-   CAMERA / IMAGE / CANVAS
+   CAMERA
    ========================================================= */
 
-.tryon-video,
-.tryon-image,
+.tryon-video {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+
+  height: 100%;
+
+  /*
+     IMPORTANT:
+     The video uses cover because it should fill
+     the AR stage.
+  */
+
+  object-fit: cover;
+
+  display: none;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   UPLOADED IMAGE
+   ========================================================= */
+
+.tryon-image {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: contain;
+
+  display: none;
+
+  z-index: 1;
+
+  background: #26191d;
+}
+
+
+/* =========================================================
+   AR CANVAS
+   ========================================================= */
+
 .tryon-canvas {
   position: absolute;
 
@@ -1061,46 +1118,44 @@ body {
 
   height: 100%;
 
-  object-fit: cover;
-
   display: none;
+
+  pointer-events: none;
+
+  z-index: 2;
 }
 
 
-.tryon-video.active,
-.tryon-image.active,
+/* =========================================================
+   ACTIVE MEDIA
+   ========================================================= */
+
+.tryon-video.active {
+  display: block;
+}
+
+
+.tryon-image.active {
+  display: block;
+}
+
+
 .tryon-canvas.active {
   display: block;
 }
 
 
-.tryon-video.mirrored,
-.tryon-canvas.mirrored {
+/* =========================================================
+   MIRROR LIVE SELFIE CAMERA
+   ========================================================= */
+
+.tryon-video.mirrored {
   transform: scaleX(-1);
 }
 
 
-.tryon-image {
-  object-fit: contain;
-
-  background: #26191d;
-}
-
-
-.tryon-canvas {
-  z-index: 2;
-
-  pointer-events: none;
-}
-
-
-.tryon-video {
-  z-index: 1;
-}
-
-
-.tryon-image {
-  z-index: 1;
+.tryon-canvas.mirrored {
+  transform: scaleX(-1);
 }
 
 
@@ -1211,6 +1266,8 @@ body {
 
   height: 8px;
 
+  flex: 0 0 8px;
+
   border-radius: 50%;
 
   background: #ef8ca5;
@@ -1233,6 +1290,46 @@ body {
     opacity: 1;
   }
 
+}
+
+
+/* =========================================================
+   TRY-ON ERROR
+   ========================================================= */
+
+.tryon-error {
+  display: none;
+
+  margin: 0;
+
+  padding: 12px 20px;
+
+  text-align: center;
+
+  background: #fff0f3;
+
+  color: #a74360;
+
+  border-top: 1px solid #efdce1;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
+
+/*
+   IMPORTANT:
+   product_details.js uses:
+
+   errorBox.classList.add("show")
+
+   Therefore both .show and .active are supported.
+*/
+
+.tryon-error.show,
+.tryon-error.active {
+  display: block;
 }
 
 
@@ -1319,6 +1416,11 @@ body {
 }
 
 
+.tryon-control-btn[hidden] {
+  display: none !important;
+}
+
+
 .tryon-control-btn.hidden {
   display: none;
 }
@@ -1339,36 +1441,6 @@ body {
   color: #806d73;
 
   font-size: 12px;
-}
-
-
-/* =========================================================
-   TRY-ON ERROR
-   ========================================================= */
-
-.tryon-error {
-  display: none;
-
-  margin: 0;
-
-  padding: 12px 20px;
-
-  text-align: center;
-
-  background: #fff0f3;
-
-  color: #a74360;
-
-  border-top: 1px solid #efdce1;
-
-  font-size: 13px;
-
-  line-height: 1.6;
-}
-
-
-.tryon-error.active {
-  display: block;
 }
 
 

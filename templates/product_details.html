@@ -47,16 +47,16 @@
 
 <!-- =========================================================
      BODY
-     
-     PRODUCT DATA IS PASSED TO THE EXTERNAL JAVASCRIPT
-     USING DATA ATTRIBUTES.
 
-     THERE IS NO INLINE JAVASCRIPT IN THIS HTML FILE.
+     PRODUCT INFORMATION IS PASSED TO THE EXTERNAL
+     product_details.js FILE THROUGH DATA ATTRIBUTES.
+
+     NO INLINE JAVASCRIPT IS USED.
      ========================================================= -->
 
 <body
   data-product-id="{{ product.id }}"
-  data-product-name="{{ product.name|e }}"
+  data-product-name="{{ product.name|default('', true)|e }}"
   data-product-type="{{ product.product_type|default('', true)|e }}"
   data-product-shade="{{ product.shade|default('', true)|e }}"
   data-product-color="{{ product.color|default('', true)|e }}"
@@ -83,7 +83,6 @@
       GLAMORA <span>AR</span>
 
     </a>
-
 
 
     <!-- =================================================
@@ -115,7 +114,6 @@
     </nav>
 
 
-
     <!-- =================================================
          HEADER ACTIONS
          ================================================= -->
@@ -136,7 +134,6 @@
       </button>
 
 
-
       <!-- WISHLIST -->
 
       <button
@@ -148,7 +145,6 @@
       >
         ♡
       </button>
-
 
 
       <!-- SHOPPING BAG -->
@@ -169,11 +165,10 @@
           class="cart-count"
           id="cartCount"
         >
-          {{ bag_count or 0 }}
+          {{ bag_count|default(0) }}
         </span>
 
       </a>
-
 
 
       <!-- =================================================
@@ -221,7 +216,6 @@
       {% endif %}
 
 
-
       <!-- =================================================
            MOBILE MENU
            ================================================= -->
@@ -240,7 +234,6 @@
     </div>
 
   </header>
-
 
 
   <!-- =====================================================
@@ -266,7 +259,6 @@
     {% endif %}
 
   {% endwith %}
-
 
 
   <!-- =====================================================
@@ -296,7 +288,6 @@
         </a>
 
 
-
         <!-- =================================================
              MAIN PRODUCT IMAGE
              ================================================= -->
@@ -314,20 +305,21 @@
               <img
                 src="{{ product.image_url }}"
                 alt="{{ product.name }}"
-              />
+              >
 
             </a>
 
           {% else %}
 
             <div class="product-image-placeholder">
+
               {{ product.product_type or "Beauty Product" }}
+
             </div>
 
           {% endif %}
 
         </div>
-
 
 
         <!-- =================================================
@@ -351,7 +343,7 @@
                 <img
                   src="{{ image.image_url }}"
                   alt="{{ product.name }} image {{ loop.index }}"
-                />
+                >
 
               </a>
 
@@ -373,7 +365,6 @@
       </section>
 
 
-
       <!-- =================================================
            RIGHT SIDE — PRODUCT INFORMATION
            ================================================= -->
@@ -384,25 +375,28 @@
         <!-- PRODUCT TYPE -->
 
         <div class="details-category">
-          {{ product.product_type or "Beauty Product" }}
-        </div>
 
+          {{ product.product_type or "Beauty Product" }}
+
+        </div>
 
 
         <!-- PRODUCT NAME -->
 
         <h1 class="details-title">
-          {{ product.name }}
-        </h1>
 
+          {{ product.name }}
+
+        </h1>
 
 
         <!-- PRICE -->
 
         <div class="details-price">
-          ${{ "%.2f"|format(product.price) }}
-        </div>
 
+          ${{ "%.2f"|format(product.price) }}
+
+        </div>
 
 
         <!-- DESCRIPTION -->
@@ -410,11 +404,12 @@
         {% if product.description %}
 
           <p class="details-description">
+
             {{ product.description }}
+
           </p>
 
         {% endif %}
-
 
 
         <!-- =================================================
@@ -443,7 +438,6 @@
           {% endif %}
 
 
-
           <!-- SHADE -->
 
           {% if product.shade %}
@@ -461,7 +455,6 @@
             </div>
 
           {% endif %}
-
 
 
           <!-- COLOR -->
@@ -483,7 +476,6 @@
           {% endif %}
 
 
-
           <!-- AVAILABILITY -->
 
           <div class="meta-row">
@@ -492,17 +484,20 @@
               Availability
             </span>
 
-
             {% if product.is_available and product.stock > 0 %}
 
               <strong class="details-stock">
+
                 {{ product.stock }} available
+
               </strong>
 
             {% else %}
 
               <strong class="details-stock out">
+
                 Out of Stock
+
               </strong>
 
             {% endif %}
@@ -510,7 +505,6 @@
           </div>
 
         </div>
-
 
 
         <!-- =================================================
@@ -542,7 +536,6 @@
             </button>
 
 
-
             <!-- =================================================
                  ADD TO CART
                  ================================================= -->
@@ -570,35 +563,7 @@
 
               </form>
 
-            {% else %}
-
-              <!--
-              LOGIN TO ADD TO CART
-
-              Kept disabled/hidden exactly as in your current
-              product details page.
-              -->
-
-              <!--
-
-              <button
-                type="button"
-                class="product-btn product-btn-primary"
-                id="loginToCartBtn"
-              >
-
-                Add to Cart
-
-                <span>
-                  +
-                </span>
-
-              </button>
-
-              -->
-
             {% endif %}
-
 
 
             <!-- =================================================
@@ -645,10 +610,14 @@
           {% else %}
 
 
-            <!-- OUT OF STOCK -->
+            <!-- =================================================
+                 OUT OF STOCK
+                 ================================================= -->
 
             <span class="product-btn product-btn-disabled">
+
               Out of Stock
+
             </span>
 
 
@@ -659,7 +628,6 @@
       </section>
 
     </div>
-
 
 
     <!-- =====================================================
@@ -676,11 +644,15 @@
       <div class="reviews-heading">
 
         <span class="reviews-eyebrow">
+
           Customer Feedback
+
         </span>
 
         <h2>
+
           Reviews
+
         </h2>
 
 
@@ -699,13 +671,14 @@
         {% else %}
 
           <div class="reviews-summary">
+
             Be the first to review this product.
+
           </div>
 
         {% endif %}
 
       </div>
-
 
 
       <!-- =================================================
@@ -722,12 +695,13 @@
         <div class="review-form-card">
 
           <h3>
+
             Write a Review
+
           </h3>
 
 
           {% if session.get("user_id") %}
-
 
             <form
               action="{{ url_for('add_product_review', product_id=product.id) }}"
@@ -743,9 +717,10 @@
               <div class="review-field">
 
                 <label for="rating">
-                  Rating
-                </label>
 
+                  Rating
+
+                </label>
 
                 <select
                   id="rating"
@@ -754,33 +729,44 @@
                 >
 
                   <option value="">
+
                     Select rating
+
                   </option>
 
                   <option value="5">
+
                     ★★★★★ — Excellent
+
                   </option>
 
                   <option value="4">
+
                     ★★★★☆ — Very Good
+
                   </option>
 
                   <option value="3">
+
                     ★★★☆☆ — Good
+
                   </option>
 
                   <option value="2">
+
                     ★★☆☆☆ — Fair
+
                   </option>
 
                   <option value="1">
+
                     ★☆☆☆☆ — Poor
+
                   </option>
 
                 </select>
 
               </div>
-
 
 
               <!-- =================================================
@@ -790,9 +776,10 @@
               <div class="review-field">
 
                 <label for="review_text">
-                  Your Review
-                </label>
 
+                  Your Review
+
+                </label>
 
                 <textarea
                   id="review_text"
@@ -801,7 +788,6 @@
                 ></textarea>
 
               </div>
-
 
 
               <!-- =================================================
@@ -815,21 +801,21 @@
                   Review Image
 
                   <span class="review-optional">
+
                     (Optional)
+
                   </span>
 
                 </label>
-
 
                 <input
                   type="file"
                   id="review_image"
                   name="review_image"
                   accept="image/jpeg,image/png,image/webp,image/gif"
-                />
+                >
 
               </div>
-
 
 
               <!-- =================================================
@@ -851,7 +837,9 @@
           {% else %}
 
 
-            <!-- LOGIN MESSAGE -->
+            <!-- =================================================
+                 LOGIN MESSAGE
+                 ================================================= -->
 
             <p class="review-login-message">
 
@@ -860,18 +848,18 @@
               <a
                 href="{{ url_for('login', next=request.path) }}"
               >
+
                 log in
+
               </a>
 
               to write a review.
 
             </p>
 
-
           {% endif %}
 
         </div>
-
 
 
         <!-- =================================================
@@ -882,7 +870,6 @@
 
 
           {% if reviews %}
-
 
             {% for review in reviews %}
 
@@ -897,20 +884,23 @@
                   <div>
 
                     <div class="review-customer">
+
                       {{ review.customer_name }}
+
                     </div>
 
 
                     {% if review.created_at %}
 
                       <div class="review-date">
+
                         {{ review.created_at }}
+
                       </div>
 
                     {% endif %}
 
                   </div>
-
 
 
                   <!-- REVIEW STARS -->
@@ -934,17 +924,17 @@
                 </div>
 
 
-
                 <!-- REVIEW TEXT -->
 
                 {% if review.review_text %}
 
                   <p class="review-text">
+
                     {{ review.review_text }}
+
                   </p>
 
                 {% endif %}
-
 
 
                 <!-- REVIEW IMAGE -->
@@ -961,7 +951,7 @@
                       src="{{ review.review_image }}"
                       alt="Customer review image"
                       class="review-image"
-                    />
+                    >
 
                   </a>
 
@@ -975,7 +965,9 @@
           {% else %}
 
 
-            <!-- NO REVIEWS -->
+            <!-- =================================================
+                 NO REVIEWS
+                 ================================================= -->
 
             <div class="no-reviews">
 
@@ -985,13 +977,11 @@
 
             </div>
 
-
           {% endif %}
 
         </div>
 
       </div>
-
 
 
       <!-- =================================================
@@ -1001,7 +991,9 @@
       <div class="continue-shopping">
 
         <a href="{{ url_for('beauty') }}">
+
           ← Continue Shopping
+
         </a>
 
       </div>
@@ -1009,7 +1001,6 @@
     </section>
 
   </main>
-
 
 
   <!-- =====================================================
@@ -1041,22 +1032,27 @@
         <div class="tryon-modal-heading">
 
           <span class="tryon-eyebrow">
+
             Glamora AR
+
           </span>
 
           <h2
             class="tryon-modal-title"
             id="tryOnModalTitle"
           >
+
             Virtual Try-On
+
           </h2>
 
           <div class="tryon-product-name">
+
             Trying: {{ product.name }}
+
           </div>
 
         </div>
-
 
 
         <!-- CLOSE -->
@@ -1068,11 +1064,12 @@
           aria-label="Close Try-On"
           title="Close"
         >
+
           ×
+
         </button>
 
       </div>
-
 
 
       <!-- =================================================
@@ -1084,6 +1081,9 @@
 
         <!-- =================================================
              LIVE CAMERA
+
+             The JavaScript uses this camera as the source
+             and draws the camera + AR makeup onto the canvas.
              ================================================= -->
 
         <video
@@ -1092,19 +1092,24 @@
           autoplay
           playsinline
           muted
+          aria-label="Glamora AR camera preview"
         ></video>
 
 
-
         <!-- =================================================
-             AR MAKEUP CANVAS
+             AR CANVAS
+
+             The external JavaScript draws:
+             1. Camera image
+             2. Face landmarks
+             3. Product-specific makeup
              ================================================= -->
 
         <canvas
           id="tryOnCanvas"
           class="tryon-canvas"
+          aria-label="Glamora AR virtual try-on"
         ></canvas>
-
 
 
         <!-- =================================================
@@ -1118,7 +1123,6 @@
         >
 
 
-
         <!-- =================================================
              PLACEHOLDER
              ================================================= -->
@@ -1129,25 +1133,30 @@
         >
 
           <div class="tryon-placeholder-icon">
+
             ✨
+
           </div>
 
           <h3>
+
             See Yourself With Glamora AR
+
           </h3>
 
           <p>
+
             Use your camera for a live virtual
-            try-on or upload a photo to try the
-            selected product.
+            try-on or upload a photo to try
+            the selected product.
+
           </p>
 
         </div>
 
 
-
         <!-- =================================================
-             CAMERA STATUS
+             CAMERA / AR STATUS
              ================================================= -->
 
         <div
@@ -1158,13 +1167,14 @@
           <span class="tryon-status-dot"></span>
 
           <span id="tryOnStatusText">
+
             Starting AR...
+
           </span>
 
         </div>
 
       </div>
-
 
 
       <!-- =====================================================
@@ -1174,13 +1184,14 @@
       <div
         class="tryon-error"
         id="tryOnError"
+        role="alert"
+        aria-live="polite"
       ></div>
-
 
 
       <!-- =====================================================
            TRY-ON CONTROLS
-           ===================================================== -->
+           ================================================= -->
 
       <div class="tryon-controls">
 
@@ -1198,11 +1209,12 @@
           📷
 
           <span>
+
             Use Camera
+
           </span>
 
         </button>
-
 
 
         <!-- =================================================
@@ -1218,13 +1230,17 @@
           🖼️
 
           <span>
+
             Upload Image
+
           </span>
 
         </button>
 
 
-        <!-- HIDDEN FILE INPUT -->
+        <!-- =================================================
+             HIDDEN FILE INPUT
+             ================================================= -->
 
         <input
           type="file"
@@ -1232,7 +1248,6 @@
           class="tryon-upload-input"
           accept="image/jpeg,image/png,image/webp,image/gif"
         >
-
 
 
         <!-- =================================================
@@ -1249,11 +1264,12 @@
           🔄
 
           <span>
+
             Switch Camera
+
           </span>
 
         </button>
-
 
 
         <!-- =================================================
@@ -1270,11 +1286,12 @@
           ⏹
 
           <span>
+
             Stop Camera
+
           </span>
 
         </button>
-
 
 
         <!-- =================================================
@@ -1295,11 +1312,10 @@
   </div>
 
 
-
   <!-- =====================================================
        MAIN WEBSITE JAVASCRIPT
 
-       This file handles your existing website functionality.
+       Existing website functionality.
        ===================================================== -->
 
   <script
@@ -1307,12 +1323,13 @@
   ></script>
 
 
-
   <!-- =====================================================
-       PRODUCT DETAILS / AR JAVASCRIPT
+       PRODUCT DETAILS + AR JAVASCRIPT
 
        IMPORTANT:
-       This is the ONLY file that handles the AR logic.
+       All Try-On logic is inside this external file.
+
+       There is NO inline JavaScript in this HTML file.
        ===================================================== -->
 
   <script
