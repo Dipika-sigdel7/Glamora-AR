@@ -1172,37 +1172,13 @@
        PRODUCT DATA FOR AR
        ===================================================== -->
 
-  <script>
-
-    window.GLAMORA_TRYON_PRODUCT = {
-
-      id: {{ product.id|tojson }},
-
-      name: {{ product.name|tojson }},
-
-      type: {{
-        (product.product_type_key
-        if product.product_type_key is defined
-        else product.product_type
-        if product.product_type is defined
-        else "")|tojson
-      }},
-
-      shade: {{
-        (product.shade
-        if product.shade is defined
-        else "")|tojson
-      }},
-
-      color: {{
-        (product.color
-        if product.color is defined
-        else "")|tojson
-      }}
-
-    };
-
-  </script>
+<body
+    data-product-id="{{ product.id }}"
+    data-product-name="{{ product.name|e }}"
+    data-product-type="{{ product.product_type|default('', true)|e }}"
+    data-product-shade="{{ product.shade|default('', true)|e }}"
+    data-product-color="{{ product.color|default('', true)|e }}"
+>
 
 
 
