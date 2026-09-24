@@ -3,14 +3,17 @@
    PRODUCT DETAILS + VIRTUAL TRY-ON
 
    Features:
-   - Camera access
-   - Face landmark detection
-   - Lipstick AR
-   - Eyeshadow AR
-   - Eyeliner AR
-   - Blush AR
-   - Product-specific color
+   - MediaPipe Face Landmarker
+   - Live camera face tracking
+   - Product-specific makeup
+   - Lipstick on lips
+   - Eyeshadow on eyes
+   - Eyeliner on eyelids
+   - Blush on cheeks
+   - Mascara on eyelashes
+   - Highlighter
    - Uploaded image face detection
+   - Front / rear camera switching
    ========================================================= */
 
 
@@ -39,128 +42,188 @@ const MODEL_URL =
    DOM ELEMENTS
    ========================================================= */
 
-const tryOnBtn = document.getElementById("tryOnBtn");
-const tryOnModal = document.getElementById("tryOnModal");
-const tryOnClose = document.getElementById("tryOnClose");
+const tryOnBtn =
+    document.getElementById("tryOnBtn");
 
-const video = document.getElementById("tryOnVideo");
-const canvas = document.getElementById("tryOnCanvas");
-const image = document.getElementById("tryOnImage");
+const tryOnModal =
+    document.getElementById("tryOnModal");
 
-const placeholder = document.getElementById("tryOnPlaceholder");
+const tryOnClose =
+    document.getElementById("tryOnClose");
 
-const status = document.getElementById("tryOnStatus");
-const statusText = document.getElementById("tryOnStatusText");
+const video =
+    document.getElementById("tryOnVideo");
 
-const errorBox = document.getElementById("tryOnError");
+const canvas =
+    document.getElementById("tryOnCanvas");
 
-const startCameraBtn = document.getElementById("startCameraBtn");
-const uploadImageBtn = document.getElementById("uploadImageBtn");
-const imageInput = document.getElementById("tryOnImageInput");
+const image =
+    document.getElementById("tryOnImage");
 
-const switchCameraBtn = document.getElementById("switchCameraBtn");
-const stopCameraBtn = document.getElementById("stopCameraBtn");
+const placeholder =
+    document.getElementById("tryOnPlaceholder");
 
-const ctx = canvas ? canvas.getContext("2d") : null;
+const status =
+    document.getElementById("tryOnStatus");
+
+const statusText =
+    document.getElementById("tryOnStatusText");
+
+const errorBox =
+    document.getElementById("tryOnError");
+
+const startCameraBtn =
+    document.getElementById("startCameraBtn");
+
+const uploadImageBtn =
+    document.getElementById("uploadImageBtn");
+
+const imageInput =
+    document.getElementById("tryOnImageInput");
+
+const switchCameraBtn =
+    document.getElementById("switchCameraBtn");
+
+const stopCameraBtn =
+    document.getElementById("stopCameraBtn");
+
+const ctx =
+    canvas
+        ? canvas.getContext("2d", {
+            alpha: false,
+            desynchronized: true
+        })
+        : null;
+
+
+/* =========================================================
+   CHECK REQUIRED ELEMENTS
+   ========================================================= */
+
+if (!tryOnBtn) {
+    console.warn(
+        "Glamora AR: Try On button was not found."
+    );
+}
+
+if (!tryOnModal) {
+    console.warn(
+        "Glamora AR: Try On modal was not found."
+    );
+}
+
+if (!canvas) {
+    console.error(
+        "Glamora AR: Canvas was not found."
+    );
+}
 
 
 /* =========================================================
    PRODUCT DATA
-
-   These values come from the data-* attributes
-   on the HTML body element.
    ========================================================= */
 
 const product = {
 
-    id: document.body.dataset.productId || "",
+    id:
+        document.body.dataset.productId || "",
 
-    name: document.body.dataset.productName || "",
+    name:
+        document.body.dataset.productName || "",
 
-    type: document.body.dataset.productType || "",
+    type:
+        document.body.dataset.productType || "",
 
-    shade: document.body.dataset.productShade || "",
+    shade:
+        document.body.dataset.productShade || "",
 
-    color: document.body.dataset.productColor || ""
+    color:
+        document.body.dataset.productColor || ""
 
 };
 
 
 /* =========================================================
-   STATE
-   ========================================================= */
-
-let faceLandmarker = null;
-
-let mediaStream = null;
-
-let cameraFacingMode = "user";
-
-let animationFrameId = null;
-
-let lastVideoTime = -1;
-
-let faceTrackingReady = false;
-
-let cameraRunning = false;
-
-
-/* =========================================================
-   PRODUCT TYPE NORMALIZATION
+   PRODUCT TYPE
    ========================================================= */
 
 function normalizeProductType(value) {
 
-    const type = String(value || "")
-        .trim()
-        .toLowerCase();
+    const type =
+        String(value || "")
+            .trim()
+            .toLowerCase();
 
-    if (type.includes("lip")) {
+
+    if (
+        type.includes("lipstick") ||
+        type.includes("lip")
+    ) {
         return "lipstick";
     }
 
+
     if (
-        type.includes("eye") &&
-        type.includes("shadow")
+        type.includes("eyeshadow") ||
+        (
+            type.includes("eye") &&
+            type.includes("shadow")
+        )
     ) {
         return "eyeshadow";
     }
 
-    if (type.includes("blush")) {
-        return "blush";
-    }
 
     if (
-        type.includes("liner") ||
-        type.includes("eyeliner")
+        type.includes("eyeliner") ||
+        type.includes("liner")
     ) {
         return "eyeliner";
     }
 
-    if (type.includes("mascara")) {
+
+    if (
+        type.includes("blush")
+    ) {
+        return "blush";
+    }
+
+
+    if (
+        type.includes("mascara")
+    ) {
         return "mascara";
     }
 
-    if (type.includes("foundation")) {
+
+    if (
+        type.includes("foundation")
+    ) {
         return "foundation";
     }
 
+
     if (
-        type.includes("highlight") ||
-        type.includes("highlighter")
+        type.includes("highlighter") ||
+        type.includes("highlight")
     ) {
         return "highlighter";
     }
 
+
     return type || "lipstick";
+
 }
 
 
-const productType = normalizeProductType(product.type);
+const productType =
+    normalizeProductType(
+        product.type
+    );
 
 
 /* =========================================================
-   COLOR HELPERS
+   PRODUCT COLOR
    ========================================================= */
 
 function normalizeColor(value) {
@@ -169,15 +232,10 @@ function normalizeColor(value) {
         return null;
     }
 
-    const color = String(value).trim();
 
-    /*
-       Accept:
-       #ff0000
-       #fff
-       rgb(...)
-       rgba(...)
-    */
+    const color =
+        String(value).trim();
+
 
     if (
         /^#[0-9a-f]{3}$/i.test(color) ||
@@ -185,34 +243,41 @@ function normalizeColor(value) {
         /^rgb\(/i.test(color) ||
         /^rgba\(/i.test(color)
     ) {
+
         return color;
+
     }
 
+
     return null;
+
 }
 
 
-/* =========================================================
-   DETERMINE PRODUCT COLOR
-   ========================================================= */
-
 function getProductColor() {
 
-    const directColor = normalizeColor(product.color);
+    const directColor =
+        normalizeColor(
+            product.color
+        );
+
 
     if (directColor) {
         return directColor;
     }
 
 
-    const text = (
-        `${product.color} ${product.shade} ${product.name}`
-    ).toLowerCase();
+    const text =
+        (
+            `${product.color} ${product.shade} ${product.name}`
+        )
+            .toLowerCase();
 
 
     if (text.includes("black")) {
         return "#171114";
     }
+
 
     if (
         text.includes("burgundy") ||
@@ -221,6 +286,7 @@ function getProductColor() {
         return "#741f3b";
     }
 
+
     if (
         text.includes("wine") ||
         text.includes("maroon")
@@ -228,17 +294,21 @@ function getProductColor() {
         return "#72243d";
     }
 
+
     if (text.includes("berry")) {
         return "#8f294b";
     }
+
 
     if (text.includes("plum")) {
         return "#6b294f";
     }
 
+
     if (text.includes("mauve")) {
         return "#a84f6e";
     }
+
 
     if (
         text.includes("coral") ||
@@ -247,9 +317,11 @@ function getProductColor() {
         return "#e67b66";
     }
 
+
     if (text.includes("orange")) {
         return "#e46d39";
     }
+
 
     if (
         text.includes("brown") ||
@@ -258,12 +330,14 @@ function getProductColor() {
         return "#7a4b3a";
     }
 
+
     if (
         text.includes("nude") ||
         text.includes("beige")
     ) {
         return "#b96f68";
     }
+
 
     if (
         text.includes("rose") ||
@@ -272,19 +346,54 @@ function getProductColor() {
         return "#d96b8a";
     }
 
+
     if (text.includes("red")) {
         return "#c6284f";
     }
 
-    /*
-       Default Glamora AR shade
-    */
 
     return "#c85f7a";
+
 }
 
 
-const makeupColor = getProductColor();
+const makeupColor =
+    getProductColor();
+
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let faceLandmarker =
+    null;
+
+let visionFileset =
+    null;
+
+let mediaStream =
+    null;
+
+let cameraFacingMode =
+    "user";
+
+let animationFrameId =
+    null;
+
+let lastVideoTime =
+    -1;
+
+let faceTrackingReady =
+    false;
+
+let faceTrackingLoading =
+    false;
+
+let cameraRunning =
+    false;
+
+let imageMode =
+    false;
 
 
 /* =========================================================
@@ -294,12 +403,21 @@ const makeupColor = getProductColor();
 function setStatus(message) {
 
     if (statusText) {
-        statusText.textContent = message;
+
+        statusText.textContent =
+            message;
+
     }
 
+
     if (status) {
-        status.classList.add("active");
+
+        status.classList.add(
+            "active"
+        );
+
     }
+
 }
 
 
@@ -309,59 +427,92 @@ function setStatus(message) {
 
 function showError(message) {
 
-    console.error("Glamora AR:", message);
+    console.error(
+        "Glamora AR:",
+        message
+    );
+
 
     if (errorBox) {
-        errorBox.textContent = message;
-        errorBox.classList.add("show");
+
+        errorBox.textContent =
+            message;
+
+        errorBox.classList.add(
+            "show"
+        );
+
+        errorBox.classList.add(
+            "active"
+        );
+
     }
 
-    setStatus(message);
+
+    setStatus(
+        message
+    );
+
 }
 
 
 function clearError() {
 
-    if (errorBox) {
-        errorBox.textContent = "";
-        errorBox.classList.remove("show");
+    if (!errorBox) {
+        return;
     }
+
+
+    errorBox.textContent =
+        "";
+
+    errorBox.classList.remove(
+        "show"
+    );
+
+    errorBox.classList.remove(
+        "active"
+    );
 
 }
 
 
 /* =========================================================
-   CANVAS SIZE
+   CANVAS
    ========================================================= */
 
-function resizeCanvas(width, height) {
+function resizeCanvas(
+    width,
+    height
+) {
 
     if (!canvas) {
         return;
     }
+
 
     if (
         canvas.width !== width ||
         canvas.height !== height
     ) {
 
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width =
+            width;
+
+        canvas.height =
+            height;
 
     }
 
 }
 
 
-/* =========================================================
-   CLEAR CANVAS
-   ========================================================= */
-
 function clearCanvas() {
 
     if (!ctx || !canvas) {
         return;
     }
+
 
     ctx.clearRect(
         0,
@@ -374,47 +525,89 @@ function clearCanvas() {
 
 
 /* =========================================================
-   CONVERT LANDMARK TO CANVAS COORDINATES
+   LANDMARK POINT
    ========================================================= */
 
-function point(landmark) {
+function point(
+    landmarks,
+    index
+) {
+
+    if (
+        !landmarks ||
+        !landmarks[index]
+    ) {
+
+        return {
+            x: 0,
+            y: 0
+        };
+
+    }
+
 
     return {
-        x: landmark.x * canvas.width,
-        y: landmark.y * canvas.height
+
+        x:
+            landmarks[index].x *
+            canvas.width,
+
+        y:
+            landmarks[index].y *
+            canvas.height
+
     };
 
 }
 
 
 /* =========================================================
-   DRAW POLYGON
+   POLYGON
    ========================================================= */
 
-function drawPolygon(
+function createPolygonPath(
     landmarks,
-    indices,
-    fillStyle
+    indices
 ) {
 
-    if (!landmarks || !indices.length) {
-        return;
+    if (
+        !landmarks ||
+        !indices ||
+        !indices.length
+    ) {
+
+        return false;
+
     }
+
+
+    const first =
+        point(
+            landmarks,
+            indices[0]
+        );
+
 
     ctx.beginPath();
 
-    const first = point(
-        landmarks[indices[0]]
+    ctx.moveTo(
+        first.x,
+        first.y
     );
 
-    ctx.moveTo(first.x, first.y);
 
+    for (
+        let i = 1;
+        i < indices.length;
+        i++
+    ) {
 
-    for (let i = 1; i < indices.length; i++) {
+        const p =
+            point(
+                landmarks,
+                indices[i]
+            );
 
-        const p = point(
-            landmarks[indices[i]]
-        );
 
         ctx.lineTo(
             p.x,
@@ -423,190 +616,35 @@ function drawPolygon(
 
     }
 
+
     ctx.closePath();
 
-    ctx.fillStyle = fillStyle;
 
-    ctx.fill();
+    return true;
 
 }
 
 
-/* =========================================================
-   LIP LANDMARKS
-   ========================================================= */
+function drawPolygon(
+    landmarks,
+    indices,
+    fillStyle
+) {
 
-const OUTER_LIPS = [
+    if (
+        !createPolygonPath(
+            landmarks,
+            indices
+        )
+    ) {
 
-    61,
-    146,
-    91,
-    181,
-    84,
-    17,
-    314,
-    405,
-    321,
-    375,
-    291,
-    409,
-    270,
-    269,
-    267,
-    0,
-    37,
-    39,
-    40,
-    185
-
-];
-
-
-const INNER_LIPS = [
-
-    78,
-    95,
-    88,
-    178,
-    87,
-    14,
-    317,
-    402,
-    318,
-    324,
-    308,
-    415,
-    310,
-    311,
-    312,
-    13,
-    82,
-    81,
-    80,
-    191
-
-];
-
-
-/* =========================================================
-   DRAW LIPSTICK
-   ========================================================= */
-
-function drawLipstick(landmarks) {
-
-    if (!landmarks) {
         return;
+
     }
 
 
-    /*
-       Slight transparency gives the lipstick
-       a more realistic appearance.
-    */
-
-    ctx.save();
-
-
-    /*
-       Outer lip
-    */
-
-    drawPolygon(
-        landmarks,
-        OUTER_LIPS,
-        hexToRgba(makeupColor, 0.72)
-    );
-
-
-    /*
-       Remove the inner mouth area.
-    */
-
-    ctx.globalCompositeOperation =
-        "destination-out";
-
-
-    drawPolygon(
-        landmarks,
-        INNER_LIPS,
-        "rgba(0,0,0,1)"
-    );
-
-
-    ctx.globalCompositeOperation =
-        "source-over";
-
-
-    /*
-       Add subtle shine.
-    */
-
-    drawLipHighlight(
-        landmarks
-    );
-
-
-    ctx.restore();
-
-}
-
-
-/* =========================================================
-   LIP HIGHLIGHT
-   ========================================================= */
-
-function drawLipHighlight(landmarks) {
-
-    const upperCenter =
-        point(landmarks[13]);
-
-    const lowerCenter =
-        point(landmarks[14]);
-
-
-    const width =
-        Math.abs(
-            point(landmarks[61]).x -
-            point(landmarks[291]).x
-        );
-
-
-    const gradient =
-        ctx.createRadialGradient(
-            lowerCenter.x,
-            lowerCenter.y,
-            1,
-            lowerCenter.x,
-            lowerCenter.y,
-            width * 0.45
-        );
-
-
-    gradient.addColorStop(
-        0,
-        "rgba(255,255,255,0.16)"
-    );
-
-    gradient.addColorStop(
-        1,
-        "rgba(255,255,255,0)"
-    );
-
-
-    ctx.fillStyle = gradient;
-
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        lowerCenter.x,
-        lowerCenter.y,
-        width * 0.30,
-        width * 0.10,
-        0,
-        0,
-        Math.PI * 2
-    );
+    ctx.fillStyle =
+        fillStyle;
 
     ctx.fill();
 
@@ -614,27 +652,32 @@ function drawLipHighlight(landmarks) {
 
 
 /* =========================================================
-   HEX TO RGBA
+   COLOR → RGBA
    ========================================================= */
 
-function hexToRgba(hex, alpha) {
+function hexToRgba(
+    color,
+    alpha
+) {
 
-    if (!hex) {
+    if (!color) {
+
         return `rgba(200,95,122,${alpha})`;
+
     }
 
 
     if (
-        !hex.startsWith("#")
+        !color.startsWith("#")
     ) {
 
-        return hex;
+        return color;
 
     }
 
 
     let value =
-        hex.substring(1);
+        color.substring(1);
 
 
     if (value.length === 3) {
@@ -647,17 +690,26 @@ function hexToRgba(hex, alpha) {
     }
 
 
+    if (value.length !== 6) {
+
+        return `rgba(200,95,122,${alpha})`;
+
+    }
+
+
     const r =
         parseInt(
             value.substring(0, 2),
             16
         );
 
+
     const g =
         parseInt(
             value.substring(2, 4),
             16
         );
+
 
     const b =
         parseInt(
@@ -672,38 +724,259 @@ function hexToRgba(hex, alpha) {
 
 
 /* =========================================================
+   LIP LANDMARKS
+
+   MediaPipe Face Mesh / Face Landmarker
+   ========================================================= */
+
+const OUTER_LIPS = [
+
+    61,
+    185,
+    40,
+    39,
+    37,
+    0,
+    267,
+    269,
+    270,
+    409,
+    291,
+    375,
+    321,
+    405,
+    314,
+    17,
+    84,
+    181,
+    91,
+    146
+
+];
+
+
+const INNER_LIPS = [
+
+    78,
+    191,
+    80,
+    81,
+    82,
+    13,
+    312,
+    311,
+    310,
+    415,
+    308,
+    324,
+    318,
+    402,
+    317,
+    14,
+    87,
+    178,
+    88,
+    95
+
+];
+
+
+/* =========================================================
+   LIPSTICK
+   ========================================================= */
+
+function drawLipstick(
+    landmarks
+) {
+
+    if (!landmarks) {
+        return;
+    }
+
+
+    const left =
+        point(
+            landmarks,
+            61
+        );
+
+    const right =
+        point(
+            landmarks,
+            291
+        );
+
+
+    const lipWidth =
+        Math.abs(
+            right.x - left.x
+        );
+
+
+    if (lipWidth < 5) {
+        return;
+    }
+
+
+    ctx.save();
+
+
+    /*
+       Main lipstick.
+    */
+
+    createPolygonPath(
+        landmarks,
+        OUTER_LIPS
+    );
+
+
+    ctx.fillStyle =
+        hexToRgba(
+            makeupColor,
+            0.68
+        );
+
+
+    ctx.fill();
+
+
+    /*
+       Remove inner mouth.
+    */
+
+    ctx.globalCompositeOperation =
+        "destination-out";
+
+
+    createPolygonPath(
+        landmarks,
+        INNER_LIPS
+    );
+
+
+    ctx.fillStyle =
+        "rgba(0,0,0,1)";
+
+    ctx.fill();
+
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+
+    /*
+       Slight second layer makes
+       the product easier to see.
+    */
+
+    createPolygonPath(
+        landmarks,
+        OUTER_LIPS
+    );
+
+
+    ctx.strokeStyle =
+        hexToRgba(
+            makeupColor,
+            0.45
+        );
+
+    ctx.lineWidth =
+        Math.max(
+            1,
+            lipWidth * 0.012
+        );
+
+    ctx.stroke();
+
+
+    /*
+       Lip shine.
+    */
+
+    const center =
+        point(
+            landmarks,
+            14
+        );
+
+
+    const gradient =
+        ctx.createRadialGradient(
+            center.x,
+            center.y,
+            0,
+            center.x,
+            center.y,
+            lipWidth * 0.35
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "rgba(255,255,255,0.18)"
+    );
+
+
+    gradient.addColorStop(
+        1,
+        "rgba(255,255,255,0)"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        center.x,
+        center.y,
+        lipWidth * 0.25,
+        lipWidth * 0.075,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
    EYE LANDMARKS
    ========================================================= */
 
 const LEFT_EYE = [
+
     33,
-    7,
-    163,
-    144,
-    145,
-    153,
-    154,
-    155,
-    133,
-    173,
-    157,
-    158,
-    159,
-    160,
+    246,
     161,
-    246
+    160,
+    159,
+    158,
+    157,
+    173,
+    133,
+    155,
+    154,
+    153,
+    145,
+    144,
+    163,
+    7
+
 ];
 
 
 const RIGHT_EYE = [
-    263,
-    249,
-    390,
-    373,
-    374,
-    380,
-    381,
-    382,
+
     362,
     398,
     384,
@@ -711,7 +984,16 @@ const RIGHT_EYE = [
     386,
     387,
     388,
-    466
+    466,
+    263,
+    249,
+    390,
+    373,
+    374,
+    380,
+    381,
+    382
+
 ];
 
 
@@ -726,27 +1008,175 @@ function drawEyeshadow(
     ctx.save();
 
 
-    drawPolygon(
+    /*
+       Soft shadow above left eye.
+    */
+
+    drawSoftEyeShadow(
         landmarks,
-        LEFT_EYE,
-        hexToRgba(
-            makeupColor,
-            0.30
-        )
+        LEFT_EYE
     );
 
 
-    drawPolygon(
+    /*
+       Soft shadow above right eye.
+    */
+
+    drawSoftEyeShadow(
         landmarks,
-        RIGHT_EYE,
-        hexToRgba(
-            makeupColor,
-            0.30
-        )
+        RIGHT_EYE
     );
 
 
     ctx.restore();
+
+}
+
+
+function drawSoftEyeShadow(
+    landmarks,
+    indices
+) {
+
+    const points =
+        indices.map(
+            index =>
+                point(
+                    landmarks,
+                    index
+                )
+        );
+
+
+    if (!points.length) {
+        return;
+    }
+
+
+    let minX =
+        Infinity;
+
+    let maxX =
+        -Infinity;
+
+    let minY =
+        Infinity;
+
+    let maxY =
+        -Infinity;
+
+
+    points.forEach(
+        p => {
+
+            minX =
+                Math.min(
+                    minX,
+                    p.x
+                );
+
+            maxX =
+                Math.max(
+                    maxX,
+                    p.x
+                );
+
+            minY =
+                Math.min(
+                    minY,
+                    p.y
+                );
+
+            maxY =
+                Math.max(
+                    maxY,
+                    p.y
+                );
+
+        }
+    );
+
+
+    const centerX =
+        (minX + maxX) / 2;
+
+
+    const centerY =
+        minY +
+        (maxY - minY) *
+        0.35;
+
+
+    const radiusX =
+        (maxX - minX) *
+        0.65;
+
+
+    const radiusY =
+        Math.max(
+            (maxY - minY) *
+            1.1,
+
+            canvas.height *
+            0.025
+        );
+
+
+    const gradient =
+        ctx.createRadialGradient(
+            centerX,
+            centerY,
+            0,
+            centerX,
+            centerY,
+            radiusX
+        );
+
+
+    gradient.addColorStop(
+        0,
+        hexToRgba(
+            makeupColor,
+            0.38
+        )
+    );
+
+
+    gradient.addColorStop(
+        0.55,
+        hexToRgba(
+            makeupColor,
+            0.20
+        )
+    );
+
+
+    gradient.addColorStop(
+        1,
+        hexToRgba(
+            makeupColor,
+            0
+        )
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        centerX,
+        centerY,
+        radiusX,
+        radiusY,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
 
 }
 
@@ -755,42 +1185,86 @@ function drawEyeshadow(
    EYELINER
    ========================================================= */
 
+const LEFT_UPPER_EYE = [
+
+    33,
+    246,
+    161,
+    160,
+    159,
+    158,
+    157,
+    173,
+    133
+
+];
+
+
+const RIGHT_UPPER_EYE = [
+
+    362,
+    398,
+    384,
+    385,
+    386,
+    387,
+    388,
+    466,
+    263
+
+];
+
+
 function drawEyeliner(
     landmarks
 ) {
 
     ctx.save();
 
+
     ctx.strokeStyle =
         hexToRgba(
             makeupColor,
-            0.90
+            0.92
         );
+
+
+    const faceWidth =
+        Math.abs(
+            point(
+                landmarks,
+                234
+            ).x -
+            point(
+                landmarks,
+                454
+            ).x
+        );
+
 
     ctx.lineWidth =
         Math.max(
-            2,
-            canvas.width * 0.004
+            1.5,
+            faceWidth * 0.006
         );
 
-    ctx.lineCap = "round";
+
+    ctx.lineCap =
+        "round";
+
+    ctx.lineJoin =
+        "round";
 
 
-    drawEyeLine(
+    drawSmoothLine(
         landmarks,
-        [
-            33,
-            133
-        ]
+        LEFT_UPPER_EYE
     );
 
 
-    drawEyeLine(
+    drawSmoothLine(
         landmarks,
-        [
-            263,
-            362
-        ]
+        RIGHT_UPPER_EYE
     );
 
 
@@ -799,35 +1273,120 @@ function drawEyeliner(
 }
 
 
-function drawEyeLine(
+function drawSmoothLine(
     landmarks,
     indices
 ) {
 
-    const start =
-        point(
-            landmarks[indices[0]]
-        );
+    if (
+        !indices ||
+        indices.length < 2
+    ) {
 
-    const end =
-        point(
-            landmarks[indices[1]]
-        );
+        return;
+
+    }
 
 
     ctx.beginPath();
 
+
+    const first =
+        point(
+            landmarks,
+            indices[0]
+        );
+
+
     ctx.moveTo(
-        start.x,
-        start.y
+        first.x,
+        first.y
     );
 
-    ctx.lineTo(
-        end.x,
-        end.y
-    );
+
+    for (
+        let i = 1;
+        i < indices.length;
+        i++
+    ) {
+
+        const p =
+            point(
+                landmarks,
+                indices[i]
+            );
+
+
+        ctx.lineTo(
+            p.x,
+            p.y
+        );
+
+    }
+
 
     ctx.stroke();
+
+}
+
+
+/* =========================================================
+   MASCARA
+   ========================================================= */
+
+function drawMascara(
+    landmarks
+) {
+
+    ctx.save();
+
+
+    ctx.strokeStyle =
+        hexToRgba(
+            makeupColor === "#c85f7a"
+                ? "#171114"
+                : makeupColor,
+            0.85
+        );
+
+
+    const faceWidth =
+        Math.abs(
+            point(
+                landmarks,
+                234
+            ).x -
+            point(
+                landmarks,
+                454
+            ).x
+        );
+
+
+    ctx.lineWidth =
+        Math.max(
+            2,
+            faceWidth * 0.008
+        );
+
+
+    ctx.lineCap =
+        "round";
+
+
+    drawSmoothLine(
+        landmarks,
+        LEFT_UPPER_EYE
+    );
+
+
+    drawSmoothLine(
+        landmarks,
+        RIGHT_UPPER_EYE
+    );
+
+
+    ctx.restore();
 
 }
 
@@ -841,39 +1400,58 @@ function drawBlush(
 ) {
 
     drawBlushSpot(
-        landmarks[50],
-        0.16
+        landmarks,
+        50
     );
 
 
     drawBlushSpot(
-        landmarks[280],
-        0.16
+        landmarks,
+        280
     );
 
 }
 
 
 function drawBlushSpot(
-    landmark,
-    opacity
+    landmarks,
+    landmarkIndex
 ) {
 
-    const p =
-        point(landmark);
+    const center =
+        point(
+            landmarks,
+            landmarkIndex
+        );
+
+
+    const faceWidth =
+        Math.abs(
+            point(
+                landmarks,
+                234
+            ).x -
+            point(
+                landmarks,
+                454
+            ).x
+        );
 
 
     const radius =
-        canvas.width * 0.065;
+        Math.max(
+            25,
+            faceWidth * 0.075
+        );
 
 
     const gradient =
         ctx.createRadialGradient(
-            p.x,
-            p.y,
+            center.x,
+            center.y,
             0,
-            p.x,
-            p.y,
+            center.x,
+            center.y,
             radius
         );
 
@@ -882,16 +1460,16 @@ function drawBlushSpot(
         0,
         hexToRgba(
             makeupColor,
-            opacity
+            0.24
         )
     );
 
 
     gradient.addColorStop(
-        0.55,
+        0.45,
         hexToRgba(
             makeupColor,
-            opacity * 0.45
+            0.15
         )
     );
 
@@ -912,8 +1490,8 @@ function drawBlushSpot(
     ctx.beginPath();
 
     ctx.arc(
-        p.x,
-        p.y,
+        center.x,
+        center.y,
         radius,
         0,
         Math.PI * 2
@@ -934,13 +1512,22 @@ function drawHighlighter(
 
     const nose =
         point(
-            landmarks[1]
+            landmarks,
+            1
         );
 
 
-    const chin =
+    const leftCheek =
         point(
-            landmarks[152]
+            landmarks,
+            116
+        );
+
+
+    const rightCheek =
+        point(
+            landmarks,
+            345
         );
 
 
@@ -952,9 +1539,16 @@ function drawHighlighter(
 
 
     drawGlow(
-        chin.x,
-        chin.y,
-        canvas.width * 0.020
+        leftCheek.x,
+        leftCheek.y,
+        canvas.width * 0.025
+    );
+
+
+    drawGlow(
+        rightCheek.x,
+        rightCheek.y,
+        canvas.width * 0.025
     );
 
 }
@@ -979,7 +1573,13 @@ function drawGlow(
 
     gradient.addColorStop(
         0,
-        "rgba(255,255,255,0.45)"
+        "rgba(255,255,255,0.48)"
+    );
+
+
+    gradient.addColorStop(
+        0.4,
+        "rgba(255,255,255,0.18)"
     );
 
 
@@ -999,6 +1599,103 @@ function drawGlow(
         x,
         y,
         radius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+}
+
+
+/* =========================================================
+   FOUNDATION
+
+   Kept subtle because proper foundation AR requires
+   facial segmentation rather than only landmarks.
+   ========================================================= */
+
+function drawFoundation(
+    landmarks
+) {
+
+    const faceWidth =
+        Math.abs(
+            point(
+                landmarks,
+                234
+            ).x -
+            point(
+                landmarks,
+                454
+            ).x
+        );
+
+
+    const forehead =
+        point(
+            landmarks,
+            10
+        );
+
+
+    const chin =
+        point(
+            landmarks,
+            152
+        );
+
+
+    const centerX =
+        (forehead.x + chin.x) / 2;
+
+
+    const centerY =
+        (forehead.y + chin.y) / 2;
+
+
+    const faceHeight =
+        Math.abs(
+            chin.y -
+            forehead.y
+        );
+
+
+    const gradient =
+        ctx.createRadialGradient(
+            centerX,
+            centerY,
+            faceWidth * 0.15,
+            centerX,
+            centerY,
+            faceWidth * 0.55
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "rgba(255,255,255,0.04)"
+    );
+
+
+    gradient.addColorStop(
+        1,
+        "rgba(255,255,255,0)"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        centerX,
+        centerY,
+        faceWidth * 0.48,
+        faceHeight * 0.46,
+        0,
         0,
         Math.PI * 2
     );
@@ -1059,6 +1756,15 @@ function drawMakeup(
             break;
 
 
+        case "mascara":
+
+            drawMascara(
+                landmarks
+            );
+
+            break;
+
+
         case "highlighter":
 
             drawHighlighter(
@@ -1068,31 +1774,24 @@ function drawMakeup(
             break;
 
 
-        case "mascara":
-
-            drawEyeliner(
-                landmarks
-            );
-
-            break;
-
-
         case "foundation":
 
-            /*
-               Foundation is intentionally subtle.
-               A full skin-segmentation foundation effect
-               requires a different segmentation model.
-            */
+            drawFoundation(
+                landmarks
+            );
 
             break;
 
 
         default:
 
-            drawLipstick(
-                landmarks
-            );
+            /*
+               Do NOT put lipstick on the user's lips
+               for an unknown product type.
+
+               Instead, keep the face clean and tell
+               the user that AR has detected the face.
+            */
 
             break;
 
@@ -1102,10 +1801,49 @@ function drawMakeup(
 
 
 /* =========================================================
-   CREATE FACE LANDMARKER
+   INITIALIZE MEDIAPIPE
    ========================================================= */
 
-async function createFaceLandmarker() {
+async function initializeFaceTracking() {
+
+    if (faceTrackingReady) {
+
+        return true;
+
+    }
+
+
+    if (faceTrackingLoading) {
+
+        /*
+           Wait for the existing initialization
+           instead of starting a second initialization.
+        */
+
+        while (faceTrackingLoading) {
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        100
+                    )
+            );
+
+        }
+
+
+        return faceTrackingReady;
+
+    }
+
+
+    faceTrackingLoading =
+        true;
+
+
+    clearError();
+
 
     setStatus(
         "Loading AR face tracking..."
@@ -1114,21 +1852,40 @@ async function createFaceLandmarker() {
 
     try {
 
-        const vision =
+        console.log(
+            "Glamora AR: Loading MediaPipe..."
+        );
+
+
+        /*
+           Load the WASM runtime once.
+        */
+
+        visionFileset =
             await FilesetResolver.forVisionTasks(
                 WASM_URL
             );
 
 
+        console.log(
+            "Glamora AR: WASM loaded."
+        );
+
+
         /*
-           First attempt GPU.
+           Try GPU first.
         */
 
         try {
 
+            console.log(
+                "Glamora AR: Trying GPU..."
+            );
+
+
             faceLandmarker =
                 await FaceLandmarker.createFromOptions(
-                    vision,
+                    visionFileset,
                     {
 
                         baseOptions: {
@@ -1148,29 +1905,44 @@ async function createFaceLandmarker() {
                             1,
 
                         minFaceDetectionConfidence:
-                            0.5,
+                            0.45,
 
                         minFacePresenceConfidence:
-                            0.5,
+                            0.45,
 
                         minTrackingConfidence:
-                            0.5
+                            0.45,
+
+                        outputFaceBlendshapes:
+                            false,
+
+                        outputFacialTransformationMatrixes:
+                            false
 
                     }
                 );
 
 
+            console.log(
+                "Glamora AR: GPU FaceLandmarker loaded."
+            );
+
+
         } catch (gpuError) {
 
             console.warn(
-                "GPU FaceLandmarker failed. Falling back to CPU.",
+                "Glamora AR: GPU initialization failed.",
                 gpuError
             );
 
 
+            /*
+               CPU fallback.
+            */
+
             faceLandmarker =
                 await FaceLandmarker.createFromOptions(
-                    vision,
+                    visionFileset,
                     {
 
                         baseOptions: {
@@ -1190,16 +1962,27 @@ async function createFaceLandmarker() {
                             1,
 
                         minFaceDetectionConfidence:
-                            0.5,
+                            0.45,
 
                         minFacePresenceConfidence:
-                            0.5,
+                            0.45,
 
                         minTrackingConfidence:
-                            0.5
+                            0.45,
+
+                        outputFaceBlendshapes:
+                            false,
+
+                        outputFacialTransformationMatrixes:
+                            false
 
                     }
                 );
+
+
+            console.log(
+                "Glamora AR: CPU FaceLandmarker loaded."
+            );
 
         }
 
@@ -1209,32 +1992,277 @@ async function createFaceLandmarker() {
 
 
         setStatus(
-            "AR ready • Start your camera"
+            "AR ready • Starting camera..."
         );
 
 
         console.log(
-            "Glamora AR FaceLandmarker ready."
+            "Glamora AR: Face tracking ready."
         );
+
+
+        return true;
 
 
     } catch (error) {
 
-        console.error(
-            "Failed to load MediaPipe:",
-            error
-        );
-
+        faceLandmarker =
+            null;
 
         faceTrackingReady =
             false;
 
 
+        console.error(
+            "Glamora AR: MediaPipe initialization failed:",
+            error
+        );
+
+
         showError(
-            "Unable to load AR face tracking. Check your internet connection and reload the page."
+            "AR face tracking could not be loaded. Please check your internet connection and refresh the page."
+        );
+
+
+        return false;
+
+
+    } finally {
+
+        faceTrackingLoading =
+            false;
+
+    }
+
+}
+
+
+/* =========================================================
+   DRAW CAMERA FRAME
+   ========================================================= */
+
+function drawCameraFrame() {
+
+    if (
+        !video ||
+        !canvas ||
+        !ctx
+    ) {
+
+        return;
+
+    }
+
+
+    const width =
+        video.videoWidth;
+
+    const height =
+        video.videoHeight;
+
+
+    if (
+        !width ||
+        !height
+    ) {
+
+        return;
+
+    }
+
+
+    resizeCanvas(
+        width,
+        height
+    );
+
+
+    /*
+       Mirror the complete camera image.
+
+       IMPORTANT:
+       The makeup is drawn while this transform is active.
+       Therefore the face landmarks and makeup remain aligned.
+    */
+
+    ctx.save();
+
+
+    ctx.translate(
+        width,
+        0
+    );
+
+
+    ctx.scale(
+        -1,
+        1
+    );
+
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   DRAW CAMERA + MAKEUP
+   ========================================================= */
+
+function renderCameraFrame() {
+
+    if (
+        !cameraRunning ||
+        !faceLandmarker ||
+        !video
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        video.readyState <
+        HTMLMediaElement.HAVE_CURRENT_DATA
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       Draw the camera first.
+    */
+
+    drawCameraFrame();
+
+
+    /*
+       Detect face.
+    */
+
+    try {
+
+        if (
+            video.currentTime !==
+            lastVideoTime
+        ) {
+
+            lastVideoTime =
+                video.currentTime;
+
+
+            const results =
+                faceLandmarker.detectForVideo(
+                    video,
+                    performance.now()
+                );
+
+
+            const landmarks =
+                results &&
+                results.faceLandmarks &&
+                results.faceLandmarks.length
+                    ? results.faceLandmarks[0]
+                    : null;
+
+
+            if (landmarks) {
+
+                /*
+                   IMPORTANT:
+
+                   We mirror the makeup coordinates
+                   inside the canvas as well.
+                */
+
+                ctx.save();
+
+
+                ctx.translate(
+                    canvas.width,
+                    0
+                );
+
+
+                ctx.scale(
+                    -1,
+                    1
+                );
+
+
+                drawMakeup(
+                    landmarks
+                );
+
+
+                ctx.restore();
+
+
+                setStatus(
+                    `Face detected • ${product.name || productType} applied`
+                );
+
+
+            } else {
+
+                setStatus(
+                    "Move your face into the frame"
+                );
+
+            }
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Glamora AR face detection error:",
+            error
+        );
+
+
+        setStatus(
+            "Face tracking is starting..."
         );
 
     }
+
+}
+
+
+/* =========================================================
+   CAMERA LOOP
+   ========================================================= */
+
+function cameraLoop() {
+
+    if (!cameraRunning) {
+
+        return;
+
+    }
+
+
+    renderCameraFrame();
+
+
+    animationFrameId =
+        requestAnimationFrame(
+            cameraLoop
+        );
 
 }
 
@@ -1248,24 +2276,40 @@ async function startCamera() {
     clearError();
 
 
-    if (!faceTrackingReady) {
+    /*
+       Make sure MediaPipe is ready.
+    */
 
-        setStatus(
-            "Loading AR face tracking..."
-        );
-
-
-        await createFaceLandmarker();
+    const ready =
+        await initializeFaceTracking();
 
 
-        if (!faceTrackingReady) {
-            return;
-        }
+    if (!ready) {
+
+        return;
 
     }
 
 
+    /*
+       Stop any existing camera.
+    */
+
     stopCamera();
+
+
+    if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
+
+        showError(
+            "Camera access is not supported by this browser."
+        );
+
+        return;
+
+    }
 
 
     try {
@@ -1282,15 +2326,31 @@ async function startCamera() {
                     video: {
 
                         facingMode:
-                            cameraFacingMode,
+                            {
+                                ideal:
+                                    cameraFacingMode
+                            },
 
-                        width: {
-                            ideal: 1280
-                        },
+                        width:
+                            {
+                                ideal:
+                                    1280
+                            },
 
-                        height: {
-                            ideal: 720
-                        }
+                        height:
+                            {
+                                ideal:
+                                    720
+                            },
+
+                        frameRate:
+                            {
+                                ideal:
+                                    30,
+
+                                max:
+                                    30
+                            }
 
                     },
 
@@ -1305,9 +2365,8 @@ async function startCamera() {
             mediaStream;
 
 
-        video.classList.add(
-            "active"
-        );
+        imageMode =
+            false;
 
 
         image.classList.remove(
@@ -1315,12 +2374,8 @@ async function startCamera() {
         );
 
 
-        placeholder.style.display =
-            "none";
-
-
         video.classList.add(
-            "mirrored"
+            "active"
         );
 
 
@@ -1328,16 +2383,43 @@ async function startCamera() {
             "active"
         );
 
-        canvas.classList.add(
+
+        canvas.classList.remove(
             "mirrored"
         );
+
+
+        if (placeholder) {
+
+            placeholder.style.display =
+                "none";
+
+        }
 
 
         await video.play();
 
 
+        /*
+           Wait until actual video dimensions
+           are available.
+        */
+
+        await waitForVideoDimensions();
+
+
+        resizeCanvas(
+            video.videoWidth,
+            video.videoHeight
+        );
+
+
         cameraRunning =
             true;
+
+
+        lastVideoTime =
+            -1;
 
 
         startCameraBtn.hidden =
@@ -1357,59 +2439,39 @@ async function startCamera() {
         );
 
 
-        lastVideoTime =
-            -1;
-
-
-        detectCameraFrame();
+        cameraLoop();
 
 
     } catch (error) {
-
-        console.error(
-            "Camera error:",
-            error
-        );
-
 
         cameraRunning =
             false;
 
 
-        if (
-            error.name ===
-            "NotAllowedError"
-        ) {
+        if (mediaStream) {
 
-            showError(
-                "Camera permission was denied. Please allow camera access in your browser."
-            );
+            mediaStream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
 
-        } else if (
-            error.name ===
-            "NotFoundError"
-        ) {
-
-            showError(
-                "No camera was found on this device."
-            );
-
-        } else if (
-            error.name ===
-            "NotReadableError"
-        ) {
-
-            showError(
-                "The camera is already being used by another application."
-            );
-
-        } else {
-
-            showError(
-                "Unable to start the camera. Please check your browser camera permissions."
-            );
+            mediaStream =
+                null;
 
         }
+
+
+        console.error(
+            "Glamora AR camera error:",
+            error
+        );
+
+
+        handleCameraError(
+            error
+        );
 
     }
 
@@ -1417,115 +2479,131 @@ async function startCamera() {
 
 
 /* =========================================================
-   CAMERA DETECTION LOOP
+   WAIT FOR VIDEO DIMENSIONS
    ========================================================= */
 
-function detectCameraFrame() {
+function waitForVideoDimensions() {
 
-    if (!cameraRunning) {
-        return;
-    }
+    return new Promise(
+        resolve => {
 
+            if (
+                video.videoWidth > 0 &&
+                video.videoHeight > 0
+            ) {
 
-    if (
-        !faceLandmarker ||
-        video.readyState <
-        HTMLMediaElement.HAVE_CURRENT_DATA
-    ) {
+                resolve();
 
-        animationFrameId =
-            requestAnimationFrame(
-                detectCameraFrame
-            );
-
-        return;
-
-    }
-
-
-    /*
-       Do not process the exact same video frame repeatedly.
-    */
-
-    if (
-        video.currentTime !==
-        lastVideoTime
-    ) {
-
-        lastVideoTime =
-            video.currentTime;
-
-
-        try {
-
-            const results =
-                faceLandmarker.detectForVideo(
-                    video,
-                    performance.now()
-                );
-
-
-            clearCanvas();
-
-
-            /*
-               Canvas dimensions match the actual
-               video frame.
-            */
-
-            resizeCanvas(
-                video.videoWidth ||
-                1280,
-
-                video.videoHeight ||
-                720
-            );
-
-
-            const landmarks =
-                results.faceLandmarks &&
-                results.faceLandmarks.length
-                    ? results.faceLandmarks[0]
-                    : null;
-
-
-            if (landmarks) {
-
-                drawMakeup(
-                    landmarks
-                );
-
-
-                setStatus(
-                    `Face detected • ${product.name} applied`
-                );
-
-
-            } else {
-
-                setStatus(
-                    "Move your face into the frame"
-                );
+                return;
 
             }
 
 
-        } catch (error) {
+            const check =
+                () => {
 
-            console.error(
-                "Face detection error:",
-                error
-            );
+                    if (
+                        video.videoWidth > 0 &&
+                        video.videoHeight > 0
+                    ) {
+
+                        resolve();
+
+                        return;
+
+                    }
+
+
+                    requestAnimationFrame(
+                        check
+                    );
+
+                };
+
+
+            check();
 
         }
+    );
+
+}
+
+
+/* =========================================================
+   CAMERA ERROR HANDLER
+   ========================================================= */
+
+function handleCameraError(
+    error
+) {
+
+    if (
+        error &&
+        error.name ===
+        "NotAllowedError"
+    ) {
+
+        showError(
+            "Camera permission was denied. Allow camera access in your browser, then click Use Camera."
+        );
+
+
+        return;
 
     }
 
 
-    animationFrameId =
-        requestAnimationFrame(
-            detectCameraFrame
+    if (
+        error &&
+        error.name ===
+        "NotFoundError"
+    ) {
+
+        showError(
+            "No camera was found on this device."
         );
+
+
+        return;
+
+    }
+
+
+    if (
+        error &&
+        error.name ===
+        "NotReadableError"
+    ) {
+
+        showError(
+            "The camera is already being used by another application."
+        );
+
+
+        return;
+
+    }
+
+
+    if (
+        error &&
+        error.name ===
+        "SecurityError"
+    ) {
+
+        showError(
+            "Camera access was blocked for security reasons. Use localhost or HTTPS."
+        );
+
+
+        return;
+
+    }
+
+
+    showError(
+        "Unable to start the camera. Please check your browser camera permissions."
+    );
 
 }
 
@@ -1540,7 +2618,7 @@ function stopCamera() {
         false;
 
 
-    if (animationFrameId) {
+    if (animationFrameId !== null) {
 
         cancelAnimationFrame(
             animationFrameId
@@ -1557,7 +2635,8 @@ function stopCamera() {
         mediaStream
             .getTracks()
             .forEach(
-                track => track.stop()
+                track =>
+                    track.stop()
             );
 
         mediaStream =
@@ -1580,35 +2659,251 @@ function stopCamera() {
     }
 
 
-    if (canvas) {
+    if (switchCameraBtn) {
 
-        canvas.classList.remove(
-            "active"
-        );
-
-        canvas.classList.remove(
-            "mirrored"
-        );
-
-        clearCanvas();
+        switchCameraBtn.hidden =
+            true;
 
     }
 
 
-    switchCameraBtn.hidden =
-        true;
+    if (stopCameraBtn) {
 
-    stopCameraBtn.hidden =
-        true;
+        stopCameraBtn.hidden =
+            true;
+
+    }
+
+
+    lastVideoTime =
+        -1;
 
 }
 
 
 /* =========================================================
-   OPEN TRY-ON MODAL
+   UPLOAD IMAGE
+   ========================================================= */
+
+async function handleImageUpload(
+    event
+) {
+
+    const file =
+        event.target.files &&
+        event.target.files[0];
+
+
+    if (!file) {
+        return;
+    }
+
+
+    clearError();
+
+
+    stopCamera();
+
+
+    imageMode =
+        true;
+
+
+    setStatus(
+        "Loading your image..."
+    );
+
+
+    const objectUrl =
+        URL.createObjectURL(
+            file
+        );
+
+
+    image.onload =
+        async function () {
+
+            URL.revokeObjectURL(
+                objectUrl
+            );
+
+
+            video.classList.remove(
+                "active"
+            );
+
+
+            image.classList.add(
+                "active"
+            );
+
+
+            canvas.classList.add(
+                "active"
+            );
+
+
+            canvas.classList.remove(
+                "mirrored"
+            );
+
+
+            if (placeholder) {
+
+                placeholder.style.display =
+                    "none";
+
+            }
+
+
+            resizeCanvas(
+                image.naturalWidth,
+                image.naturalHeight
+            );
+
+
+            /*
+               Draw original uploaded image.
+            */
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            ctx.drawImage(
+                image,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            const ready =
+                await initializeFaceTracking();
+
+
+            if (!ready) {
+                return;
+            }
+
+
+            try {
+
+                /*
+                   Uploaded images use detect(),
+                   not detectForVideo().
+                */
+
+                const results =
+                    faceLandmarker.detect(
+                        image
+                    );
+
+
+                const landmarks =
+                    results &&
+                    results.faceLandmarks &&
+                    results.faceLandmarks.length
+                        ? results.faceLandmarks[0]
+                        : null;
+
+
+                /*
+                   Redraw the image because detection
+                   does not draw anything.
+                */
+
+                ctx.clearRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+
+                ctx.drawImage(
+                    image,
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+
+                if (landmarks) {
+
+                    drawMakeup(
+                        landmarks
+                    );
+
+
+                    setStatus(
+                        `Face detected • ${product.name || productType} applied`
+                    );
+
+
+                } else {
+
+                    setStatus(
+                        "No face detected in this image"
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Glamora AR uploaded image detection error:",
+                    error
+                );
+
+
+                showError(
+                    "Unable to detect a face in this image."
+                );
+
+            }
+
+        };
+
+
+    image.onerror =
+        function () {
+
+            URL.revokeObjectURL(
+                objectUrl
+            );
+
+
+            showError(
+                "Unable to load the selected image."
+            );
+
+        };
+
+
+    image.src =
+        objectUrl;
+
+}
+
+
+/* =========================================================
+   OPEN TRY-ON
    ========================================================= */
 
 async function openTryOn() {
+
+    if (!tryOnModal) {
+        return;
+    }
+
 
     clearError();
 
@@ -1629,34 +2924,39 @@ async function openTryOn() {
     );
 
 
+    imageMode =
+        false;
+
+
     setStatus(
         "Loading AR face tracking..."
     );
 
 
     /*
-       Load the face model and then
-       automatically start the camera.
+       Load MediaPipe first.
     */
 
-    if (!faceTrackingReady) {
+    const ready =
+        await initializeFaceTracking();
 
-        await createFaceLandmarker();
 
+    if (!ready) {
+        return;
     }
 
 
-    if (faceTrackingReady) {
+    /*
+       Automatically open camera.
+    */
 
-        await startCamera();
-
-    }
+    await startCamera();
 
 }
 
 
 /* =========================================================
-   CLOSE TRY-ON MODAL
+   CLOSE TRY-ON
    ========================================================= */
 
 function closeTryOn() {
@@ -1664,15 +2964,18 @@ function closeTryOn() {
     stopCamera();
 
 
-    tryOnModal.classList.remove(
-        "active"
-    );
+    if (tryOnModal) {
 
+        tryOnModal.classList.remove(
+            "active"
+        );
 
-    tryOnModal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
+        tryOnModal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
 
 
     document.body.classList.remove(
@@ -1684,6 +2987,12 @@ function closeTryOn() {
 
 
     if (image) {
+
+        image.onload =
+            null;
+
+        image.onerror =
+            null;
 
         image.src =
             "";
@@ -1728,167 +3037,6 @@ async function switchCamera() {
 
 
     await startCamera();
-
-}
-
-
-/* =========================================================
-   UPLOAD IMAGE
-   ========================================================= */
-
-function handleImageUpload(event) {
-
-    const file =
-        event.target.files &&
-        event.target.files[0];
-
-
-    if (!file) {
-        return;
-    }
-
-
-    clearError();
-
-
-    stopCamera();
-
-
-    const objectUrl =
-        URL.createObjectURL(file);
-
-
-    image.onload =
-        async function () {
-
-            URL.revokeObjectURL(
-                objectUrl
-            );
-
-
-            image.classList.add(
-                "active"
-            );
-
-
-            video.classList.remove(
-                "active"
-            );
-
-
-            placeholder.style.display =
-                "none";
-
-
-            canvas.classList.add(
-                "active"
-            );
-
-
-            canvas.classList.remove(
-                "mirrored"
-            );
-
-
-            resizeCanvas(
-                image.naturalWidth,
-                image.naturalHeight
-            );
-
-
-            clearCanvas();
-
-
-            setStatus(
-                "Detecting your face..."
-            );
-
-
-            if (!faceTrackingReady) {
-
-                await createFaceLandmarker();
-
-            }
-
-
-            if (!faceTrackingReady) {
-                return;
-            }
-
-
-            try {
-
-                const results =
-                    faceLandmarker.detect(
-                        image
-                    );
-
-
-                const landmarks =
-                    results.faceLandmarks &&
-                    results.faceLandmarks.length
-                        ? results.faceLandmarks[0]
-                        : null;
-
-
-                clearCanvas();
-
-
-                if (landmarks) {
-
-                    drawMakeup(
-                        landmarks
-                    );
-
-
-                    setStatus(
-                        `Face detected • ${product.name} applied`
-                    );
-
-
-                } else {
-
-                    setStatus(
-                        "No face detected in this image"
-                    );
-
-                }
-
-
-            } catch (error) {
-
-                console.error(
-                    "Uploaded image detection error:",
-                    error
-                );
-
-
-                showError(
-                    "Unable to detect a face in this image."
-                );
-
-            }
-
-        };
-
-
-    image.onerror =
-        function () {
-
-            URL.revokeObjectURL(
-                objectUrl
-            );
-
-
-            showError(
-                "Unable to load the selected image."
-            );
-
-        };
-
-
-    image.src =
-        objectUrl;
 
 }
 
@@ -1953,7 +3101,11 @@ if (uploadImageBtn) {
         "click",
         function () {
 
-            imageInput.click();
+            if (imageInput) {
+
+                imageInput.click();
+
+            }
 
         }
     );
@@ -1972,7 +3124,7 @@ if (imageInput) {
 
 
 /* =========================================================
-   CLOSE WHEN CLICKING OUTSIDE MODAL
+   CLICK OUTSIDE MODAL
    ========================================================= */
 
 if (tryOnModal) {
@@ -2019,21 +3171,48 @@ document.addEventListener(
 
 
 /* =========================================================
-   INITIAL AR MODEL LOAD
-
-   The model is loaded when the page is ready.
-   This means clicking Try On does not have to wait
-   for the model in many cases.
+   INITIAL PAGE SETUP
    ========================================================= */
 
-createFaceLandmarker()
-    .catch(
-        error => {
+console.log(
+    "========================================"
+);
 
-            console.error(
-                "Initial AR setup failed:",
-                error
-            );
+console.log(
+    "Glamora AR initialized"
+);
 
-        }
-    );
+console.log(
+    "Product:",
+    product.name
+);
+
+console.log(
+    "Type:",
+    productType
+);
+
+console.log(
+    "Shade:",
+    product.shade
+);
+
+console.log(
+    "Color:",
+    makeupColor
+);
+
+console.log(
+    "========================================"
+);
+
+
+/*
+   IMPORTANT:
+
+   Do NOT initialize the model here.
+
+   It will initialize when the user clicks
+   Try On. This prevents two simultaneous
+   FaceLandmarker initialization processes.
+*/
