@@ -3,846 +3,1228 @@
 
 <head>
 
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-    <title>{{ product.name }} — Glamora AR</title>
-
-
-    <!-- =====================================================
-         GOOGLE FONTS
-         ===================================================== -->
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
-        rel="stylesheet"
-    >
+  <title>{{ product.name }} — Glamora AR</title>
 
 
-    <!-- =====================================================
-         GLOBAL CSS
-         ===================================================== -->
+  <!-- =====================================================
+       GOOGLE FONTS
+       ===================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
 
 
-    <!-- =====================================================
-         PRODUCT DETAILS CSS
-         ===================================================== -->
+  <!-- =====================================================
+       MAIN WEBSITE CSS
+       ===================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/product_details.css') }}"
-    >
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}"
+  >
+
+
+  <!-- =====================================================
+       PRODUCT DETAILS CSS
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/product_details.css') }}"
+  >
 
 </head>
 
 
-<body class="product-details-page">
+<body>
 
 
-    <!-- =====================================================
-         NAVBAR
-         ===================================================== -->
+  <!-- =====================================================
+       NAVBAR
+       ===================================================== -->
 
-    <header class="site-header">
+  <header class="navbar product-details-navbar">
 
-        <nav class="navbar">
 
-            <a
-                href="{{ url_for('home') }}"
-                class="logo"
-            >
-                Glamora <span>AR</span>
-            </a>
+    <!-- LOGO -->
 
+    <a
+      href="{{ url_for('index') }}"
+      class="logo"
+      aria-label="Glamora AR Home"
+    >
+      GLAMORA <span>AR</span>
+    </a>
 
-            <div class="nav-links">
 
-                <a href="{{ url_for('home') }}">
-                    Home
-                </a>
 
-                <a
-                    href="{{ url_for('beauty') }}"
-                    class="active"
-                >
-                    Beauty
-                </a>
+    <!-- MAIN NAVIGATION -->
 
-                <a href="{{ url_for('about') }}">
-                    About
-                </a>
-
-                <a href="{{ url_for('contact') }}">
-                    Contact
-                </a>
-
-            </div>
-
-
-            <div class="nav-actions">
-
-                <!-- Search -->
-
-                <button
-                    type="button"
-                    class="nav-icon-btn"
-                    aria-label="Search"
-                    onclick="window.location.href='{{ url_for('beauty') }}'"
-                >
-                    ⌕
-                </button>
-
-
-                <!-- Wishlist -->
-
-                <button
-                    type="button"
-                    class="nav-icon-btn"
-                    aria-label="Wishlist"
-                >
-                    ♡
-                </button>
-
-
-                <!-- Bag -->
-
-                <a
-                    href="{{ url_for('cart') }}"
-                    class="bag-link"
-                >
-                    Bag
-                    <span class="bag-count">
-                        {{ bag_count|default(0) }}
-                    </span>
-                </a>
-
-
-                <!-- Login / Profile -->
-
-                {% if session.get('user_id') %}
-
-                    <a
-                        href="{{ url_for('profile') }}"
-                        class="login-btn"
-                    >
-                        <span class="login-icon">
-                            ♙
-                        </span>
-
-                        <span>
-                            {{ session.get('user_name') or 'Profile' }}
-                        </span>
-                    </a>
-
-                {% else %}
-
-                    <a
-                        href="{{ url_for('login', next=request.path) }}"
-                        class="login-btn"
-                    >
-                        <span class="login-icon">
-                            ♙
-                        </span>
-
-                        <span>
-                            Login
-                        </span>
-                    </a>
-
-                {% endif %}
-
-            </div>
-
-        </nav>
-
-    </header>
-
-
-
-    <!-- =====================================================
-         MAIN PRODUCT CONTENT
-         ===================================================== -->
-
-    <main>
-
-        <div class="product-details-container">
-
-
-            <!-- =================================================
-                 BREADCRUMB
-                 ================================================= -->
-
-            <div class="product-breadcrumb">
-
-                <a href="{{ url_for('home') }}">
-                    Home
-                </a>
-
-                <span>›</span>
-
-                <a href="{{ url_for('beauty') }}">
-                    Beauty
-                </a>
-
-                <span>›</span>
-
-                <span>
-                    {{ product.name }}
-                </span>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 PRODUCT
-                 ================================================= -->
-
-            <section class="product-main">
-
-
-                <!-- =============================================
-                     PRODUCT GALLERY
-                     ============================================= -->
-
-                <div class="product-gallery">
-
-                    <div class="product-main-image">
-
-                        {% if images and images|length > 0 %}
-
-                            <img
-                                id="mainProductImage"
-                                src="{{ url_for('static', filename=images[0].image_url) if not images[0].image_url.startswith('http') else images[0].image_url }}"
-                                alt="{{ product.name }}"
-                            >
-
-                        {% elif product.image_url %}
-
-                            <img
-                                id="mainProductImage"
-                                src="{{ url_for('static', filename=product.image_url) if not product.image_url.startswith('http') else product.image_url }}"
-                                alt="{{ product.name }}"
-                            >
-
-                        {% else %}
-
-                            <div class="product-placeholder">
-                                💄
-                            </div>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <!-- Thumbnails -->
-
-                    {% if images and images|length > 1 %}
-
-                        <div class="product-thumbnails">
-
-                            {% for image in images %}
-
-                                <button
-                                    type="button"
-                                    class="product-thumbnail {% if loop.first %}active{% endif %}"
-                                    data-image="{{ url_for('static', filename=image.image_url) if not image.image_url.startswith('http') else image.image_url }}"
-                                >
-
-                                    <img
-                                        src="{{ url_for('static', filename=image.image_url) if not image.image_url.startswith('http') else image.image_url }}"
-                                        alt="{{ product.name }}"
-                                    >
-
-                                </button>
-
-                            {% endfor %}
-
-                        </div>
-
-                    {% endif %}
-
-                </div>
-
-
-
-                <!-- =============================================
-                     PRODUCT INFORMATION
-                     ============================================= -->
-
-                <div class="product-info">
-
-
-                    {% if product.product_type %}
-
-                        <div class="product-category">
-                            {{ product.product_type }}
-                        </div>
-
-                    {% endif %}
-
-
-                    <h1 class="product-title">
-                        {{ product.name }}
-                    </h1>
-
-
-                    <!-- Rating -->
-
-                    <div class="product-rating">
-
-                        <span class="rating-stars">
-
-                            {% set rounded_rating = average_rating|round|int %}
-
-                            {% for i in range(1, 6) %}
-
-                                {% if i <= rounded_rating %}
-                                    ★
-                                {% else %}
-                                    ☆
-                                {% endif %}
-
-                            {% endfor %}
-
-                        </span>
-
-                        <span class="rating-count">
-                            {{ review_count|default(0) }}
-                            review{% if review_count != 1 %}s{% endif %}
-                        </span>
-
-                    </div>
-
-
-                    <!-- Price -->
-
-                    <div class="product-price">
-
-                        {% if product.price is not none %}
-
-                            Rs. {{ "%.2f"|format(product.price|float) }}
-
-                        {% else %}
-
-                            Price unavailable
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <!-- Description -->
-
-                    {% if product.description %}
-
-                        <div class="product-description">
-                            {{ product.description }}
-                        </div>
-
-                    {% endif %}
-
-
-                    <!-- Product information -->
-
-                    <div class="product-meta">
-
-
-                        {% if product.shade %}
-
-                            <div class="product-meta-row">
-
-                                <span class="product-meta-label">
-                                    Shade
-                                </span>
-
-                                <span class="product-meta-value">
-                                    {{ product.shade }}
-                                </span>
-
-                            </div>
-
-                        {% endif %}
-
-
-                        {% if product.color %}
-
-                            <div class="product-meta-row">
-
-                                <span class="product-meta-label">
-                                    Color
-                                </span>
-
-                                <span class="product-meta-value">
-                                    {{ product.color }}
-                                </span>
-
-                            </div>
-
-                        {% endif %}
-
-
-                        {% if product.brand %}
-
-                            <div class="product-meta-row">
-
-                                <span class="product-meta-label">
-                                    Brand
-                                </span>
-
-                                <span class="product-meta-value">
-                                    {{ product.brand }}
-                                </span>
-
-                            </div>
-
-                        {% endif %}
-
-                    </div>
-
-
-
-                    <!-- =========================================
-                         PRODUCT ACTIONS
-                         ========================================= -->
-
-                    <div class="product-actions">
-
-
-                        <!-- TRY ON -->
-
-                        <button
-                            type="button"
-                            class="product-btn product-btn-secondary try-on-btn"
-                            onclick="openTryOn()"
-                        >
-
-                            <span class="try-on-icon">
-                                ✨
-                            </span>
-
-                            Try On
-
-                        </button>
-
-
-
-                        <!-- ADD TO CART -->
-
-                        {% if session.get('user_id') %}
-
-                            <form
-                                method="POST"
-                                action="{{ url_for('add_to_cart', product_id=product.id) }}"
-                            >
-
-                                <button
-                                    type="submit"
-                                    class="product-btn product-btn-primary"
-                                    {% if product.stock is defined and product.stock|int <= 0 %}
-                                        disabled
-                                    {% endif %}
-                                >
-
-                                    Add to Bag
-                                    <span>+</span>
-
-                                </button>
-
-                            </form>
-
-                        {% else %}
-
-                            <button
-                                type="button"
-                                class="product-btn product-btn-primary"
-                                onclick="redirectToLogin()"
-                            >
-
-                                Add to Bag
-                                <span>+</span>
-
-                            </button>
-
-                        {% endif %}
-
-
-
-                        <!-- BUY NOW -->
-
-                        {% if session.get('user_id') %}
-
-                            <a
-                                href="{{ url_for('buy_now', product_id=product.id) }}"
-                                class="product-btn product-btn-secondary"
-                            >
-                                Buy Now
-                            </a>
-
-                        {% else %}
-
-                            <button
-                                type="button"
-                                class="product-btn product-btn-secondary"
-                                onclick="redirectToLogin()"
-                            >
-                                Buy Now
-                            </button>
-
-                        {% endif %}
-
-                    </div>
-
-
-
-                    <!-- Stock -->
-
-                    {% if product.stock is defined %}
-
-                        {% if product.stock|int <= 0 %}
-
-                            <div class="stock-status stock-out">
-                                Out of stock
-                            </div>
-
-                        {% elif product.stock|int <= 5 %}
-
-                            <div class="stock-status stock-low">
-                                Only {{ product.stock }} left
-                            </div>
-
-                        {% else %}
-
-                            <div class="stock-status stock-available">
-                                In stock
-                            </div>
-
-                        {% endif %}
-
-                    {% endif %}
-
-                </div>
-
-            </section>
-
-
-
-            <!-- =================================================
-                 REVIEWS
-                 ================================================= -->
-
-            <section class="reviews-section">
-
-                <div class="reviews-header">
-
-                    <div>
-
-                        <h2 class="reviews-heading">
-                            Customer Reviews
-                        </h2>
-
-                        <p class="reviews-subheading">
-                            See what other beauty lovers think.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                {% if reviews and reviews|length > 0 %}
-
-                    {% for review in reviews %}
-
-                        <article class="review-card">
-
-                            <div class="review-top">
-
-                                <div class="review-user">
-                                    {{ review.customer_name or review.name or 'Customer' }}
-                                </div>
-
-                                {% if review.created_at %}
-
-                                    <div class="review-date">
-                                        {{ review.created_at }}
-                                    </div>
-
-                                {% endif %}
-
-                            </div>
-
-
-                            <div class="review-rating">
-
-                                {% for i in range(1, 6) %}
-
-                                    {% if i <= review.rating|int %}
-                                        ★
-                                    {% else %}
-                                        ☆
-                                    {% endif %}
-
-                                {% endfor %}
-
-                            </div>
-
-
-                            {% if review.text %}
-
-                                <div class="review-text">
-                                    {{ review.text }}
-                                </div>
-
-                            {% endif %}
-
-
-                            {% if review.image_url %}
-
-                                <img
-                                    class="review-image"
-                                    src="{{ url_for('static', filename=review.image_url) if not review.image_url.startswith('http') else review.image_url }}"
-                                    alt="Customer review"
-                                >
-
-                            {% endif %}
-
-                        </article>
-
-                    {% endfor %}
-
-                {% else %}
-
-                    <div class="review-card">
-
-                        <div class="review-text">
-                            No reviews yet. Be the first to review this product.
-                        </div>
-
-                    </div>
-
-                {% endif %}
-
-            </section>
-
-        </div>
-
-    </main>
-
-
-
-    <!-- =========================================================
-         VIRTUAL TRY-ON MODAL
-         ========================================================= -->
-
-    <div
-        id="tryOnModal"
-        class="tryon-modal"
-        aria-hidden="true"
+    <nav
+      class="nav-links"
+      id="navLinks"
+      aria-label="Main navigation"
     >
 
-        <div class="tryon-modal-card">
+      <a href="{{ url_for('index') }}">
+        Home
+      </a>
 
+      <a href="{{ url_for('beauty') }}">
+        Beauty
+      </a>
 
-            <!-- =================================================
-                 MODAL HEADER
-                 ================================================= -->
+      <a href="{{ url_for('about') }}">
+        About
+      </a>
 
-            <div class="tryon-modal-header">
+      <a href="{{ url_for('contact') }}">
+        Contact
+      </a>
 
-                <div>
-
-                    <h2 class="tryon-modal-title">
-                        Virtual Try-On
-                    </h2>
-
-                    <div class="tryon-modal-subtitle">
-
-                        Trying:
-                        <strong>
-                            {{ product.name }}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    id="tryOnCloseBtn"
-                    class="tryon-close"
-                    aria-label="Close"
-                >
-                    ×
-                </button>
-
-            </div>
+    </nav>
 
 
 
-            <!-- =================================================
-                 CAMERA / IMAGE STAGE
-                 ================================================= -->
+    <!-- HEADER ACTIONS -->
 
-            <div class="tryon-stage">
-
-                <!-- Camera -->
-
-                <video
-                    id="tryOnVideo"
-                    class="tryon-video"
-                    autoplay
-                    muted
-                    playsinline
-                ></video>
+    <div class="nav-actions">
 
 
-                <!-- Uploaded image -->
+      <!-- SEARCH -->
 
-                <img
-                    id="tryOnImage"
-                    class="tryon-image"
-                    alt="Uploaded face"
-                >
-
-
-                <!-- AR canvas -->
-
-                <canvas
-                    id="tryOnCanvas"
-                    class="tryon-canvas"
-                ></canvas>
-
-
-                <!-- Placeholder -->
-
-                <div
-                    id="tryOnPlaceholder"
-                    class="tryon-placeholder"
-                >
-
-                    <div class="tryon-placeholder-inner">
-
-                        <div class="tryon-placeholder-icon">
-                            ✨
-                        </div>
-
-                        <h3>
-                            Virtual Try-On
-                        </h3>
-
-                        <p>
-                            Allow camera access and place your face
-                            inside the frame.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Status -->
-
-                <div
-                    id="tryOnStatus"
-                    class="tryon-status"
-                >
-                    Starting virtual try-on...
-                </div>
-
-            </div>
+      <button
+        class="icon-btn"
+        id="searchBtn"
+        type="button"
+        aria-label="Search"
+        title="Search"
+      >
+        ⌕
+      </button>
 
 
 
-            <!-- =================================================
-                 CONTROLS
-                 ================================================= -->
+      <!-- WISHLIST -->
 
-            <div class="tryon-controls">
-
-                <button
-                    type="button"
-                    id="startCameraBtn"
-                    class="tryon-control-btn primary"
-                >
-                    📷 Use Camera
-                </button>
+      <button
+        class="icon-btn wishlist-btn"
+        id="wishlistBtn"
+        type="button"
+        aria-label="Wishlist"
+        title="Wishlist"
+      >
+        ♡
+      </button>
 
 
-                <button
-                    type="button"
-                    id="uploadImageBtn"
-                    class="tryon-control-btn"
-                >
-                    🖼 Upload Image
-                </button>
+
+      <!-- SHOPPING BAG -->
+
+      <a
+        href="{{ url_for('cart') }}"
+        class="cart-btn"
+        id="cartBtn"
+        aria-label="Shopping bag"
+        title="Shopping bag"
+      >
+
+        <span>
+          Bag
+        </span>
+
+        <span
+          class="cart-count"
+          id="cartCount"
+        >
+          {{ bag_count or 0 }}
+        </span>
+
+      </a>
 
 
-                <button
-                    type="button"
-                    id="switchCameraBtn"
-                    class="tryon-control-btn"
-                >
-                    🔄 Switch Camera
-                </button>
+
+      <!-- LOGIN / PROFILE -->
+
+      {% if session.get("user_id") %}
+
+        <a
+          href="{{ url_for('profile') }}"
+          class="login-btn"
+          id="loginBtn"
+          aria-label="Open profile"
+        >
+
+          <span class="login-icon">
+            ♙
+          </span>
+
+          <span>
+            {{ session.get("user_name") or "Profile" }}
+          </span>
+
+        </a>
+
+      {% else %}
+
+        <a
+          href="{{ url_for('login', next=request.path) }}"
+          class="login-btn"
+          id="loginBtn"
+          aria-label="Login to Glamora AR"
+        >
+
+          <span class="login-icon">
+            ♙
+          </span>
+
+          <span>
+            Login
+          </span>
+
+        </a>
+
+      {% endif %}
 
 
-                <button
-                    type="button"
-                    id="stopCameraBtn"
-                    class="tryon-control-btn"
-                >
-                    ⏹ Stop Camera
-                </button>
 
-            </div>
+      <!-- MOBILE MENU -->
+
+      <button
+        class="menu-btn"
+        id="menuBtn"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        aria-controls="navLinks"
+      >
+        ☰
+      </button>
+
+    </div>
+
+  </header>
 
 
-            <!-- Hidden file input -->
 
-            <input
-                type="file"
-                id="tryOnImageInput"
-                accept="image/*"
-                hidden
+  <!-- =====================================================
+       FLASH MESSAGES
+       ===================================================== -->
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+      <div class="flash-wrapper">
+
+        {% for category, message in messages %}
+
+          <div class="flash-message {{ category }}">
+            {{ message }}
+          </div>
+
+        {% endfor %}
+
+      </div>
+
+    {% endif %}
+
+  {% endwith %}
+
+
+
+  <!-- =====================================================
+       PRODUCT DETAILS
+       ===================================================== -->
+
+  <main class="product-details-page">
+
+
+    <div class="product-details-container">
+
+
+      <!-- =================================================
+           LEFT SIDE — PRODUCT IMAGES
+           ================================================= -->
+
+      <section class="details-gallery">
+
+
+        <!-- BACK TO BEAUTY -->
+
+        <a
+          href="{{ url_for('beauty') }}"
+          class="back-beauty"
+        >
+          ← Back to Beauty
+        </a>
+
+
+
+        <!-- MAIN PRODUCT IMAGE -->
+
+        <div class="main-product-image">
+
+          {% if product.image_url %}
+
+            <a
+              href="{{ product.image_url }}"
+              target="_blank"
+              rel="noopener"
             >
 
+              <img
+                src="{{ product.image_url }}"
+                alt="{{ product.name }}"
+              />
+
+            </a>
+
+          {% else %}
+
+            <div class="product-image-placeholder">
+              {{ product.product_type or "Beauty Product" }}
+            </div>
+
+          {% endif %}
+
         </div>
+
+
+
+        <!-- PRODUCT THUMBNAILS -->
+
+        {% if images %}
+
+          <div class="thumbnail-gallery">
+
+            {% for image in images %}
+
+              <a
+                href="{{ image.image_url }}"
+                target="_blank"
+                rel="noopener"
+                class="thumbnail {% if loop.first %}thumbnail-primary{% endif %}"
+                title="View product image"
+              >
+
+                <img
+                  src="{{ image.image_url }}"
+                  alt="{{ product.name }} image {{ loop.index }}"
+                />
+
+              </a>
+
+            {% endfor %}
+
+          </div>
+
+
+          {% if images|length > 1 %}
+
+            <div class="image-note">
+              Click an image to view it in full size.
+            </div>
+
+          {% endif %}
+
+        {% endif %}
+
+      </section>
+
+
+
+      <!-- =================================================
+           RIGHT SIDE — PRODUCT INFORMATION
+           ================================================= -->
+
+      <section class="details-info">
+
+
+        <!-- PRODUCT TYPE -->
+
+        <div class="details-category">
+          {{ product.product_type or "Beauty Product" }}
+        </div>
+
+
+
+        <!-- PRODUCT NAME -->
+
+        <h1 class="details-title">
+          {{ product.name }}
+        </h1>
+
+
+
+        <!-- PRICE -->
+
+        <div class="details-price">
+          ${{ "%.2f"|format(product.price) }}
+        </div>
+
+
+
+        <!-- DESCRIPTION -->
+
+        {% if product.description %}
+
+          <p class="details-description">
+            {{ product.description }}
+          </p>
+
+        {% endif %}
+
+
+
+        <!-- PRODUCT META -->
+
+        <div class="details-meta">
+
+
+          {% if product.category_name %}
+
+            <div class="meta-row">
+
+              <span>
+                Category
+              </span>
+
+              <strong>
+                {{ product.category_name }}
+              </strong>
+
+            </div>
+
+          {% endif %}
+
+
+
+          {% if product.shade %}
+
+            <div class="meta-row">
+
+              <span>
+                Shade
+              </span>
+
+              <strong>
+                {{ product.shade }}
+              </strong>
+
+            </div>
+
+          {% endif %}
+
+
+
+          {% if product.color %}
+
+            <div class="meta-row">
+
+              <span>
+                Color
+              </span>
+
+              <strong>
+                {{ product.color }}
+              </strong>
+
+            </div>
+
+          {% endif %}
+
+
+
+          <div class="meta-row">
+
+            <span>
+              Availability
+            </span>
+
+
+            {% if product.is_available and product.stock > 0 %}
+
+              <strong class="details-stock">
+                {{ product.stock }} available
+              </strong>
+
+            {% else %}
+
+              <strong class="details-stock out">
+                Out of Stock
+              </strong>
+
+            {% endif %}
+
+          </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT ACTIONS
+             ================================================= -->
+
+        <div class="product-actions">
+
+
+          {% if product.is_available and product.stock > 0 %}
+
+
+            <!-- TRY ON -->
+
+            <button
+              type="button"
+              class="product-btn product-btn-secondary"
+              id="tryOnBtn"
+            >
+
+              Try On
+
+              <span>
+                →
+              </span>
+
+            </button>
+
+
+
+            <!-- ADD TO CART -->
+
+            {% if session.get("user_id") %}
+
+              <form
+                action="{{ url_for('add_to_cart', product_id=product.id) }}"
+                method="POST"
+                class="product-action-form"
+              >
+
+                <button
+                  type="submit"
+                  class="product-btn product-btn-primary"
+                >
+
+                  Add to Cart
+
+                  <span>
+                    +
+                  </span>
+
+                </button>
+
+              </form>
+
+            {% else %}
+
+              <!-- <button
+                type="button"
+                class="product-btn product-btn-primary"
+                id="loginToCartBtn"
+              >
+
+                Add to Cart
+
+                <span>
+                  +
+                </span>
+
+              </button> -->
+
+            {% endif %}
+
+
+
+            <!-- PLACE ORDER -->
+
+            {% if session.get("user_id") %}
+
+              <form
+                action="{{ url_for('buy_now', product_id=product.id) }}"
+                method="POST"
+                class="product-action-form"
+              >
+
+                <button
+                  type="submit"
+                  class="product-btn product-btn-secondary"
+                >
+
+                  Place Order
+
+                  <span>
+                    →
+                  </span>
+
+                </button>
+
+              </form>
+
+            {% else %}
+
+              <a
+                href="{{ url_for('login', next=request.path) }}"
+                class="product-btn product-btn-secondary"
+              >
+                Login to Purchase
+              </a>
+
+            {% endif %}
+
+
+          {% else %}
+
+            <span class="product-btn product-btn-disabled">
+              Out of Stock
+            </span>
+
+          {% endif %}
+
+        </div>
+
+      </section>
 
     </div>
 
 
 
+    <!-- =====================================================
+         REVIEWS SECTION
+         ===================================================== -->
 
-    <!-- =========================================================
-         EXISTING GLOBAL JS
-         ========================================================= -->
-
-    <script
-        src="{{ url_for('static', filename='js/main.js') }}"
-    ></script>
+    <section class="reviews-section">
 
 
+      <!-- REVIEWS HEADING -->
 
-    <!-- =========================================================
-         PRODUCT DETAILS + AR JS
-         ========================================================= -->
+      <div class="reviews-heading">
 
-    <script
-        type="module"
-        src="{{ url_for('static', filename='js/product_details.js') }}"
-    ></script>
+        <span class="reviews-eyebrow">
+          Customer Feedback
+        </span>
+
+        <h2>
+          Reviews
+        </h2>
+
+
+        {% if review_count > 0 %}
+
+          <div class="reviews-summary">
+
+            {{ average_rating }}/5 ·
+
+            {{ review_count }}
+
+            review{% if review_count != 1 %}s{% endif %}
+
+          </div>
+
+        {% else %}
+
+          <div class="reviews-summary">
+            Be the first to review this product.
+          </div>
+
+        {% endif %}
+
+      </div>
+
+
+
+      <!-- REVIEWS LAYOUT -->
+
+      <div class="reviews-layout">
+
+
+        <!-- REVIEW FORM -->
+
+        <div class="review-form-card">
+
+          <h3>
+            Write a Review
+          </h3>
+
+
+          {% if session.get("user_id") %}
+
+
+            <form
+              action="{{ url_for('add_product_review', product_id=product.id) }}"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+
+
+              <!-- RATING -->
+
+              <div class="review-field">
+
+                <label for="rating">
+                  Rating
+                </label>
+
+
+                <select
+                  id="rating"
+                  name="rating"
+                  required
+                >
+
+                  <option value="">
+                    Select rating
+                  </option>
+
+                  <option value="5">
+                    ★★★★★ — Excellent
+                  </option>
+
+                  <option value="4">
+                    ★★★★☆ — Very Good
+                  </option>
+
+                  <option value="3">
+                    ★★★☆☆ — Good
+                  </option>
+
+                  <option value="2">
+                    ★★☆☆☆ — Fair
+                  </option>
+
+                  <option value="1">
+                    ★☆☆☆☆ — Poor
+                  </option>
+
+                </select>
+
+              </div>
+
+
+
+              <!-- REVIEW TEXT -->
+
+              <div class="review-field">
+
+                <label for="review_text">
+                  Your Review
+                </label>
+
+
+                <textarea
+                  id="review_text"
+                  name="review_text"
+                  placeholder="Share your experience with this product..."
+                ></textarea>
+
+              </div>
+
+
+
+              <!-- REVIEW IMAGE -->
+
+              <div class="review-field">
+
+                <label for="review_image">
+
+                  Review Image
+
+                  <span class="review-optional">
+                    (Optional)
+                  </span>
+
+                </label>
+
+
+                <input
+                  type="file"
+                  id="review_image"
+                  name="review_image"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                />
+
+              </div>
+
+
+
+              <!-- SUBMIT -->
+
+              <button
+                type="submit"
+                class="review-submit"
+              >
+                Submit Review
+              </button>
+
+            </form>
+
+
+          {% else %}
+
+
+            <p class="review-login-message">
+
+              Please
+
+              <a href="{{ url_for('login', next=request.path) }}">
+                log in
+              </a>
+
+              to write a review.
+
+            </p>
+
+
+          {% endif %}
+
+        </div>
+
+
+
+        <!-- EXISTING REVIEWS -->
+
+        <div class="reviews-list">
+
+
+          {% if reviews %}
+
+
+            {% for review in reviews %}
+
+              <article class="review-card">
+
+
+                <div class="review-top">
+
+
+                  <div>
+
+                    <div class="review-customer">
+                      {{ review.customer_name }}
+                    </div>
+
+
+                    {% if review.created_at %}
+
+                      <div class="review-date">
+                        {{ review.created_at }}
+                      </div>
+
+                    {% endif %}
+
+                  </div>
+
+
+
+                  <div class="review-stars">
+
+                    {% for star in range(review.rating|int) %}
+                      ★
+                    {% endfor %}
+
+                    {% for star in range(5 - (review.rating|int)) %}
+                      ☆
+                    {% endfor %}
+
+                  </div>
+
+                </div>
+
+
+
+                {% if review.review_text %}
+
+                  <p class="review-text">
+                    {{ review.review_text }}
+                  </p>
+
+                {% endif %}
+
+
+
+                {% if review.review_image %}
+
+                  <a
+                    href="{{ review.review_image }}"
+                    target="_blank"
+                    rel="noopener"
+                  >
+
+                    <img
+                      src="{{ review.review_image }}"
+                      alt="Customer review image"
+                      class="review-image"
+                    />
+
+                  </a>
+
+                {% endif %}
+
+              </article>
+
+            {% endfor %}
+
+
+          {% else %}
+
+
+            <div class="no-reviews">
+
+              No reviews yet.
+
+              Be the first customer to share your experience.
+
+            </div>
+
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+
+
+      <!-- CONTINUE SHOPPING -->
+
+      <div class="continue-shopping">
+
+        <a href="{{ url_for('beauty') }}">
+          ← Continue Shopping
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+
+  <!-- =====================================================
+       TRY-ON MODAL
+       ===================================================== -->
+
+  <div
+    class="tryon-modal"
+    id="tryOnModal"
+    aria-hidden="true"
+  >
+
+
+    <div
+      class="tryon-modal-content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tryOnModalTitle"
+    >
+
+
+      <!-- =================================================
+           MODAL HEADER
+           ================================================= -->
+
+      <div class="tryon-modal-header">
+
+
+        <div class="tryon-modal-heading">
+
+          <span class="tryon-eyebrow">
+            Glamora AR
+          </span>
+
+          <h2
+            class="tryon-modal-title"
+            id="tryOnModalTitle"
+          >
+            Virtual Try-On
+          </h2>
+
+          <div class="tryon-product-name">
+            Trying: {{ product.name }}
+          </div>
+
+        </div>
+
+
+
+        <button
+          type="button"
+          class="tryon-close"
+          id="tryOnClose"
+          aria-label="Close Try-On"
+          title="Close"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+
+      <!-- =================================================
+           TRY-ON STAGE
+           ================================================= -->
+
+      <div class="tryon-stage">
+
+
+        <!-- LIVE CAMERA -->
+
+        <video
+          id="tryOnVideo"
+          class="tryon-video"
+          autoplay
+          playsinline
+          muted
+        ></video>
+
+
+
+        <!-- CAMERA / IMAGE OVERLAY CANVAS -->
+
+        <canvas
+          id="tryOnCanvas"
+          class="tryon-canvas"
+        ></canvas>
+
+
+
+        <!-- UPLOADED IMAGE -->
+
+        <img
+          id="tryOnImage"
+          class="tryon-image"
+          alt="Your selected try-on image"
+        >
+
+
+
+        <!-- PLACEHOLDER -->
+
+        <div
+          class="tryon-placeholder"
+          id="tryOnPlaceholder"
+        >
+
+          <div class="tryon-placeholder-icon">
+            ✨
+          </div>
+
+          <h3>
+            See Yourself With Glamora AR
+          </h3>
+
+          <p>
+            Use your camera for a live virtual
+            try-on or upload a photo to try the
+            selected product.
+          </p>
+
+        </div>
+
+
+
+        <!-- CAMERA STATUS -->
+
+        <div
+          class="tryon-status"
+          id="tryOnStatus"
+        >
+
+          <span class="tryon-status-dot"></span>
+
+          <span id="tryOnStatusText">
+            Starting AR...
+          </span>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           ERROR MESSAGE
+           ================================================= -->
+
+      <div
+        class="tryon-error"
+        id="tryOnError"
+      ></div>
+
+
+
+      <!-- =================================================
+           TRY-ON CONTROLS
+           ================================================= -->
+
+      <div class="tryon-controls">
+
+
+        <!-- USE CAMERA -->
+
+        <button
+          type="button"
+          class="tryon-control-btn primary"
+          id="startCameraBtn"
+        >
+
+          📷
+
+          <span>
+            Use Camera
+          </span>
+
+        </button>
+
+
+
+        <!-- UPLOAD IMAGE -->
+
+        <button
+          type="button"
+          class="tryon-control-btn"
+          id="uploadImageBtn"
+        >
+
+          🖼️
+
+          <span>
+            Upload Image
+          </span>
+
+        </button>
+
+
+        <input
+          type="file"
+          id="tryOnImageInput"
+          class="tryon-upload-input"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+        >
+
+
+
+        <!-- SWITCH CAMERA -->
+
+        <button
+          type="button"
+          class="tryon-control-btn"
+          id="switchCameraBtn"
+          hidden
+        >
+
+          🔄
+
+          <span>
+            Switch Camera
+          </span>
+
+        </button>
+
+
+
+        <!-- STOP CAMERA -->
+
+        <button
+          type="button"
+          class="tryon-control-btn"
+          id="stopCameraBtn"
+          hidden
+        >
+
+          ⏹
+
+          <span>
+            Stop Camera
+          </span>
+
+        </button>
+
+
+
+        <!-- HINT -->
+
+        <p class="tryon-hint">
+          Allow camera permission when your browser asks.
+          Your selected product will be applied to your face.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       PRODUCT DATA FOR AR
+       ===================================================== -->
+
+  <script>
+
+    window.GLAMORA_TRYON_PRODUCT = {
+
+      id: {{ product.id|tojson }},
+
+      name: {{ product.name|tojson }},
+
+      type: {{
+        (product.product_type_key
+        if product.product_type_key is defined
+        else product.product_type
+        if product.product_type is defined
+        else "")|tojson
+      }},
+
+      shade: {{
+        (product.shade
+        if product.shade is defined
+        else "")|tojson
+      }},
+
+      color: {{
+        (product.color
+        if product.color is defined
+        else "")|tojson
+      }}
+
+    };
+
+  </script>
+
+
+
+  <!-- =====================================================
+       MAIN WEBSITE JAVASCRIPT
+       ===================================================== -->
+
+  <script
+    src="{{ url_for('static', filename='js/main.js') }}"
+  ></script>
+
+
+
+  <!-- =====================================================
+       TRY-ON JAVASCRIPT
+       ===================================================== -->
+
+  <script
+    type="module"
+    src="{{ url_for('static', filename='js/product_details.js') }}"
+  ></script>
+
 
 </body>
 
