@@ -7,21 +7,16 @@
    LOCAL WASM
    LOCAL FACE LANDMARK MODEL
 
-   CAMERA BEHAVIOR:
-   - Requests camera permission when Try On is clicked
-   - Opens the real camera
-   - NO horizontal mirroring
-   - NO scaleX(-1)
-   - NO canvas scale(-1,1)
-   - Makeup uses the same camera coordinates
+   IMPORTANT:
+   CAMERA IS NOT MIRRORED / INVERTED
    ========================================================= */
 
 (() => {
+
     "use strict";
 
     console.log("========================================");
-    console.log("GLAMORA AR — Product Details JS");
-    console.log("Virtual Try-On starting...");
+    console.log("GLAMORA AR - PRODUCT DETAILS JS");
     console.log("========================================");
 
 
@@ -29,248 +24,151 @@
        DOM ELEMENTS
        ===================================================== */
 
-    const tryOnBtn =
-        document.getElementById("tryOnBtn");
+    const tryOnBtn = document.getElementById("tryOnBtn");
+    const tryOnModal = document.getElementById("tryOnModal");
+    const tryOnClose = document.getElementById("tryOnClose");
 
-    const tryOnModal =
-        document.getElementById("tryOnModal");
+    const tryOnVideo = document.getElementById("tryOnVideo");
+    const tryOnCanvas = document.getElementById("tryOnCanvas");
 
-    const tryOnClose =
-        document.getElementById("tryOnClose");
+    const tryOnImage = document.getElementById("tryOnImage");
+    const tryOnPlaceholder = document.getElementById("tryOnPlaceholder");
 
-    const tryOnVideo =
-        document.getElementById("tryOnVideo");
+    const tryOnStatus = document.getElementById("tryOnStatus");
+    const tryOnStatusText = document.getElementById("tryOnStatusText");
 
-    const tryOnCanvas =
-        document.getElementById("tryOnCanvas");
+    const tryOnError = document.getElementById("tryOnError");
 
-    const tryOnImage =
-        document.getElementById("tryOnImage");
+    const startCameraBtn = document.getElementById("startCameraBtn");
+    const uploadImageBtn = document.getElementById("uploadImageBtn");
+    const tryOnImageInput = document.getElementById("tryOnImageInput");
 
-    const tryOnPlaceholder =
-        document.getElementById("tryOnPlaceholder");
-
-    const tryOnStatus =
-        document.getElementById("tryOnStatus");
-
-    const tryOnStatusText =
-        document.getElementById("tryOnStatusText");
-
-    const tryOnError =
-        document.getElementById("tryOnError");
-
-    const startCameraBtn =
-        document.getElementById("startCameraBtn");
-
-    const uploadImageBtn =
-        document.getElementById("uploadImageBtn");
-
-    const tryOnImageInput =
-        document.getElementById("tryOnImageInput");
-
-    const switchCameraBtn =
-        document.getElementById("switchCameraBtn");
-
-    const stopCameraBtn =
-        document.getElementById("stopCameraBtn");
+    const switchCameraBtn = document.getElementById("switchCameraBtn");
+    const stopCameraBtn = document.getElementById("stopCameraBtn");
 
 
     /* =====================================================
-       REQUIRED ELEMENT CHECK
+       CHECK DOM
        ===================================================== */
 
-    if (!tryOnBtn) {
-        console.error(
-            "ERROR: #tryOnBtn not found."
-        );
-        return;
-    }
+    if (!tryOnBtn || !tryOnModal) {
 
-    if (!tryOnModal) {
         console.error(
-            "ERROR: #tryOnModal not found."
+            "Glamora AR: Try-On button or modal not found."
         );
-        return;
-    }
 
-    if (!tryOnVideo) {
-        console.error(
-            "ERROR: #tryOnVideo not found."
-        );
-        return;
-    }
-
-    if (!tryOnCanvas) {
-        console.error(
-            "ERROR: #tryOnCanvas not found."
-        );
         return;
     }
 
 
     /* =====================================================
-       PRODUCT DATA
+       PRODUCT INFORMATION
        ===================================================== */
 
-    const body =
-        document.body;
+    const body = document.body;
+
+    const productId =
+        body.dataset.productId || "";
 
     const productName =
-        body.dataset.productName ||
-        "Glamora Beauty Product";
+        body.dataset.productName || "Beauty Product";
 
     const productType =
-        body.dataset.productType ||
-        "lipstick";
+        body.dataset.productType || "";
 
     const productShade =
-        body.dataset.productShade ||
-        "";
+        body.dataset.productShade || "";
 
     const productColor =
-        body.dataset.productColor ||
-        "";
+        body.dataset.productColor || "";
 
 
-    console.log(
-        "Product:",
-        productName
-    );
-
-    console.log(
-        "Product type:",
-        productType
-    );
-
-    console.log(
-        "Product shade:",
-        productShade
-    );
-
-    console.log(
-        "Product color:",
-        productColor
-    );
+    console.log("Product:", {
+        id: productId,
+        name: productName,
+        type: productType,
+        shade: productShade,
+        color: productColor
+    });
 
 
     /* =====================================================
-       NORMALIZE PRODUCT TYPE
+       PRODUCT TYPE NORMALIZATION
        ===================================================== */
 
     function normalizeProductType(type) {
 
-        const value =
-            String(type || "")
-                .trim()
-                .toLowerCase()
-                .replace(/[\s_-]+/g, "");
+        return String(type || "")
+            .trim()
+            .toLowerCase()
+            .replace(/[_\s-]+/g, "");
 
-
-        if (
-            value.includes("lip")
-        ) {
-            return "lipstick";
-        }
-
-
-        if (
-            value.includes("eyeshadow")
-        ) {
-            return "eyeshadow";
-        }
-
-
-        if (
-            value === "shadow"
-        ) {
-            return "eyeshadow";
-        }
-
-
-        if (
-            value.includes("liner")
-        ) {
-            return "eyeliner";
-        }
-
-
-        if (
-            value.includes("mascara")
-        ) {
-            return "mascara";
-        }
-
-
-        if (
-            value.includes("blush")
-        ) {
-            return "blush";
-        }
-
-
-        if (
-            value.includes("foundation")
-        ) {
-            return "foundation";
-        }
-
-
-        if (
-            value.includes("highlight")
-        ) {
-            return "highlighter";
-        }
-
-
-        return "lipstick";
     }
 
 
     const normalizedProductType =
-        normalizeProductType(
-            productType
-        );
-
-
-    console.log(
-        "Normalized product type:",
-        normalizedProductType
-    );
+        normalizeProductType(productType);
 
 
     /* =====================================================
        STATE
        ===================================================== */
 
-    let faceLandmarker =
-        null;
+    let faceLandmarker = null;
 
-    let mediaStream =
-        null;
+    let mediaStream = null;
 
-    let animationFrame =
-        null;
+    let animationFrame = null;
 
-    let cameraRunning =
-        false;
+    let cameraRunning = false;
 
-    let cameraFacingMode =
-        "user";
+    let cameraFacingMode = "user";
 
-    let mediaPipeLoading =
-        false;
+    let mediaPipeLoading = false;
 
-    let mediaPipeReady =
-        false;
+    let mediaPipeReady = false;
 
-    let cameraStartAttempts =
-        0;
+    let cameraStartAttempts = 0;
 
-    let currentVideoWidth =
-        640;
+    let currentVideoWidth = 0;
 
-    let currentVideoHeight =
-        480;
+    let currentVideoHeight = 0;
+
+
+    /* =====================================================
+       PREVIEW ORIENTATION
+       
+       VERY IMPORTANT:
+       NEVER MIRROR THE CAMERA.
+       ===================================================== */
+
+    function resetPreviewOrientation() {
+
+        if (tryOnVideo) {
+
+            tryOnVideo.style.transform = "none";
+
+            tryOnVideo.style.webkitTransform = "none";
+
+        }
+
+        if (tryOnCanvas) {
+
+            tryOnCanvas.style.transform = "none";
+
+            tryOnCanvas.style.webkitTransform = "none";
+
+        }
+
+        if (tryOnImage) {
+
+            tryOnImage.style.transform = "none";
+
+            tryOnImage.style.webkitTransform = "none";
+
+        }
+
+    }
 
 
     /* =====================================================
@@ -279,58 +177,53 @@
 
     function setStatus(message) {
 
-        if (tryOnStatusText) {
-
-            tryOnStatusText.textContent =
-                message;
+        if (!tryOnStatusText) {
+            return;
         }
 
+        tryOnStatusText.textContent = message;
 
-        if (tryOnStatus) {
-
-            tryOnStatus.classList.remove(
-                "hidden"
-            );
-
-            tryOnStatus.classList.add(
-                "show"
-            );
-        }
     }
 
 
-    function clearStatus() {
+    function showStatus() {
 
         if (tryOnStatus) {
 
-            tryOnStatus.classList.remove(
-                "show"
-            );
+            tryOnStatus.style.display = "flex";
 
-            tryOnStatus.classList.add(
-                "hidden"
-            );
         }
+
     }
 
+
+    function hideStatus() {
+
+        if (tryOnStatus) {
+
+            tryOnStatus.style.display = "none";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       ERROR
+       ===================================================== */
 
     function showError(message) {
 
-        console.error(
-            "TRY-ON ERROR:",
-            message
-        );
-
+        console.error("Glamora AR:", message);
 
         if (tryOnError) {
 
-            tryOnError.textContent =
-                message;
+            tryOnError.textContent = message;
 
-            tryOnError.classList.add(
-                "show"
-            );
+            tryOnError.style.display = "block";
+
         }
+
     }
 
 
@@ -338,58 +231,12 @@
 
         if (tryOnError) {
 
-            tryOnError.textContent =
-                "";
+            tryOnError.textContent = "";
 
-            tryOnError.classList.remove(
-                "show"
-            );
-        }
-    }
+            tryOnError.style.display = "none";
 
-
-    /* =====================================================
-       CAMERA ORIENTATION
-
-       IMPORTANT:
-
-       The camera is NOT mirrored.
-
-       Never use:
-
-       scaleX(-1)
-
-       ctx.scale(-1, 1)
-
-       transform: scaleX(-1)
-       ===================================================== */
-
-    function resetCameraOrientation() {
-
-        if (tryOnVideo) {
-
-            tryOnVideo.style.transform =
-                "none";
-
-            tryOnVideo.style.webkitTransform =
-                "none";
-
-            tryOnVideo.style.scale =
-                "1";
         }
 
-
-        if (tryOnCanvas) {
-
-            tryOnCanvas.style.transform =
-                "none";
-
-            tryOnCanvas.style.webkitTransform =
-                "none";
-
-            tryOnCanvas.style.scale =
-                "1";
-        }
     }
 
 
@@ -399,43 +246,53 @@
 
     async function openTryOn() {
 
-        console.log(
-            "Try On button clicked."
-        );
-
+        console.log("Opening Glamora AR Try-On...");
 
         clearError();
-        clearStatus();
 
-        resetCameraOrientation();
+        resetPreviewOrientation();
 
+        tryOnModal.classList.add("active");
 
-        /* -------------------------------------------------
-           OPEN MODAL
-           ------------------------------------------------- */
-
-        tryOnModal.classList.add(
-            "open"
+        tryOnModal.setAttribute(
+            "aria-hidden",
+            "false"
         );
 
-        tryOnModal.classList.add(
-            "show"
+        document.body.classList.add(
+            "tryon-open"
         );
 
-        tryOnModal.style.display =
-            "flex";
+        if (tryOnPlaceholder) {
 
+            tryOnPlaceholder.style.display = "flex";
 
-        /* -------------------------------------------------
-           REQUEST CAMERA
-           ------------------------------------------------- */
+        }
 
-        setStatus(
-            "Requesting camera permission..."
-        );
+        if (tryOnImage) {
 
+            tryOnImage.style.display = "none";
+
+        }
+
+        if (tryOnCanvas) {
+
+            tryOnCanvas.style.display = "none";
+
+        }
+
+        if (tryOnVideo) {
+
+            tryOnVideo.style.display = "none";
+
+        }
+
+        setStatus("Requesting camera permission...");
+
+        showStatus();
 
         await startCamera();
+
     }
 
 
@@ -445,47 +302,63 @@
 
     function closeTryOn() {
 
-        console.log(
-            "Closing Try-On."
-        );
-
+        console.log("Closing Glamora AR Try-On.");
 
         stopCamera();
 
-        clearError();
-
-        clearStatus();
-
-
         if (tryOnModal) {
 
-            tryOnModal.classList.remove(
-                "open"
+            tryOnModal.classList.remove("active");
+
+            tryOnModal.setAttribute(
+                "aria-hidden",
+                "true"
             );
 
-            tryOnModal.classList.remove(
-                "show"
-            );
-
-            tryOnModal.style.display =
-                "";
         }
 
+        document.body.classList.remove(
+            "tryon-open"
+        );
 
-        if (tryOnImage) {
-
-            tryOnImage.removeAttribute(
-                "src"
-            );
-
-            tryOnImage.style.display =
-                "none";
-        }
-
+        clearError();
 
         clearCanvas();
 
-        resetCameraOrientation();
+        if (tryOnVideo) {
+
+            tryOnVideo.style.display = "none";
+
+            tryOnVideo.pause();
+
+            tryOnVideo.srcObject = null;
+
+        }
+
+        if (tryOnImage) {
+
+            tryOnImage.style.display = "none";
+
+            tryOnImage.removeAttribute("src");
+
+        }
+
+        if (tryOnCanvas) {
+
+            tryOnCanvas.style.display = "none";
+
+        }
+
+        if (tryOnPlaceholder) {
+
+            tryOnPlaceholder.style.display = "flex";
+
+        }
+
+        resetPreviewOrientation();
+
+        setStatus("Ready");
+
     }
 
 
@@ -496,44 +369,20 @@
     function checkCameraSupport() {
 
         if (
-            !window.isSecureContext
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
         ) {
 
             showError(
-                "Camera access requires a secure context. " +
-                "Use http://127.0.0.1:5000 for local Glamora AR."
+                "Your browser does not support camera access. Please use a modern version of Chrome, Edge, or Firefox."
             );
 
             return false;
+
         }
-
-
-        if (
-            !navigator.mediaDevices
-        ) {
-
-            showError(
-                "Camera API is not available in this browser."
-            );
-
-            return false;
-        }
-
-
-        if (
-            typeof navigator.mediaDevices.getUserMedia !==
-            "function"
-        ) {
-
-            showError(
-                "Your browser does not support camera access."
-            );
-
-            return false;
-        }
-
 
         return true;
+
     }
 
 
@@ -543,483 +392,383 @@
 
     async function startCamera() {
 
-        console.log(
-            "----------------------------------------"
-        );
+        if (!checkCameraSupport()) {
 
-        console.log(
-            "Starting camera..."
-        );
+            return;
 
-        console.log(
-            "----------------------------------------"
-        );
-
-
-        clearError();
-
-        resetCameraOrientation();
-
-
-        /* -------------------------------------------------
-           CHECK CAMERA SUPPORT
-           ------------------------------------------------- */
-
-        if (
-            !checkCameraSupport()
-        ) {
-
-            return false;
         }
 
 
-        /* -------------------------------------------------
-           STOP OLD STREAM
-           ------------------------------------------------- */
+        /* -----------------------------------------------
+           STOP EXISTING CAMERA
+           ----------------------------------------------- */
 
         if (mediaStream) {
 
             stopCamera();
+
         }
 
 
         cameraStartAttempts++;
 
-
         console.log(
-            "Camera attempt:",
+            "Starting camera. Attempt:",
             cameraStartAttempts
         );
 
 
-        /* -------------------------------------------------
-           CAMERA PERMISSION
-           ------------------------------------------------- */
+        clearError();
 
         setStatus(
             "Requesting camera permission..."
         );
 
 
-        let stream;
+        /* -----------------------------------------------
+           CAMERA CONSTRAINTS
+           
+           We use the user's camera but DO NOT mirror it.
+           ----------------------------------------------- */
 
+        const constraints = {
 
-        try {
+            audio: false,
 
-            /*
-             * Keep camera constraints simple.
-             *
-             * This allows Chrome to choose
-             * the available camera.
-             */
-            stream =
-                await navigator.mediaDevices.getUserMedia({
-                    audio: false,
-                    video: true
-                });
+            video: {
 
+                facingMode: {
+                    ideal: cameraFacingMode
+                },
 
-        } catch (error) {
+                width: {
+                    ideal: 1280
+                },
 
-            console.error(
-                "getUserMedia() failed:",
-                error
-            );
+                height: {
+                    ideal: 720
+                }
 
-
-            handleCameraError(
-                error
-            );
-
-
-            return false;
-        }
-
-
-        /* -------------------------------------------------
-           CHECK STREAM
-           ------------------------------------------------- */
-
-        if (!stream) {
-
-            showError(
-                "The browser did not return a camera stream."
-            );
-
-            return false;
-        }
-
-
-        const tracks =
-            stream.getVideoTracks();
-
-
-        if (
-            !tracks ||
-            tracks.length === 0
-        ) {
-
-            showError(
-                "No camera video track was returned."
-            );
-
-
-            stream
-                .getTracks()
-                .forEach(track => {
-
-                    track.stop();
-
-                });
-
-
-            return false;
-        }
-
-
-        console.log(
-            "Camera device:",
-            tracks[0].label
-        );
-
-
-        console.log(
-            "Camera settings:",
-            tracks[0].getSettings()
-        );
-
-
-        /* -------------------------------------------------
-           SAVE STREAM
-           ------------------------------------------------- */
-
-        mediaStream =
-            stream;
-
-
-        /* -------------------------------------------------
-           CAMERA TRACK EVENTS
-           ------------------------------------------------- */
-
-        tracks.forEach(
-            track => {
-
-                track.addEventListener(
-                    "ended",
-                    () => {
-
-                        console.warn(
-                            "Camera track ended."
-                        );
-
-
-                        cameraRunning =
-                            false;
-
-
-                        setStatus(
-                            "Camera stopped."
-                        );
-                    }
-                );
             }
-        );
 
-
-        /* -------------------------------------------------
-           VIDEO CONFIGURATION
-           ------------------------------------------------- */
-
-        tryOnVideo.autoplay =
-            true;
-
-        tryOnVideo.muted =
-            true;
-
-        tryOnVideo.playsInline =
-            true;
-
-
-        tryOnVideo.setAttribute(
-            "autoplay",
-            ""
-        );
-
-        tryOnVideo.setAttribute(
-            "muted",
-            ""
-        );
-
-        tryOnVideo.setAttribute(
-            "playsinline",
-            ""
-        );
-
-
-        /*
-         * VERY IMPORTANT:
-         * Keep video unmirrored.
-         */
-        resetCameraOrientation();
-
-
-        /* -------------------------------------------------
-           ATTACH STREAM
-           ------------------------------------------------- */
-
-        tryOnVideo.srcObject =
-            mediaStream;
-
-
-        console.log(
-            "Camera stream attached."
-        );
-
-
-        /* -------------------------------------------------
-           SHOW CAMERA
-           ------------------------------------------------- */
-
-        if (tryOnPlaceholder) {
-
-            tryOnPlaceholder.style.display =
-                "none";
-        }
-
-
-        if (tryOnImage) {
-
-            tryOnImage.style.display =
-                "none";
-        }
-
-
-        if (tryOnVideo) {
-
-            tryOnVideo.style.display =
-                "block";
-
-            tryOnVideo.classList.add(
-                "show"
-            );
-        }
-
-
-        if (tryOnCanvas) {
-
-            tryOnCanvas.style.display =
-                "block";
-
-            tryOnCanvas.classList.add(
-                "show"
-            );
-        }
-
-
-        /* -------------------------------------------------
-           START VIDEO
-           ------------------------------------------------- */
-
-        setStatus(
-            "Opening camera..."
-        );
+        };
 
 
         try {
 
-            await tryOnVideo.play();
+            console.log(
+                "Calling navigator.mediaDevices.getUserMedia..."
+            );
+
+            mediaStream =
+                await navigator.mediaDevices.getUserMedia(
+                    constraints
+                );
 
 
             console.log(
-                "video.play() successful."
+                "Camera permission granted."
             );
 
 
-        } catch (error) {
+            /* -------------------------------------------
+               VERIFY STREAM
+               ------------------------------------------- */
 
-            console.warn(
-                "First video.play() failed:",
-                error
+            if (!mediaStream) {
+
+                throw new Error(
+                    "Camera stream was not created."
+                );
+
+            }
+
+
+            const tracks =
+                mediaStream.getVideoTracks();
+
+
+            if (!tracks.length) {
+
+                throw new Error(
+                    "No video track was returned by the camera."
+                );
+
+            }
+
+
+            console.log(
+                "Camera track:",
+                tracks[0].label
             );
 
 
-            await new Promise(
-                resolve => {
+            /* -------------------------------------------
+               TRACK END HANDLER
+               ------------------------------------------- */
 
-                    const timeout =
-                        setTimeout(
-                            resolve,
-                            1500
-                        );
+            tracks[0].addEventListener(
+                "ended",
+                () => {
 
-
-                    tryOnVideo.addEventListener(
-                        "loadedmetadata",
-                        () => {
-
-                            clearTimeout(
-                                timeout
-                            );
-
-                            resolve();
-
-                        },
-                        {
-                            once: true
-                        }
+                    console.warn(
+                        "Camera track ended."
                     );
+
+                    cameraRunning = false;
+
+                    setStatus(
+                        "Camera stopped."
+                    );
+
                 }
             );
 
+
+            /* -------------------------------------------
+               CONFIGURE VIDEO
+               ------------------------------------------- */
+
+            tryOnVideo.autoplay = true;
+
+            tryOnVideo.playsInline = true;
+
+            tryOnVideo.muted = true;
+
+            tryOnVideo.setAttribute(
+                "playsinline",
+                ""
+            );
+
+            tryOnVideo.setAttribute(
+                "autoplay",
+                ""
+            );
+
+            tryOnVideo.muted = true;
+
+
+            /* -------------------------------------------
+               IMPORTANT:
+               REMOVE ALL MIRRORING
+               ------------------------------------------- */
+
+            resetPreviewOrientation();
+
+
+            /* -------------------------------------------
+               ATTACH CAMERA STREAM
+               ------------------------------------------- */
+
+            tryOnVideo.srcObject =
+                mediaStream;
+
+
+            /* -------------------------------------------
+               VIDEO EVENTS
+               ------------------------------------------- */
+
+            tryOnVideo.onloadedmetadata = () => {
+
+                console.log(
+                    "Camera video metadata loaded:",
+                    tryOnVideo.videoWidth,
+                    "x",
+                    tryOnVideo.videoHeight
+                );
+
+            };
+
+
+            /* -------------------------------------------
+               SHOW CAMERA SOURCE
+               
+               Video itself is hidden visually.
+               Canvas is the visible AR preview.
+               ------------------------------------------- */
+
+            tryOnVideo.style.display = "none";
+
+
+            if (tryOnPlaceholder) {
+
+                tryOnPlaceholder.style.display =
+                    "none";
+
+            }
+
+            if (tryOnImage) {
+
+                tryOnImage.style.display =
+                    "none";
+
+            }
+
+            if (tryOnCanvas) {
+
+                tryOnCanvas.style.display =
+                    "block";
+
+            }
+
+
+            /* -------------------------------------------
+               PLAY VIDEO
+               ------------------------------------------- */
 
             try {
 
                 await tryOnVideo.play();
 
+            } catch (playError) {
 
-            } catch (secondError) {
-
-                console.error(
-                    "Second video.play() failed:",
-                    secondError
+                console.warn(
+                    "Initial video.play() failed:",
+                    playError
                 );
 
 
-                showError(
-                    "Camera permission was granted, but the camera preview could not start."
+                await new Promise(
+                    resolve => setTimeout(
+                        resolve,
+                        300
+                    )
                 );
 
 
-                stopCamera();
+                try {
 
-                return false;
+                    await tryOnVideo.play();
+
+                } catch (secondPlayError) {
+
+                    console.error(
+                        "Camera video could not start:",
+                        secondPlayError
+                    );
+
+                    throw secondPlayError;
+
+                }
+
             }
-        }
 
 
-        /* -------------------------------------------------
-           WAIT FOR VIDEO SIZE
-           ------------------------------------------------- */
+            /* -------------------------------------------
+               WAIT FOR VIDEO DIMENSIONS
+               ------------------------------------------- */
 
-        const ready =
             await waitForVideoDimensions();
 
 
-        if (!ready) {
+            /* -------------------------------------------
+               RESIZE CANVAS
+               ------------------------------------------- */
 
-            showError(
-                "Camera opened, but its video dimensions could not be detected."
+            resizeCanvas();
+
+
+            /* -------------------------------------------
+               CAMERA READY
+               ------------------------------------------- */
+
+            cameraRunning = true;
+
+            setStatus(
+                "Camera ready. Position your face in the frame."
             );
 
 
-            stopCamera();
+            if (switchCameraBtn) {
 
-            return false;
-        }
+                switchCameraBtn.hidden = false;
 
+            }
 
-        /* -------------------------------------------------
-           CANVAS
-           ------------------------------------------------- */
+            if (stopCameraBtn) {
 
-        resizeCanvas();
+                stopCameraBtn.hidden = false;
 
-        resetCameraOrientation();
+            }
 
 
-        /* -------------------------------------------------
-           CAMERA READY
-           ------------------------------------------------- */
+            /* -------------------------------------------
+               START RENDER LOOP
+               ------------------------------------------- */
 
-        cameraRunning =
-            true;
+            if (animationFrame) {
 
-        cameraStartAttempts =
-            0;
+                cancelAnimationFrame(
+                    animationFrame
+                );
 
+            }
 
-        if (startCameraBtn) {
-
-            startCameraBtn.style.display =
-                "none";
-        }
+            renderCameraFrame();
 
 
-        if (switchCameraBtn) {
+            /* -------------------------------------------
+               LOAD MEDIAPIPE
+               ------------------------------------------- */
 
-            switchCameraBtn.style.display =
-                "inline-flex";
-        }
+            if (!mediaPipeReady) {
 
-
-        if (stopCameraBtn) {
-
-            stopCameraBtn.style.display =
-                "inline-flex";
-        }
-
-
-        setStatus(
-            "Camera ready. Looking for your face..."
-        );
-
-
-        console.log(
-            "Camera is running."
-        );
-
-
-        /* -------------------------------------------------
-           START RENDER LOOP
-           ------------------------------------------------- */
-
-        if (animationFrame) {
-
-            cancelAnimationFrame(
-                animationFrame
-            );
-        }
-
-
-        renderCameraFrame();
-
-
-        /* -------------------------------------------------
-           LOAD MEDIAPIPE
-           ------------------------------------------------- */
-
-        if (
-            !mediaPipeReady &&
-            !mediaPipeLoading
-        ) {
-
-            loadMediaPipe()
-                .then(
-                    () => {
-
-                        if (
-                            cameraRunning
-                        ) {
-
-                            setStatus(
-                                "Face tracking ready."
-                            );
-                        }
-                    }
-                )
-                .catch(
-                    error => {
+                loadMediaPipe()
+                    .catch(error => {
 
                         console.error(
-                            "MediaPipe error:",
+                            "MediaPipe loading failed:",
                             error
                         );
-                    }
+
+                        showError(
+                            "Face tracking is unavailable. You can still use the camera, but face makeup cannot be applied until the face tracker loads."
+                        );
+
+                    });
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Camera startup failed:",
+                error
+            );
+
+
+            handleCameraError(error);
+
+
+            /* -------------------------------------------
+               RETRY ABORT ERROR ONCE
+               ------------------------------------------- */
+
+            if (
+                error &&
+                error.name === "AbortError" &&
+                cameraStartAttempts < 2
+            ) {
+
+                console.log(
+                    "Retrying camera startup..."
                 );
+
+
+                await new Promise(
+                    resolve => setTimeout(
+                        resolve,
+                        700
+                    )
+                );
+
+
+                return startCamera();
+
+            }
+
         }
 
-
-        return true;
     }
 
 
@@ -1030,103 +779,90 @@
     function waitForVideoDimensions() {
 
         return new Promise(
-            resolve => {
+            (resolve, reject) => {
 
-                const start =
-                    performance.now();
+                const timeout =
+                    setTimeout(
+                        () => {
+
+                            if (
+                                tryOnVideo.videoWidth > 0 &&
+                                tryOnVideo.videoHeight > 0
+                            ) {
+
+                                resolve();
+
+                            } else {
+
+                                reject(
+                                    new Error(
+                                        "Camera started but video dimensions are unavailable."
+                                    )
+                                );
+
+                            }
+
+                        },
+                        8000
+                    );
 
 
-                function check() {
+                const check = () => {
 
                     if (
                         tryOnVideo.videoWidth > 0 &&
                         tryOnVideo.videoHeight > 0
                     ) {
 
-                        currentVideoWidth =
-                            tryOnVideo.videoWidth;
+                        clearTimeout(timeout);
 
-                        currentVideoHeight =
-                            tryOnVideo.videoHeight;
-
-
-                        console.log(
-                            "Video size:",
-                            currentVideoWidth,
-                            "x",
-                            currentVideoHeight
-                        );
-
-
-                        resolve(true);
+                        resolve();
 
                         return;
+
                     }
-
-
-                    if (
-                        performance.now() -
-                        start >
-                        5000
-                    ) {
-
-                        resolve(false);
-
-                        return;
-                    }
-
 
                     requestAnimationFrame(
                         check
                     );
-                }
+
+                };
 
 
                 check();
+
             }
         );
+
     }
 
 
     /* =====================================================
-       CAMERA ERROR
+       CAMERA ERROR HANDLER
        ===================================================== */
 
-    function handleCameraError(
-        error
-    ) {
-
-        console.error(
-            "Camera error:",
-            error
-        );
-
+    function handleCameraError(error) {
 
         let message =
-            "Unable to access the camera.";
-
+            "Unable to start the camera.";
 
         if (!error) {
 
-            showError(
-                message
-            );
+            showError(message);
 
             return;
+
         }
 
 
-        switch (
-            error.name
-        ) {
+        switch (error.name) {
 
             case "NotAllowedError":
 
             case "PermissionDeniedError":
 
                 message =
-                    "Camera permission was denied. " +
-                    "Click the camera icon in Chrome's address bar, allow Camera access for Glamora AR, then click Try On again.";
+                    "Camera permission was denied. Please allow camera access for 127.0.0.1:5000 in your browser and then click Use Camera again.";
 
                 break;
 
@@ -1146,7 +882,7 @@
             case "TrackStartError":
 
                 message =
-                    "The camera is already being used by another application or browser tab.";
+                    "The camera is already being used by another application. Close other camera applications and try again.";
 
                 break;
 
@@ -1154,7 +890,7 @@
             case "OverconstrainedError":
 
                 message =
-                    "The selected camera settings are not available.";
+                    "The selected camera does not support the requested settings. Please try another camera.";
 
                 break;
 
@@ -1170,33 +906,32 @@
             case "AbortError":
 
                 message =
-                    "Camera startup was interrupted. Click Try On again.";
+                    "Camera startup was interrupted. Please click Use Camera again.";
 
                 break;
 
 
             default:
 
-                message =
-                    "Camera could not be opened: " +
-                    (
-                        error.message ||
-                        error.name ||
-                        "Unknown error"
-                    );
+                if (error.message) {
+
+                    message =
+                        "Camera error: " +
+                        error.message;
+
+                }
 
                 break;
+
         }
 
 
-        showError(
-            message
-        );
-
+        showError(message);
 
         setStatus(
-            "Camera unavailable."
+            "Camera unavailable"
         );
+
     }
 
 
@@ -1211,8 +946,7 @@
         );
 
 
-        cameraRunning =
-            false;
+        cameraRunning = false;
 
 
         if (animationFrame) {
@@ -1221,8 +955,8 @@
                 animationFrame
             );
 
-            animationFrame =
-                null;
+            animationFrame = null;
+
         }
 
 
@@ -1230,74 +964,59 @@
 
             mediaStream
                 .getTracks()
-                .forEach(
-                    track => {
+                .forEach(track => {
 
-                        try {
+                    try {
 
-                            track.stop();
+                        track.stop();
 
-                        } catch (error) {
+                    } catch (error) {
 
-                            console.warn(
-                                "Could not stop camera track:",
-                                error
-                            );
-                        }
+                        console.warn(
+                            "Unable to stop track:",
+                            error
+                        );
+
                     }
-                );
 
+                });
 
-            mediaStream =
-                null;
+            mediaStream = null;
+
         }
 
 
-        try {
+        if (tryOnVideo) {
 
             tryOnVideo.pause();
 
-        } catch (error) {
+            tryOnVideo.srcObject = null;
 
-            console.warn(
-                error
-            );
-        }
-
-
-        tryOnVideo.srcObject =
-            null;
-
-
-        if (startCameraBtn) {
-
-            startCameraBtn.style.display =
-                "inline-flex";
         }
 
 
         if (switchCameraBtn) {
 
-            switchCameraBtn.style.display =
-                "none";
-        }
+            switchCameraBtn.hidden = true;
 
+        }
 
         if (stopCameraBtn) {
 
-            stopCameraBtn.style.display =
-                "none";
+            stopCameraBtn.hidden = true;
+
         }
 
 
         console.log(
             "Camera stopped."
         );
+
     }
 
 
     /* =====================================================
-       LOAD MEDIAPIPE
+       LOAD LOCAL MEDIAPIPE
        ===================================================== */
 
     async function loadMediaPipe() {
@@ -1305,14 +1024,13 @@
         if (mediaPipeReady) {
 
             return faceLandmarker;
+
         }
 
 
         if (mediaPipeLoading) {
 
-            while (
-                mediaPipeLoading
-            ) {
+            while (mediaPipeLoading) {
 
                 await new Promise(
                     resolve =>
@@ -1321,44 +1039,40 @@
                             100
                         )
                 );
+
             }
 
-
             return faceLandmarker;
+
         }
 
 
-        mediaPipeLoading =
-            true;
-
-
-        console.log(
-            "Loading local MediaPipe..."
-        );
+        mediaPipeLoading = true;
 
 
         try {
 
-            setStatus(
-                "Loading face tracking..."
+            console.log(
+                "Loading local MediaPipe..."
             );
 
 
-            /* -------------------------------------------------
-               LOCAL MEDIAPIPE MODULE
-               ------------------------------------------------- */
+            /* -------------------------------------------
+               LOCAL MODULE
+               ------------------------------------------- */
 
-            const module =
+            const visionModule =
                 await import(
                     "/static/mediapipe/vision_bundle.mjs"
                 );
 
 
             const FaceLandmarker =
-                module.FaceLandmarker;
+                visionModule.FaceLandmarker;
+
 
             const FilesetResolver =
-                module.FilesetResolver;
+                visionModule.FilesetResolver;
 
 
             if (
@@ -1367,14 +1081,20 @@
             ) {
 
                 throw new Error(
-                    "FaceLandmarker or FilesetResolver is missing."
+                    "FaceLandmarker or FilesetResolver was not found in vision_bundle.mjs."
                 );
+
             }
 
 
-            /* -------------------------------------------------
+            /* -------------------------------------------
                LOCAL WASM
-               ------------------------------------------------- */
+               ------------------------------------------- */
+
+            console.log(
+                "Loading local MediaPipe WASM..."
+            );
+
 
             const vision =
                 await FilesetResolver.forVisionTasks(
@@ -1382,24 +1102,25 @@
                 );
 
 
-            /* -------------------------------------------------
-               LOCAL MODEL
-               ------------------------------------------------- */
+            /* -------------------------------------------
+               LOCAL FACE MODEL
+               ------------------------------------------- */
 
             const modelPath =
                 "/static/models/face_landmarker.task";
 
 
-            /* -------------------------------------------------
-               TRY GPU
-               ------------------------------------------------- */
+            console.log(
+                "Loading local face model:",
+                modelPath
+            );
+
+
+            /* -------------------------------------------
+               TRY GPU FIRST
+               ------------------------------------------- */
 
             try {
-
-                console.log(
-                    "Trying GPU..."
-                );
-
 
                 faceLandmarker =
                     await FaceLandmarker.createFromOptions(
@@ -1413,42 +1134,43 @@
 
                                 delegate:
                                     "GPU"
-                            },
 
+                            },
 
                             runningMode:
                                 "VIDEO",
 
-
                             numFaces:
                                 1,
-
 
                             minFaceDetectionConfidence:
                                 0.45,
 
-
                             minFacePresenceConfidence:
                                 0.45,
 
-
                             minTrackingConfidence:
                                 0.45
+
                         }
                     );
 
 
+                console.log(
+                    "MediaPipe initialized using GPU."
+                );
+
             } catch (gpuError) {
 
                 console.warn(
-                    "GPU failed. Trying CPU.",
+                    "GPU MediaPipe failed. Trying CPU...",
                     gpuError
                 );
 
 
-                /* -------------------------------------------------
-                   TRY CPU
-                   ------------------------------------------------- */
+                /* ---------------------------------------
+                   CPU FALLBACK
+                   --------------------------------------- */
 
                 faceLandmarker =
                     await FaceLandmarker.createFromOptions(
@@ -1462,98 +1184,88 @@
 
                                 delegate:
                                     "CPU"
-                            },
 
+                            },
 
                             runningMode:
                                 "VIDEO",
 
-
                             numFaces:
                                 1,
-
 
                             minFaceDetectionConfidence:
                                 0.45,
 
-
                             minFacePresenceConfidence:
                                 0.45,
 
-
                             minTrackingConfidence:
                                 0.45
+
                         }
                     );
+
+
+                console.log(
+                    "MediaPipe initialized using CPU."
+                );
+
             }
 
 
-            mediaPipeReady =
-                true;
-
+            mediaPipeReady = true;
 
             console.log(
-                "MediaPipe loaded successfully."
+                "MediaPipe face tracking is ready."
             );
 
 
-            if (
-                cameraRunning
-            ) {
+            if (cameraRunning) {
 
                 setStatus(
-                    "Face tracking ready."
+                    "Face tracking ready. Position your face in the frame."
                 );
+
             }
 
 
             return faceLandmarker;
 
-
         } catch (error) {
 
+            mediaPipeReady = false;
+
+            faceLandmarker = null;
+
             console.error(
-                "MediaPipe loading failed:",
+                "MediaPipe initialization failed:",
                 error
             );
 
-
-            mediaPipeReady =
-                false;
-
-
-            showError(
-                "Face tracking failed. " +
-                (
-                    error.message ||
-                    error
-                )
-            );
-
-
             throw error;
-
 
         } finally {
 
-            mediaPipeLoading =
-                false;
+            mediaPipeLoading = false;
+
         }
+
     }
 
 
     /* =====================================================
-       RESIZE CANVAS
+       CANVAS RESIZE
        ===================================================== */
 
     function resizeCanvas() {
 
         if (
-            !tryOnVideo ||
-            !tryOnCanvas
+            !tryOnCanvas ||
+            !tryOnVideo
         ) {
 
             return;
+
         }
 
 
@@ -1583,17 +1295,25 @@
             height;
 
 
-        /*
-         * NO MIRROR.
-         */
+        /* -------------------------------------------
+           VERY IMPORTANT:
+           NO MIRRORING
+           ------------------------------------------- */
+
         tryOnCanvas.style.transform =
             "none";
 
         tryOnCanvas.style.webkitTransform =
             "none";
 
-        tryOnCanvas.style.scale =
-            "1";
+
+        console.log(
+            "Canvas resized:",
+            width,
+            "x",
+            height
+        );
+
     }
 
 
@@ -1603,6 +1323,13 @@
 
     function clearCanvas() {
 
+        if (!tryOnCanvas) {
+
+            return;
+
+        }
+
+
         const ctx =
             tryOnCanvas.getContext(
                 "2d"
@@ -1610,7 +1337,9 @@
 
 
         if (!ctx) {
+
             return;
+
         }
 
 
@@ -1620,6 +1349,7 @@
             tryOnCanvas.width,
             tryOnCanvas.height
         );
+
     }
 
 
@@ -1634,23 +1364,28 @@
         height
     ) {
 
-        const p =
-            landmarks[index];
+        if (
+            !landmarks ||
+            !landmarks[index]
+        ) {
 
-
-        if (!p) {
             return null;
+
         }
 
 
         return {
 
             x:
-                p.x * width,
+                landmarks[index].x *
+                width,
 
             y:
-                p.y * height
+                landmarks[index].y *
+                height
+
         };
+
     }
 
 
@@ -1660,104 +1395,221 @@
 
     function getProductColor() {
 
-        const source =
+        const text =
             (
                 productColor ||
                 productShade ||
+                productName ||
                 ""
             )
             .toLowerCase()
             .trim();
 
 
-        if (!source) {
+        /* -------------------------------------------
+           HEX COLOR
+           ------------------------------------------- */
 
-            return "#c85f7a";
+        const hexMatch =
+            text.match(
+                /#[0-9a-f]{3,8}/i
+            );
+
+
+        if (hexMatch) {
+
+            return hexMatch[0];
+
         }
 
+
+        /* -------------------------------------------
+           RGB COLOR
+           ------------------------------------------- */
+
+        const rgbMatch =
+            text.match(
+                /rgb\s*\([^)]+\)/i
+            );
+
+
+        if (rgbMatch) {
+
+            return rgbMatch[0];
+
+        }
+
+
+        /* -------------------------------------------
+           BLACK
+           ------------------------------------------- */
 
         if (
-            source.startsWith("#")
+            text.includes("black") ||
+            text.includes("jet")
         ) {
 
-            return source;
+            return "#171116";
+
         }
 
+
+        /* -------------------------------------------
+           BURGUNDY / WINE
+           ------------------------------------------- */
 
         if (
-            source.startsWith("rgb")
+            text.includes("burgundy") ||
+            text.includes("wine") ||
+            text.includes("maroon")
         ) {
 
-            return source;
+            return "#7A1835";
+
         }
 
 
-        const colors = {
+        /* -------------------------------------------
+           BERRY / PLUM
+           ------------------------------------------- */
 
-            black:
-                "#241b1d",
-
-            burgundy:
-                "#800020",
-
-            wine:
-                "#722f37",
-
-            berry:
-                "#7d2148",
-
-            plum:
-                "#6d1f4a",
-
-            mauve:
-                "#9b5c6c",
-
-            coral:
-                "#f88379",
-
-            peach:
-                "#ffb07c",
-
-            orange:
-                "#e96f3d",
-
-            brown:
-                "#7a4636",
-
-            chocolate:
-                "#4a2921",
-
-            nude:
-                "#c98d78",
-
-            beige:
-                "#c9a38f",
-
-            rose:
-                "#c95c78",
-
-            pink:
-                "#e889a3",
-
-            red:
-                "#c6283e"
-        };
-
-
-        for (
-            const key in colors
+        if (
+            text.includes("berry") ||
+            text.includes("plum") ||
+            text.includes("purple")
         ) {
 
-            if (
-                source.includes(key)
-            ) {
+            return "#8A2859";
 
-                return colors[key];
-            }
         }
 
 
-        return "#c85f7a";
+        /* -------------------------------------------
+           MAUVE
+           ------------------------------------------- */
+
+        if (
+            text.includes("mauve")
+        ) {
+
+            return "#9B5A72";
+
+        }
+
+
+        /* -------------------------------------------
+           CORAL
+           ------------------------------------------- */
+
+        if (
+            text.includes("coral")
+        ) {
+
+            return "#E8786D";
+
+        }
+
+
+        /* -------------------------------------------
+           PEACH
+           ------------------------------------------- */
+
+        if (
+            text.includes("peach")
+        ) {
+
+            return "#F2A08C";
+
+        }
+
+
+        /* -------------------------------------------
+           ORANGE
+           ------------------------------------------- */
+
+        if (
+            text.includes("orange")
+        ) {
+
+            return "#E8752A";
+
+        }
+
+
+        /* -------------------------------------------
+           BROWN
+           ------------------------------------------- */
+
+        if (
+            text.includes("brown") ||
+            text.includes("chocolate")
+        ) {
+
+            return "#6B3928";
+
+        }
+
+
+        /* -------------------------------------------
+           NUDE / BEIGE
+           ------------------------------------------- */
+
+        if (
+            text.includes("nude") ||
+            text.includes("beige")
+        ) {
+
+            return "#C78F7A";
+
+        }
+
+
+        /* -------------------------------------------
+           ROSE
+           ------------------------------------------- */
+
+        if (
+            text.includes("rose")
+        ) {
+
+            return "#C95F78";
+
+        }
+
+
+        /* -------------------------------------------
+           PINK
+           ------------------------------------------- */
+
+        if (
+            text.includes("pink")
+        ) {
+
+            return "#D96A86";
+
+        }
+
+
+        /* -------------------------------------------
+           RED
+           ------------------------------------------- */
+
+        if (
+            text.includes("red") ||
+            text.includes("crimson")
+        ) {
+
+            return "#C62845";
+
+        }
+
+
+        /* -------------------------------------------
+           DEFAULT GLAMORA COLOR
+           ------------------------------------------- */
+
+        return "#C85F7A";
+
     }
 
 
@@ -1771,23 +1623,19 @@
     ) {
 
         let value =
-            String(hex)
+            String(hex || "")
                 .replace("#", "")
                 .trim();
 
 
-        if (
-            value.length === 3
-        ) {
+        if (value.length === 3) {
 
             value =
                 value
                     .split("")
-                    .map(
-                        char =>
-                            char + char
-                    )
+                    .map(char => char + char)
                     .join("");
+
         }
 
 
@@ -1805,14 +1653,17 @@
             return (
                 `rgba(200,95,122,${alpha})`
             );
+
         }
 
 
         const r =
             (number >> 16) & 255;
 
+
         const g =
             (number >> 8) & 255;
+
 
         const b =
             number & 255;
@@ -1821,11 +1672,12 @@
         return (
             `rgba(${r},${g},${b},${alpha})`
         );
+
     }
 
 
     /* =====================================================
-       FACE LANDMARKS
+       FACIAL LANDMARK ARRAYS
        ===================================================== */
 
     const OUTER_LIPS = [
@@ -1850,7 +1702,10 @@
         87,
         178,
         88,
-        95
+        95,
+        78,
+        61
+
     ];
 
 
@@ -1867,40 +1722,23 @@
         318,
         324,
         308,
-        415,
-        310,
-        311,
-        312,
-        13,
-        82,
-        81,
-        80,
-        191
+        291,
+        375,
+        321,
+        405,
+        314,
+        17,
+        84,
+        181,
+        91,
+        146,
+        61,
+        78
+
     ];
 
 
     const LEFT_EYE = [
-
-        33,
-        7,
-        163,
-        144,
-        145,
-        153,
-        154,
-        155,
-        133,
-        173,
-        157,
-        158,
-        159,
-        160,
-        161,
-        246
-    ];
-
-
-    const RIGHT_EYE = [
 
         263,
         249,
@@ -1911,13 +1749,38 @@
         381,
         382,
         362,
-        398,
-        384,
-        385,
-        386,
-        387,
+        466,
         388,
-        466
+        387,
+        386,
+        385,
+        384,
+        398,
+        263
+
+    ];
+
+
+    const RIGHT_EYE = [
+
+        33,
+        7,
+        163,
+        144,
+        145,
+        153,
+        154,
+        155,
+        133,
+        246,
+        161,
+        160,
+        159,
+        158,
+        157,
+        173,
+        33
+
     ];
 
 
@@ -1928,74 +1791,78 @@
     function drawPolygon(
         ctx,
         landmarks,
-        indices,
+        indexes,
         width,
         height
     ) {
 
         if (
-            !indices.length
+            !landmarks ||
+            !indexes ||
+            !indexes.length
         ) {
 
             return;
+
+        }
+
+
+        const first =
+            point(
+                landmarks,
+                indexes[0],
+                width,
+                height
+            );
+
+
+        if (!first) {
+
+            return;
+
         }
 
 
         ctx.beginPath();
 
-
-        let firstPoint =
-            null;
-
-
-        indices.forEach(
-            (index, i) => {
-
-                const p =
-                    point(
-                        landmarks,
-                        index,
-                        width,
-                        height
-                    );
-
-
-                if (!p) {
-                    return;
-                }
-
-
-                if (
-                    i === 0
-                ) {
-
-                    firstPoint =
-                        p;
-
-
-                    ctx.moveTo(
-                        p.x,
-                        p.y
-                    );
-
-
-                } else {
-
-                    ctx.lineTo(
-                        p.x,
-                        p.y
-                    );
-                }
-            }
+        ctx.moveTo(
+            first.x,
+            first.y
         );
 
 
-        if (
-            firstPoint
+        for (
+            let i = 1;
+            i < indexes.length;
+            i++
         ) {
 
-            ctx.closePath();
+            const p =
+                point(
+                    landmarks,
+                    indexes[i],
+                    width,
+                    height
+                );
+
+
+            if (!p) {
+
+                continue;
+
+            }
+
+
+            ctx.lineTo(
+                p.x,
+                p.y
+            );
+
         }
+
+
+        ctx.closePath();
+
     }
 
 
@@ -2017,6 +1884,10 @@
         ctx.save();
 
 
+        /* -------------------------------------------
+           SOFT LIP COLOR
+           ------------------------------------------- */
+
         drawPolygon(
             ctx,
             landmarks,
@@ -2033,12 +1904,22 @@
             );
 
 
+        ctx.shadowColor =
+            hexToRgba(
+                color,
+                0.25
+            );
+
+
+        ctx.shadowBlur = 4;
+
         ctx.fill();
 
 
-        /*
-         * Remove inner mouth.
-         */
+        /* -------------------------------------------
+           REMOVE INNER LIP AREA
+           ------------------------------------------- */
+
         ctx.globalCompositeOperation =
             "destination-out";
 
@@ -2056,6 +1937,7 @@
 
 
         ctx.restore();
+
     }
 
 
@@ -2066,170 +1948,277 @@
     function drawEyeShadow(
         ctx,
         landmarks,
+        indexes,
         width,
         height
     ) {
+
+        const points =
+            indexes
+                .map(
+                    index =>
+                        point(
+                            landmarks,
+                            index,
+                            width,
+                            height
+                        )
+                )
+                .filter(Boolean);
+
+
+        if (!points.length) {
+
+            return;
+
+        }
+
+
+        let minX =
+            Infinity;
+
+        let maxX =
+            -Infinity;
+
+        let minY =
+            Infinity;
+
+        let maxY =
+            -Infinity;
+
+
+        points.forEach(p => {
+
+            minX =
+                Math.min(
+                    minX,
+                    p.x
+                );
+
+            maxX =
+                Math.max(
+                    maxX,
+                    p.x
+                );
+
+            minY =
+                Math.min(
+                    minY,
+                    p.y
+                );
+
+            maxY =
+                Math.max(
+                    maxY,
+                    p.y
+                );
+
+        });
+
+
+        const centerX =
+            (minX + maxX) / 2;
+
+
+        const centerY =
+            (minY + maxY) / 2;
+
+
+        const radiusX =
+            Math.max(
+                25,
+                (maxX - minX) * 0.85
+            );
+
+
+        const radiusY =
+            Math.max(
+                14,
+                (maxY - minY) * 1.2
+            );
+
+
+        const gradient =
+            ctx.createRadialGradient(
+                centerX,
+                centerY,
+                2,
+                centerX,
+                centerY,
+                radiusX
+            );
+
 
         const color =
             getProductColor();
 
 
-        function drawEye(
-            indices
+        gradient.addColorStop(
+            0,
+            hexToRgba(
+                color,
+                0.45
+            )
+        );
+
+
+        gradient.addColorStop(
+            0.55,
+            hexToRgba(
+                color,
+                0.22
+            )
+        );
+
+
+        gradient.addColorStop(
+            1,
+            hexToRgba(
+                color,
+                0
+            )
+        );
+
+
+        ctx.save();
+
+
+        ctx.fillStyle =
+            gradient;
+
+
+        ctx.beginPath();
+
+
+        ctx.ellipse(
+            centerX,
+            centerY,
+            radiusX,
+            radiusY,
+            0,
+            0,
+            Math.PI * 2
+        );
+
+
+        ctx.fill();
+
+
+        ctx.restore();
+
+    }
+
+
+    /* =====================================================
+       EYESHADOW
+       ===================================================== */
+
+    function drawEyeshadow(
+        ctx,
+        landmarks,
+        width,
+        height
+    ) {
+
+        drawEyeShadow(
+            ctx,
+            landmarks,
+            LEFT_EYE,
+            width,
+            height
+        );
+
+
+        drawEyeShadow(
+            ctx,
+            landmarks,
+            RIGHT_EYE,
+            width,
+            height
+        );
+
+    }
+
+
+    /* =====================================================
+       EYELINER
+       ===================================================== */
+
+    function drawEyeLine(
+        ctx,
+        landmarks,
+        indexes,
+        width,
+        height
+    ) {
+
+        const points =
+            indexes
+                .map(
+                    index =>
+                        point(
+                            landmarks,
+                            index,
+                            width,
+                            height
+                        )
+                )
+                .filter(Boolean);
+
+
+        if (
+            points.length < 3
         ) {
 
-            const points =
-                indices
-                    .map(
-                        index =>
-                            point(
-                                landmarks,
-                                index,
-                                width,
-                                height
-                            )
-                    )
-                    .filter(
-                        Boolean
-                    );
+            return;
 
-
-            if (
-                !points.length
-            ) {
-
-                return;
-            }
-
-
-            let minX =
-                Infinity;
-
-            let maxX =
-                -Infinity;
-
-            let minY =
-                Infinity;
-
-            let maxY =
-                -Infinity;
-
-
-            points.forEach(
-                p => {
-
-                    minX =
-                        Math.min(
-                            minX,
-                            p.x
-                        );
-
-                    maxX =
-                        Math.max(
-                            maxX,
-                            p.x
-                        );
-
-                    minY =
-                        Math.min(
-                            minY,
-                            p.y
-                        );
-
-                    maxY =
-                        Math.max(
-                            maxY,
-                            p.y
-                        );
-                }
-            );
-
-
-            const centerX =
-                (minX + maxX) / 2;
-
-            const centerY =
-                (minY + maxY) / 2;
-
-
-            const radiusX =
-                Math.max(
-                    15,
-                    (maxX - minX) * 0.8
-                );
-
-
-            const radiusY =
-                Math.max(
-                    10,
-                    (maxY - minY) * 1.5
-                );
-
-
-            const gradient =
-                ctx.createRadialGradient(
-                    centerX,
-                    centerY,
-                    1,
-                    centerX,
-                    centerY,
-                    radiusX
-                );
-
-
-            gradient.addColorStop(
-                0,
-                hexToRgba(
-                    color,
-                    0.45
-                )
-            );
-
-
-            gradient.addColorStop(
-                1,
-                hexToRgba(
-                    color,
-                    0
-                )
-            );
-
-
-            ctx.fillStyle =
-                gradient;
-
-
-            ctx.beginPath();
-
-
-            ctx.ellipse(
-                centerX,
-                centerY,
-                radiusX,
-                radiusY,
-                0,
-                0,
-                Math.PI * 2
-            );
-
-
-            ctx.fill();
         }
 
 
         ctx.save();
 
 
-        drawEye(
-            LEFT_EYE
+        ctx.strokeStyle =
+            "#211218";
+
+
+        ctx.lineWidth = 3;
+
+        ctx.lineCap =
+            "round";
+
+        ctx.lineJoin =
+            "round";
+
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            points[0].x,
+            points[0].y
         );
 
-        drawEye(
-            RIGHT_EYE
-        );
+
+        for (
+            let i = 1;
+            i < points.length;
+            i++
+        ) {
+
+            ctx.lineTo(
+                points[i].x,
+                points[i].y
+            );
+
+        }
+
+
+        ctx.stroke();
 
 
         ctx.restore();
+
     }
 
 
@@ -2244,100 +2233,44 @@
         height
     ) {
 
-        const color =
-            getProductColor();
-
-
-        function drawLine(
-            indices
-        ) {
-
-            const points =
-                indices
-                    .map(
-                        index =>
-                            point(
-                                landmarks,
-                                index,
-                                width,
-                                height
-                            )
-                    )
-                    .filter(
-                        Boolean
-                    );
-
-
-            if (
-                points.length < 2
-            ) {
-
-                return;
-            }
-
-
-            ctx.beginPath();
-
-
-            points.forEach(
-                (p, index) => {
-
-                    if (
-                        index === 0
-                    ) {
-
-                        ctx.moveTo(
-                            p.x,
-                            p.y
-                        );
-
-                    } else {
-
-                        ctx.lineTo(
-                            p.x,
-                            p.y
-                        );
-                    }
-                }
-            );
-
-
-            ctx.strokeStyle =
-                color;
-
-
-            ctx.lineWidth =
-                Math.max(
-                    2,
-                    width / 350
-                );
-
-
-            ctx.lineCap =
-                "round";
-
-
-            ctx.lineJoin =
-                "round";
-
-
-            ctx.stroke();
-        }
-
-
-        ctx.save();
-
-
-        drawLine(
-            LEFT_EYE
-        );
-
-        drawLine(
-            RIGHT_EYE
+        drawEyeLine(
+            ctx,
+            landmarks,
+            LEFT_EYE,
+            width,
+            height
         );
 
 
-        ctx.restore();
+        drawEyeLine(
+            ctx,
+            landmarks,
+            RIGHT_EYE,
+            width,
+            height
+        );
+
+    }
+
+
+    /* =====================================================
+       MASCARA
+       ===================================================== */
+
+    function drawMascara(
+        ctx,
+        landmarks,
+        width,
+        height
+    ) {
+
+        drawEyeliner(
+            ctx,
+            landmarks,
+            width,
+            height
+        );
+
     }
 
 
@@ -2356,88 +2289,100 @@
             getProductColor();
 
 
-        function cheek(
-            landmarkIndex
-        ) {
+        const cheeks = [
 
-            const p =
-                point(
-                    landmarks,
-                    landmarkIndex,
-                    width,
-                    height
-                );
+            point(
+                landmarks,
+                50,
+                width,
+                height
+            ),
 
+            point(
+                landmarks,
+                280,
+                width,
+                height
+            )
 
-            if (!p) {
-                return;
-            }
-
-
-            const radius =
-                Math.max(
-                    25,
-                    width * 0.07
-                );
-
-
-            const gradient =
-                ctx.createRadialGradient(
-                    p.x,
-                    p.y,
-                    1,
-                    p.x,
-                    p.y,
-                    radius
-                );
-
-
-            gradient.addColorStop(
-                0,
-                hexToRgba(
-                    color,
-                    0.38
-                )
-            );
-
-
-            gradient.addColorStop(
-                1,
-                hexToRgba(
-                    color,
-                    0
-                )
-            );
-
-
-            ctx.fillStyle =
-                gradient;
-
-
-            ctx.beginPath();
-
-
-            ctx.arc(
-                p.x,
-                p.y,
-                radius,
-                0,
-                Math.PI * 2
-            );
-
-
-            ctx.fill();
-        }
+        ];
 
 
         ctx.save();
 
 
-        cheek(50);
-        cheek(280);
+        cheeks.forEach(
+            cheek => {
+
+                if (!cheek) {
+
+                    return;
+
+                }
+
+
+                const gradient =
+                    ctx.createRadialGradient(
+                        cheek.x,
+                        cheek.y,
+                        5,
+                        cheek.x,
+                        cheek.y,
+                        55
+                    );
+
+
+                gradient.addColorStop(
+                    0,
+                    hexToRgba(
+                        color,
+                        0.32
+                    )
+                );
+
+
+                gradient.addColorStop(
+                    0.5,
+                    hexToRgba(
+                        color,
+                        0.18
+                    )
+                );
+
+
+                gradient.addColorStop(
+                    1,
+                    hexToRgba(
+                        color,
+                        0
+                    )
+                );
+
+
+                ctx.fillStyle =
+                    gradient;
+
+
+                ctx.beginPath();
+
+
+                ctx.arc(
+                    cheek.x,
+                    cheek.y,
+                    55,
+                    0,
+                    Math.PI * 2
+                );
+
+
+                ctx.fill();
+
+            }
+        );
 
 
         ctx.restore();
+
     }
 
 
@@ -2452,17 +2397,19 @@
         height
     ) {
 
-        const indices = [
+        const indexes = [
+
             1,
             116,
             345
+
         ];
 
 
         ctx.save();
 
 
-        indices.forEach(
+        indexes.forEach(
             index => {
 
                 const p =
@@ -2475,37 +2422,32 @@
 
 
                 if (!p) {
+
                     return;
+
                 }
-
-
-                const radius =
-                    Math.max(
-                        10,
-                        width * 0.025
-                    );
 
 
                 const gradient =
                     ctx.createRadialGradient(
                         p.x,
                         p.y,
-                        0,
+                        1,
                         p.x,
                         p.y,
-                        radius
+                        22
                     );
 
 
                 gradient.addColorStop(
                     0,
-                    "rgba(255,255,255,0.55)"
+                    "rgba(255,245,230,0.60)"
                 );
 
 
                 gradient.addColorStop(
                     1,
-                    "rgba(255,255,255,0)"
+                    "rgba(255,245,230,0)"
                 );
 
 
@@ -2519,18 +2461,20 @@
                 ctx.arc(
                     p.x,
                     p.y,
-                    radius,
+                    22,
                     0,
                     Math.PI * 2
                 );
 
 
                 ctx.fill();
+
             }
         );
 
 
         ctx.restore();
+
     }
 
 
@@ -2545,11 +2489,7 @@
         height
     ) {
 
-        const color =
-            getProductColor();
-
-
-        const p =
+        const nose =
             point(
                 landmarks,
                 1,
@@ -2558,26 +2498,25 @@
             );
 
 
-        if (!p) {
+        if (!nose) {
+
             return;
+
         }
 
 
-        const radius =
-            Math.max(
-                70,
-                width * 0.16
-            );
+        const color =
+            getProductColor();
 
 
         const gradient =
             ctx.createRadialGradient(
-                p.x,
-                p.y,
-                radius * 0.1,
-                p.x,
-                p.y,
-                radius
+                nose.x,
+                nose.y,
+                15,
+                nose.x,
+                nose.y,
+                150
             );
 
 
@@ -2585,7 +2524,16 @@
             0,
             hexToRgba(
                 color,
-                0.13
+                0.08
+            )
+        );
+
+
+        gradient.addColorStop(
+            0.65,
+            hexToRgba(
+                color,
+                0.035
             )
         );
 
@@ -2610,9 +2558,9 @@
 
 
         ctx.arc(
-            p.x,
-            p.y,
-            radius,
+            nose.x,
+            nose.y,
+            150,
             0,
             Math.PI * 2
         );
@@ -2622,6 +2570,7 @@
 
 
         ctx.restore();
+
     }
 
 
@@ -2635,6 +2584,16 @@
         width,
         height
     ) {
+
+        if (
+            !landmarks ||
+            !landmarks.length
+        ) {
+
+            return;
+
+        }
+
 
         switch (
             normalizedProductType
@@ -2654,7 +2613,7 @@
 
             case "eyeshadow":
 
-                drawEyeShadow(
+                drawEyeshadow(
                     ctx,
                     landmarks,
                     width,
@@ -2678,7 +2637,7 @@
 
             case "mascara":
 
-                drawEyeliner(
+                drawMascara(
                     ctx,
                     landmarks,
                     width,
@@ -2726,29 +2685,29 @@
 
             default:
 
-                drawLipstick(
-                    ctx,
-                    landmarks,
-                    width,
-                    height
+                console.warn(
+                    "Unsupported product type:",
+                    normalizedProductType
                 );
 
                 break;
+
         }
+
     }
 
 
     /* =====================================================
-       CAMERA RENDER LOOP
-
+       RENDER CAMERA FRAME
+       
        IMPORTANT:
-       The camera frame is drawn exactly as received.
-
-       NO:
-           translate()
-           scale(-1,1)
-           mirror
-           flip
+       THERE IS ABSOLUTELY NO MIRRORING HERE.
+       
+       DO NOT ADD:
+       
+       ctx.translate(width, 0);
+       ctx.scale(-1, 1);
+       
        ===================================================== */
 
     function renderCameraFrame() {
@@ -2760,16 +2719,38 @@
         ) {
 
             return;
+
         }
 
 
         const ctx =
             tryOnCanvas.getContext(
-                "2d"
+                "2d",
+                {
+                    alpha: true
+                }
             );
 
 
         if (!ctx) {
+
+            return;
+
+        }
+
+
+        const width =
+            tryOnCanvas.width;
+
+
+        const height =
+            tryOnCanvas.height;
+
+
+        if (
+            !width ||
+            !height
+        ) {
 
             animationFrame =
                 requestAnimationFrame(
@@ -2777,41 +2758,24 @@
                 );
 
             return;
+
         }
 
 
-        const width =
-            tryOnVideo.videoWidth ||
-            currentVideoWidth ||
-            640;
+        /* -------------------------------------------
+           FORCE NORMAL ORIENTATION
+           ------------------------------------------- */
+
+        tryOnVideo.style.transform =
+            "none";
+
+        tryOnCanvas.style.transform =
+            "none";
 
 
-        const height =
-            tryOnVideo.videoHeight ||
-            currentVideoHeight ||
-            480;
-
-
-        /* -------------------------------------------------
-           KEEP CANVAS SAME SIZE AS CAMERA
-           ------------------------------------------------- */
-
-        if (
-            tryOnCanvas.width !== width ||
-            tryOnCanvas.height !== height
-        ) {
-
-            tryOnCanvas.width =
-                width;
-
-            tryOnCanvas.height =
-                height;
-        }
-
-
-        /* -------------------------------------------------
-           CLEAR FRAME
-           ------------------------------------------------- */
+        /* -------------------------------------------
+           CLEAR PREVIOUS FRAME
+           ------------------------------------------- */
 
         ctx.clearRect(
             0,
@@ -2821,11 +2785,20 @@
         );
 
 
-        /* -------------------------------------------------
-           DRAW REAL CAMERA
+        /* -------------------------------------------
+           DRAW CAMERA EXACTLY AS RECEIVED
+           
+           NO FLIP
+           NO MIRROR
+           NO SCALE(-1,1)
+           ------------------------------------------- */
 
-           DO NOT ADD ANY TRANSFORM HERE.
-           ------------------------------------------------- */
+        ctx.save();
+
+
+        ctx.globalCompositeOperation =
+            "source-over";
+
 
         ctx.drawImage(
             tryOnVideo,
@@ -2836,17 +2809,21 @@
         );
 
 
-        /* -------------------------------------------------
-           FACE TRACKING
-           ------------------------------------------------- */
+        ctx.restore();
+
+
+        /* -------------------------------------------
+           FACE DETECTION
+           ------------------------------------------- */
 
         if (
+            mediaPipeReady &&
             faceLandmarker
         ) {
 
             try {
 
-                const result =
+                const results =
                     faceLandmarker.detectForVideo(
                         tryOnVideo,
                         performance.now()
@@ -2854,19 +2831,22 @@
 
 
                 if (
-                    result &&
-                    result.faceLandmarks &&
-                    result.faceLandmarks.length > 0
+                    results &&
+                    results.faceLandmarks &&
+                    results.faceLandmarks.length > 0
                 ) {
 
                     const landmarks =
-                        result.faceLandmarks[0];
+                        results.faceLandmarks[0];
 
 
-                    /*
-                     * The landmarks and camera frame
-                     * have exactly the same orientation.
-                     */
+                    /* --------------------------------
+                       DRAW MAKEUP DIRECTLY IN THE SAME
+                       NORMAL COORDINATE SYSTEM.
+
+                       NO MIRRORING.
+                       -------------------------------- */
+
                     drawMakeup(
                         ctx,
                         landmarks,
@@ -2875,42 +2855,50 @@
                     );
 
 
-                    clearStatus();
-
+                    setStatus(
+                        "Face detected — virtual try-on active."
+                    );
 
                 } else {
 
                     setStatus(
-                        "No face detected. Look directly at the camera."
+                        "No face detected. Position your face in the frame."
                     );
-                }
 
+                }
 
             } catch (error) {
 
                 console.error(
-                    "Face detection error:",
+                    "Face tracking error:",
                     error
                 );
-            }
 
+
+                setStatus(
+                    "Face tracking is processing..."
+                );
+
+            }
 
         } else {
 
             setStatus(
                 "Loading face tracking..."
             );
+
         }
 
 
-        /* -------------------------------------------------
+        /* -------------------------------------------
            NEXT FRAME
-           ------------------------------------------------- */
+           ------------------------------------------- */
 
         animationFrame =
             requestAnimationFrame(
                 renderCameraFrame
             );
+
     }
 
 
@@ -2920,8 +2908,15 @@
 
     async function switchCamera() {
 
+        if (!checkCameraSupport()) {
+
+            return;
+
+        }
+
+
         console.log(
-            "Switch camera clicked."
+            "Switching camera..."
         );
 
 
@@ -2931,15 +2926,18 @@
                 : "user";
 
 
-        stopCamera();
+        setStatus(
+            "Switching camera..."
+        );
 
 
         await startCamera();
+
     }
 
 
     /* =====================================================
-       IMAGE UPLOAD
+       HANDLE IMAGE UPLOAD
        ===================================================== */
 
     async function handleImageUpload(
@@ -2952,7 +2950,9 @@
 
 
         if (!file) {
+
             return;
+
         }
 
 
@@ -2967,12 +2967,20 @@
             );
 
             return;
+
         }
 
 
-        stopCamera();
+        console.log(
+            "Uploaded image:",
+            file.name
+        );
+
 
         clearError();
+
+
+        stopCamera();
 
 
         setStatus(
@@ -2980,257 +2988,406 @@
         );
 
 
-        const image =
-            new Image();
+        showStatus();
 
 
-        image.onload =
-            async () => {
+        const objectUrl =
+            URL.createObjectURL(
+                file
+            );
 
-                try {
 
-                    if (
-                        !mediaPipeReady
-                    ) {
+        try {
 
-                        await loadMediaPipe();
+            const image =
+                new Image();
+
+
+            image.onload =
+                async () => {
+
+                    try {
+
+                        if (
+                            !mediaPipeReady
+                        ) {
+
+                            await loadMediaPipe();
+
+                        }
+
+
+                        if (
+                            tryOnImage
+                        ) {
+
+                            tryOnImage.src =
+                                objectUrl;
+
+                            tryOnImage.style.display =
+                                "none";
+
+                            tryOnImage.style.transform =
+                                "none";
+
+                        }
+
+
+                        if (
+                            tryOnPlaceholder
+                        ) {
+
+                            tryOnPlaceholder.style.display =
+                                "none";
+
+                        }
+
+
+                        if (
+                            tryOnVideo
+                        ) {
+
+                            tryOnVideo.style.display =
+                                "none";
+
+                        }
+
+
+                        if (
+                            tryOnCanvas
+                        ) {
+
+                            tryOnCanvas.style.display =
+                                "block";
+
+                            tryOnCanvas.style.transform =
+                                "none";
+
+                        }
+
+
+                        /* --------------------------------
+                           RESIZE CANVAS
+                           -------------------------------- */
+
+                        const maxWidth =
+                            1280;
+
+                        const scale =
+                            Math.min(
+                                1,
+                                maxWidth /
+                                image.naturalWidth
+                            );
+
+
+                        const width =
+                            Math.round(
+                                image.naturalWidth *
+                                scale
+                            );
+
+
+                        const height =
+                            Math.round(
+                                image.naturalHeight *
+                                scale
+                            );
+
+
+                        tryOnCanvas.width =
+                            width;
+
+                        tryOnCanvas.height =
+                            height;
+
+
+                        const ctx =
+                            tryOnCanvas.getContext(
+                                "2d"
+                            );
+
+
+                        if (!ctx) {
+
+                            throw new Error(
+                                "Could not create canvas context."
+                            );
+
+                        }
+
+
+                        ctx.clearRect(
+                            0,
+                            0,
+                            width,
+                            height
+                        );
+
+
+                        /* --------------------------------
+                           DRAW IMAGE NORMALLY
+                           
+                           NO MIRRORING
+                           -------------------------------- */
+
+                        ctx.drawImage(
+                            image,
+                            0,
+                            0,
+                            width,
+                            height
+                        );
+
+
+                        if (
+                            mediaPipeReady &&
+                            faceLandmarker
+                        ) {
+
+                            try {
+
+                                /* -------------------------
+                                   TEMPORARILY IMAGE MODE
+                                   ------------------------- */
+
+                                await faceLandmarker.setOptions(
+                                    {
+                                        runningMode:
+                                            "IMAGE"
+                                    }
+                                );
+
+
+                                const result =
+                                    faceLandmarker.detect(
+                                        image
+                                    );
+
+
+                                if (
+                                    result &&
+                                    result.faceLandmarks &&
+                                    result.faceLandmarks.length
+                                ) {
+
+                                    drawMakeup(
+                                        ctx,
+                                        result.faceLandmarks[0],
+                                        width,
+                                        height
+                                    );
+
+
+                                    setStatus(
+                                        "Face detected — virtual try-on active."
+                                    );
+
+                                } else {
+
+                                    setStatus(
+                                        "No face detected in the uploaded image."
+                                    );
+
+                                }
+
+
+                                /* -------------------------
+                                   RETURN TO VIDEO MODE
+                                   ------------------------- */
+
+                                await faceLandmarker.setOptions(
+                                    {
+                                        runningMode:
+                                            "VIDEO"
+                                    }
+                                );
+
+                            } catch (error) {
+
+                                console.error(
+                                    "Image face detection failed:",
+                                    error
+                                );
+
+
+                                showError(
+                                    "Could not detect a face in this image."
+                                );
+
+                            }
+
+                        } else {
+
+                            setStatus(
+                                "Face tracking is unavailable."
+                            );
+
+                        }
+
+                    } catch (error) {
+
+                        console.error(
+                            "Image try-on failed:",
+                            error
+                        );
+
+
+                        showError(
+                            "Unable to process the selected image."
+                        );
+
                     }
 
-
-                    await faceLandmarker.setOptions({
-                        runningMode:
-                            "IMAGE"
-                    });
+                };
 
 
-                    tryOnCanvas.width =
-                        image.naturalWidth;
+            image.onerror =
+                () => {
 
-
-                    tryOnCanvas.height =
-                        image.naturalHeight;
-
-
-                    resetCameraOrientation();
-
-
-                    const ctx =
-                        tryOnCanvas.getContext(
-                            "2d"
-                        );
-
-
-                    ctx.clearRect(
-                        0,
-                        0,
-                        tryOnCanvas.width,
-                        tryOnCanvas.height
-                    );
-
-
-                    ctx.drawImage(
-                        image,
-                        0,
-                        0,
-                        image.naturalWidth,
-                        image.naturalHeight
-                    );
-
-
-                    const result =
-                        faceLandmarker.detect(
-                            image
-                        );
-
-
-                    if (
-                        result &&
-                        result.faceLandmarks &&
-                        result.faceLandmarks.length > 0
-                    ) {
-
-                        drawMakeup(
-                            ctx,
-                            result.faceLandmarks[0],
-                            image.naturalWidth,
-                            image.naturalHeight
-                        );
-
-
-                        clearStatus();
-
-
-                    } else {
-
-                        setStatus(
-                            "No face detected in this image."
-                        );
-                    }
-
-
-                    await faceLandmarker.setOptions({
-                        runningMode:
-                            "VIDEO"
-                    });
-
-
-                    console.log(
-                        "Image try-on complete."
-                    );
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Image try-on error:",
-                        error
+                    URL.revokeObjectURL(
+                        objectUrl
                     );
 
 
                     showError(
-                        "Unable to process the selected image."
+                        "Unable to load the selected image."
                     );
-                }
-            };
+
+                };
 
 
-        image.onerror =
-            () => {
+            image.src =
+                objectUrl;
 
-                showError(
-                    "Unable to load the selected image."
-                );
-            };
+        } catch (error) {
 
-
-        image.src =
-            URL.createObjectURL(
-                file
+            URL.revokeObjectURL(
+                objectUrl
             );
+
+
+            console.error(
+                "Upload error:",
+                error
+            );
+
+
+            showError(
+                "Unable to process the image."
+            );
+
+        }
+
     }
 
 
     /* =====================================================
-       TRY ON BUTTON
+       EVENT LISTENERS
        ===================================================== */
 
     tryOnBtn.addEventListener(
         "click",
-        async event => {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-            console.log(
-                "TRY ON BUTTON PRESSED"
-            );
-
-
-            await openTryOn();
-        }
+        openTryOn
     );
 
-
-    /* =====================================================
-       CLOSE
-       ===================================================== */
 
     if (tryOnClose) {
 
         tryOnClose.addEventListener(
             "click",
-            event => {
-
-                event.preventDefault();
-
-                closeTryOn();
-            }
+            closeTryOn
         );
+
     }
 
-
-    /* =====================================================
-       START CAMERA BUTTON
-       ===================================================== */
 
     if (startCameraBtn) {
 
         startCameraBtn.addEventListener(
             "click",
-            async event => {
+            async () => {
 
-                event.preventDefault();
+                clearError();
+
+                resetPreviewOrientation();
 
                 await startCamera();
+
             }
         );
+
     }
 
-
-    /* =====================================================
-       STOP CAMERA BUTTON
-       ===================================================== */
 
     if (stopCameraBtn) {
 
         stopCameraBtn.addEventListener(
             "click",
-            event => {
-
-                event.preventDefault();
+            () => {
 
                 stopCamera();
+
+                clearCanvas();
+
+                if (tryOnCanvas) {
+
+                    tryOnCanvas.style.display =
+                        "none";
+
+                }
+
+                if (tryOnVideo) {
+
+                    tryOnVideo.style.display =
+                        "none";
+
+                }
+
+                if (tryOnPlaceholder) {
+
+                    tryOnPlaceholder.style.display =
+                        "flex";
+
+                }
+
+                setStatus(
+                    "Camera stopped."
+                );
+
             }
         );
+
     }
 
-
-    /* =====================================================
-       SWITCH CAMERA BUTTON
-       ===================================================== */
 
     if (switchCameraBtn) {
 
         switchCameraBtn.addEventListener(
             "click",
-            async event => {
-
-                event.preventDefault();
-
-                await switchCamera();
-            }
+            switchCamera
         );
+
     }
 
-
-    /* =====================================================
-       UPLOAD IMAGE BUTTON
-       ===================================================== */
 
     if (uploadImageBtn) {
 
         uploadImageBtn.addEventListener(
             "click",
-            event => {
+            () => {
 
-                event.preventDefault();
-
-
-                if (
-                    tryOnImageInput
-                ) {
+                if (tryOnImageInput) {
 
                     tryOnImageInput.click();
+
                 }
+
             }
         );
+
     }
 
-
-    /* =====================================================
-       IMAGE INPUT
-       ===================================================== */
 
     if (tryOnImageInput) {
 
@@ -3238,6 +3395,7 @@
             "change",
             handleImageUpload
         );
+
     }
 
 
@@ -3255,13 +3413,15 @@
             ) {
 
                 closeTryOn();
+
             }
+
         }
     );
 
 
     /* =====================================================
-       ESCAPE
+       ESCAPE KEY
        ===================================================== */
 
     document.addEventListener(
@@ -3269,27 +3429,22 @@
         event => {
 
             if (
-                event.key === "Escape"
+                event.key === "Escape" &&
+                tryOnModal.classList.contains(
+                    "active"
+                )
             ) {
 
-                if (
-                    tryOnModal.classList.contains(
-                        "open"
-                    ) ||
-                    tryOnModal.classList.contains(
-                        "show"
-                    )
-                ) {
+                closeTryOn();
 
-                    closeTryOn();
-                }
             }
+
         }
     );
 
 
     /* =====================================================
-       PAGE EXIT
+       PAGE UNLOAD
        ===================================================== */
 
     window.addEventListener(
@@ -3297,36 +3452,21 @@
         () => {
 
             stopCamera();
+
         }
     );
 
 
     /* =====================================================
-       INITIAL CAMERA ORIENTATION
+       INITIAL ORIENTATION RESET
        ===================================================== */
 
-    resetCameraOrientation();
+    resetPreviewOrientation();
 
-
-    /* =====================================================
-       FINISHED
-       ===================================================== */
 
     console.log(
-        "========================================"
+        "Glamora AR Product Details initialized."
     );
 
-    console.log(
-        "GLAMORA AR — Try-On initialized."
-    );
-
-    console.log(
-        "Camera mode: REAL / NOT MIRRORED"
-    );
-
-    console.log(
-        "========================================"
-
-    );
 
 })();
