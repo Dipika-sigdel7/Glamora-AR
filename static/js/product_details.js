@@ -1,8 +1,9 @@
+
 /* =========================================================
    GLAMORA AR
    PRODUCT DETAILS - VIRTUAL TRY ON
 
-   CAMERA
+   CAMERA FIRST
    LOCAL MEDIAPIPE
    LOCAL WASM
    LOCAL FACE LANDMARK MODEL
@@ -86,7 +87,9 @@
         body.dataset.productName || "Beauty Product";
 
     const productType =
-        body.dataset.productType || "";
+        body.dataset.productType ||
+        body.dataset.product_type ||
+        "";
 
     const productShade =
         body.dataset.productShade || "";
@@ -154,12 +157,18 @@
 
     let lastFaceDetected = false;
 
+    let isTryOnOpen = false;
+
+    let uploadedObjectUrl = null;
+
 
     /* =====================================================
        ORIENTATION
-
+       
        IMPORTANT:
-       THERE IS NO MIRRORING ANYWHERE.
+       NO CSS MIRRORING.
+       NO CANVAS MIRRORING.
+       NO TRANSFORM.
        ===================================================== */
 
     function resetPreviewOrientation() {
@@ -262,6 +271,8 @@
 
     /* =====================================================
        OPEN TRY ON
+       
+       CAMERA FIRST
        ===================================================== */
 
     async function openTryOn() {
@@ -274,6 +285,8 @@
 
         resetPreviewOrientation();
 
+        isTryOnOpen = true;
+
         tryOnModal.classList.add("active");
 
         tryOnModal.setAttribute(
@@ -284,6 +297,11 @@
         document.body.classList.add(
             "tryon-open"
         );
+
+
+        /* -----------------------------------------------
+           RESET PREVIEW
+           ----------------------------------------------- */
 
         if (tryOnPlaceholder) {
 
@@ -313,42 +331,81 @@
 
         }
 
+
         setStatus(
-            "Loading face tracking..."
+            "Starting camera..."
         );
 
         showStatus();
 
-        /*
-         * IMPORTANT:
-         * Load MediaPipe FIRST.
-         * Then start the camera.
-         */
+
+        /* =================================================
+           CAMERA FIRST
+           ================================================= */
 
         try {
 
-            await loadMediaPipe();
+            await startCamera();
 
-        } catch (error) {
+        } catch (cameraError) {
 
             console.error(
-                "MediaPipe could not load:",
-                error
+                "Camera startup failed:",
+                cameraError
             );
 
-            showError(
-                "Face tracking could not be loaded. Check the local MediaPipe files in static/mediapipe and static/models."
-            );
-
-            setStatus(
-                "Face tracking unavailable."
+            handleCameraError(
+                cameraError
             );
 
             return;
 
         }
 
-        await startCamera();
+
+        /* =================================================
+           LOAD MEDIAPIPE AFTER CAMERA
+           ================================================= */
+
+        if (!mediaPipeReady) {
+
+            setStatus(
+                "Camera active. Loading face tracking..."
+            );
+
+            try {
+
+                await loadMediaPipe();
+
+                if (!cameraRunning) {
+
+                    return;
+
+                }
+
+                setStatus(
+                    "Face tracking ready. Position your face in the frame."
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "MediaPipe could not load:",
+                    error
+                );
+
+                showError(
+                    "Camera is working, but face tracking could not be loaded. Check static/mediapipe/vision_bundle.mjs, static/mediapipe/wasm and static/models/face_landmarker.task."
+                );
+
+                setStatus(
+                    "Camera active — face tracking unavailable."
+                );
+
+            }
+
+        }
 
     }
 
@@ -362,6 +419,8 @@
         console.log(
             "Closing Glamora AR Try-On."
         );
+
+        isTryOnOpen = false;
 
         stopCamera();
 
@@ -386,6 +445,7 @@
 
         clearCanvas();
 
+
         if (tryOnVideo) {
 
             tryOnVideo.style.display =
@@ -398,6 +458,7 @@
 
         }
 
+
         if (tryOnImage) {
 
             tryOnImage.style.display =
@@ -409,12 +470,14 @@
 
         }
 
+
         if (tryOnCanvas) {
 
             tryOnCanvas.style.display =
                 "none";
 
         }
+
 
         if (tryOnPlaceholder) {
 
@@ -423,9 +486,23 @@
 
         }
 
+
+        if (uploadedObjectUrl) {
+
+            URL.revokeObjectURL(
+                uploadedObjectUrl
+            );
+
+            uploadedObjectUrl = null;
+
+        }
+
+
         resetPreviewOrientation();
 
-        setStatus("Ready");
+        setStatus(
+            "Ready"
+        );
 
     }
 
@@ -449,6 +526,7 @@
 
         }
 
+
         return true;
 
     }
@@ -462,7 +540,9 @@
 
         if (!checkCameraSupport()) {
 
-            return;
+            throw new Error(
+                "Camera API is not supported."
+            );
 
         }
 
@@ -485,31 +565,22 @@
         );
 
 
-        /* -----------------------------------------------
+        /* =================================================
            CAMERA CONSTRAINTS
+           
+           IMPORTANT:
+           Use a simple constraint first.
+           This avoids OverconstrainedError on Linux
+           webcams and integrated cameras.
+           ================================================= */
 
-           User camera.
-
-           NO MIRRORING IS APPLIED.
-           ----------------------------------------------- */
-
-        const constraints = {
+        let constraints = {
 
             audio: false,
 
             video: {
 
-                facingMode: {
-                    ideal: cameraFacingMode
-                },
-
-                width: {
-                    ideal: 1280
-                },
-
-                height: {
-                    ideal: 720
-                }
+                facingMode: cameraFacingMode
 
             }
 
@@ -519,7 +590,8 @@
         try {
 
             console.log(
-                "Requesting camera..."
+                "Requesting camera with:",
+                constraints
             );
 
 
@@ -529,187 +601,462 @@
                 );
 
 
-            const tracks =
-                mediaStream.getVideoTracks();
+        } catch (firstError) {
 
-
-            if (!tracks.length) {
-
-                throw new Error(
-                    "No video track was returned."
-                );
-
-            }
-
-
-            console.log(
-                "Camera:",
-                tracks[0].label
+            console.warn(
+                "Initial camera request failed:",
+                firstError
             );
 
 
-            /* -------------------------------------------
-               CAMERA TRACK ENDED
-               ------------------------------------------- */
+            /*
+             * Some webcams have problems with
+             * facingMode constraints.
+             *
+             * Retry with completely generic
+             * video constraints.
+             */
 
-            tracks[0].addEventListener(
-                "ended",
-                () => {
+            if (
+                firstError.name ===
+                    "OverconstrainedError" ||
+                firstError.name ===
+                    "NotFoundError"
+            ) {
 
-                    cameraRunning = false;
+                console.log(
+                    "Retrying camera with generic constraints..."
+                );
 
-                    setStatus(
-                        "Camera stopped."
+
+                constraints = {
+
+                    audio: false,
+
+                    video: true
+
+                };
+
+
+                mediaStream =
+                    await navigator.mediaDevices.getUserMedia(
+                        constraints
                     );
 
-                }
-            );
+            } else {
 
-
-            /* -------------------------------------------
-               VIDEO CONFIGURATION
-               ------------------------------------------- */
-
-            tryOnVideo.autoplay = true;
-
-            tryOnVideo.playsInline = true;
-
-            tryOnVideo.muted = true;
-
-            tryOnVideo.setAttribute(
-                "playsinline",
-                ""
-            );
-
-            tryOnVideo.setAttribute(
-                "autoplay",
-                ""
-            );
-
-            tryOnVideo.style.transform =
-                "none";
-
-
-            /* -------------------------------------------
-               ATTACH STREAM
-               ------------------------------------------- */
-
-            tryOnVideo.srcObject =
-                mediaStream;
-
-
-            /* -------------------------------------------
-               SHOW CANVAS
-               ------------------------------------------- */
-
-            tryOnVideo.style.display =
-                "none";
-
-
-            if (tryOnPlaceholder) {
-
-                tryOnPlaceholder.style.display =
-                    "none";
+                throw firstError;
 
             }
 
-            if (tryOnImage) {
-
-                tryOnImage.style.display =
-                    "none";
-
-            }
-
-            if (tryOnCanvas) {
-
-                tryOnCanvas.style.display =
-                    "block";
-
-            }
+        }
 
 
-            /* -------------------------------------------
-               PLAY CAMERA
-               ------------------------------------------- */
+        /* =================================================
+           VERIFY VIDEO TRACK
+           ================================================= */
 
-            await tryOnVideo.play();
-
-
-            /* -------------------------------------------
-               WAIT FOR VIDEO SIZE
-               ------------------------------------------- */
-
-            await waitForVideoDimensions();
+        const tracks =
+            mediaStream.getVideoTracks();
 
 
-            console.log(
-                "Video dimensions:",
-                tryOnVideo.videoWidth,
-                "x",
-                tryOnVideo.videoHeight
-            );
-
-
-            /* -------------------------------------------
-               RESIZE CANVAS
-               ------------------------------------------- */
-
-            resizeCanvas();
-
-
-            cameraRunning = true;
-
-
-            setStatus(
-                "Face tracking ready. Position your face in the frame."
-            );
-
-
-            if (switchCameraBtn) {
-
-                switchCameraBtn.hidden =
-                    false;
-
-            }
-
-            if (stopCameraBtn) {
-
-                stopCameraBtn.hidden =
-                    false;
-
-            }
-
-
-            /* -------------------------------------------
-               START RENDER LOOP
-               ------------------------------------------- */
-
-            if (animationFrame) {
-
-                cancelAnimationFrame(
-                    animationFrame
-                );
-
-            }
-
-            animationFrame =
-                requestAnimationFrame(
-                    renderCameraFrame
-                );
-
-
-        } catch (error) {
-
-            console.error(
-                "Camera startup failed:",
-                error
-            );
+        if (!tracks.length) {
 
             stopCamera();
 
-            handleCameraError(error);
+            throw new Error(
+                "No video track was returned by the camera."
+            );
 
         }
+
+
+        const videoTrack =
+            tracks[0];
+
+
+        console.log(
+            "Camera selected:",
+            videoTrack.label
+        );
+
+
+        console.log(
+            "Camera settings:",
+            videoTrack.getSettings
+                ? videoTrack.getSettings()
+                : "Unavailable"
+        );
+
+
+        /* =================================================
+           TRACK ENDED
+           ================================================= */
+
+        videoTrack.addEventListener(
+            "ended",
+            () => {
+
+                console.warn(
+                    "Camera track ended."
+                );
+
+                cameraRunning = false;
+
+                setStatus(
+                    "Camera stopped."
+                );
+
+            }
+        );
+
+
+        /* =================================================
+           VIDEO ELEMENT CONFIGURATION
+           ================================================= */
+
+        tryOnVideo.autoplay = true;
+
+        tryOnVideo.playsInline = true;
+
+        tryOnVideo.muted = true;
+
+        tryOnVideo.setAttribute(
+            "playsinline",
+            ""
+        );
+
+        tryOnVideo.setAttribute(
+            "autoplay",
+            ""
+        );
+
+        tryOnVideo.setAttribute(
+            "muted",
+            ""
+        );
+
+
+        /* NO MIRROR */
+
+        tryOnVideo.style.transform =
+            "none";
+
+        tryOnVideo.style.webkitTransform =
+            "none";
+
+
+        /* =================================================
+           ATTACH STREAM
+           ================================================= */
+
+        tryOnVideo.srcObject =
+            mediaStream;
+
+
+        /* =================================================
+           SHOW VIDEO IMMEDIATELY
+           
+           The camera should become visible as soon as
+           the stream is available.
+           ================================================= */
+
+        if (tryOnPlaceholder) {
+
+            tryOnPlaceholder.style.display =
+                "none";
+
+        }
+
+        if (tryOnImage) {
+
+            tryOnImage.style.display =
+                "none";
+
+        }
+
+        if (tryOnCanvas) {
+
+            tryOnCanvas.style.display =
+                "block";
+
+        }
+
+        /*
+         * Keep video hidden underneath the canvas.
+         * Canvas displays the actual camera frame and
+         * makeup overlay.
+         */
+
+        tryOnVideo.style.display =
+            "block";
+
+
+        /* =================================================
+           WAIT FOR VIDEO METADATA
+           ================================================= */
+
+        await waitForVideoReady();
+
+
+        /* =================================================
+           PLAY VIDEO
+           ================================================= */
+
+        try {
+
+            await tryOnVideo.play();
+
+        } catch (playError) {
+
+            console.warn(
+                "Video play() failed:",
+                playError
+            );
+
+
+            /*
+             * Try one more time after metadata is ready.
+             */
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        100
+                    )
+            );
+
+
+            await tryOnVideo.play();
+
+        }
+
+
+        /* =================================================
+           WAIT FOR REAL VIDEO DIMENSIONS
+           ================================================= */
+
+        await waitForVideoDimensions();
+
+
+        console.log(
+            "Video dimensions:",
+            tryOnVideo.videoWidth,
+            "x",
+            tryOnVideo.videoHeight
+        );
+
+
+        /* =================================================
+           RESIZE CANVAS
+           ================================================= */
+
+        resizeCanvas();
+
+
+        cameraRunning = true;
+
+        lastDetectionTime = 0;
+
+        lastFaceDetected = false;
+
+
+        setStatus(
+            "Camera active. Loading face tracking..."
+        );
+
+
+        /* =================================================
+           SHOW CAMERA CONTROLS
+           ================================================= */
+
+        if (switchCameraBtn) {
+
+            switchCameraBtn.hidden =
+                false;
+
+        }
+
+        if (stopCameraBtn) {
+
+            stopCameraBtn.hidden =
+                false;
+
+        }
+
+
+        /* =================================================
+           START RENDER LOOP
+           ================================================= */
+
+        if (animationFrame) {
+
+            cancelAnimationFrame(
+                animationFrame
+            );
+
+            animationFrame = null;
+
+        }
+
+
+        animationFrame =
+            requestAnimationFrame(
+                renderCameraFrame
+            );
+
+
+        console.log(
+            "Camera started successfully."
+        );
+
+    }
+
+
+    /* =====================================================
+       WAIT FOR VIDEO READY
+       ===================================================== */
+
+    function waitForVideoReady() {
+
+        return new Promise(
+            (resolve, reject) => {
+
+                if (
+                    tryOnVideo.readyState >= 2
+                ) {
+
+                    resolve();
+
+                    return;
+
+                }
+
+
+                let finished = false;
+
+
+                const timeout =
+                    setTimeout(
+                        () => {
+
+                            if (finished) {
+
+                                return;
+
+                            }
+
+                            finished = true;
+
+                            cleanup();
+
+                            reject(
+                                new Error(
+                                    "Camera video metadata did not become ready."
+                                )
+                            );
+
+                        },
+                        10000
+                    );
+
+
+                function cleanup() {
+
+                    clearTimeout(
+                        timeout
+                    );
+
+                    tryOnVideo.removeEventListener(
+                        "loadedmetadata",
+                        onReady
+                    );
+
+                    tryOnVideo.removeEventListener(
+                        "canplay",
+                        onReady
+                    );
+
+                }
+
+
+                function onReady() {
+
+                    if (finished) {
+
+                        return;
+
+                    }
+
+                    if (
+                        tryOnVideo.videoWidth > 0 &&
+                        tryOnVideo.videoHeight > 0
+                    ) {
+
+                        finished = true;
+
+                        cleanup();
+
+                        resolve();
+
+                    }
+
+                }
+
+
+                tryOnVideo.addEventListener(
+                    "loadedmetadata",
+                    onReady
+                );
+
+                tryOnVideo.addEventListener(
+                    "canplay",
+                    onReady
+                );
+
+
+                /*
+                 * Safety polling.
+                 */
+
+                const check =
+                    () => {
+
+                        if (finished) {
+
+                            return;
+
+                        }
+
+
+                        if (
+                            tryOnVideo.videoWidth > 0 &&
+                            tryOnVideo.videoHeight > 0
+                        ) {
+
+                            finished = true;
+
+                            cleanup();
+
+                            resolve();
+
+                            return;
+
+                        }
+
+
+                        requestAnimationFrame(
+                            check
+                        );
+
+                    };
+
+
+                check();
+
+            }
+        );
 
     }
 
@@ -723,30 +1070,8 @@
         return new Promise(
             (resolve, reject) => {
 
-                const timeout =
-                    setTimeout(
-                        () => {
-
-                            if (
-                                tryOnVideo.videoWidth > 0 &&
-                                tryOnVideo.videoHeight > 0
-                            ) {
-
-                                resolve();
-
-                            } else {
-
-                                reject(
-                                    new Error(
-                                        "Camera started but video dimensions are unavailable."
-                                    )
-                                );
-
-                            }
-
-                        },
-                        8000
-                    );
+                const start =
+                    performance.now();
 
 
                 function check() {
@@ -756,11 +1081,24 @@
                         tryOnVideo.videoHeight > 0
                     ) {
 
-                        clearTimeout(
-                            timeout
-                        );
-
                         resolve();
+
+                        return;
+
+                    }
+
+
+                    if (
+                        performance.now() -
+                        start >
+                        10000
+                    ) {
+
+                        reject(
+                            new Error(
+                                "Camera started but video dimensions are unavailable."
+                            )
+                        );
 
                         return;
 
@@ -791,13 +1129,27 @@
         let message =
             "Unable to start the camera.";
 
+
         if (!error) {
 
-            showError(message);
+            showError(
+                message
+            );
 
             return;
 
         }
+
+
+        console.error(
+            "Camera error name:",
+            error.name
+        );
+
+        console.error(
+            "Camera error message:",
+            error.message
+        );
 
 
         switch (error.name) {
@@ -807,7 +1159,7 @@
             case "PermissionDeniedError":
 
                 message =
-                    "Camera permission was denied. Allow camera access for 127.0.0.1:5000 and click Use Camera again.";
+                    "Camera permission was denied. Allow camera access for 127.0.0.1:5000 in Chrome and click Use Camera again.";
 
                 break;
 
@@ -817,7 +1169,7 @@
             case "DevicesNotFoundError":
 
                 message =
-                    "No camera was found on this device.";
+                    "No camera was found. Check that your webcam is connected and available to the browser.";
 
                 break;
 
@@ -827,7 +1179,7 @@
             case "TrackStartError":
 
                 message =
-                    "The camera is already being used by another application.";
+                    "The camera exists but cannot be opened. Close other applications using the camera and try again.";
 
                 break;
 
@@ -835,7 +1187,7 @@
             case "OverconstrainedError":
 
                 message =
-                    "The selected camera does not support the requested settings.";
+                    "The selected camera does not support the requested settings. Try switching the camera.";
 
                 break;
 
@@ -843,7 +1195,23 @@
             case "SecurityError":
 
                 message =
-                    "The browser blocked camera access.";
+                    "The browser blocked camera access. Open Glamora AR through localhost or 127.0.0.1.";
+
+                break;
+
+
+            case "AbortError":
+
+                message =
+                    "Camera startup was interrupted. Please try again.";
+
+                break;
+
+
+            case "TypeError":
+
+                message =
+                    "Camera access is unavailable in this browser context.";
 
                 break;
 
@@ -861,7 +1229,10 @@
         }
 
 
-        showError(message);
+        showError(
+            message
+        );
+
 
         setStatus(
             "Camera unavailable."
@@ -877,6 +1248,10 @@
     function stopCamera() {
 
         cameraRunning = false;
+
+        lastDetectionTime = 0;
+
+        lastFaceDetected = false;
 
 
         if (animationFrame) {
@@ -894,21 +1269,24 @@
 
             mediaStream
                 .getTracks()
-                .forEach(track => {
+                .forEach(
+                    track => {
 
-                    try {
+                        try {
 
-                        track.stop();
+                            track.stop();
 
-                    } catch (error) {
+                        } catch (error) {
 
-                        console.warn(
-                            error
-                        );
+                            console.warn(
+                                "Unable to stop camera track:",
+                                error
+                            );
+
+                        }
 
                     }
-
-                });
+                );
 
             mediaStream = null;
 
@@ -917,7 +1295,18 @@
 
         if (tryOnVideo) {
 
-            tryOnVideo.pause();
+            try {
+
+                tryOnVideo.pause();
+
+            } catch (error) {
+
+                console.warn(
+                    error
+                );
+
+            }
+
 
             tryOnVideo.srcObject =
                 null;
@@ -938,6 +1327,11 @@
                 true;
 
         }
+
+
+        console.log(
+            "Camera stopped."
+        );
 
     }
 
@@ -972,6 +1366,7 @@
 
             }
 
+
             if (
                 mediaPipeReady &&
                 faceLandmarker
@@ -980,6 +1375,7 @@
                 return faceLandmarker;
 
             }
+
 
             throw new Error(
                 "MediaPipe failed to initialize."
@@ -998,9 +1394,9 @@
             );
 
 
-            /* -------------------------------------------
+            /* =================================================
                LOCAL JS MODULE
-               ------------------------------------------- */
+               ================================================= */
 
             const visionModule =
                 await import(
@@ -1032,9 +1428,9 @@
             }
 
 
-            /* -------------------------------------------
+            /* =================================================
                LOCAL WASM
-               ------------------------------------------- */
+               ================================================= */
 
             console.log(
                 "Loading local WASM..."
@@ -1052,9 +1448,9 @@
             );
 
 
-            /* -------------------------------------------
+            /* =================================================
                LOCAL MODEL
-               ------------------------------------------- */
+               ================================================= */
 
             const modelPath =
                 "/static/models/face_landmarker.task";
@@ -1066,9 +1462,9 @@
             );
 
 
-            /* -------------------------------------------
+            /* =================================================
                GPU
-               ------------------------------------------- */
+               ================================================= */
 
             try {
 
@@ -1114,14 +1510,14 @@
             } catch (gpuError) {
 
                 console.warn(
-                    "GPU initialization failed. Using CPU.",
+                    "GPU initialization failed. Falling back to CPU.",
                     gpuError
                 );
 
 
-                /* ---------------------------------------
+                /* =================================================
                    CPU FALLBACK
-                   --------------------------------------- */
+                   ================================================= */
 
                 faceLandmarker =
                     await FaceLandmarker.createFromOptions(
@@ -1203,10 +1599,12 @@
 
             faceLandmarker = null;
 
+
             console.error(
                 "MediaPipe initialization failed:",
                 error
             );
+
 
             throw error;
 
@@ -1239,7 +1637,6 @@
         const width =
             tryOnVideo.videoWidth ||
             640;
-
 
         const height =
             tryOnVideo.videoHeight ||
@@ -1291,7 +1688,9 @@
 
 
         const ctx =
-            tryOnCanvas.getContext("2d");
+            tryOnCanvas.getContext(
+                "2d"
+            );
 
 
         if (!ctx) {
@@ -1299,6 +1698,16 @@
             return;
 
         }
+
+
+        ctx.setTransform(
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+        );
 
 
         ctx.clearRect(
@@ -1577,8 +1986,6 @@
 
     /* =====================================================
        LIP LANDMARKS
-
-       OUTER LIP CONTOUR
        ===================================================== */
 
     const OUTER_LIPS = [
@@ -1608,10 +2015,6 @@
 
     ];
 
-
-    /* =====================================================
-       INNER LIP CONTOUR
-       ===================================================== */
 
     const INNER_LIPS = [
 
@@ -1764,10 +2167,6 @@
 
     /* =====================================================
        LIPSTICK
-
-       IMPORTANT:
-       THIS IS THE PART THAT WAS CHANGED TO MAKE THE
-       LIPSTICK VISIBLE AGAIN.
        ===================================================== */
 
     function drawLipstick(
@@ -1781,18 +2180,8 @@
             getProductColor();
 
 
-        console.log(
-            "Drawing lipstick:",
-            color
-        );
-
-
         ctx.save();
 
-
-        /* -------------------------------------------
-           OUTER LIPS
-           ------------------------------------------- */
 
         const outerValid =
             drawPolygon(
@@ -1835,12 +2224,11 @@
 
 
         /* -------------------------------------------
-           INNER LIP
-
-           Remove only the inside of the mouth.
+           REMOVE INNER MOUTH
            ------------------------------------------- */
 
-        ctx.shadowBlur = 0;
+        ctx.shadowBlur =
+            0;
 
         ctx.globalCompositeOperation =
             "destination-out";
@@ -1867,9 +2255,7 @@
 
 
         /* -------------------------------------------
-           SECOND SOFT LAYER
-
-           Adds natural lipstick intensity.
+           SOFT SECOND LAYER
            ------------------------------------------- */
 
         ctx.save();
@@ -1881,20 +2267,24 @@
             0.18;
 
 
-        drawPolygon(
-            ctx,
-            landmarks,
-            OUTER_LIPS,
-            width,
-            height
-        );
+        const secondLayer =
+            drawPolygon(
+                ctx,
+                landmarks,
+                OUTER_LIPS,
+                width,
+                height
+            );
 
 
-        ctx.fillStyle =
-            color;
+        if (secondLayer) {
 
+            ctx.fillStyle =
+                color;
 
-        ctx.fill();
+            ctx.fill();
+
+        }
 
 
         ctx.restore();
@@ -1948,33 +2338,35 @@
             -Infinity;
 
 
-        points.forEach(p => {
+        points.forEach(
+            p => {
 
-            minX =
-                Math.min(
-                    minX,
-                    p.x
-                );
+                minX =
+                    Math.min(
+                        minX,
+                        p.x
+                    );
 
-            maxX =
-                Math.max(
-                    maxX,
-                    p.x
-                );
+                maxX =
+                    Math.max(
+                        maxX,
+                        p.x
+                    );
 
-            minY =
-                Math.min(
-                    minY,
-                    p.y
-                );
+                minY =
+                    Math.min(
+                        minY,
+                        p.y
+                    );
 
-            maxY =
-                Math.max(
-                    maxY,
-                    p.y
-                );
+                maxY =
+                    Math.max(
+                        maxY,
+                        p.y
+                    );
 
-        });
+            }
+        );
 
 
         const centerX =
@@ -2345,9 +2737,11 @@
     ) {
 
         const indexes = [
+
             1,
             116,
             345
+
         ];
 
 
@@ -2694,9 +3088,9 @@
         }
 
 
-        /* -------------------------------------------
-           ABSOLUTELY NO MIRRORING
-           ------------------------------------------- */
+        /* =================================================
+           RESET TRANSFORM
+           ================================================= */
 
         ctx.setTransform(
             1,
@@ -2711,10 +3105,13 @@
         tryOnCanvas.style.transform =
             "none";
 
+        tryOnCanvas.style.webkitTransform =
+            "none";
 
-        /* -------------------------------------------
+
+        /* =================================================
            CLEAR
-           ------------------------------------------- */
+           ================================================= */
 
         ctx.clearRect(
             0,
@@ -2724,9 +3121,12 @@
         );
 
 
-        /* -------------------------------------------
-           CAMERA FRAME
-           ------------------------------------------- */
+        /* =================================================
+           DRAW CAMERA
+           
+           IMPORTANT:
+           Direct drawImage means there is NO MIRROR.
+           ================================================= */
 
         ctx.globalCompositeOperation =
             "source-over";
@@ -2744,9 +3144,9 @@
         );
 
 
-        /* -------------------------------------------
+        /* =================================================
            FACE DETECTION
-           ------------------------------------------- */
+           ================================================= */
 
         if (
             mediaPipeReady &&
@@ -2761,7 +3161,8 @@
 
 
                 /*
-                 * Prevent duplicate timestamps.
+                 * MediaPipe VIDEO mode requires timestamps
+                 * to increase.
                  */
 
                 if (
@@ -2838,23 +3239,27 @@
 
 
                 setStatus(
-                    "Face tracking error — check browser console."
+                    "Face tracking error."
                 );
 
             }
 
         } else {
 
-            setStatus(
-                "Loading face tracking..."
-            );
+            if (cameraRunning) {
+
+                setStatus(
+                    "Camera active. Loading face tracking..."
+                );
+
+            }
 
         }
 
 
-        /* -------------------------------------------
+        /* =================================================
            NEXT FRAME
-           ------------------------------------------- */
+           ================================================= */
 
         animationFrame =
             requestAnimationFrame(
@@ -2870,6 +3275,13 @@
 
     async function switchCamera() {
 
+        if (!isTryOnOpen) {
+
+            return;
+
+        }
+
+
         cameraFacingMode =
             cameraFacingMode === "user"
                 ? "environment"
@@ -2881,7 +3293,36 @@
         );
 
 
-        await startCamera();
+        try {
+
+            await startCamera();
+
+            /*
+             * MediaPipe remains loaded.
+             * The render loop automatically resumes.
+             */
+
+            if (mediaPipeReady) {
+
+                setStatus(
+                    "Face tracking ready. Position your face in the frame."
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Switch camera failed:",
+                error
+            );
+
+
+            handleCameraError(
+                error
+            );
+
+        }
 
     }
 
@@ -2929,8 +3370,23 @@
         showStatus();
 
 
+        if (uploadedObjectUrl) {
+
+            URL.revokeObjectURL(
+                uploadedObjectUrl
+            );
+
+        }
+
+
+        uploadedObjectUrl =
+            URL.createObjectURL(
+                file
+            );
+
+
         const objectUrl =
-            URL.createObjectURL(file);
+            uploadedObjectUrl;
 
 
         try {
@@ -2947,6 +3403,17 @@
                         if (!mediaPipeReady) {
 
                             await loadMediaPipe();
+
+                        }
+
+
+                        if (
+                            !faceLandmarker
+                        ) {
+
+                            throw new Error(
+                                "FaceLandmarker unavailable."
+                            );
 
                         }
 
@@ -3025,6 +3492,13 @@
                             height;
 
 
+                        currentVideoWidth =
+                            width;
+
+                        currentVideoHeight =
+                            height;
+
+
                         const ctx =
                             tryOnCanvas.getContext(
                                 "2d"
@@ -3038,6 +3512,16 @@
                             );
 
                         }
+
+
+                        ctx.setTransform(
+                            1,
+                            0,
+                            0,
+                            1,
+                            0,
+                            0
+                        );
 
 
                         ctx.clearRect(
@@ -3057,13 +3541,15 @@
                         );
 
 
-                        /*
-                         * Image mode is used only for uploaded
-                         * images.
-                         */
+                        /* =================================================
+                           IMAGE MODE
+                           ================================================= */
 
                         await faceLandmarker.setOptions({
-                            runningMode: "IMAGE"
+
+                            runningMode:
+                                "IMAGE"
+
                         });
 
 
@@ -3101,13 +3587,15 @@
                         }
 
 
-                        /*
-                         * Restore VIDEO mode so the camera
-                         * works again later.
-                         */
+                        /* =================================================
+                           RESTORE VIDEO MODE
+                           ================================================= */
 
                         await faceLandmarker.setOptions({
-                            runningMode: "VIDEO"
+
+                            runningMode:
+                                "VIDEO"
+
                         });
 
 
@@ -3135,10 +3623,6 @@
                         "Unable to load the selected image."
                     );
 
-                    URL.revokeObjectURL(
-                        objectUrl
-                    );
-
                 };
 
 
@@ -3151,11 +3635,6 @@
             console.error(
                 "Image processing failed:",
                 error
-            );
-
-
-            URL.revokeObjectURL(
-                objectUrl
             );
 
 
@@ -3198,39 +3677,53 @@
 
                 resetPreviewOrientation();
 
-                /*
-                 * If MediaPipe was not initialized,
-                 * initialize it first.
-                 */
 
-                if (!mediaPipeReady) {
+                if (!isTryOnOpen) {
 
-                    try {
-
-                        setStatus(
-                            "Loading face tracking..."
-                        );
-
-                        await loadMediaPipe();
-
-                    } catch (error) {
-
-                        console.error(
-                            error
-                        );
-
-                        showError(
-                            "Face tracking could not be loaded."
-                        );
-
-                        return;
-
-                    }
+                    isTryOnOpen = true;
 
                 }
 
 
-                await startCamera();
+                try {
+
+                    await startCamera();
+
+
+                    if (!mediaPipeReady) {
+
+                        setStatus(
+                            "Camera active. Loading face tracking..."
+                        );
+
+
+                        await loadMediaPipe();
+
+                    }
+
+
+                    if (mediaPipeReady) {
+
+                        setStatus(
+                            "Face tracking ready. Position your face in the frame."
+                        );
+
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Use Camera failed:",
+                        error
+                    );
+
+
+                    handleCameraError(
+                        error
+                    );
+
+                }
 
             }
         );
@@ -3261,6 +3754,14 @@
 
                     tryOnPlaceholder.style.display =
                         "flex";
+
+                }
+
+
+                if (tryOnVideo) {
+
+                    tryOnVideo.style.display =
+                        "none";
 
                 }
 
@@ -3372,6 +3873,34 @@
 
 
     /* =====================================================
+       PAGE VISIBILITY
+       
+       Stop camera when the tab becomes hidden.
+       This prevents Linux/browser camera locking.
+       ===================================================== */
+
+    document.addEventListener(
+        "visibilitychange",
+        () => {
+
+            if (
+                document.hidden &&
+                cameraRunning
+            ) {
+
+                console.log(
+                    "Page hidden — stopping camera."
+                );
+
+                stopCamera();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
        INITIALIZATION
        ===================================================== */
 
@@ -3383,3 +3912,4 @@
     );
 
 })();
+
