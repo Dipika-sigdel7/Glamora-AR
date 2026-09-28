@@ -38,6 +38,33 @@ app.secret_key = os.environ.get(
 
 
 # =========================================================
+# CURRENCY CONFIGURATION
+# =========================================================
+
+CURRENCY_SYMBOL = "Rs."
+CURRENCY_CODE = "NPR"
+
+
+def format_npr(value):
+
+    try:
+
+        amount = Decimal(
+            str(value or 0)
+        )
+
+    except (
+        InvalidOperation,
+        ValueError,
+        TypeError
+    ):
+
+        amount = Decimal("0.00")
+
+    return f"{CURRENCY_SYMBOL} {amount:,.2f}"
+
+
+# =========================================================
 # SESSION CONFIGURATION
 # =========================================================
 
@@ -261,6 +288,29 @@ def prepare_products(products):
             product["product_type_key"]
         )
 
+        # -------------------------------------------------
+        # NPR PRICE
+        # -------------------------------------------------
+
+        try:
+
+            product["price"] = Decimal(
+                str(
+                    product.get(
+                        "price",
+                        0
+                    ) or 0
+                )
+            )
+
+        except (
+            InvalidOperation,
+            ValueError,
+            TypeError
+        ):
+
+            product["price"] = Decimal("0.00")
+
     return products
 
 
@@ -400,7 +450,15 @@ def inject_global_data():
         "current_user": current_user,
         "is_logged_in": bool(
             session.get("user_id")
-        )
+        ),
+
+        # -------------------------------------------------
+        # NPR CURRENCY
+        # -------------------------------------------------
+
+        "currency_symbol": CURRENCY_SYMBOL,
+        "currency_code": CURRENCY_CODE,
+        "format_npr": format_npr
     }
 
 
@@ -530,6 +588,10 @@ def beauty():
                 product.get("id"),
                 "| NAME:",
                 product.get("name"),
+                "| PRICE:",
+                format_npr(
+                    product.get("price")
+                ),
                 "| CATEGORY:",
                 product.get("category_name"),
                 "| TYPE:",
@@ -1097,10 +1159,6 @@ def product_details(product_id):
             product_id
         )
 
-        # =================================================
-        # GET PRODUCT
-        # =================================================
-
         cursor.execute(
             """
             SELECT
@@ -1136,10 +1194,6 @@ def product_details(product_id):
             product
         )
 
-        # -------------------------------------------------
-        # PRODUCT NOT FOUND
-        # -------------------------------------------------
-
         if not product:
 
             print(
@@ -1155,6 +1209,29 @@ def product_details(product_id):
             return redirect(
                 url_for("beauty")
             )
+
+        # =================================================
+        # NORMALIZE PRICE TO NPR
+        # =================================================
+
+        try:
+
+            product["price"] = Decimal(
+                str(
+                    product.get(
+                        "price",
+                        0
+                    ) or 0
+                )
+            )
+
+        except (
+            InvalidOperation,
+            ValueError,
+            TypeError
+        ):
+
+            product["price"] = Decimal("0.00")
 
         # =================================================
         # GET PRODUCT IMAGES
@@ -1317,10 +1394,6 @@ def product_details(product_id):
             average_rating
         )
 
-        # =================================================
-        # RENDER PRODUCT DETAILS
-        # =================================================
-
         print(
             "RENDERING product_details.html"
         )
@@ -1339,10 +1412,6 @@ def product_details(product_id):
 
     except Exception as error:
 
-        # =================================================
-        # ERROR OUTPUT ONLY
-        # =================================================
-
         print("\n")
         print("!" * 60)
         print("PRODUCT DETAILS ERROR")
@@ -1357,10 +1426,6 @@ def product_details(product_id):
         )
         print("!" * 60)
         print("\n")
-
-        # -------------------------------------------------
-        # NO FLASH MESSAGE HERE
-        # -------------------------------------------------
 
         return redirect(
             url_for("beauty")
@@ -2175,6 +2240,8 @@ def cart():
                 ) or 0
             )
 
+            item["price"] = price
+
             item["line_total"] = (
                 price * quantity
             )
@@ -2540,6 +2607,27 @@ def admin_dashboard():
             cursor.fetchall() or []
         )
 
+        for product in recent_products:
+
+            try:
+
+                product["price"] = Decimal(
+                    str(
+                        product.get(
+                            "price",
+                            0
+                        ) or 0
+                    )
+                )
+
+            except (
+                InvalidOperation,
+                ValueError,
+                TypeError
+            ):
+
+                product["price"] = Decimal("0.00")
+
         return render_template(
             "admin/dashboard.html",
             product_count=product_count,
@@ -2712,6 +2800,7 @@ def admin_add_product():
                 ""
             ).strip()
 
+            # PRICE IS NOW NPR
             price_value = request.form.get(
                 "price",
                 ""
@@ -2773,6 +2862,14 @@ def admin_add_product():
 
                     raise InvalidOperation
 
+                # -------------------------------------------------
+                # NPR PRICE
+                # -------------------------------------------------
+
+                price = price.quantize(
+                    Decimal("0.01")
+                )
+
             except (
                 InvalidOperation,
                 ValueError,
@@ -2780,7 +2877,7 @@ def admin_add_product():
             ):
 
                 flash(
-                    "Please enter a valid price.",
+                    "Please enter a valid price in NPR.",
                     "error"
                 )
 
@@ -2863,6 +2960,7 @@ def admin_add_product():
 
             # -------------------------------------------------
             # INSERT PRODUCT
+            # PRICE STORED AS NPR
             # -------------------------------------------------
 
             cursor.execute(
