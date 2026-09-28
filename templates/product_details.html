@@ -42,9 +42,9 @@
     rel="stylesheet"
     href="{{ url_for('static', filename='css/product_details.css') }}"
 >
-```
 
 </head>
+
 
 <!-- =========================================================
      BODY
@@ -58,7 +58,7 @@
     data-product-color="{{ product.color|default('', true)|e }}"
 >
 
-```
+
 <!-- =====================================================
      NAVBAR
      ===================================================== -->
@@ -369,7 +369,7 @@
 
             <div class="details-price">
 
-                ${{ "%.2f"|format(product.price|float) }}
+                Rs {{ "%.2f"|format(product.price|float) }}
 
             </div>
 
