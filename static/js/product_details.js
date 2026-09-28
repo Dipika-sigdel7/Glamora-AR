@@ -8,8 +8,9 @@
    LOCAL WASM
    LOCAL FACE LANDMARK MODEL
 
-   CAMERA ORIENTATION:
-   FRONT CAMERA IS MIRRORED HORIZONTALLY
+   CAMERA:
+   - ASK USER BEFORE ACCESSING CAMERA
+   - FRONT CAMERA IS MIRRORED HORIZONTALLY
    ========================================================= */
 
 (() => {
@@ -25,13 +26,23 @@
        DOM ELEMENTS
        ===================================================== */
 
-    const tryOnBtn = document.getElementById("tryOnBtn");
-    const tryOnModal = document.getElementById("tryOnModal");
-    const tryOnClose = document.getElementById("tryOnClose");
+    const tryOnBtn =
+        document.getElementById("tryOnBtn");
 
-    const tryOnVideo = document.getElementById("tryOnVideo");
-    const tryOnCanvas = document.getElementById("tryOnCanvas");
-    const tryOnImage = document.getElementById("tryOnImage");
+    const tryOnModal =
+        document.getElementById("tryOnModal");
+
+    const tryOnClose =
+        document.getElementById("tryOnClose");
+
+    const tryOnVideo =
+        document.getElementById("tryOnVideo");
+
+    const tryOnCanvas =
+        document.getElementById("tryOnCanvas");
+
+    const tryOnImage =
+        document.getElementById("tryOnImage");
 
     const tryOnPlaceholder =
         document.getElementById("tryOnPlaceholder");
@@ -124,7 +135,7 @@
 
 
     /* =====================================================
-       CANVAS CONTEXT
+       CANVAS
        ===================================================== */
 
     const ctx = tryOnCanvas
@@ -157,17 +168,24 @@
     function getProductColor() {
 
         const value =
-            String(productColor || productShade || "")
-                .trim()
-                .toLowerCase();
+            String(
+                productColor ||
+                productShade ||
+                ""
+            )
+            .trim()
+            .toLowerCase();
+
 
         if (!value) {
             return "#b84d6b";
         }
 
+
         if (value.startsWith("#")) {
             return value;
         }
+
 
         const colorMap = {
 
@@ -197,6 +215,7 @@
 
         };
 
+
         for (const key in colorMap) {
 
             if (value.includes(key)) {
@@ -204,6 +223,7 @@
             }
 
         }
+
 
         return "#b84d6b";
     }
@@ -214,16 +234,13 @@
 
 
     /* =====================================================
-       ORIENTATION
+       CAMERA ORIENTATION
        ===================================================== */
 
     function resetPreviewOrientation() {
 
         /*
-         * IMPORTANT:
-         * Front camera should look like a normal selfie.
-         *
-         * Only horizontal mirroring is applied.
+         * Front camera = normal selfie mirror.
          */
 
         if (tryOnVideo) {
@@ -247,7 +264,7 @@
 
 
         /*
-         * Uploaded images should NOT be mirrored.
+         * Uploaded images are NOT mirrored.
          */
 
         if (tryOnImage) {
@@ -268,11 +285,16 @@
     function setStatus(message) {
 
         if (tryOnStatusText) {
-            tryOnStatusText.textContent = message;
+
+            tryOnStatusText.textContent =
+                message;
         }
 
+
         if (tryOnStatus) {
-            tryOnStatus.style.display = "flex";
+
+            tryOnStatus.style.display =
+                "flex";
         }
     }
 
@@ -280,20 +302,28 @@
     function hideStatus() {
 
         if (tryOnStatus) {
-            tryOnStatus.style.display = "none";
+
+            tryOnStatus.style.display =
+                "none";
         }
     }
 
 
     function showError(message) {
 
-        console.error("[Glamora AR]", message);
+        console.error(
+            "[Glamora AR]",
+            message
+        );
+
 
         if (tryOnError) {
 
-            tryOnError.textContent = message;
+            tryOnError.textContent =
+                message;
 
-            tryOnError.style.display = "block";
+            tryOnError.style.display =
+                "block";
         }
     }
 
@@ -302,10 +332,272 @@
 
         if (tryOnError) {
 
-            tryOnError.textContent = "";
+            tryOnError.textContent =
+                "";
 
-            tryOnError.style.display = "none";
+            tryOnError.style.display =
+                "none";
         }
+    }
+
+
+    /* =====================================================
+       CAMERA PERMISSION PROMPT
+       ===================================================== */
+
+    function showCameraPermissionPrompt() {
+
+        /*
+         * Do not create another prompt if one already exists.
+         */
+
+        const oldPrompt =
+            document.getElementById(
+                "glamoraCameraPermission"
+            );
+
+
+        if (oldPrompt) {
+
+            oldPrompt.style.display =
+                "flex";
+
+            return;
+        }
+
+
+        const overlay =
+            document.createElement("div");
+
+
+        overlay.id =
+            "glamoraCameraPermission";
+
+
+        overlay.style.position =
+            "fixed";
+
+        overlay.style.inset =
+            "0";
+
+        overlay.style.zIndex =
+            "999999";
+
+        overlay.style.display =
+            "flex";
+
+        overlay.style.alignItems =
+            "center";
+
+        overlay.style.justifyContent =
+            "center";
+
+        overlay.style.padding =
+            "20px";
+
+        overlay.style.background =
+            "rgba(30, 15, 20, 0.65)";
+
+        overlay.style.backdropFilter =
+            "blur(8px)";
+
+
+        const card =
+            document.createElement("div");
+
+
+        card.style.width =
+            "min(420px, 100%)";
+
+        card.style.background =
+            "#fff5f7";
+
+        card.style.borderRadius =
+            "24px";
+
+        card.style.padding =
+            "32px 26px";
+
+        card.style.textAlign =
+            "center";
+
+        card.style.boxShadow =
+            "0 25px 70px rgba(164,73,98,.25)";
+
+
+        const icon =
+            document.createElement("div");
+
+
+        icon.textContent =
+            "📷";
+
+        icon.style.fontSize =
+            "48px";
+
+        icon.style.marginBottom =
+            "14px";
+
+
+        const title =
+            document.createElement("h2");
+
+
+        title.textContent =
+            "Camera Access Required";
+
+
+        title.style.margin =
+            "0 0 10px";
+
+        title.style.color =
+            "#26191d";
+
+        title.style.fontFamily =
+            "Playfair Display, serif";
+
+
+        const message =
+            document.createElement("p");
+
+
+        message.textContent =
+            "Glamora AR needs access to your camera to detect your face and show how this product looks on you.";
+
+
+        message.style.margin =
+            "0 auto 22px";
+
+        message.style.maxWidth =
+            "340px";
+
+        message.style.lineHeight =
+            "1.6";
+
+        message.style.color =
+            "#806b72";
+
+        message.style.fontFamily =
+            "DM Sans, sans-serif";
+
+
+        const allowButton =
+            document.createElement("button");
+
+
+        allowButton.type =
+            "button";
+
+        allowButton.textContent =
+            "Allow Camera Access";
+
+
+        allowButton.style.width =
+            "100%";
+
+        allowButton.style.padding =
+            "14px 20px";
+
+        allowButton.style.border =
+            "0";
+
+        allowButton.style.borderRadius =
+            "999px";
+
+        allowButton.style.background =
+            "#c85f7a";
+
+        allowButton.style.color =
+            "#ffffff";
+
+        allowButton.style.fontWeight =
+            "600";
+
+        allowButton.style.fontSize =
+            "15px";
+
+        allowButton.style.cursor =
+            "pointer";
+
+
+        const cancelButton =
+            document.createElement("button");
+
+
+        cancelButton.type =
+            "button";
+
+        cancelButton.textContent =
+            "Not Now";
+
+
+        cancelButton.style.marginTop =
+            "10px";
+
+        cancelButton.style.width =
+            "100%";
+
+        cancelButton.style.padding =
+            "12px 20px";
+
+        cancelButton.style.border =
+            "0";
+
+        cancelButton.style.background =
+            "transparent";
+
+        cancelButton.style.color =
+            "#806b72";
+
+        cancelButton.style.cursor =
+            "pointer";
+
+
+        card.appendChild(icon);
+
+        card.appendChild(title);
+
+        card.appendChild(message);
+
+        card.appendChild(allowButton);
+
+        card.appendChild(cancelButton);
+
+        overlay.appendChild(card);
+
+        document.body.appendChild(overlay);
+
+
+        /* =================================================
+           ALLOW CAMERA
+           ================================================= */
+
+        allowButton.addEventListener(
+            "click",
+            async () => {
+
+                overlay.remove();
+
+                await startCamera();
+            }
+        );
+
+
+        /* =================================================
+           CANCEL
+           ================================================= */
+
+        cancelButton.addEventListener(
+            "click",
+            () => {
+
+                overlay.remove();
+
+                setStatus(
+                    "Camera access was not granted."
+                );
+            }
+        );
     }
 
 
@@ -315,27 +607,42 @@
 
     async function loadMediaPipe() {
 
-        if (mediaPipeReady && faceLandmarker) {
+        if (
+            mediaPipeReady &&
+            faceLandmarker
+        ) {
+
             return true;
         }
+
 
         if (mediaPipeLoading) {
 
             while (mediaPipeLoading) {
 
-                await new Promise(resolve =>
-                    setTimeout(resolve, 100)
+                await new Promise(
+                    resolve =>
+                        setTimeout(
+                            resolve,
+                            100
+                        )
                 );
             }
+
 
             return !!faceLandmarker;
         }
 
+
         mediaPipeLoading = true;
+
 
         try {
 
-            setStatus("Loading face tracking...");
+            setStatus(
+                "Loading face tracking..."
+            );
+
 
             console.log(
                 "[Glamora AR] Loading local MediaPipe..."
@@ -367,23 +674,31 @@
                         filesetResolver,
                         {
                             baseOptions: {
+
                                 modelAssetPath:
                                     "/static/models/face_landmarker.task",
 
-                                delegate: "GPU"
+                                delegate:
+                                    "GPU"
                             },
 
-                            runningMode: "VIDEO",
+                            runningMode:
+                                "VIDEO",
 
-                            numFaces: 1,
+                            numFaces:
+                                1,
 
-                            minFaceDetectionConfidence: 0.35,
+                            minFaceDetectionConfidence:
+                                0.35,
 
-                            minFacePresenceConfidence: 0.35,
+                            minFacePresenceConfidence:
+                                0.35,
 
-                            minTrackingConfidence: 0.35
+                            minTrackingConfidence:
+                                0.35
                         }
                     );
+
 
             } catch (gpuError) {
 
@@ -398,33 +713,44 @@
                         filesetResolver,
                         {
                             baseOptions: {
+
                                 modelAssetPath:
                                     "/static/models/face_landmarker.task",
 
-                                delegate: "CPU"
+                                delegate:
+                                    "CPU"
                             },
 
-                            runningMode: "VIDEO",
+                            runningMode:
+                                "VIDEO",
 
-                            numFaces: 1,
+                            numFaces:
+                                1,
 
-                            minFaceDetectionConfidence: 0.35,
+                            minFaceDetectionConfidence:
+                                0.35,
 
-                            minFacePresenceConfidence: 0.35,
+                            minFacePresenceConfidence:
+                                0.35,
 
-                            minTrackingConfidence: 0.35
+                            minTrackingConfidence:
+                                0.35
                         }
                     );
             }
 
 
-            mediaPipeReady = true;
+            mediaPipeReady =
+                true;
+
 
             console.log(
                 "[Glamora AR] MediaPipe ready."
             );
 
+
             return true;
+
 
         } catch (error) {
 
@@ -433,20 +759,27 @@
                 error
             );
 
+
             showError(
                 "Face tracking failed. " +
                 error.message
             );
 
-            faceLandmarker = null;
 
-            mediaPipeReady = false;
+            faceLandmarker =
+                null;
+
+            mediaPipeReady =
+                false;
+
 
             return false;
 
+
         } finally {
 
-            mediaPipeLoading = false;
+            mediaPipeLoading =
+                false;
         }
     }
 
@@ -457,8 +790,10 @@
 
     async function startCamera() {
 
-        if (!navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia) {
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
 
             showError(
                 "Your browser does not support camera access."
@@ -472,7 +807,9 @@
 
         hideError();
 
-        setStatus("Starting camera...");
+        setStatus(
+            "Requesting camera access..."
+        );
 
 
         try {
@@ -484,15 +821,21 @@
                 video: {
 
                     facingMode: {
-                        ideal: cameraFacingMode
+
+                        ideal:
+                            cameraFacingMode
                     },
 
                     width: {
-                        ideal: 1280
+
+                        ideal:
+                            1280
                     },
 
                     height: {
-                        ideal: 720
+
+                        ideal:
+                            720
                     }
                 }
             };
@@ -504,9 +847,15 @@
             );
 
 
+            /*
+             * This is the actual browser camera permission request.
+             */
+
             mediaStream =
                 await navigator.mediaDevices
-                    .getUserMedia(constraints);
+                    .getUserMedia(
+                        constraints
+                    );
 
 
             console.log(
@@ -526,30 +875,21 @@
                 mediaStream;
 
 
-            tryOnVideo.muted = true;
+            tryOnVideo.muted =
+                true;
 
-            tryOnVideo.playsInline = true;
+            tryOnVideo.playsInline =
+                true;
 
-            tryOnVideo.autoplay = true;
+            tryOnVideo.autoplay =
+                true;
 
 
             await tryOnVideo.play();
 
 
-            await new Promise(resolve => {
-
-                if (
-                    tryOnVideo.videoWidth > 0 &&
-                    tryOnVideo.videoHeight > 0
-                ) {
-
-                    resolve();
-
-                    return;
-                }
-
-
-                const checkVideo = () => {
+            await new Promise(
+                resolve => {
 
                     if (
                         tryOnVideo.videoWidth > 0 &&
@@ -558,17 +898,32 @@
 
                         resolve();
 
-                    } else {
-
-                        requestAnimationFrame(
-                            checkVideo
-                        );
+                        return;
                     }
-                };
 
 
-                checkVideo();
-            });
+                    const checkVideo =
+                        () => {
+
+                            if (
+                                tryOnVideo.videoWidth > 0 &&
+                                tryOnVideo.videoHeight > 0
+                            ) {
+
+                                resolve();
+
+                            } else {
+
+                                requestAnimationFrame(
+                                    checkVideo
+                                );
+                            }
+                        };
+
+
+                    checkVideo();
+                }
+            );
 
 
             currentVideoWidth =
@@ -591,26 +946,39 @@
             /*
              * CAMERA ORIENTATION FIX
              */
+
             resetPreviewOrientation();
 
 
-            cameraRunning = true;
+            cameraRunning =
+                true;
 
 
             if (tryOnVideo) {
-                tryOnVideo.style.display = "block";
+
+                tryOnVideo.style.display =
+                    "block";
             }
+
 
             if (tryOnCanvas) {
-                tryOnCanvas.style.display = "block";
+
+                tryOnCanvas.style.display =
+                    "block";
             }
+
 
             if (tryOnImage) {
-                tryOnImage.style.display = "none";
+
+                tryOnImage.style.display =
+                    "none";
             }
 
+
             if (tryOnPlaceholder) {
-                tryOnPlaceholder.style.display = "none";
+
+                tryOnPlaceholder.style.display =
+                    "none";
             }
 
 
@@ -618,7 +986,7 @@
 
 
             /*
-             * Start MediaPipe after camera starts.
+             * Load MediaPipe after camera starts.
              */
 
             const loaded =
@@ -630,7 +998,9 @@
             }
 
 
-            setStatus("Detecting your face...");
+            setStatus(
+                "Detecting your face..."
+            );
 
 
             renderCameraFrame();
@@ -644,46 +1014,69 @@
             );
 
 
-            cameraRunning = false;
+            cameraRunning =
+                false;
 
 
-            if (error.name === "NotAllowedError") {
+            if (
+                error.name ===
+                "NotAllowedError"
+            ) {
 
                 showError(
-                    "Camera permission was denied. " +
-                    "Please allow camera access in your browser."
+                    "Camera permission was denied. Please allow camera access in your browser and try again."
                 );
 
-            } else if (error.name === "NotFoundError") {
+
+            } else if (
+                error.name ===
+                "NotFoundError"
+            ) {
 
                 showError(
                     "No camera was found on this device."
                 );
 
-            } else if (error.name === "NotReadableError") {
+
+            } else if (
+                error.name ===
+                "NotReadableError"
+            ) {
 
                 showError(
-                    "The camera is already being used " +
-                    "by another application."
+                    "The camera is already being used by another application."
                 );
 
-            } else if (error.name === "OverconstrainedError") {
+
+            } else if (
+                error.name ===
+                "OverconstrainedError"
+            ) {
 
                 showError(
                     "The selected camera settings are not supported."
                 );
 
-            } else if (error.name === "SecurityError") {
+
+            } else if (
+                error.name ===
+                "SecurityError"
+            ) {
 
                 showError(
                     "Camera access was blocked by browser security."
                 );
 
-            } else if (error.name === "AbortError") {
+
+            } else if (
+                error.name ===
+                "AbortError"
+            ) {
 
                 showError(
                     "Camera startup was interrupted."
                 );
+
 
             } else {
 
@@ -703,9 +1096,12 @@
        STOP CAMERA
        ===================================================== */
 
-    function stopCamera(showMessage = true) {
+    function stopCamera(
+        showMessage = true
+    ) {
 
-        cameraRunning = false;
+        cameraRunning =
+            false;
 
 
         if (animationFrame) {
@@ -714,7 +1110,8 @@
                 animationFrame
             );
 
-            animationFrame = null;
+            animationFrame =
+                null;
         }
 
 
@@ -722,9 +1119,13 @@
 
             mediaStream
                 .getTracks()
-                .forEach(track => track.stop());
+                .forEach(
+                    track =>
+                        track.stop()
+                );
 
-            mediaStream = null;
+            mediaStream =
+                null;
         }
 
 
@@ -732,11 +1133,15 @@
 
             tryOnVideo.pause();
 
-            tryOnVideo.srcObject = null;
+            tryOnVideo.srcObject =
+                null;
         }
 
 
-        if (ctx && tryOnCanvas) {
+        if (
+            ctx &&
+            tryOnCanvas
+        ) {
 
             ctx.setTransform(
                 1,
@@ -747,6 +1152,7 @@
                 0
             );
 
+
             ctx.clearRect(
                 0,
                 0,
@@ -756,16 +1162,14 @@
         }
 
 
-        /*
-         * Keep the selfie orientation after stopping.
-         */
-
         resetPreviewOrientation();
 
 
         if (showMessage) {
 
-            setStatus("Camera stopped.");
+            setStatus(
+                "Camera stopped."
+            );
         }
     }
 
@@ -790,15 +1194,17 @@
 
 
     /* =====================================================
-       DRAW CAMERA FRAME
+       RENDER CAMERA FRAME
        ===================================================== */
 
     function renderCameraFrame() {
 
-        if (!cameraRunning ||
+        if (
+            !cameraRunning ||
             !tryOnVideo ||
             !tryOnCanvas ||
-            !ctx) {
+            !ctx
+        ) {
 
             return;
         }
@@ -811,7 +1217,10 @@
             tryOnVideo.videoHeight;
 
 
-        if (!width || !height) {
+        if (
+            !width ||
+            !height
+        ) {
 
             animationFrame =
                 requestAnimationFrame(
@@ -821,11 +1230,6 @@
             return;
         }
 
-
-        /*
-         * Keep canvas coordinate system normal.
-         * CSS handles the visible horizontal mirror.
-         */
 
         ctx.setTransform(
             1,
@@ -839,8 +1243,6 @@
 
         /*
          * CAMERA ORIENTATION FIX
-         *
-         * The visible canvas is mirrored.
          */
 
         tryOnCanvas.style.transform =
@@ -857,11 +1259,6 @@
             height
         );
 
-
-        /*
-         * Draw original camera frame.
-         * CSS mirror is applied afterward.
-         */
 
         ctx.drawImage(
             tryOnVideo,
@@ -896,7 +1293,9 @@
                     result.faceLandmarks.length > 0
                 ) {
 
-                    lastFaceDetected = true;
+                    lastFaceDetected =
+                        true;
+
 
                     setStatus(
                         "Face detected — " +
@@ -915,9 +1314,12 @@
                         height
                     );
 
+
                 } else {
 
-                    lastFaceDetected = false;
+                    lastFaceDetected =
+                        false;
+
 
                     setStatus(
                         "Move your face into the camera."
@@ -956,24 +1358,28 @@
         const p =
             landmarks[index];
 
+
         if (!p) {
             return null;
         }
 
+
         return {
-            x: p.x * width,
-            y: p.y * height
+
+            x:
+                p.x * width,
+
+            y:
+                p.y * height
         };
     }
 
 
     /* =====================================================
-       DRAW POLYGON
+       POLYGON
        ===================================================== */
 
-    function drawPolygon(
-        points
-    ) {
+    function drawPolygon(points) {
 
         if (!points.length) {
             return;
@@ -981,6 +1387,7 @@
 
 
         ctx.beginPath();
+
 
         ctx.moveTo(
             points[0].x,
@@ -1008,7 +1415,7 @@
 
 
     /* =====================================================
-       DRAW MAKEUP
+       MAKEUP
        ===================================================== */
 
     function drawMakeup(
@@ -1017,7 +1424,11 @@
         height
     ) {
 
-        if (!ctx || !landmarks) {
+        if (
+            !ctx ||
+            !landmarks
+        ) {
+
             return;
         }
 
@@ -1037,6 +1448,7 @@
                 height
             );
 
+
         } else if (
             type === "eyeshadow"
         ) {
@@ -1046,6 +1458,7 @@
                 width,
                 height
             );
+
 
         } else if (
             type === "eyeliner"
@@ -1057,6 +1470,7 @@
                 height
             );
 
+
         } else if (
             type === "mascara"
         ) {
@@ -1066,6 +1480,7 @@
                 width,
                 height
             );
+
 
         } else if (
             type === "blush"
@@ -1077,6 +1492,7 @@
                 height
             );
 
+
         } else if (
             type === "highlighter"
         ) {
@@ -1086,6 +1502,7 @@
                 width,
                 height
             );
+
 
         } else if (
             type === "foundation"
@@ -1097,12 +1514,8 @@
                 height
             );
 
-        } else {
 
-            /*
-             * Default to lipstick-style application
-             * for unknown makeup types.
-             */
+        } else {
 
             drawLipstick(
                 landmarks,
@@ -1123,11 +1536,8 @@
         height
     ) {
 
-        /*
-         * MediaPipe outer lips.
-         */
-
         const indices = [
+
             61, 146, 91, 181, 84,
             17, 314, 405, 321, 375,
             291, 409, 270, 269, 267,
@@ -1138,20 +1548,23 @@
         const points = [];
 
 
-        indices.forEach(index => {
+        indices.forEach(
+            index => {
 
-            const p =
-                point(
-                    landmarks,
-                    index,
-                    width,
-                    height
-                );
+                const p =
+                    point(
+                        landmarks,
+                        index,
+                        width,
+                        height
+                    );
 
-            if (p) {
-                points.push(p);
+
+                if (p) {
+                    points.push(p);
+                }
             }
-        });
+        );
 
 
         if (!points.length) {
@@ -1161,10 +1574,14 @@
 
         ctx.save();
 
-        ctx.globalAlpha = 0.58;
+
+        ctx.globalAlpha =
+            0.58;
+
 
         ctx.fillStyle =
             makeupColor;
+
 
         ctx.globalCompositeOperation =
             "multiply";
@@ -1188,8 +1605,8 @@
     ) {
 
         const leftEye = [
-            33, 7, 163, 144, 145,
-            153, 154, 155, 133
+            33, 7, 163, 144,
+            145, 153, 154, 155, 133
         ];
 
 
@@ -1201,10 +1618,14 @@
 
         ctx.save();
 
-        ctx.globalAlpha = 0.28;
+
+        ctx.globalAlpha =
+            0.28;
+
 
         ctx.fillStyle =
             makeupColor;
+
 
         ctx.globalCompositeOperation =
             "multiply";
@@ -1212,13 +1633,14 @@
 
         drawPolygon(
             leftEye
-                .map(i =>
-                    point(
-                        landmarks,
-                        i,
-                        width,
-                        height
-                    )
+                .map(
+                    i =>
+                        point(
+                            landmarks,
+                            i,
+                            width,
+                            height
+                        )
                 )
                 .filter(Boolean)
         );
@@ -1226,13 +1648,14 @@
 
         drawPolygon(
             rightEye
-                .map(i =>
-                    point(
-                        landmarks,
-                        i,
-                        width,
-                        height
-                    )
+                .map(
+                    i =>
+                        point(
+                            landmarks,
+                            i,
+                            width,
+                            height
+                        )
                 )
                 .filter(Boolean)
         );
@@ -1264,14 +1687,21 @@
 
         ctx.save();
 
+
         ctx.strokeStyle =
             makeupColor;
 
+
         ctx.lineWidth =
-            Math.max(2, width / 300);
+            Math.max(
+                2,
+                width / 300
+            );
+
 
         ctx.lineCap =
             "round";
+
 
         ctx.lineJoin =
             "round";
@@ -1281,13 +1711,14 @@
 
             const pts =
                 indices
-                    .map(i =>
-                        point(
-                            landmarks,
-                            i,
-                            width,
-                            height
-                        )
+                    .map(
+                        i =>
+                            point(
+                                landmarks,
+                                i,
+                                width,
+                                height
+                            )
                     )
                     .filter(Boolean);
 
@@ -1298,6 +1729,7 @@
 
 
             ctx.beginPath();
+
 
             ctx.moveTo(
                 pts[0].x,
@@ -1353,11 +1785,17 @@
 
         ctx.save();
 
+
         ctx.strokeStyle =
             makeupColor;
 
+
         ctx.lineWidth =
-            Math.max(2, width / 250);
+            Math.max(
+                2,
+                width / 250
+            );
+
 
         ctx.lineCap =
             "round";
@@ -1367,13 +1805,14 @@
 
             const pts =
                 indices
-                    .map(i =>
-                        point(
-                            landmarks,
-                            i,
-                            width,
-                            height
-                        )
+                    .map(
+                        i =>
+                            point(
+                                landmarks,
+                                i,
+                                width,
+                                height
+                            )
                     )
                     .filter(Boolean);
 
@@ -1384,6 +1823,7 @@
 
 
             ctx.beginPath();
+
 
             ctx.moveTo(
                 pts[0].x,
@@ -1447,10 +1887,14 @@
 
         ctx.save();
 
-        ctx.globalAlpha = 0.18;
+
+        ctx.globalAlpha =
+            0.18;
+
 
         ctx.fillStyle =
             makeupColor;
+
 
         ctx.globalCompositeOperation =
             "multiply";
@@ -1538,8 +1982,10 @@
 
         ctx.save();
 
+
         ctx.globalAlpha =
             0.20;
+
 
         ctx.fillStyle =
             makeupColor;
@@ -1556,25 +2002,29 @@
             nose,
             leftCheek,
             rightCheek
-        ].forEach(p => {
+        ].forEach(
+            p => {
 
-            if (!p) {
-                return;
+                if (!p) {
+                    return;
+                }
+
+
+                ctx.beginPath();
+
+
+                ctx.arc(
+                    p.x,
+                    p.y,
+                    radius,
+                    0,
+                    Math.PI * 2
+                );
+
+
+                ctx.fill();
             }
-
-
-            ctx.beginPath();
-
-            ctx.arc(
-                p.x,
-                p.y,
-                radius,
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fill();
-        });
+        );
 
 
         ctx.restore();
@@ -1607,13 +2057,14 @@
 
         const points =
             faceIndices
-                .map(i =>
-                    point(
-                        landmarks,
-                        i,
-                        width,
-                        height
-                    )
+                .map(
+                    i =>
+                        point(
+                            landmarks,
+                            i,
+                            width,
+                            height
+                        )
                 )
                 .filter(Boolean);
 
@@ -1625,11 +2076,14 @@
 
         ctx.save();
 
+
         ctx.globalAlpha =
             0.08;
 
+
         ctx.fillStyle =
             makeupColor;
+
 
         ctx.globalCompositeOperation =
             "multiply";
@@ -1669,18 +2123,21 @@
 
 
         if (tryOnVideo) {
+
             tryOnVideo.style.display =
                 "none";
         }
 
 
         if (tryOnCanvas) {
+
             tryOnCanvas.style.display =
                 "block";
         }
 
 
         if (tryOnPlaceholder) {
+
             tryOnPlaceholder.style.display =
                 "none";
         }
@@ -1691,12 +2148,15 @@
             tryOnImage.src =
                 objectURL;
 
+
             tryOnImage.style.display =
                 "block";
 
+
             /*
-             * Uploaded image stays NORMAL.
+             * Uploaded image is normal.
              */
+
             tryOnImage.style.transform =
                 "none";
 
@@ -1709,6 +2169,7 @@
 
             const loaded =
                 await loadMediaPipe();
+
 
             if (!loaded) {
                 return;
@@ -1723,15 +2184,12 @@
             );
 
 
-            /*
-             * IMAGE mode.
-             */
-
             try {
 
                 await faceLandmarker.setOptions({
                     runningMode: "IMAGE"
                 });
+
 
             } catch (error) {
 
@@ -1789,6 +2247,13 @@
 
                 tryOnCanvas.height =
                     height;
+
+
+                tryOnCanvas.style.transform =
+                    "none";
+
+                tryOnCanvas.style.webkitTransform =
+                    "none";
             }
 
 
@@ -1808,20 +2273,6 @@
                 0,
                 0
             );
-
-
-            /*
-             * Uploaded image remains unmirrored.
-             */
-
-            if (tryOnCanvas) {
-
-                tryOnCanvas.style.transform =
-                    "none";
-
-                tryOnCanvas.style.webkitTransform =
-                    "none";
-            }
 
 
             drawMakeup(
@@ -1849,15 +2300,12 @@
 
         } finally {
 
-            /*
-             * Restore VIDEO mode.
-             */
-
             try {
 
                 await faceLandmarker.setOptions({
                     runningMode: "VIDEO"
                 });
+
 
             } catch (error) {
 
@@ -1874,7 +2322,7 @@
        OPEN TRY ON
        ===================================================== */
 
-    async function openTryOn() {
+    function openTryOn() {
 
         console.log(
             "[Glamora AR] Opening Try-On."
@@ -1900,18 +2348,18 @@
             "flex";
 
 
-        /*
-         * Camera orientation.
-         */
-
         resetPreviewOrientation();
 
 
         /*
-         * Start camera.
+         * IMPORTANT:
+         *
+         * Do NOT immediately request the camera.
+         *
+         * First ask the user inside Glamora AR.
          */
 
-        await startCamera();
+        showCameraPermissionPrompt();
     }
 
 
@@ -1924,9 +2372,22 @@
         stopCamera(false);
 
 
+        const permissionPrompt =
+            document.getElementById(
+                "glamoraCameraPermission"
+            );
+
+
+        if (permissionPrompt) {
+            permissionPrompt.remove();
+        }
+
+
         if (tryOnModal) {
 
-            tryOnModal.classList.remove("show");
+            tryOnModal.classList.remove(
+                "show"
+            );
 
             tryOnModal.style.display =
                 "none";
@@ -1935,7 +2396,8 @@
 
         if (tryOnImage) {
 
-            tryOnImage.src = "";
+            tryOnImage.src =
+                "";
 
             tryOnImage.style.display =
                 "none";
@@ -2010,7 +2472,8 @@
 
         stopCameraBtn.addEventListener(
             "click",
-            () => stopCamera(true)
+            () =>
+                stopCamera(true)
         );
     }
 
@@ -2031,6 +2494,7 @@
             () => {
 
                 if (tryOnImageInput) {
+
                     tryOnImageInput.click();
                 }
             }
@@ -2047,9 +2511,9 @@
     }
 
 
-    /*
-     * Close when clicking outside modal.
-     */
+    /* =====================================================
+       MODAL BACKDROP
+       ===================================================== */
 
     if (tryOnModal) {
 
@@ -2069,9 +2533,9 @@
     }
 
 
-    /*
-     * ESC closes modal.
-     */
+    /* =====================================================
+       ESCAPE
+       ===================================================== */
 
     document.addEventListener(
         "keydown",
@@ -2080,7 +2544,9 @@
             if (
                 event.key === "Escape" &&
                 tryOnModal &&
-                tryOnModal.classList.contains("show")
+                tryOnModal.classList.contains(
+                    "show"
+                )
             ) {
 
                 closeTryOn();
@@ -2098,7 +2564,6 @@
         () => {
 
             stopCamera(false);
-
         }
     );
 
@@ -2115,5 +2580,4 @@
     );
 
 })();
-
 
