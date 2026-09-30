@@ -664,7 +664,7 @@ def contact():
 
 
 # =========================================================
-# REGISTER
+# USER REGISTER
 # =========================================================
 
 @app.route(
@@ -673,42 +673,181 @@ def contact():
 )
 def register():
 
+    # -----------------------------------------------------
+    # NEXT PAGE
+    # -----------------------------------------------------
+
     next_url = request.args.get(
         "next",
         ""
+    ).strip()
+
+    if not next_url.startswith("/"):
+        next_url = ""
+
+    # -----------------------------------------------------
+    # ALREADY LOGGED IN
+    # -----------------------------------------------------
+
+    if session.get("user_id"):
+
+        if next_url:
+            return redirect(next_url)
+
+        return redirect(
+            url_for("beauty")
+        )
+
+    # -----------------------------------------------------
+    # GET
+    # -----------------------------------------------------
+
+    if request.method == "GET":
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+    # -----------------------------------------------------
+    # FORM DATA
+    # -----------------------------------------------------
+
+    name = request.form.get(
+        "name",
+        ""
+    ).strip()
+
+    email = request.form.get(
+        "email",
+        ""
+    ).strip().lower()
+
+    password = request.form.get(
+        "password",
+        ""
     )
 
-    if request.method == "POST":
+    confirm_password = request.form.get(
+        "confirm_password",
+        ""
+    )
 
-        name = request.form.get(
-            "name",
-            ""
-        ).strip()
+    next_url = request.form.get(
+        "next",
+        ""
+    ).strip()
 
-        email = request.form.get(
-            "email",
-            ""
-        ).strip().lower()
+    if not next_url.startswith("/"):
+        next_url = ""
 
-        password = request.form.get(
-            "password",
-            ""
+    # -----------------------------------------------------
+    # VALIDATION
+    # -----------------------------------------------------
+
+    if not name:
+
+        flash(
+            "Please enter your name.",
+            "error"
         )
 
-        confirm_password = request.form.get(
-            "confirm_password",
-            ""
+        return render_template(
+            "register.html",
+            next=next_url
         )
 
-        next_url = request.form.get(
-            "next",
-            ""
+    if not email:
+
+        flash(
+            "Please enter your email address.",
+            "error"
         )
 
-        if not name:
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+    email_pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+
+    if not re.match(
+        email_pattern,
+        email
+    ):
+
+        flash(
+            "Please enter a valid email address.",
+            "error"
+        )
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+    if not password:
+
+        flash(
+            "Please enter a password.",
+            "error"
+        )
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+    if len(password) < 6:
+
+        flash(
+            "Password must contain at least 6 characters.",
+            "error"
+        )
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+    if password != confirm_password:
+
+        flash(
+            "Passwords do not match.",
+            "error"
+        )
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+    # -----------------------------------------------------
+    # DATABASE
+    # -----------------------------------------------------
+
+    connection = None
+    cursor = None
+
+    try:
+
+        print()
+        print("=" * 70)
+        print("GLAMORA AR - REGISTER")
+        print("=" * 70)
+
+        # -------------------------------------------------
+        # CONNECT
+        # -------------------------------------------------
+
+        connection = get_db_connection()
+
+        if connection is None:
+
+            print("DATABASE CONNECTION: FAILED")
 
             flash(
-                "Please enter your name.",
+                "Database connection failed.",
                 "error"
             )
 
@@ -717,169 +856,231 @@ def register():
                 next=next_url
             )
 
-        if not email:
+        print("DATABASE CONNECTION: OK")
 
-            flash(
-                "Please enter your email.",
-                "error"
+        # -------------------------------------------------
+        # CREATE CURSOR
+        # -------------------------------------------------
+
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
+        print("DATABASE CURSOR: OK")
+
+        # -------------------------------------------------
+        # CHECK USERS TABLE
+        # -------------------------------------------------
+
+        cursor.execute(
+            """
+            SELECT
+                DATABASE() AS database_name
+            """
+        )
+
+        database_info = cursor.fetchone()
+
+        print(
+            "DATABASE NAME:",
+            database_info.get("database_name")
+            if database_info
+            else "UNKNOWN"
+        )
+
+        # -------------------------------------------------
+        # CHECK USER EMAIL
+        # -------------------------------------------------
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                email
+            FROM users
+            WHERE LOWER(email) = %s
+            LIMIT 1
+            """,
+            (
+                email,
             )
+        )
 
-            return render_template(
-                "register.html",
-                next=next_url
-            )
+        existing_user = cursor.fetchone()
 
-        if not password:
-
-            flash(
-                "Please enter a password.",
-                "error"
-            )
-
-            return render_template(
-                "register.html",
-                next=next_url
-            )
-
-        if password != confirm_password:
-
-            flash(
-                "Passwords do not match.",
-                "error"
-            )
-
-            return render_template(
-                "register.html",
-                next=next_url
-            )
-
-        if len(password) < 6:
-
-            flash(
-                "Password must be at least 6 characters.",
-                "error"
-            )
-
-            return render_template(
-                "register.html",
-                next=next_url
-            )
-
-        connection = None
-        cursor = None
-
-        try:
-
-            connection = get_db_connection()
-
-            cursor = connection.cursor(
-                dictionary=True
-            )
-
-            cursor.execute(
-                """
-                SELECT
-                    id
-                FROM users
-                WHERE email = %s
-                LIMIT 1
-                """,
-                (email,)
-            )
-
-            existing_user = cursor.fetchone()
-
-            if existing_user:
-
-                flash(
-                    "An account with this email already exists.",
-                    "error"
-                )
-
-                return render_template(
-                    "register.html",
-                    next=next_url
-                )
-
-            password_hash = generate_password_hash(
-                password
-            )
-
-            cursor.execute(
-                """
-                INSERT INTO users (
-                    name,
-                    email,
-                    password
-                )
-                VALUES (
-                    %s,
-                    %s,
-                    %s
-                )
-                """,
-                (
-                    name,
-                    email,
-                    password_hash
-                )
-            )
-
-            connection.commit()
-
-            flash(
-                "Registration successful. Please log in.",
-                "success"
-            )
-
-            if next_url:
-
-                return redirect(
-                    url_for(
-                        "login",
-                        next=next_url
-                    )
-                )
-
-            return redirect(
-                url_for("login")
-            )
-
-        except Exception as error:
-
-            if connection:
-
-                try:
-                    connection.rollback()
-                except Exception:
-                    pass
+        if existing_user:
 
             print(
-                "REGISTER ERROR:",
-                repr(error)
+                "EMAIL ALREADY EXISTS:",
+                email
             )
 
             flash(
-                "Unable to create account.",
+                "An account with this email already exists. Please login.",
                 "error"
             )
 
-            return render_template(
-                "register.html",
-                next=next_url
+            return redirect(
+                url_for(
+                    "login",
+                    next=next_url
+                )
             )
 
-        finally:
+        # -------------------------------------------------
+        # HASH PASSWORD
+        # -------------------------------------------------
 
-            safe_close(
-                cursor,
-                connection
+        hashed_password = generate_password_hash(
+            password
+        )
+
+        print(
+            "PASSWORD HASH CREATED: YES"
+        )
+
+        # -------------------------------------------------
+        # INSERT USER
+        # -------------------------------------------------
+
+        cursor.execute(
+            """
+            INSERT INTO users
+            (
+                name,
+                email,
+                password
+            )
+            VALUES
+            (
+                %s,
+                %s,
+                %s
+            )
+            """,
+            (
+                name,
+                email,
+                hashed_password
+            )
+        )
+
+        print(
+            "USER INSERT: OK"
+        )
+
+        # -------------------------------------------------
+        # COMMIT
+        # -------------------------------------------------
+
+        connection.commit()
+
+        print(
+            "DATABASE COMMIT: OK"
+        )
+
+        print(
+            "NEW USER ID:",
+            cursor.lastrowid
+        )
+
+        print("=" * 70)
+        print(
+            "REGISTRATION SUCCESSFUL"
+        )
+        print("=" * 70)
+        print()
+
+        flash(
+            "Account created successfully. Please login.",
+            "success"
+        )
+
+        # -------------------------------------------------
+        # LOGIN
+        # -------------------------------------------------
+
+        if next_url:
+
+            return redirect(
+                url_for(
+                    "login",
+                    next=next_url
+                )
             )
 
-    return render_template(
-        "register.html",
-        next=next_url
-    )
+        return redirect(
+            url_for("login")
+        )
+
+    # -----------------------------------------------------
+    # DATABASE ERROR
+    # -----------------------------------------------------
+
+    except Exception as error:
+
+        # -------------------------------------------------
+        # ROLLBACK
+        # -------------------------------------------------
+
+        if connection is not None:
+
+            try:
+                connection.rollback()
+            except Exception:
+                pass
+
+        # -------------------------------------------------
+        # PRINT REAL ERROR
+        # -------------------------------------------------
+
+        print()
+        print("=" * 70)
+        print("GLAMORA AR - REGISTER ERROR")
+        print("=" * 70)
+
+        print(
+            "ERROR TYPE:",
+            type(error).__name__
+        )
+
+        print(
+            "ERROR MESSAGE:",
+            str(error)
+        )
+
+        print(
+            "ERROR REPR:",
+            repr(error)
+        )
+
+        print("=" * 70)
+        print()
+
+        # -------------------------------------------------
+        # SHOW REAL ERROR TO USER DURING DEVELOPMENT
+        # -------------------------------------------------
+
+        flash(
+            "Registration failed: " + str(error),
+            "error"
+        )
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+    # -----------------------------------------------------
+    # CLOSE
+    # -----------------------------------------------------
+
+    finally:
+
+        safe_close(
+            cursor,
+            connection
+        )
 
 
 # =========================================================
