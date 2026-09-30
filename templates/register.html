@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 
@@ -12,7 +13,6 @@
 
     <title>Create Account — Glamora AR</title>
 
-
     <!-- =====================================================
          GOOGLE FONTS
          ===================================================== -->
@@ -21,7 +21,6 @@
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
         rel="stylesheet"
     >
-
 
     <!-- =====================================================
          REGISTER CSS
@@ -37,22 +36,18 @@
 
 <body>
 
-
     <!-- =====================================================
          REGISTER PAGE
          ===================================================== -->
 
     <main class="register-page">
 
-
         <!-- =================================================
              DECORATIVE ELEMENTS
              ================================================= -->
 
         <div class="decor decor-one"></div>
-
         <div class="decor decor-two"></div>
-
         <div class="decor decor-three"></div>
 
 
@@ -68,7 +63,6 @@
                  ============================================= -->
 
             <section class="register-visual">
-
 
                 <!-- BRAND -->
 
@@ -89,12 +83,10 @@
                         WELCOME TO GLAMORA AR
                     </span>
 
-
                     <h1>
                         Create your
                         <em>beauty story.</em>
                     </h1>
-
 
                     <p>
                         Join Glamora AR and discover a world of
@@ -174,9 +166,7 @@
                                             error
                                         {% endif %}"
                                     >
-
                                         {{ message }}
-
                                     </div>
 
                                 {% endfor %}
@@ -189,7 +179,7 @@
 
 
                     <!-- =====================================
-                         JAVASCRIPT ERROR
+                         JAVASCRIPT ERROR MESSAGE
                          ===================================== -->
 
                     <div
@@ -209,15 +199,17 @@
                         id="registerForm"
                         method="POST"
                         action="{{ url_for('register') }}"
-                        novalidate
                     >
 
-                        <!-- Preserve redirect destination -->
+                        <!-- =================================================
+                             IMPORTANT:
+                             Flask sends "next", NOT "next_page"
+                             ================================================= -->
 
                         <input
                             type="hidden"
                             name="next"
-                            value="{{ next_page }}"
+                            value="{{ next }}"
                         >
 
 
@@ -384,7 +376,7 @@
                             id="registerButton"
                         >
 
-                            <span>
+                            <span id="registerButtonText">
                                 Create Account
                             </span>
 
@@ -445,7 +437,6 @@
 
             </section>
 
-
         </div>
 
     </main>
@@ -463,3 +454,4 @@
 </body>
 
 </html>
+
