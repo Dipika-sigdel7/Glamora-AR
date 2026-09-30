@@ -663,6 +663,7 @@ def contact():
     )
 
 
+
 # =========================================================
 # USER REGISTER
 # =========================================================
@@ -674,7 +675,7 @@ def contact():
 def register():
 
     # -----------------------------------------------------
-    # NEXT PAGE
+    # GET NEXT URL
     # -----------------------------------------------------
 
     next_url = request.args.get(
@@ -682,8 +683,12 @@ def register():
         ""
     ).strip()
 
-    if not next_url.startswith("/"):
+    # Only allow local paths.
+    # Prevents external redirect URLs.
+
+    if not next_url.startswith("/") or next_url.startswith("//"):
         next_url = ""
+
 
     # -----------------------------------------------------
     # ALREADY LOGGED IN
@@ -695,11 +700,12 @@ def register():
             return redirect(next_url)
 
         return redirect(
-            url_for("beauty")
+            url_for("profile")
         )
 
+
     # -----------------------------------------------------
-    # GET
+    # GET REQUEST
     # -----------------------------------------------------
 
     if request.method == "GET":
@@ -709,8 +715,9 @@ def register():
             next=next_url
         )
 
+
     # -----------------------------------------------------
-    # FORM DATA
+    # POST REQUEST
     # -----------------------------------------------------
 
     name = request.form.get(
@@ -733,16 +740,51 @@ def register():
         ""
     )
 
-    next_url = request.form.get(
+    form_next_url = request.form.get(
         "next",
         ""
     ).strip()
 
-    if not next_url.startswith("/"):
-        next_url = ""
 
     # -----------------------------------------------------
-    # VALIDATION
+    # NEXT URL FROM FORM
+    # -----------------------------------------------------
+
+    if (
+        form_next_url.startswith("/")
+        and not form_next_url.startswith("//")
+    ):
+
+        next_url = form_next_url
+
+    else:
+
+        next_url = ""
+
+
+    # -----------------------------------------------------
+    # TERMS
+    # -----------------------------------------------------
+
+    terms = request.form.get(
+        "terms"
+    )
+
+    if not terms:
+
+        flash(
+            "Please agree to create a Glamora AR account.",
+            "error"
+        )
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+
+    # -----------------------------------------------------
+    # NAME VALIDATION
     # -----------------------------------------------------
 
     if not name:
@@ -757,6 +799,37 @@ def register():
             next=next_url
         )
 
+
+    if len(name) < 2:
+
+        flash(
+            "Your name must contain at least 2 characters.",
+            "error"
+        )
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+
+    if len(name) > 100:
+
+        flash(
+            "Your name is too long.",
+            "error"
+        )
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+
+    # -----------------------------------------------------
+    # EMAIL VALIDATION
+    # -----------------------------------------------------
+
     if not email:
 
         flash(
@@ -769,7 +842,24 @@ def register():
             next=next_url
         )
 
-    email_pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+
+    if len(email) > 150:
+
+        flash(
+            "Email address is too long.",
+            "error"
+        )
+
+        return render_template(
+            "register.html",
+            next=next_url
+        )
+
+
+    email_pattern = (
+        r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+    )
+
 
     if not re.match(
         email_pattern,
@@ -786,6 +876,11 @@ def register():
             next=next_url
         )
 
+
+    # -----------------------------------------------------
+    # PASSWORD VALIDATION
+    # -----------------------------------------------------
+
     if not password:
 
         flash(
@@ -797,6 +892,7 @@ def register():
             "register.html",
             next=next_url
         )
+
 
     if len(password) < 6:
 
@@ -810,6 +906,11 @@ def register():
             next=next_url
         )
 
+
+    # -----------------------------------------------------
+    # CONFIRM PASSWORD
+    # -----------------------------------------------------
+
     if password != confirm_password:
 
         flash(
@@ -822,9 +923,10 @@ def register():
             next=next_url
         )
 
-    # -----------------------------------------------------
+
+    # =====================================================
     # DATABASE
-    # -----------------------------------------------------
+    # =====================================================
 
     connection = None
     cursor = None
@@ -833,21 +935,34 @@ def register():
 
         print()
         print("=" * 70)
-        print("GLAMORA AR - REGISTER")
+        print("GLAMORA AR - USER REGISTRATION")
         print("=" * 70)
 
+        print(
+            "NAME:",
+            name
+        )
+
+        print(
+            "EMAIL:",
+            email
+        )
+
+
         # -------------------------------------------------
-        # CONNECT
+        # DATABASE CONNECTION
         # -------------------------------------------------
 
         connection = get_db_connection()
 
         if connection is None:
 
-            print("DATABASE CONNECTION: FAILED")
+            print(
+                "DATABASE CONNECTION: FAILED"
+            )
 
             flash(
-                "Database connection failed.",
+                "Database connection failed. Please try again.",
                 "error"
             )
 
@@ -856,40 +971,97 @@ def register():
                 next=next_url
             )
 
-        print("DATABASE CONNECTION: OK")
+
+        print(
+            "DATABASE CONNECTION: OK"
+        )
+
 
         # -------------------------------------------------
-        # CREATE CURSOR
+        # CURSOR
         # -------------------------------------------------
 
         cursor = connection.cursor(
             dictionary=True
         )
 
-        print("DATABASE CURSOR: OK")
+        print(
+            "DATABASE CURSOR: OK"
+        )
+
+
+        # -------------------------------------------------
+        # DATABASE NAME
+        # -------------------------------------------------
+
+        try:
+
+            cursor.execute(
+                """
+                SELECT DATABASE() AS database_name
+                """
+            )
+
+            database_info = cursor.fetchone()
+
+            print(
+                "DATABASE:",
+                database_info.get(
+                    "database_name"
+                )
+                if database_info
+                else "UNKNOWN"
+            )
+
+        except Exception as database_name_error:
+
+            print(
+                "DATABASE NAME CHECK ERROR:",
+                repr(database_name_error)
+            )
+
 
         # -------------------------------------------------
         # CHECK USERS TABLE
         # -------------------------------------------------
 
-        cursor.execute(
-            """
-            SELECT
-                DATABASE() AS database_name
-            """
-        )
+        try:
 
-        database_info = cursor.fetchone()
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    name,
+                    email,
+                    password
+                FROM users
+                LIMIT 1
+                """
+            )
 
-        print(
-            "DATABASE NAME:",
-            database_info.get("database_name")
-            if database_info
-            else "UNKNOWN"
-        )
+            cursor.fetchone()
+
+            print(
+                "USERS TABLE CHECK: OK"
+            )
+
+        except Exception as table_error:
+
+            print()
+            print(
+                "USERS TABLE CHECK FAILED"
+            )
+            print(
+                "TABLE ERROR:",
+                repr(table_error)
+            )
+            print()
+
+            raise
+
 
         # -------------------------------------------------
-        # CHECK USER EMAIL
+        # CHECK EMAIL
         # -------------------------------------------------
 
         cursor.execute(
@@ -907,6 +1079,7 @@ def register():
         )
 
         existing_user = cursor.fetchone()
+
 
         if existing_user:
 
@@ -927,6 +1100,7 @@ def register():
                 )
             )
 
+
         # -------------------------------------------------
         # HASH PASSWORD
         # -------------------------------------------------
@@ -938,6 +1112,7 @@ def register():
         print(
             "PASSWORD HASH CREATED: YES"
         )
+
 
         # -------------------------------------------------
         # INSERT USER
@@ -965,9 +1140,23 @@ def register():
             )
         )
 
+
         print(
             "USER INSERT: OK"
         )
+
+
+        # -------------------------------------------------
+        # USER ID
+        # -------------------------------------------------
+
+        new_user_id = cursor.lastrowid
+
+        print(
+            "NEW USER ID:",
+            new_user_id
+        )
+
 
         # -------------------------------------------------
         # COMMIT
@@ -980,24 +1169,32 @@ def register():
         )
 
         print(
-            "NEW USER ID:",
-            cursor.lastrowid
+            "=" * 70
         )
 
-        print("=" * 70)
         print(
             "REGISTRATION SUCCESSFUL"
         )
-        print("=" * 70)
+
+        print(
+            "=" * 70
+        )
+
         print()
+
+
+        # -------------------------------------------------
+        # SUCCESS MESSAGE
+        # -------------------------------------------------
 
         flash(
             "Account created successfully. Please login.",
             "success"
         )
 
+
         # -------------------------------------------------
-        # LOGIN
+        # LOGIN PAGE
         # -------------------------------------------------
 
         if next_url:
@@ -1013,9 +1210,10 @@ def register():
             url_for("login")
         )
 
-    # -----------------------------------------------------
-    # DATABASE ERROR
-    # -----------------------------------------------------
+
+    # =====================================================
+    # DATABASE / REGISTRATION ERROR
+    # =====================================================
 
     except Exception as error:
 
@@ -1026,18 +1224,29 @@ def register():
         if connection is not None:
 
             try:
+
                 connection.rollback()
-            except Exception:
-                pass
+
+                print(
+                    "DATABASE ROLLBACK: OK"
+                )
+
+            except Exception as rollback_error:
+
+                print(
+                    "ROLLBACK ERROR:",
+                    repr(rollback_error)
+                )
+
 
         # -------------------------------------------------
-        # PRINT REAL ERROR
+        # PRINT COMPLETE ERROR
         # -------------------------------------------------
 
         print()
-        print("=" * 70)
-        print("GLAMORA AR - REGISTER ERROR")
-        print("=" * 70)
+        print("!" * 70)
+        print("GLAMORA AR - REGISTRATION ERROR")
+        print("!" * 70)
 
         print(
             "ERROR TYPE:",
@@ -1054,26 +1263,58 @@ def register():
             repr(error)
         )
 
-        print("=" * 70)
+        print("!" * 70)
         print()
 
+
         # -------------------------------------------------
-        # SHOW REAL ERROR TO USER DURING DEVELOPMENT
+        # USER MESSAGE
+        # -------------------------------------------------
+
+        error_text = str(error).lower()
+
+
+        # -------------------------------------------------
+        # DUPLICATE EMAIL
+        # -------------------------------------------------
+
+        if (
+            "duplicate" in error_text
+            and "email" in error_text
+        ):
+
+            flash(
+                "An account with this email already exists. Please login.",
+                "error"
+            )
+
+            return redirect(
+                url_for(
+                    "login",
+                    next=next_url
+                )
+            )
+
+
+        # -------------------------------------------------
+        # UNKNOWN DATABASE ERROR
         # -------------------------------------------------
 
         flash(
-            "Registration failed: " + str(error),
+            "Unable to create account. Please check the server terminal for the exact database error.",
             "error"
         )
+
 
         return render_template(
             "register.html",
             next=next_url
         )
 
-    # -----------------------------------------------------
-    # CLOSE
-    # -----------------------------------------------------
+
+    # =====================================================
+    # CLOSE DATABASE
+    # =====================================================
 
     finally:
 
@@ -1081,6 +1322,7 @@ def register():
             cursor,
             connection
         )
+
 
 
 # =========================================================
