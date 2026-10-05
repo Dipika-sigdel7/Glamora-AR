@@ -2580,12 +2580,17 @@ def buy_now(product_id):
         )
 
 
+
 # =========================================================
 # CART
 # =========================================================
 
 @app.route("/cart")
 def cart():
+
+    # -----------------------------------------------------
+    # LOGIN REQUIRED
+    # -----------------------------------------------------
 
     if not session.get("user_id"):
 
@@ -2601,67 +2606,223 @@ def cart():
             )
         )
 
+    user_id = session.get("user_id")
+
     connection = None
     cursor = None
 
     try:
 
+        print()
+        print("=" * 70)
+        print("GLAMORA AR - CART")
+        print("=" * 70)
+        print("LOGGED-IN USER ID:", user_id)
+
+        # -------------------------------------------------
+        # DATABASE CONNECTION
+        # -------------------------------------------------
+
         connection = get_db_connection()
+
+        if connection is None:
+
+            print("CART DATABASE CONNECTION: FAILED")
+
+            flash(
+                "Unable to connect to the database.",
+                "error"
+            )
+
+            return render_template(
+                "cart.html",
+                cart_items=[],
+                subtotal=Decimal("0.00")
+            )
+
+        print("CART DATABASE CONNECTION: OK")
+
+        # -------------------------------------------------
+        # CURSOR
+        # -------------------------------------------------
 
         cursor = connection.cursor(
             dictionary=True
         )
 
+        # -------------------------------------------------
+        # GET CART ITEMS
+        #
+        # IMPORTANT:
+        # We use the exact same user_id that was used
+        # when the product was added to the bag.
+        # -------------------------------------------------
+
         cursor.execute(
             """
             SELECT
                 ci.id AS cart_item_id,
+                ci.user_id,
                 ci.product_id,
-                ci.quantity,
-
-                p.name,
-                p.description,
-                p.price,
-                p.stock,
-                p.shade,
-                p.color,
-                p.product_type,
-                p.is_available,
-
-                (
-                    SELECT pi.image_url
-                    FROM product_images pi
-                    WHERE pi.product_id = p.id
-                    ORDER BY
-                        pi.is_primary DESC,
-                        pi.id ASC
-                    LIMIT 1
-                ) AS image_url
-
+                ci.quantity
             FROM cart_items ci
-
-            INNER JOIN products p
-                ON ci.product_id = p.id
-
             WHERE ci.user_id = %s
-
-            ORDER BY
-                ci.id DESC
+            ORDER BY ci.id DESC
             """,
-            (session["user_id"],)
+            (user_id,)
         )
 
-        cart_items = cursor.fetchall() or []
+        cart_rows = cursor.fetchall() or []
+
+        print(
+            "CART ROW COUNT:",
+            len(cart_rows)
+        )
+
+        print(
+            "CART ROWS:",
+            cart_rows
+        )
+
+        # -------------------------------------------------
+        # FINAL CART ITEMS
+        # -------------------------------------------------
+
+        cart_items = []
 
         subtotal = Decimal("0.00")
 
-        for item in cart_items:
+        # -------------------------------------------------
+        # LOAD EACH PRODUCT
+        # -------------------------------------------------
+
+        for cart_row in cart_rows:
+
+            product_id = cart_row.get(
+                "product_id"
+            )
+
+            quantity = int(
+                cart_row.get(
+                    "quantity",
+                    0
+                ) or 0
+            )
+
+            # -------------------------------------------------
+            # INVALID QUANTITY
+            # -------------------------------------------------
+
+            if quantity <= 0:
+
+                continue
+
+            print(
+                "LOADING PRODUCT:",
+                product_id,
+                "| QUANTITY:",
+                quantity
+            )
+
+            # -------------------------------------------------
+            # GET PRODUCT
+            # -------------------------------------------------
+
+            cursor.execute(
+                """
+                SELECT
+                    p.id,
+                    p.name,
+                    p.description,
+                    p.price,
+                    p.stock,
+                    p.shade,
+                    p.color,
+                    p.product_type,
+                    p.is_available,
+                    p.category_id,
+
+                    c.name AS category_name
+
+                FROM products p
+
+                LEFT JOIN categories c
+                    ON p.category_id = c.id
+
+                WHERE p.id = %s
+
+                LIMIT 1
+                """,
+                (product_id,)
+            )
+
+            product = cursor.fetchone()
+
+            # -------------------------------------------------
+            # PRODUCT NO LONGER EXISTS
+            # -------------------------------------------------
+
+            if not product:
+
+                print(
+                    "PRODUCT NOT FOUND FOR CART ITEM:",
+                    product_id
+                )
+
+                continue
+
+            # -------------------------------------------------
+            # GET PRODUCT IMAGE
+            # -------------------------------------------------
+
+            image_url = None
+
+            try:
+
+                cursor.execute(
+                    """
+                    SELECT
+                        image_url
+
+                    FROM product_images
+
+                    WHERE product_id = %s
+
+                    ORDER BY
+                        is_primary DESC,
+                        id ASC
+
+                    LIMIT 1
+                    """,
+                    (product_id,)
+                )
+
+                image_result = cursor.fetchone()
+
+                if image_result:
+
+                    image_url = image_result.get(
+                        "image_url"
+                    )
+
+            except Exception as image_error:
+
+                print(
+                    "CART IMAGE ERROR:",
+                    repr(image_error)
+                )
+
+                image_url = None
+
+            # -------------------------------------------------
+            # PRICE
+            # -------------------------------------------------
 
             try:
 
                 price = Decimal(
                     str(
-                        item.get(
+                        product.get(
                             "price",
                             0
                         ) or 0
@@ -2676,45 +2837,205 @@ def cart():
 
                 price = Decimal("0.00")
 
-            quantity = int(
+            # -------------------------------------------------
+            # LINE TOTAL
+            # -------------------------------------------------
+
+            line_total = (
+                price * quantity
+            )
+
+            # -------------------------------------------------
+            # CREATE CART ITEM
+            # -------------------------------------------------
+
+            item = {
+
+                # Cart information
+                "cart_item_id": cart_row.get(
+                    "cart_item_id"
+                ),
+
+                "user_id": user_id,
+
+                "product_id": product.get(
+                    "id"
+                ),
+
+                "quantity": quantity,
+
+                # Product information
+                "name": product.get(
+                    "name"
+                ),
+
+                "description": product.get(
+                    "description"
+                ),
+
+                "price": price,
+
+                "stock": product.get(
+                    "stock",
+                    0
+                ),
+
+                "shade": product.get(
+                    "shade"
+                ),
+
+                "color": product.get(
+                    "color"
+                ),
+
+                "product_type": product.get(
+                    "product_type"
+                ),
+
+                "is_available": product.get(
+                    "is_available"
+                ),
+
+                "category_id": product.get(
+                    "category_id"
+                ),
+
+                "category_name": product.get(
+                    "category_name"
+                ),
+
+                # Image
+                "image_url": image_url,
+
+                # Calculated
+                "line_total": line_total
+            }
+
+            cart_items.append(
+                item
+            )
+
+            subtotal += line_total
+
+            print(
+                "CART PRODUCT:",
+                item["name"],
+                "| PRICE:",
+                format_npr(price),
+                "| QUANTITY:",
+                quantity,
+                "| TOTAL:",
+                format_npr(line_total)
+            )
+
+        # -------------------------------------------------
+        # TOTAL ITEMS
+        # -------------------------------------------------
+
+        total_items = 0
+
+        for item in cart_items:
+
+            total_items += int(
                 item.get(
                     "quantity",
                     0
                 ) or 0
             )
 
-            item["price"] = price
+        # -------------------------------------------------
+        # DEBUG
+        # -------------------------------------------------
 
-            item["line_total"] = (
-                price * quantity
-            )
+        print()
+        print("FINAL CART ITEM COUNT:", len(cart_items))
+        print("FINAL BAG QUANTITY:", total_items)
+        print("SUBTOTAL:", format_npr(subtotal))
+        print("=" * 70)
+        print()
 
-            subtotal += item[
-                "line_total"
-            ]
+        # -------------------------------------------------
+        # RENDER CART
+        # -------------------------------------------------
 
         return render_template(
             "cart.html",
+
+            # Main cart data
             cart_items=cart_items,
-            subtotal=subtotal
+
+            # Totals
+            subtotal=subtotal,
+            total_items=total_items,
+
+            # Currency
+            currency_symbol=CURRENCY_SYMBOL,
+            currency_code=CURRENCY_CODE,
+            format_npr=format_npr
         )
+
+    # =====================================================
+    # CART ERROR
+    # =====================================================
 
     except Exception as error:
 
+        # -------------------------------------------------
+        # ROLLBACK
+        # -------------------------------------------------
+
+        if connection:
+
+            try:
+
+                connection.rollback()
+
+            except Exception:
+
+                pass
+
+        # -------------------------------------------------
+        # PRINT EXACT ERROR
+        # -------------------------------------------------
+
+        print()
+        print("!" * 70)
+        print("GLAMORA AR - CART ERROR")
+        print("!" * 70)
         print(
-            "CART ERROR:",
+            "USER ID:",
+            user_id
+        )
+        print(
+            "ERROR TYPE:",
+            type(error).__name__
+        )
+        print(
+            "ERROR:",
+            str(error)
+        )
+        print(
+            "ERROR REPR:",
             repr(error)
         )
+        print("!" * 70)
+        print()
+
+        # -------------------------------------------------
+        # IMPORTANT:
+        # Do NOT silently pretend the bag is empty.
+        # -------------------------------------------------
 
         flash(
-            "Unable to load your bag.",
+            "Unable to load your bag. Please check the server terminal for the exact error.",
             "error"
         )
 
         return render_template(
             "cart.html",
             cart_items=[],
-            subtotal=Decimal("0.00")
+            subtotal=Decimal("0.00"),
+            total_items=0
         )
 
     finally:
@@ -2723,6 +3044,7 @@ def cart():
             cursor,
             connection
         )
+
 
 
 # =========================================================
