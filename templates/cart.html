@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 
@@ -393,12 +394,25 @@
             </a>
 
 
-            <a
-                href="{{ url_for('login') }}"
-                class="login-btn"
-            >
-                Login
-            </a>
+            {% if is_logged_in %}
+
+                <a
+                    href="{{ url_for('profile') }}"
+                    class="login-btn"
+                >
+                    Profile
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{{ url_for('login') }}"
+                    class="login-btn"
+                >
+                    Login
+                </a>
+
+            {% endif %}
 
         </div>
 
@@ -414,7 +428,9 @@
         <div class="bag-container">
 
 
-            <!-- HEADING -->
+            <!-- =================================================
+                 HEADING
+                 ================================================= -->
 
             <div class="bag-heading">
 
@@ -435,7 +451,9 @@
             </div>
 
 
-            <!-- FLASH MESSAGES -->
+            <!-- =================================================
+                 FLASH MESSAGES
+                 ================================================= -->
 
             {% with messages = get_flashed_messages(with_categories=true) %}
 
@@ -458,8 +476,11 @@
             {% endwith %}
 
 
-            {% if cart_items %}
+            <!-- =================================================
+                 CART HAS PRODUCTS
+                 ================================================= -->
 
+            {% if cart_items %}
 
                 <div class="bag-layout">
 
@@ -469,7 +490,6 @@
                          ================================================= -->
 
                     <section class="bag-items">
-
 
                         {% for item in cart_items %}
 
@@ -483,8 +503,9 @@
                                     {% if item.image_url %}
 
                                         <img
-                                            src="{{ item.image_url }}"
+                                            src="{{ url_for('static', filename=item.image_url) }}"
                                             alt="{{ item.name }}"
+                                            loading="lazy"
                                         >
 
                                     {% else %}
@@ -506,11 +527,31 @@
                                         {{ item.name }}
                                     </h3>
 
+
                                     <div class="bag-item-price">
 
-                                        ${{ "%.2f"|format(item.price|float) }}
+                                        {{ format_npr(item.price) }}
 
                                     </div>
+
+
+                                    {% if item.shade %}
+
+                                        <div class="bag-item-quantity">
+                                            Shade: {{ item.shade }}
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    {% if item.color %}
+
+                                        <div class="bag-item-quantity">
+                                            Color: {{ item.color }}
+                                        </div>
+
+                                    {% endif %}
+
 
                                     <div class="bag-item-quantity">
 
@@ -527,7 +568,7 @@
                                 <div class="bag-item-total">
 
                                     <strong>
-                                        ${{ "%.2f"|format(item.item_total|float) }}
+                                        {{ format_npr(item.line_total) }}
                                     </strong>
 
 
@@ -574,7 +615,7 @@
                             </span>
 
                             <strong>
-                                {{ bag_count }}
+                                {{ total_items }}
                             </strong>
 
                         </div>
@@ -587,7 +628,7 @@
                             </span>
 
                             <strong>
-                                ${{ "%.2f"|format(subtotal|float) }}
+                                {{ format_npr(subtotal) }}
                             </strong>
 
                         </div>
@@ -657,3 +698,4 @@
 </body>
 
 </html>
+
