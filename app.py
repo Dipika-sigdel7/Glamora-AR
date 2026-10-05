@@ -1549,6 +1549,11 @@ def product_details(product_id):
             product_id
         )
 
+        print(
+            "LOGGED-IN USER ID:",
+            session.get("user_id")
+        )
+
         connection = get_db_connection()
 
         if connection is None:
@@ -1696,43 +1701,35 @@ def product_details(product_id):
 
         images = []
 
-        try:
+        cursor.execute(
+            """
+            SELECT
+                id,
+                product_id,
+                image_url,
+                is_primary
+            FROM product_images
+            WHERE product_id = %s
+            ORDER BY
+                is_primary DESC,
+                id ASC
+            """,
+            (product_id,)
+        )
 
-            cursor.execute(
-                """
-                SELECT
-                    id,
-                    product_id,
-                    image_url,
-                    is_primary
-                FROM product_images
-                WHERE product_id = %s
-                ORDER BY
-                    is_primary DESC,
-                    id ASC
-                """,
-                (product_id,)
-            )
+        images = (
+            cursor.fetchall() or []
+        )
 
-            images = (
-                cursor.fetchall() or []
-            )
+        print(
+            "PRODUCT IMAGE COUNT:",
+            len(images)
+        )
 
-            print(
-                "PRODUCT IMAGE COUNT:",
-                len(images)
-            )
 
-        except Exception as image_error:
-
-            print(
-                "PRODUCT IMAGES ERROR:",
-                type(image_error).__name__,
-                repr(image_error)
-            )
-
-            images = []
-
+        # -------------------------------------------------
+        # PRIMARY IMAGE
+        # -------------------------------------------------
 
         product["image_url"] = None
 
@@ -1889,6 +1886,11 @@ def product_details(product_id):
         )
 
         print(
+            "LOGGED-IN USER:",
+            bool(session.get("user_id"))
+        )
+
+        print(
             "RENDERING product_details.html..."
         )
 
@@ -1932,6 +1934,11 @@ def product_details(product_id):
         )
 
         print(
+            "LOGGED-IN USER ID:",
+            session.get("user_id")
+        )
+
+        print(
             "ERROR TYPE:",
             type(error).__name__
         )
@@ -1946,9 +1953,7 @@ def product_details(product_id):
             repr(error)
         )
 
-        print(
-            "!" * 70
-        )
+        print("!" * 70)
         print()
 
         flash(
@@ -1966,6 +1971,7 @@ def product_details(product_id):
             cursor,
             connection
         )
+
 
 
 # =========================================================
