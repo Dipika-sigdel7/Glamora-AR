@@ -49,6 +49,7 @@ CURRENCY_CODE = "NPR"
 def format_npr(value):
 
     try:
+
         amount = Decimal(
             str(value or 0)
         )
@@ -58,6 +59,7 @@ def format_npr(value):
         ValueError,
         TypeError
     ):
+
         amount = Decimal("0.00")
 
     return f"{CURRENCY_SYMBOL} {amount:,.2f}"
@@ -139,14 +141,18 @@ MAX_IMAGE_SIZE = 5 * 1024 * 1024
 def safe_close(cursor=None, connection=None):
 
     try:
+
         if cursor is not None:
             cursor.close()
+
     except Exception:
         pass
 
     try:
+
         if connection is not None:
             connection.close()
+
     except Exception:
         pass
 
@@ -1533,26 +1539,40 @@ def product_details(product_id):
 
     try:
 
-        connection = get_db_connection()
-
-        if connection is None:
-            raise RuntimeError(
-                "Database connection failed."
-            )
-
-        cursor = connection.cursor(
-            dictionary=True
-        )
-
         print()
-        print("=" * 60)
+        print("=" * 70)
         print("GLAMORA AR - PRODUCT DETAILS")
-        print("=" * 60)
+        print("=" * 70)
 
         print(
             "PRODUCT ID:",
             product_id
         )
+
+        connection = get_db_connection()
+
+        if connection is None:
+
+            raise RuntimeError(
+                "Database connection failed."
+            )
+
+        print(
+            "PRODUCT DATABASE CONNECTION: OK"
+        )
+
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
+        print(
+            "PRODUCT DATABASE CURSOR: OK"
+        )
+
+
+        # -------------------------------------------------
+        # GET PRODUCT
+        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -1567,16 +1587,11 @@ def product_details(product_id):
                 p.product_type,
                 p.is_available,
                 p.category_id,
-
                 c.name AS category_name
-
             FROM products p
-
             LEFT JOIN categories c
                 ON p.category_id = c.id
-
             WHERE p.id = %s
-
             LIMIT 1
             """,
             (product_id,)
@@ -1590,6 +1605,11 @@ def product_details(product_id):
         )
 
         if not product:
+
+            print(
+                "PRODUCT NOT FOUND:",
+                product_id
+            )
 
             flash(
                 "Product not found.",
@@ -1628,6 +1648,49 @@ def product_details(product_id):
 
 
         # -------------------------------------------------
+        # PRODUCT TYPE
+        # -------------------------------------------------
+
+        product["product_type_key"] = (
+            normalize_product_type(
+                product.get(
+                    "product_type"
+                )
+            )
+        )
+
+
+        # -------------------------------------------------
+        # CATEGORY SLUG
+        # -------------------------------------------------
+
+        category_name = product.get(
+            "category_name"
+        )
+
+        if category_name:
+
+            product["category_slug"] = re.sub(
+                r"[^a-z0-9]+",
+                "-",
+                str(category_name).lower()
+            ).strip("-")
+
+        else:
+
+            product["category_slug"] = ""
+
+
+        # -------------------------------------------------
+        # PRODUCT TYPE SLUG
+        # -------------------------------------------------
+
+        product["product_type_slug"] = (
+            product["product_type_key"]
+        )
+
+
+        # -------------------------------------------------
         # IMAGES
         # -------------------------------------------------
 
@@ -1655,10 +1718,16 @@ def product_details(product_id):
                 cursor.fetchall() or []
             )
 
+            print(
+                "PRODUCT IMAGE COUNT:",
+                len(images)
+            )
+
         except Exception as image_error:
 
             print(
                 "PRODUCT IMAGES ERROR:",
+                type(image_error).__name__,
                 repr(image_error)
             )
 
@@ -1706,10 +1775,16 @@ def product_details(product_id):
                 cursor.fetchall() or []
             )
 
+            print(
+                "PRODUCT REVIEW COUNT:",
+                len(reviews)
+            )
+
         except Exception as review_error:
 
             print(
                 "PRODUCT REVIEWS ERROR:",
+                type(review_error).__name__,
                 repr(review_error)
             )
 
@@ -1743,10 +1818,10 @@ def product_details(product_id):
                         review.get(
                             "rating",
                             0
-                        )
+                        ) or 0
                     )
 
-                    if rating > 0:
+                    if 1 <= rating <= 5:
 
                         ratings.append(
                             rating
@@ -1767,6 +1842,42 @@ def product_details(product_id):
                 )
 
 
+        # -------------------------------------------------
+        # FINAL DEBUG
+        # -------------------------------------------------
+
+        print(
+            "PRODUCT NAME:",
+            product.get("name")
+        )
+
+        print(
+            "PRODUCT PRICE:",
+            format_npr(
+                product.get("price")
+            )
+        )
+
+        print(
+            "PRODUCT TYPE:",
+            product.get("product_type")
+        )
+
+        print(
+            "PRODUCT TYPE KEY:",
+            product.get("product_type_key")
+        )
+
+        print(
+            "CATEGORY:",
+            product.get("category_name")
+        )
+
+        print(
+            "PRIMARY IMAGE:",
+            product.get("image_url")
+        )
+
         print(
             "REVIEW COUNT:",
             review_count
@@ -1777,8 +1888,19 @@ def product_details(product_id):
             average_rating
         )
 
-        print("=" * 60)
+        print(
+            "RENDERING product_details.html..."
+        )
+
+        print(
+            "=" * 70
+        )
         print()
+
+
+        # -------------------------------------------------
+        # RENDER PRODUCT DETAILS
+        # -------------------------------------------------
 
         return render_template(
             "product_details.html",
@@ -1789,12 +1911,20 @@ def product_details(product_id):
             average_rating=average_rating
         )
 
+
     except Exception as error:
 
+        if connection:
+
+            try:
+                connection.rollback()
+            except Exception:
+                pass
+
         print()
-        print("!" * 60)
-        print("PRODUCT DETAILS ERROR")
-        print("!" * 60)
+        print("!" * 70)
+        print("GLAMORA AR - PRODUCT DETAILS ERROR")
+        print("!" * 70)
 
         print(
             "PRODUCT ID:",
@@ -1807,12 +1937,24 @@ def product_details(product_id):
         )
 
         print(
-            "ERROR:",
+            "ERROR MESSAGE:",
+            str(error)
+        )
+
+        print(
+            "ERROR REPR:",
             repr(error)
         )
 
-        print("!" * 60)
+        print(
+            "!" * 70
+        )
         print()
+
+        flash(
+            "Unable to open this product. Please check the Flask terminal for the exact error.",
+            "error"
+        )
 
         return redirect(
             url_for("beauty")
@@ -2583,11 +2725,6 @@ def cart():
             user_id
         )
 
-
-        # -------------------------------------------------
-        # DATABASE
-        # -------------------------------------------------
-
         connection = get_db_connection()
 
         if connection is None:
@@ -2600,19 +2737,9 @@ def cart():
             "CART DATABASE CONNECTION: OK"
         )
 
-
-        # -------------------------------------------------
-        # CURSOR
-        # -------------------------------------------------
-
         cursor = connection.cursor(
             dictionary=True
         )
-
-
-        # -------------------------------------------------
-        # GET CART ROWS
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -2642,21 +2769,11 @@ def cart():
             cart_rows
         )
 
-
-        # -------------------------------------------------
-        # BUILD CART
-        # -------------------------------------------------
-
         cart_items = []
 
         subtotal = Decimal(
             "0.00"
         )
-
-
-        # -------------------------------------------------
-        # LOAD EACH CART ITEM
-        # -------------------------------------------------
 
         for cart_row in cart_rows:
 
@@ -2680,10 +2797,8 @@ def cart():
 
                 quantity = 0
 
-
             if quantity <= 0:
                 continue
-
 
             print(
                 "LOADING PRODUCT:",
@@ -2691,11 +2806,6 @@ def cart():
                 "| QUANTITY:",
                 quantity
             )
-
-
-            # -------------------------------------------------
-            # PRODUCT
-            # -------------------------------------------------
 
             cursor.execute(
                 """
@@ -2730,11 +2840,6 @@ def cart():
                 )
 
                 continue
-
-
-            # -------------------------------------------------
-            # PRODUCT IMAGE
-            # -------------------------------------------------
 
             image_url = None
 
@@ -2775,11 +2880,6 @@ def cart():
 
                 image_url = None
 
-
-            # -------------------------------------------------
-            # PRICE
-            # -------------------------------------------------
-
             try:
 
                 price = Decimal(
@@ -2801,19 +2901,9 @@ def cart():
                     "0.00"
                 )
 
-
-            # -------------------------------------------------
-            # LINE TOTAL
-            # -------------------------------------------------
-
             line_total = (
                 price * quantity
             )
-
-
-            # -------------------------------------------------
-            # CART ITEM
-            # -------------------------------------------------
 
             item = {
 
@@ -2889,13 +2979,11 @@ def cart():
                     line_total
             }
 
-
             cart_items.append(
                 item
             )
 
             subtotal += line_total
-
 
             print(
                 "CART PRODUCT:",
@@ -2908,11 +2996,6 @@ def cart():
                 format_npr(line_total)
             )
 
-
-        # -------------------------------------------------
-        # TOTAL QUANTITY
-        # -------------------------------------------------
-
         total_items = sum(
             int(
                 item.get(
@@ -2922,11 +3005,6 @@ def cart():
             )
             for item in cart_items
         )
-
-
-        # -------------------------------------------------
-        # DEBUG
-        # -------------------------------------------------
 
         print()
         print(
@@ -2949,11 +3027,6 @@ def cart():
         )
         print()
 
-
-        # -------------------------------------------------
-        # RENDER
-        # -------------------------------------------------
-
         return render_template(
             "cart.html",
             cart_items=cart_items,
@@ -2963,7 +3036,6 @@ def cart():
             currency_code=CURRENCY_CODE,
             format_npr=format_npr
         )
-
 
     except Exception as error:
 
@@ -3002,12 +3074,10 @@ def cart():
         print("!" * 70)
         print()
 
-
         flash(
             "Unable to load your bag. Please check the server terminal for the exact error.",
             "error"
         )
-
 
         return render_template(
             "cart.html",
@@ -3020,7 +3090,6 @@ def cart():
             currency_code=CURRENCY_CODE,
             format_npr=format_npr
         )
-
 
     finally:
 
@@ -3078,11 +3147,6 @@ def remove_from_cart(cart_item_id):
             cart_item_id
         )
 
-
-        # -------------------------------------------------
-        # DATABASE
-        # -------------------------------------------------
-
         connection = get_db_connection()
 
         if connection is None:
@@ -3100,11 +3164,6 @@ def remove_from_cart(cart_item_id):
             dictionary=True
         )
 
-
-        # -------------------------------------------------
-        # DELETE ONLY USER'S ITEM
-        # -------------------------------------------------
-
         cursor.execute(
             """
             DELETE FROM cart_items
@@ -3118,11 +3177,6 @@ def remove_from_cart(cart_item_id):
         )
 
         connection.commit()
-
-
-        # -------------------------------------------------
-        # RESULT
-        # -------------------------------------------------
 
         if cursor.rowcount > 0:
 
@@ -3154,7 +3208,6 @@ def remove_from_cart(cart_item_id):
         return redirect(
             url_for("cart")
         )
-
 
     except Exception as error:
 
@@ -3432,11 +3485,6 @@ def admin_dashboard():
             dictionary=True
         )
 
-
-        # -------------------------------------------------
-        # PRODUCT COUNT
-        # -------------------------------------------------
-
         cursor.execute(
             """
             SELECT COUNT(*) AS total
@@ -3454,11 +3502,6 @@ def admin_dashboard():
                 0
             ) or 0
         )
-
-
-        # -------------------------------------------------
-        # CATEGORY COUNT
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -3478,11 +3521,6 @@ def admin_dashboard():
             ) or 0
         )
 
-
-        # -------------------------------------------------
-        # USER COUNT
-        # -------------------------------------------------
-
         cursor.execute(
             """
             SELECT COUNT(*) AS total
@@ -3500,11 +3538,6 @@ def admin_dashboard():
                 0
             ) or 0
         )
-
-
-        # -------------------------------------------------
-        # AVAILABLE PRODUCTS
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -3524,11 +3557,6 @@ def admin_dashboard():
                 0
             ) or 0
         )
-
-
-        # -------------------------------------------------
-        # RECENT PRODUCTS
-        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -3590,7 +3618,6 @@ def admin_dashboard():
                 product["price"] = Decimal(
                     "0.00"
                 )
-
 
         return render_template(
             "admin/dashboard.html",
@@ -3757,10 +3784,6 @@ def admin_add_product():
 
         try:
 
-            # -------------------------------------------------
-            # FORM VALUES
-            # -------------------------------------------------
-
             name = request.form.get(
                 "name",
                 ""
@@ -3805,11 +3828,6 @@ def admin_add_product():
                 "is_available"
             )
 
-
-            # -------------------------------------------------
-            # NAME
-            # -------------------------------------------------
-
             if not name:
 
                 flash(
@@ -3822,11 +3840,6 @@ def admin_add_product():
                         "admin_add_product"
                     )
                 )
-
-
-            # -------------------------------------------------
-            # PRICE
-            # -------------------------------------------------
 
             try:
 
@@ -3858,11 +3871,6 @@ def admin_add_product():
                     )
                 )
 
-
-            # -------------------------------------------------
-            # STOCK
-            # -------------------------------------------------
-
             try:
 
                 stock = int(
@@ -3888,11 +3896,6 @@ def admin_add_product():
                     )
                 )
 
-
-            # -------------------------------------------------
-            # CATEGORY
-            # -------------------------------------------------
-
             try:
 
                 category_id = int(
@@ -3906,21 +3909,11 @@ def admin_add_product():
 
                 category_id = None
 
-
-            # -------------------------------------------------
-            # AVAILABILITY
-            # -------------------------------------------------
-
             is_available = (
                 1
                 if is_available_value
                 else 0
             )
-
-
-            # -------------------------------------------------
-            # PRODUCT TYPE
-            # -------------------------------------------------
 
             normalized_type = (
                 normalize_product_type(
@@ -3928,21 +3921,11 @@ def admin_add_product():
                 )
             )
 
-
-            # -------------------------------------------------
-            # IMAGE FILES
-            # -------------------------------------------------
-
             image_files = (
                 request.files.getlist(
                     "images"
                 )
             )
-
-
-            # -------------------------------------------------
-            # DATABASE
-            # -------------------------------------------------
 
             connection = get_db_connection()
 
@@ -3954,11 +3937,6 @@ def admin_add_product():
             cursor = connection.cursor(
                 dictionary=True
             )
-
-
-            # -------------------------------------------------
-            # INSERT PRODUCT
-            # -------------------------------------------------
 
             cursor.execute(
                 """
@@ -4001,11 +3979,6 @@ def admin_add_product():
             product_id = (
                 cursor.lastrowid
             )
-
-
-            # -------------------------------------------------
-            # SAVE PRODUCT IMAGES
-            # -------------------------------------------------
 
             valid_images = []
 
@@ -4072,11 +4045,6 @@ def admin_add_product():
                     image_url
                 )
 
-
-            # -------------------------------------------------
-            # INSERT IMAGE RECORDS
-            # -------------------------------------------------
-
             for index, image_url in enumerate(
                 valid_images
             ):
@@ -4107,11 +4075,6 @@ def admin_add_product():
                     )
                 )
 
-
-            # -------------------------------------------------
-            # COMMIT
-            # -------------------------------------------------
-
             connection.commit()
 
             flash(
@@ -4124,7 +4087,6 @@ def admin_add_product():
                     "admin_products"
                 )
             )
-
 
         except Exception as error:
 
