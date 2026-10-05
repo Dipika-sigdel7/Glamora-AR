@@ -1033,7 +1033,7 @@ def register():
                     id,
                     name,
                     email,
-                    password
+                    password_hash
                 FROM users
                 LIMIT 1
                 """
@@ -1124,7 +1124,7 @@ def register():
             (
                 name,
                 email,
-                password
+                password_hash
             )
             VALUES
             (
@@ -1386,7 +1386,7 @@ def login():
                     id,
                     name,
                     email,
-                    password
+                    password_hash
                 FROM users
                 WHERE email = %s
                 LIMIT 1
@@ -1409,7 +1409,7 @@ def login():
                 )
 
             stored_password = user.get(
-                "password"
+                "password_hash"
             )
 
             if not stored_password:
