@@ -3212,10 +3212,13 @@ def admin_products():
             products
         )
 
-        # IMPORTANT:
-        # This is the number displayed on the
-        # All Products admin page.
-        product_count = len(products)
+        # -------------------------------------------------
+        # TOTAL NUMBER OF PRODUCTS
+        # -------------------------------------------------
+
+        product_count = len(
+            products
+        )
 
         return render_template(
             "admin/products.html",
@@ -3551,6 +3554,8 @@ def admin_add_product():
                     file_path
                 )
 
+                # IMPORTANT:
+                # Store ONLY the path relative to /static
                 image_url = (
                     "uploads/products/"
                     + unique_filename
@@ -3848,17 +3853,29 @@ def admin_delete_product(product_id):
             if not image_url:
                 continue
 
-            # Database path:
-            #
-            # uploads/products/example.jpg
-            #
-            # Static path:
-            #
-            # /static/uploads/products/example.jpg
+            # Remove accidental leading /static/ if an
+            # older database record contains it.
+            clean_image_url = str(
+                image_url
+            ).replace("\\", "/")
+
+            clean_image_url = re.sub(
+                r"^/static/",
+                "",
+                clean_image_url,
+                flags=re.IGNORECASE
+            )
+
+            clean_image_url = re.sub(
+                r"^static/",
+                "",
+                clean_image_url,
+                flags=re.IGNORECASE
+            )
 
             image_path = os.path.join(
                 app.static_folder,
-                image_url.replace(
+                clean_image_url.replace(
                     "/",
                     os.sep
                 )
