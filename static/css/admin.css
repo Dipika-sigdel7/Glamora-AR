@@ -1457,6 +1457,352 @@ textarea {
 }
 
 
+
+/* =========================================================
+   CLICKABLE STAT CARD
+   ========================================================= */
+
+.stat-card-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.stat-card-link:hover {
+    transform: translateY(-3px);
+}
+
+
+/* =========================================================
+   PRODUCTS SUMMARY
+   ========================================================= */
+
+.products-summary {
+    margin-bottom: 30px;
+}
+
+.products-count-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 28px;
+    background: #ffffff;
+    border: 1px solid #f3dfe4;
+    border-radius: 18px;
+    box-shadow: 0 15px 40px rgba(164, 73, 98, 0.08);
+    width: fit-content;
+    min-width: 220px;
+}
+
+.count-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #fdecef;
+    color: #c85f7a;
+    font-size: 22px;
+}
+
+.count-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #806b72;
+}
+
+.products-count-card strong {
+    display: block;
+    font-family: "Playfair Display", serif;
+    font-size: 30px;
+    color: #2b1b20;
+}
+
+
+/* =========================================================
+   PRODUCTS GRID
+   ========================================================= */
+
+.admin-products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
+
+.admin-product-card {
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #f3dfe4;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(164, 73, 98, 0.07);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(164, 73, 98, 0.12);
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE
+   ========================================================= */
+
+.admin-product-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+    background: #fff5f7;
+}
+
+.admin-product-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.admin-product-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    color: #c85f7a;
+}
+
+
+/* =========================================================
+   PRODUCT STATUS
+   ========================================================= */
+
+.product-status {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.product-status.available {
+    background: #ffffff;
+    color: #a74360;
+}
+
+.product-status.unavailable {
+    background: #2b1b20;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   PRODUCT INFO
+   ========================================================= */
+
+.admin-product-info {
+    padding: 22px;
+}
+
+.admin-product-type {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #c85f7a;
+}
+
+.admin-product-info h2 {
+    margin: 7px 0 4px;
+    font-family: "Playfair Display", serif;
+    font-size: 22px;
+    color: #2b1b20;
+}
+
+.admin-product-category {
+    margin: 0 0 15px;
+    color: #806b72;
+    font-size: 13px;
+}
+
+.admin-product-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.admin-product-meta strong {
+    color: #a74360;
+    font-size: 16px;
+}
+
+.admin-product-meta span {
+    color: #806b72;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   PRODUCT ACTIONS
+   ========================================================= */
+
+.admin-product-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.product-view-btn,
+.product-delete-btn {
+    min-height: 42px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.product-view-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-decoration: none;
+    background: #2b1b20;
+    color: #ffffff;
+}
+
+.product-view-btn:hover {
+    background: #a74360;
+}
+
+.delete-product-form {
+    margin: 0;
+}
+
+.product-delete-btn {
+    border: 1px solid #f0cbd4;
+    background: #fbecef;
+    color: #a74360;
+}
+
+.product-delete-btn:hover {
+    background: #a74360;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.admin-empty-state {
+    padding: 70px 30px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid #f3dfe4;
+    border-radius: 20px;
+}
+
+.empty-icon {
+    margin-bottom: 15px;
+    font-size: 38px;
+    color: #c85f7a;
+}
+
+.admin-empty-state h2 {
+    margin: 0 0 10px;
+    font-family: "Playfair Display", serif;
+    font-size: 28px;
+    color: #2b1b20;
+}
+
+.admin-empty-state p {
+    max-width: 500px;
+    margin: 0 auto 25px;
+    color: #806b72;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   FLASH MESSAGES
+   ========================================================= */
+
+.flash-messages {
+    margin-bottom: 25px;
+}
+
+.flash-message {
+    padding: 13px 17px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.flash-message.success {
+    background: #edf8f0;
+    color: #34734a;
+}
+
+.flash-message.error {
+    background: #fbecef;
+    color: #a74360;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .admin-products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .admin-products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .products-count-card {
+        width: 100%;
+    }
+
+    .admin-product-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .product-view-btn,
+    .product-delete-btn {
+        width: 100%;
+    }
+
+}
+
+
 /* =========================================================
    RESPONSIVE LOGIN
    ========================================================= */
