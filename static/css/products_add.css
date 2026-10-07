@@ -1,0 +1,1745 @@
+/* =========================================================
+   GLAMORA AR
+   ADMIN PANEL
+   ADD PRODUCT PAGE
+   add-product.css
+   PREMIUM LUXURY BEAUTY STYLE
+   ========================================================= */
+
+
+/* =========================================================
+   ROOT VARIABLES
+   ========================================================= */
+
+:root {
+
+    --add-bg: #fff7f9;
+    --add-bg-soft: #fffafb;
+
+    --add-card: #ffffff;
+    --add-card-soft: #fff9fb;
+
+    --add-text: #2b1b20;
+    --add-text-soft: #4c383e;
+
+    --add-muted: #806b72;
+    --add-muted-light: #a18d94;
+
+    --add-accent: #c85f7a;
+    --add-accent-dark: #a74360;
+    --add-accent-deep: #8f3853;
+    --add-accent-light: #f3b8c6;
+
+    --add-pink-soft: #fdecef;
+    --add-pink-light: #fff3f6;
+
+    --add-border: #eedde2;
+    --add-border-light: #f5e9ec;
+
+    --add-success-bg: #edf8f1;
+    --add-success-text: #4c8867;
+
+    --add-danger-bg: #fff0f3;
+    --add-danger-text: #b34e67;
+
+    --add-shadow:
+        0 18px 55px rgba(121, 57, 75, 0.08);
+
+    --add-shadow-hover:
+        0 25px 65px rgba(121, 57, 75, 0.13);
+
+    --add-radius: 22px;
+    --add-radius-small: 14px;
+
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.admin-page {
+
+    min-height: 100vh;
+
+    color:
+        var(--add-text);
+
+    background:
+        radial-gradient(
+            circle at 85% 3%,
+            rgba(243, 184, 198, 0.20),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 8% 45%,
+            rgba(253, 236, 239, 0.58),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #fff9fa 0%,
+            #fff5f7 48%,
+            #fffafb 100%
+        );
+
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.admin-main {
+
+    position: relative;
+
+    min-height: 100vh;
+
+    padding:
+        42px 50px;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   DECORATIVE BACKGROUND GLOW
+   ========================================================= */
+
+.admin-main::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 480px;
+    height: 480px;
+
+    top: -270px;
+    right: -180px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(200, 95, 122, 0.10),
+            rgba(200, 95, 122, 0)
+        );
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   TOP HEADER
+   ========================================================= */
+
+.admin-topbar {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 30px;
+
+    padding-bottom: 28px;
+
+    border-bottom:
+        1px solid rgba(200, 95, 122, 0.12);
+
+}
+
+
+/* =========================================================
+   EYEBROW
+   ========================================================= */
+
+.admin-eyebrow {
+
+    margin: 0 0 9px;
+
+    color:
+        var(--add-accent);
+
+    font-size: 0.69rem;
+
+    font-weight: 800;
+
+    letter-spacing: 0.20em;
+
+    line-height: 1.4;
+
+    text-transform: uppercase;
+
+}
+
+
+/* =========================================================
+   PAGE TITLE
+   ========================================================= */
+
+.admin-topbar h1 {
+
+    margin: 0;
+
+    color:
+        var(--add-text);
+
+    font-family:
+        "Playfair Display",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(2.25rem, 3.2vw, 3.15rem);
+
+    font-weight: 600;
+
+    line-height: 1.05;
+
+    letter-spacing: -0.035em;
+
+}
+
+
+/* =========================================================
+   WELCOME / DESCRIPTION
+   ========================================================= */
+
+.admin-welcome {
+
+    margin: 11px 0 0;
+
+    color:
+        var(--add-muted);
+
+    font-size: 0.91rem;
+
+    line-height: 1.7;
+
+}
+
+
+/* =========================================================
+   FLASH MESSAGES
+   ========================================================= */
+
+.flash-messages {
+
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-bottom: 22px;
+
+}
+
+
+/* =========================================================
+   FLASH MESSAGE
+   ========================================================= */
+
+.flash-message {
+
+    position: relative;
+
+    padding:
+        14px 17px;
+
+    border:
+        1px solid var(--add-border);
+
+    border-radius:
+        13px;
+
+    background:
+        rgba(255, 255, 255, 0.92);
+
+    color:
+        var(--add-text-soft);
+
+    font-size: 0.82rem;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 10px 30px rgba(121, 57, 75, 0.06);
+
+}
+
+
+/* Success */
+
+.flash-message.success {
+
+    border-color:
+        rgba(76, 136, 103, 0.18);
+
+    background:
+        var(--add-success-bg);
+
+    color:
+        var(--add-success-text);
+
+}
+
+
+/* Error / danger */
+
+.flash-message.error,
+.flash-message.danger {
+
+    border-color:
+        rgba(179, 78, 103, 0.18);
+
+    background:
+        var(--add-danger-bg);
+
+    color:
+        var(--add-danger-text);
+
+}
+
+
+/* =========================================================
+   PRODUCT FORM
+   ========================================================= */
+
+.admin-product-form {
+
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 25px;
+
+}
+
+
+/* =========================================================
+   CONTENT CARD
+   ========================================================= */
+
+.admin-content-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border:
+        1px solid var(--add-border);
+
+    border-radius:
+        var(--add-radius);
+
+    background:
+        rgba(255, 255, 255, 0.96);
+
+    box-shadow:
+        var(--add-shadow);
+
+    transition:
+        box-shadow 0.28s ease,
+        border-color 0.28s ease;
+
+}
+
+
+.admin-content-card:hover {
+
+    border-color:
+        rgba(200, 95, 122, 0.17);
+
+    box-shadow:
+        var(--add-shadow-hover);
+
+}
+
+
+/* =========================================================
+   CARD DECORATIVE LINE
+   ========================================================= */
+
+.admin-content-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 32px;
+    right: 32px;
+
+    height: 2px;
+
+    border-radius:
+        0 0 10px 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(200, 95, 122, 0.35),
+            transparent
+        );
+
+}
+
+
+/* =========================================================
+   SECTION HEADER
+   ========================================================= */
+
+.admin-section-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 25px;
+
+    padding:
+        29px 31px 24px;
+
+    border-bottom:
+        1px solid var(--add-border-light);
+
+}
+
+
+/* =========================================================
+   SECTION TITLE
+   ========================================================= */
+
+.admin-section-header h2 {
+
+    margin: 0;
+
+    color:
+        var(--add-text);
+
+    font-family:
+        "Playfair Display",
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 1.55rem;
+
+    font-weight: 600;
+
+    line-height: 1.2;
+
+    letter-spacing: -0.025em;
+
+}
+
+
+/* =========================================================
+   SECTION DESCRIPTION
+   ========================================================= */
+
+.admin-section-header > div > p:last-child {
+
+    max-width: 650px;
+
+    margin:
+        9px 0 0;
+
+    color:
+        var(--add-muted);
+
+    font-size: 0.78rem;
+
+    line-height: 1.7;
+
+}
+
+
+/* =========================================================
+   FORM GRID
+   ========================================================= */
+
+.admin-form-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        23px 22px;
+
+    padding:
+        30px 31px 32px;
+
+}
+
+
+/* =========================================================
+   FULL WIDTH FIELD
+   ========================================================= */
+
+.admin-form-group.full-width {
+
+    grid-column:
+        1 / -1;
+
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.admin-form-group {
+
+    min-width: 0;
+
+}
+
+
+/* =========================================================
+   FORM LABEL
+   ========================================================= */
+
+.admin-form-group label:not(.checkbox-label) {
+
+    display: block;
+
+    margin-bottom: 9px;
+
+    color:
+        var(--add-text);
+
+    font-size: 0.74rem;
+
+    font-weight: 800;
+
+    letter-spacing: 0.025em;
+
+}
+
+
+/* =========================================================
+   REQUIRED MARK
+   ========================================================= */
+
+.admin-form-group label[for] {
+
+    position: relative;
+
+}
+
+
+/* =========================================================
+   INPUTS / SELECT / TEXTAREA
+   ========================================================= */
+
+.admin-form-group input[type="text"],
+.admin-form-group input[type="number"],
+.admin-form-group input[type="email"],
+.admin-form-group input[type="url"],
+.admin-form-group select,
+.admin-form-group textarea {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    border:
+        1px solid var(--add-border);
+
+    border-radius:
+        13px;
+
+    outline: none;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #fffafb
+        );
+
+    color:
+        var(--add-text);
+
+    font-family:
+        "DM Sans",
+        Arial,
+        sans-serif;
+
+    font-size: 0.83rem;
+
+    font-weight: 500;
+
+    transition:
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease,
+        transform 0.22s ease;
+
+}
+
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+.admin-form-group input[type="text"],
+.admin-form-group input[type="number"],
+.admin-form-group input[type="email"],
+.admin-form-group input[type="url"],
+.admin-form-group select {
+
+    height: 50px;
+
+    padding:
+        0 15px;
+
+}
+
+
+/* =========================================================
+   TEXTAREA
+   ========================================================= */
+
+.admin-form-group textarea {
+
+    min-height: 145px;
+
+    padding:
+        14px 15px;
+
+    resize:
+        vertical;
+
+    line-height: 1.65;
+
+}
+
+
+/* =========================================================
+   PLACEHOLDER
+   ========================================================= */
+
+.admin-form-group input::placeholder,
+.admin-form-group textarea::placeholder {
+
+    color:
+        var(--add-muted-light);
+
+    opacity: 0.85;
+
+}
+
+
+/* =========================================================
+   SELECT
+   ========================================================= */
+
+.admin-form-group select {
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   INPUT HOVER
+   ========================================================= */
+
+.admin-form-group input:hover,
+.admin-form-group select:hover,
+.admin-form-group textarea:hover {
+
+    border-color:
+        #e4c5ce;
+
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+   ========================================================= */
+
+.admin-form-group input:focus,
+.admin-form-group select:focus,
+.admin-form-group textarea:focus {
+
+    border-color:
+        rgba(200, 95, 122, 0.65);
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        0 0 0 4px rgba(200, 95, 122, 0.09),
+        0 10px 25px rgba(121, 57, 75, 0.05);
+
+}
+
+
+/* =========================================================
+   NUMBER INPUT
+   ========================================================= */
+
+.admin-form-group input[type="number"] {
+
+    font-variant-numeric:
+        tabular-nums;
+
+}
+
+
+/* =========================================================
+   CHECKBOX AREA
+   ========================================================= */
+
+.admin-form-group.full-width:has(.checkbox-label) {
+
+    padding-top:
+        2px;
+
+}
+
+
+/* =========================================================
+   CHECKBOX LABEL
+   ========================================================= */
+
+.checkbox-label {
+
+    display: flex !important;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-height: 50px;
+
+    padding:
+        0 15px;
+
+    border:
+        1px solid var(--add-border);
+
+    border-radius:
+        13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fffafb,
+            #fff5f7
+        );
+
+    color:
+        var(--add-text-soft);
+
+    font-size: 0.79rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.22s ease,
+        background 0.22s ease,
+        box-shadow 0.22s ease;
+
+}
+
+
+.checkbox-label:hover {
+
+    border-color:
+        rgba(200, 95, 122, 0.30);
+
+    background:
+        #fff8fa;
+
+    box-shadow:
+        0 8px 22px rgba(121, 57, 75, 0.05);
+
+}
+
+
+/* =========================================================
+   CHECKBOX
+   ========================================================= */
+
+.checkbox-label input[type="checkbox"] {
+
+    width: 18px;
+    height: 18px;
+
+    flex: 0 0 18px;
+
+    margin: 0;
+
+    accent-color:
+        var(--add-accent);
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   IMAGE UPLOAD AREA
+   ========================================================= */
+
+.image-upload-area {
+
+    padding:
+        30px 31px 32px;
+
+}
+
+
+/* =========================================================
+   IMAGE UPLOAD BOX
+   ========================================================= */
+
+.image-upload-box {
+
+    position: relative;
+
+    min-height: 230px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 9px;
+
+    padding:
+        35px 25px;
+
+    box-sizing: border-box;
+
+    border:
+        1.5px dashed rgba(200, 95, 122, 0.34);
+
+    border-radius:
+        18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff9fb,
+            #fff3f6
+        );
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.25s ease,
+        background 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+}
+
+
+/* Upload box hover */
+
+.image-upload-box:hover {
+
+    border-color:
+        rgba(200, 95, 122, 0.62);
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff5f7,
+            #ffedf2
+        );
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 15px 35px rgba(121, 57, 75, 0.08);
+
+}
+
+
+/* =========================================================
+   UPLOAD ICON
+   ========================================================= */
+
+.upload-icon {
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin-bottom: 5px;
+
+    border:
+        1px solid rgba(200, 95, 122, 0.14);
+
+    border-radius:
+        17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fdecef,
+            #f9dce4
+        );
+
+    color:
+        var(--add-accent-dark);
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 10px 25px rgba(200, 95, 122, 0.10);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+}
+
+
+.image-upload-box:hover .upload-icon {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 14px 30px rgba(200, 95, 122, 0.15);
+
+}
+
+
+/* =========================================================
+   UPLOAD TITLE
+   ========================================================= */
+
+.image-upload-box strong {
+
+    color:
+        var(--add-text);
+
+    font-size: 0.91rem;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   UPLOAD DESCRIPTION
+   ========================================================= */
+
+.image-upload-box small {
+
+    max-width: 520px;
+
+    color:
+        var(--add-muted);
+
+    font-size: 0.72rem;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   BROWSE BUTTON
+   ========================================================= */
+
+.upload-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 40px;
+
+    margin-top: 9px;
+
+    padding:
+        0 17px;
+
+    border:
+        1px solid rgba(200, 95, 122, 0.18);
+
+    border-radius:
+        10px;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--add-accent-dark);
+
+    font-size: 0.72rem;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 20px rgba(121, 57, 75, 0.06);
+
+}
+
+
+/* =========================================================
+   IMAGE PREVIEW GRID
+   ========================================================= */
+
+.image-preview-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-top: 20px;
+
+}
+
+
+/* =========================================================
+   PREVIEW IMAGE
+   ========================================================= */
+
+.image-preview-grid img {
+
+    width: 100%;
+
+    aspect-ratio: 1 / 1;
+
+    display: block;
+
+    object-fit: cover;
+
+    border:
+        1px solid var(--add-border);
+
+    border-radius:
+        15px;
+
+    background:
+        var(--add-pink-light);
+
+    box-shadow:
+        0 10px 25px rgba(121, 57, 75, 0.08);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+}
+
+
+.image-preview-grid img:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 15px 32px rgba(121, 57, 75, 0.13);
+
+}
+
+
+/* =========================================================
+   FORM ACTIONS
+   ========================================================= */
+
+.admin-form-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 13px;
+
+    padding:
+        2px 0 10px;
+
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+   ========================================================= */
+
+.admin-secondary-button {
+
+    min-height: 50px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        0 21px;
+
+    border:
+        1px solid var(--add-border);
+
+    border-radius:
+        13px;
+
+    background:
+        rgba(255, 255, 255, 0.90);
+
+    color:
+        var(--add-text-soft);
+
+    text-decoration: none;
+
+    font-size: 0.80rem;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 22px rgba(121, 57, 75, 0.05);
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        background 0.22s ease,
+        box-shadow 0.22s ease;
+
+}
+
+
+.admin-secondary-button:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(200, 95, 122, 0.30);
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        0 12px 28px rgba(121, 57, 75, 0.08);
+
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.admin-primary-button {
+
+    position: relative;
+
+    min-height: 50px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    padding:
+        0 22px;
+
+    overflow: hidden;
+
+    border:
+        0;
+
+    border-radius:
+        13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--add-accent),
+            var(--add-accent-dark)
+        );
+
+    color:
+        #ffffff;
+
+    text-decoration: none;
+
+    font-family:
+        "DM Sans",
+        Arial,
+        sans-serif;
+
+    font-size: 0.80rem;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 13px 30px rgba(167, 67, 96, 0.20);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+
+}
+
+
+/* =========================================================
+   BUTTON SHINE
+   ========================================================= */
+
+.admin-primary-button::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+
+    left: -75px;
+
+    width: 45px;
+
+    transform:
+        skewX(-20deg);
+
+    background:
+        rgba(255, 255, 255, 0.24);
+
+    transition:
+        left 0.55s ease;
+
+}
+
+
+.admin-primary-button:hover {
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--add-accent-dark),
+            var(--add-accent-deep)
+        );
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 18px 38px rgba(167, 67, 96, 0.27);
+
+}
+
+
+.admin-primary-button:hover::before {
+
+    left:
+        calc(100% + 75px);
+
+}
+
+
+.admin-primary-button:active {
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+/* =========================================================
+   FOCUS STATES
+   ========================================================= */
+
+.admin-primary-button:focus-visible,
+.admin-secondary-button:focus-visible,
+.image-upload-box:focus-visible {
+
+    outline: none;
+
+    box-shadow:
+        0 0 0 4px rgba(200, 95, 122, 0.13),
+        0 13px 30px rgba(167, 67, 96, 0.16);
+
+}
+
+
+/* =========================================================
+   LARGE DESKTOP
+   ========================================================= */
+
+@media (max-width: 1250px) {
+
+    .admin-main {
+
+        padding:
+            38px 38px;
+
+    }
+
+
+    .image-preview-grid {
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    }
+
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    .admin-main {
+
+        padding:
+            34px 28px;
+
+    }
+
+
+    .admin-topbar h1 {
+
+        font-size:
+            2.35rem;
+
+    }
+
+
+    .admin-form-grid {
+
+        gap:
+            20px;
+
+        padding:
+            26px 25px 28px;
+
+    }
+
+
+    .image-upload-area {
+
+        padding:
+            26px 25px 28px;
+
+    }
+
+
+    .admin-section-header {
+
+        padding:
+            25px 25px 21px;
+
+    }
+
+
+    .image-preview-grid {
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .admin-main {
+
+        padding:
+            28px 18px;
+
+    }
+
+
+    .admin-topbar {
+
+        align-items:
+            flex-start;
+
+        margin-bottom:
+            25px;
+
+        padding-bottom:
+            23px;
+
+    }
+
+
+    .admin-topbar h1 {
+
+        font-size:
+            2.1rem;
+
+    }
+
+
+    .admin-welcome {
+
+        font-size:
+            0.84rem;
+
+    }
+
+
+    .admin-form-grid {
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            19px;
+
+        padding:
+            23px 20px 25px;
+
+    }
+
+
+    .admin-form-group.full-width {
+
+        grid-column:
+            auto;
+
+    }
+
+
+    .admin-section-header {
+
+        padding:
+            23px 20px 19px;
+
+    }
+
+
+    .admin-section-header h2 {
+
+        font-size:
+            1.35rem;
+
+    }
+
+
+    .image-upload-area {
+
+        padding:
+            22px 20px 25px;
+
+    }
+
+
+    .image-upload-box {
+
+        min-height:
+            215px;
+
+        padding:
+            30px 18px;
+
+    }
+
+
+    .image-preview-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap:
+            13px;
+
+    }
+
+
+    .admin-form-actions {
+
+        flex-direction:
+            column-reverse;
+
+        align-items:
+            stretch;
+
+        gap:
+            10px;
+
+    }
+
+
+    .admin-primary-button,
+    .admin-secondary-button {
+
+        width:
+            100%;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .admin-main {
+
+        padding:
+            23px 14px;
+
+    }
+
+
+    .admin-topbar h1 {
+
+        font-size:
+            1.85rem;
+
+    }
+
+
+    .admin-eyebrow {
+
+        font-size:
+            0.62rem;
+
+        letter-spacing:
+            0.16em;
+
+    }
+
+
+    .admin-content-card {
+
+        border-radius:
+            18px;
+
+    }
+
+
+    .admin-content-card::before {
+
+        left:
+            18px;
+
+        right:
+            18px;
+
+    }
+
+
+    .admin-section-header {
+
+        padding:
+            21px 17px 17px;
+
+    }
+
+
+    .admin-form-grid {
+
+        padding:
+            21px 17px 23px;
+
+    }
+
+
+    .image-upload-area {
+
+        padding:
+            20px 17px 22px;
+
+    }
+
+
+    .image-upload-box {
+
+        min-height:
+            205px;
+
+        border-radius:
+            15px;
+
+    }
+
+
+    .upload-icon {
+
+        width:
+            52px;
+
+        height:
+            52px;
+
+        border-radius:
+            15px;
+
+        font-size:
+            22px;
+
+    }
+
+
+    .image-preview-grid {
+
+        gap:
+            10px;
+
+    }
+
+
+    .checkbox-label {
+
+        min-height:
+            54px;
+
+        padding:
+            0 13px;
+
+        font-size:
+            0.74rem;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL SCREENS
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+    .admin-main {
+
+        padding:
+            20px 12px;
+
+    }
+
+
+    .admin-topbar h1 {
+
+        font-size:
+            1.7rem;
+
+    }
+
+
+    .admin-form-grid {
+
+        padding:
+            19px 14px 21px;
+
+    }
+
+
+    .image-upload-area {
+
+        padding:
+            18px 14px 20px;
+
+    }
+
+
+    .admin-section-header {
+
+        padding:
+            19px 14px 16px;
+
+    }
+
+
+    .image-preview-grid {
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .admin-primary-button,
+    .admin-secondary-button,
+    .admin-content-card,
+    .admin-form-group input,
+    .admin-form-group select,
+    .admin-form-group textarea,
+    .image-upload-box,
+    .upload-icon,
+    .image-preview-grid img {
+
+        transition:
+            none !important;
+
+    }
+
+}
