@@ -1,63 +1,445 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+<head>
 
-    <title>Glamora AR — Admin Dashboard</title>
+  <meta charset="UTF-8" />
 
-    <!-- =====================================================
-         ADMIN COMMON CSS
-         ===================================================== -->
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/admin.css') }}"
-    />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 
-    <!-- =====================================================
-         DASHBOARD CSS
-         ===================================================== -->
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/dashboard.css') }}"
-    />
-  </head>
+  <title>Glamora AR — Admin Dashboard</title>
 
 
-  <body class="admin-page">
+  <!-- =====================================================
+       ADMIN COMMON CSS
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/admin.css') }}"
+  />
 
 
-    <!-- =====================================================
-         MAIN DASHBOARD
-         ===================================================== -->
-    <main class="admin-main">
+  <!-- =====================================================
+       DASHBOARD CSS
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/dashboard.css') }}"
+  />
+
+</head>
 
 
-      <!-- ===================================================
-           TOP HEADER
-           =================================================== -->
-      <header class="admin-topbar">
+<body class="admin-page">
+
+
+  <!-- =====================================================
+       MAIN DASHBOARD
+       ===================================================== -->
+
+  <main class="admin-main">
+
+
+    <!-- ===================================================
+         TOP HEADER
+         =================================================== -->
+
+    <header class="admin-topbar">
+
+      <div>
+
+        <p class="admin-eyebrow">
+          GLAMORA AR
+        </p>
+
+        <h1>
+          Dashboard
+        </h1>
+
+        <p class="admin-welcome">
+          Welcome back,
+          {{ session.get('admin_name', 'Admin') }}.
+        </p>
+
+      </div>
+
+
+      <a
+        href="{{ url_for('admin_add_product') }}"
+        class="admin-primary-button"
+      >
+        <span>+</span>
+        <span>Add Product</span>
+      </a>
+
+    </header>
+
+
+
+    <!-- ===================================================
+         DASHBOARD STATISTICS
+         =================================================== -->
+
+    <section class="admin-stats">
+
+
+      <!-- =================================================
+           TOTAL PRODUCTS
+           CLICKING THIS OPENS ALL PRODUCTS
+           ================================================= -->
+
+      <a
+        href="{{ url_for('admin_products') }}"
+        class="admin-stat-card admin-stat-link"
+        aria-label="View all products"
+      >
+
+        <div class="stat-icon">
+          ✦
+        </div>
+
+        <div>
+
+          <span>
+            Total Products
+          </span>
+
+          <strong>
+            {{ product_count }}
+          </strong>
+
+        </div>
+
+      </a>
+
+
+
+      <!-- =================================================
+           CATEGORIES
+           ================================================= -->
+
+      <div class="admin-stat-card">
+
+        <div class="stat-icon">
+          ◈
+        </div>
+
+        <div>
+
+          <span>
+            Categories
+          </span>
+
+          <strong>
+            {{ category_count }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           USERS
+           ================================================= -->
+
+      <div class="admin-stat-card">
+
+        <div class="stat-icon">
+          ♡
+        </div>
+
+        <div>
+
+          <span>
+            Users
+          </span>
+
+          <strong>
+            {{ user_count }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           AVAILABLE PRODUCTS
+           ================================================= -->
+
+      <div class="admin-stat-card">
+
+        <div class="stat-icon">
+          ◎
+        </div>
+
+        <div>
+
+          <span>
+            Available Products
+          </span>
+
+          <strong>
+            {{ available_count }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         RECENT PRODUCTS
+         =================================================== -->
+
+    <section class="admin-content-card">
+
+
+      <!-- =================================================
+           SECTION HEADER
+           ================================================= -->
+
+      <div class="admin-section-header">
 
         <div>
 
           <p class="admin-eyebrow">
-            GLAMORA AR
+            CATALOG
           </p>
 
-          <h1>
-            Dashboard
-          </h1>
-
-          <p class="admin-welcome">
-            Welcome back,
-            {{ session.get('admin_name', 'Admin') }}.
-          </p>
+          <h2>
+            Recent Products
+          </h2>
 
         </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           PRODUCTS AVAILABLE
+           ================================================= -->
+
+      {% if recent_products %}
+
+      <div class="admin-product-table">
+
+
+        <!-- =================================================
+             TABLE HEADER
+             ================================================= -->
+
+        <div class="admin-table-head">
+
+          <span>
+            Product
+          </span>
+
+          <span>
+            Category
+          </span>
+
+          <span>
+            Price
+          </span>
+
+          <span>
+            Stock
+          </span>
+
+          <span>
+            Status
+          </span>
+
+          <span>
+            Action
+          </span>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT ROWS
+             ================================================= -->
+
+        {% for product in recent_products %}
+
+        <div class="admin-table-row">
+
+
+          <!-- =================================================
+               PRODUCT
+               ================================================= -->
+
+          <div class="admin-product-name">
+
+            {% if product.image_url %}
+
+            <img
+              src="{{ url_for('static', filename=product.image_url) }}"
+              alt="{{ product.name }}"
+            />
+
+            {% else %}
+
+            <div class="admin-product-placeholder">
+              ✦
+            </div>
+
+            {% endif %}
+
+
+            <div>
+
+              <strong>
+                {{ product.name }}
+              </strong>
+
+              <small>
+                #{{ product.id }}
+              </small>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- =================================================
+               CATEGORY
+               ================================================= -->
+
+          <span>
+            {{ product.category_name or 'Uncategorized' }}
+          </span>
+
+
+
+          <!-- =================================================
+               PRICE
+               ================================================= -->
+
+          <span>
+
+            {% if format_npr is defined %}
+
+              {{ format_npr(product.price) }}
+
+            {% else %}
+
+              Rs. {{ "%.2f"|format(product.price) }}
+
+            {% endif %}
+
+          </span>
+
+
+
+          <!-- =================================================
+               STOCK
+               ================================================= -->
+
+          <span>
+            {{ product.stock }}
+          </span>
+
+
+
+          <!-- =================================================
+               STATUS
+               ================================================= -->
+
+          <span>
+
+            {% if product.is_available %}
+
+            <span class="status available">
+              Available
+            </span>
+
+            {% else %}
+
+            <span class="status unavailable">
+              Unavailable
+            </span>
+
+            {% endif %}
+
+          </span>
+
+
+
+          <!-- =================================================
+               DELETE BUTTON
+               ================================================= -->
+
+          <div class="admin-product-action">
+
+            <form
+              action="{{ url_for('admin_delete_product', product_id=product.id) }}"
+              method="POST"
+              onsubmit="return confirm('Are you sure you want to delete this product?');"
+            >
+
+              <button
+                type="submit"
+                class="admin-btn admin-btn-delete"
+              >
+                Delete
+              </button>
+
+            </form>
+
+          </div>
+
+
+        </div>
+
+        {% endfor %}
+
+      </div>
+
+
+
+      <!-- =================================================
+           NO VIEW ALL BUTTON HERE
+           ================================================= -->
+
+
+
+      <!-- =================================================
+           NO PRODUCTS
+           ================================================= -->
+
+      {% else %}
+
+      <div class="admin-empty-state">
+
+        <div class="empty-icon">
+          ✦
+        </div>
+
+        <h3>
+          No products yet
+        </h3>
+
+        <p>
+          Add your first beauty product to start building
+          the Glamora AR catalog.
+        </p>
 
 
         <a
@@ -65,353 +447,27 @@
           class="admin-primary-button"
         >
           <span>+</span>
-          <span>Add Product</span>
+          <span>Add Your First Product</span>
         </a>
 
-      </header>
+      </div>
 
+      {% endif %}
 
-      <!-- ===================================================
-           DASHBOARD STATISTICS
-           =================================================== -->
-      <section class="admin-stats">
+    </section>
 
+  </main>
 
-        <!-- =================================================
-             TOTAL PRODUCTS
-             CLICKING THIS OPENS ALL PRODUCTS
-             ================================================= -->
-        <a
-          href="{{ url_for('admin_products') }}"
-          class="admin-stat-card admin-stat-link"
-          aria-label="View all products"
-        >
 
-          <div class="stat-icon">
-            ✦
-          </div>
 
-          <div>
+  <!-- =====================================================
+       DASHBOARD JAVASCRIPT
+       ===================================================== -->
 
-            <span>
-              Total Products
-            </span>
+  <script
+    src="{{ url_for('static', filename='js/dashboard.js') }}"
+  ></script>
 
-            <strong>
-              {{ product_count }}
-            </strong>
+</body>
 
-          </div>
-
-        </a>
-
-
-        <!-- =================================================
-             CATEGORIES
-             ================================================= -->
-        <div class="admin-stat-card">
-
-          <div class="stat-icon">
-            ◈
-          </div>
-
-          <div>
-
-            <span>
-              Categories
-            </span>
-
-            <strong>
-              {{ category_count }}
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <!-- =================================================
-             USERS
-             ================================================= -->
-        <div class="admin-stat-card">
-
-          <div class="stat-icon">
-            ♡
-          </div>
-
-          <div>
-
-            <span>
-              Users
-            </span>
-
-            <strong>
-              {{ user_count }}
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <!-- =================================================
-             AVAILABLE PRODUCTS
-             ================================================= -->
-        <div class="admin-stat-card">
-
-          <div class="stat-icon">
-            ◎
-          </div>
-
-          <div>
-
-            <span>
-              Available Products
-            </span>
-
-            <strong>
-              {{ available_count }}
-            </strong>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- ===================================================
-           RECENT PRODUCTS
-           =================================================== -->
-      <section class="admin-content-card">
-
-
-        <div class="admin-section-header">
-
-          <div>
-
-            <p class="admin-eyebrow">
-              CATALOG
-            </p>
-
-            <h2>
-              Recent Products
-            </h2>
-
-          </div>
-
-
-          <a
-            href="{{ url_for('admin_products') }}"
-            class="admin-text-link"
-          >
-            View All →
-          </a>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUCTS AVAILABLE
-             ================================================= -->
-        {% if recent_products %}
-
-        <div class="admin-product-table">
-
-
-          <!-- =================================================
-               TABLE HEADER
-               ================================================= -->
-          <div class="admin-table-head">
-
-            <span>
-              Product
-            </span>
-
-            <span>
-              Category
-            </span>
-
-            <span>
-              Price
-            </span>
-
-            <span>
-              Stock
-            </span>
-
-            <span>
-              Status
-            </span>
-
-          </div>
-
-
-          <!-- =================================================
-               PRODUCT ROWS
-               ================================================= -->
-          {% for product in recent_products %}
-
-          <div class="admin-table-row">
-
-
-            <!-- =================================================
-                 PRODUCT
-                 ================================================= -->
-            <div class="admin-product-name">
-
-              {% if product.image_url %}
-
-              <img
-                src="{{ url_for('static', filename=product.image_url) }}"
-                alt="{{ product.name }}"
-              />
-
-              {% else %}
-
-              <div class="admin-product-placeholder">
-                ✦
-              </div>
-
-              {% endif %}
-
-
-              <div>
-
-                <strong>
-                  {{ product.name }}
-                </strong>
-
-                <small>
-                  #{{ product.id }}
-                </small>
-
-              </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 CATEGORY
-                 ================================================= -->
-            <span>
-              {{ product.category_name or 'Uncategorized' }}
-            </span>
-
-
-            <!-- =================================================
-                 PRICE
-                 ================================================= -->
-            <span>
-
-              {% if format_npr is defined %}
-
-                {{ format_npr(product.price) }}
-
-              {% else %}
-
-                Rs. {{ "%.2f"|format(product.price) }}
-
-              {% endif %}
-
-            </span>
-
-
-            <!-- =================================================
-                 STOCK
-                 ================================================= -->
-            <span>
-              {{ product.stock }}
-            </span>
-
-
-            <!-- =================================================
-                 STATUS
-                 ================================================= -->
-            <span>
-
-              {% if product.is_available %}
-
-              <span class="status available">
-                Available
-              </span>
-
-              {% else %}
-
-              <span class="status unavailable">
-                Unavailable
-              </span>
-
-              {% endif %}
-
-            </span>
-
-          </div>
-
-          {% endfor %}
-
-        </div>
-
-
-        <!-- =================================================
-             VIEW ALL PRODUCTS
-             ================================================= -->
-        <div class="admin-section-footer">
-
-          <a
-            href="{{ url_for('admin_products') }}"
-            class="admin-text-link"
-          >
-            View All Products →
-          </a>
-
-        </div>
-
-
-        <!-- =================================================
-             NO PRODUCTS
-             ================================================= -->
-        {% else %}
-
-        <div class="admin-empty-state">
-
-          <div class="empty-icon">
-            ✦
-          </div>
-
-          <h3>
-            No products yet
-          </h3>
-
-          <p>
-            Add your first beauty product to start building
-            the Glamora AR catalog.
-          </p>
-
-
-          <a
-            href="{{ url_for('admin_add_product') }}"
-            class="admin-primary-button"
-          >
-            <span>+</span>
-            <span>Add Your First Product</span>
-          </a>
-
-        </div>
-
-        {% endif %}
-
-      </section>
-
-    </main>
-
-
-    <!-- =====================================================
-         DASHBOARD JAVASCRIPT
-         ===================================================== -->
-    <script
-      src="{{ url_for('static', filename='js/dashboard.js') }}"
-    ></script>
-
-  </body>
 </html>
