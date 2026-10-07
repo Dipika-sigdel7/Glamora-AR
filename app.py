@@ -1,4 +1,3 @@
-
 import os
 import uuid
 import re
@@ -49,7 +48,6 @@ CURRENCY_CODE = "NPR"
 def format_npr(value):
 
     try:
-
         amount = Decimal(
             str(value or 0)
         )
@@ -69,10 +67,16 @@ def format_npr(value):
 # SESSION CONFIGURATION
 # =========================================================
 
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=3650)
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(
+    days=3650
+)
+
 app.config["SESSION_REFRESH_EACH_REQUEST"] = True
+
 app.config["SESSION_COOKIE_HTTPONLY"] = True
+
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
 app.config["SESSION_COOKIE_SECURE"] = False
 
 
@@ -114,9 +118,12 @@ os.makedirs(
 )
 
 app.config["PRODUCT_UPLOAD_FOLDER"] = PRODUCT_UPLOAD_FOLDER
+
 app.config["REVIEW_UPLOAD_FOLDER"] = REVIEW_UPLOAD_FOLDER
 
-app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
+app.config["MAX_CONTENT_LENGTH"] = (
+    50 * 1024 * 1024
+)
 
 
 # =========================================================
@@ -131,7 +138,9 @@ ALLOWED_IMAGE_EXTENSIONS = {
     "gif"
 }
 
-MAX_IMAGE_SIZE = 5 * 1024 * 1024
+MAX_IMAGE_SIZE = (
+    5 * 1024 * 1024
+)
 
 
 # =========================================================
@@ -208,34 +217,78 @@ def normalize_product_type(product_type):
     )
 
     aliases = {
-        "lipstick": "lipstick",
-        "lipsticks": "lipstick",
-        "liquid lipstick": "lipstick",
-        "liquid-lipstick": "lipstick",
 
-        "eyeshadow": "eyeshadow",
-        "eyeshadows": "eyeshadow",
-        "eye shadow": "eyeshadow",
-        "eye-shadows": "eyeshadow",
+        "lipstick":
+            "lipstick",
 
-        "blush": "blush",
-        "blushes": "blush",
+        "lipsticks":
+            "lipstick",
 
-        "eyeliner": "eyeliner",
-        "eyeliners": "eyeliner",
-        "eye liner": "eyeliner",
-        "eye-liner": "eyeliner",
+        "liquid lipstick":
+            "lipstick",
 
-        "mascara": "mascara",
-        "mascaras": "mascara",
+        "liquid-lipstick":
+            "lipstick",
 
-        "foundation": "foundation",
-        "foundations": "foundation",
 
-        "highlighter": "highlighter",
-        "highlighters": "highlighter",
-        "highlight": "highlighter",
-        "highlights": "highlighter"
+        "eyeshadow":
+            "eyeshadow",
+
+        "eyeshadows":
+            "eyeshadow",
+
+        "eye shadow":
+            "eyeshadow",
+
+        "eye-shadows":
+            "eyeshadow",
+
+
+        "blush":
+            "blush",
+
+        "blushes":
+            "blush",
+
+
+        "eyeliner":
+            "eyeliner",
+
+        "eyeliners":
+            "eyeliner",
+
+        "eye liner":
+            "eyeliner",
+
+        "eye-liner":
+            "eyeliner",
+
+
+        "mascara":
+            "mascara",
+
+        "mascaras":
+            "mascara",
+
+
+        "foundation":
+            "foundation",
+
+        "foundations":
+            "foundation",
+
+
+        "highlighter":
+            "highlighter",
+
+        "highlighters":
+            "highlighter",
+
+        "highlight":
+            "highlighter",
+
+        "highlights":
+            "highlighter"
     }
 
     if value in aliases:
@@ -268,6 +321,7 @@ def prepare_products(products):
             )
         )
 
+
         # -------------------------------------------------
         # CATEGORY SLUG
         # -------------------------------------------------
@@ -281,7 +335,9 @@ def prepare_products(products):
             category_slug = re.sub(
                 r"[^a-z0-9]+",
                 "-",
-                str(category_name).lower()
+                str(
+                    category_name
+                ).lower()
             ).strip("-")
 
             product["category_slug"] = (
@@ -359,10 +415,11 @@ def get_bag_count():
 
         cursor.execute(
             """
-            SELECT COALESCE(
-                SUM(quantity),
-                0
-            ) AS bag_count
+            SELECT
+                COALESCE(
+                    SUM(quantity),
+                    0
+                ) AS bag_count
             FROM cart_items
             WHERE user_id = %s
             """,
@@ -468,19 +525,27 @@ def inject_global_data():
     current_user = get_current_user()
 
     return {
-        "bag_count": get_bag_count(),
+        "bag_count":
+            get_bag_count(),
 
-        "current_user": current_user,
+        "current_user":
+            current_user,
 
-        "is_logged_in": bool(
-            session.get("user_id")
-        ),
+        "is_logged_in":
+            bool(
+                session.get(
+                    "user_id"
+                )
+            ),
 
-        "currency_symbol": CURRENCY_SYMBOL,
+        "currency_symbol":
+            CURRENCY_SYMBOL,
 
-        "currency_code": CURRENCY_CODE,
+        "currency_code":
+            CURRENCY_CODE,
 
-        "format_npr": format_npr
+        "format_npr":
+            format_npr
     }
 
 
@@ -492,6 +557,7 @@ def inject_global_data():
 def refresh_user_session():
 
     if session.get("user_id"):
+
         session.permanent = True
 
 
@@ -545,6 +611,7 @@ def beauty():
         connection = get_db_connection()
 
         if connection is None:
+
             raise RuntimeError(
                 "Database connection failed."
             )
@@ -570,7 +637,8 @@ def beauty():
                 c.name AS category_name,
 
                 (
-                    SELECT pi.image_url
+                    SELECT
+                        pi.image_url
                     FROM product_images pi
                     WHERE pi.product_id = p.id
                     ORDER BY
@@ -616,6 +684,7 @@ def beauty():
         print("=" * 60)
         print("GLAMORA AR - BEAUTY PAGE")
         print("=" * 60)
+
         print(
             "PRODUCT COUNT:",
             len(products)
@@ -656,7 +725,10 @@ def beauty():
         print()
         print("!" * 60)
         print("BEAUTY PAGE ERROR")
-        print("ERROR:", repr(error))
+        print(
+            "ERROR:",
+            repr(error)
+        )
         print("!" * 60)
         print()
 
@@ -722,6 +794,7 @@ def register():
         not next_url.startswith("/")
         or next_url.startswith("//")
     ):
+
         next_url = ""
 
 
@@ -732,7 +805,10 @@ def register():
     if session.get("user_id"):
 
         if next_url:
-            return redirect(next_url)
+
+            return redirect(
+                next_url
+            )
 
         return redirect(
             url_for("profile")
@@ -977,18 +1053,8 @@ def register():
 
         if connection is None:
 
-            print(
-                "DATABASE CONNECTION: FAILED"
-            )
-
-            flash(
-                "Database connection failed. Please try again.",
-                "error"
-            )
-
-            return render_template(
-                "register.html",
-                next=next_url
+            raise RuntimeError(
+                "Database connection failed."
             )
 
         print(
@@ -1012,11 +1078,14 @@ def register():
 
             cursor.execute(
                 """
-                SELECT DATABASE() AS database_name
+                SELECT
+                    DATABASE() AS database_name
                 """
             )
 
-            database_info = cursor.fetchone()
+            database_info = (
+                cursor.fetchone()
+            )
 
             print(
                 "DATABASE:",
@@ -1031,7 +1100,9 @@ def register():
 
             print(
                 "DATABASE NAME CHECK ERROR:",
-                repr(database_name_error)
+                repr(
+                    database_name_error
+                )
             )
 
 
@@ -1074,7 +1145,9 @@ def register():
             (email,)
         )
 
-        existing_user = cursor.fetchone()
+        existing_user = (
+            cursor.fetchone()
+        )
 
         if existing_user:
 
@@ -1100,8 +1173,10 @@ def register():
         # HASH PASSWORD
         # -------------------------------------------------
 
-        hashed_password = generate_password_hash(
-            password
+        hashed_password = (
+            generate_password_hash(
+                password
+            )
         )
 
         print(
@@ -1115,14 +1190,12 @@ def register():
 
         cursor.execute(
             """
-            INSERT INTO users
-            (
+            INSERT INTO users (
                 name,
                 email,
                 password_hash
             )
-            VALUES
-            (
+            VALUES (
                 %s,
                 %s,
                 %s
@@ -1135,11 +1208,13 @@ def register():
             )
         )
 
+        new_user_id = (
+            cursor.lastrowid
+        )
+
         print(
             "USER INSERT: OK"
         )
-
-        new_user_id = cursor.lastrowid
 
         print(
             "NEW USER ID:",
@@ -1158,17 +1233,12 @@ def register():
         )
 
         print(
-            "=" * 70
-        )
-
-        print(
             "REGISTRATION SUCCESSFUL"
         )
 
         print(
             "=" * 70
         )
-
         print()
 
         flash(
@@ -1272,7 +1342,7 @@ def login():
     next_url = request.args.get(
         "next",
         ""
-    )
+    ).strip()
 
     if request.method == "POST":
 
@@ -1289,7 +1359,7 @@ def login():
         next_url = request.form.get(
             "next",
             ""
-        )
+        ).strip()
 
         if not email or not password:
 
@@ -1311,6 +1381,7 @@ def login():
             connection = get_db_connection()
 
             if connection is None:
+
                 raise RuntimeError(
                     "Database connection failed."
                 )
@@ -1327,7 +1398,7 @@ def login():
                     email,
                     password_hash
                 FROM users
-                WHERE email = %s
+                WHERE LOWER(email) = %s
                 LIMIT 1
                 """,
                 (email,)
@@ -1365,9 +1436,11 @@ def login():
 
             try:
 
-                password_valid = check_password_hash(
-                    stored_password,
-                    password
+                password_valid = (
+                    check_password_hash(
+                        stored_password,
+                        password
+                    )
                 )
 
             except Exception:
@@ -1393,9 +1466,18 @@ def login():
 
             session.permanent = True
 
-            session["user_id"] = user["id"]
-            session["user_name"] = user["name"]
-            session["user_email"] = user["email"]
+            session["user_id"] = (
+                user["id"]
+            )
+
+            session["user_name"] = (
+                user["name"]
+            )
+
+            session["user_email"] = (
+                user["email"]
+            )
+
             session["logged_in"] = True
 
 
@@ -1675,11 +1757,15 @@ def product_details(product_id):
 
         if category_name:
 
-            product["category_slug"] = re.sub(
-                r"[^a-z0-9]+",
-                "-",
-                str(category_name).lower()
-            ).strip("-")
+            product["category_slug"] = (
+                re.sub(
+                    r"[^a-z0-9]+",
+                    "-",
+                    str(
+                        category_name
+                    ).lower()
+                ).strip("-")
+            )
 
         else:
 
@@ -1698,8 +1784,6 @@ def product_details(product_id):
         # -------------------------------------------------
         # IMAGES
         # -------------------------------------------------
-
-        images = []
 
         cursor.execute(
             """
@@ -1887,7 +1971,9 @@ def product_details(product_id):
 
         print(
             "LOGGED-IN USER:",
-            bool(session.get("user_id"))
+            bool(
+                session.get("user_id")
+            )
         )
 
         print(
@@ -1897,6 +1983,7 @@ def product_details(product_id):
         print(
             "=" * 70
         )
+
         print()
 
 
@@ -1920,6 +2007,7 @@ def product_details(product_id):
 
             try:
                 connection.rollback()
+
             except Exception:
                 pass
 
@@ -1971,7 +2059,6 @@ def product_details(product_id):
             cursor,
             connection
         )
-
 
 
 # =========================================================
@@ -2047,6 +2134,7 @@ def add_review(product_id):
         connection = get_db_connection()
 
         if connection is None:
+
             raise RuntimeError(
                 "Database connection failed."
             )
@@ -2054,6 +2142,11 @@ def add_review(product_id):
         cursor = connection.cursor(
             dictionary=True
         )
+
+
+        # -------------------------------------------------
+        # GET USER
+        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -2079,6 +2172,11 @@ def add_review(product_id):
             return redirect(
                 url_for("login")
             )
+
+
+        # -------------------------------------------------
+        # REVIEW IMAGE
+        # -------------------------------------------------
 
         review_image_url = None
 
@@ -2111,12 +2209,15 @@ def add_review(product_id):
                     )
                 )
 
+
             review_file.seek(
                 0,
                 os.SEEK_END
             )
 
-            file_size = review_file.tell()
+            file_size = (
+                review_file.tell()
+            )
 
             review_file.seek(
                 0
@@ -2135,6 +2236,7 @@ def add_review(product_id):
                         product_id=product_id
                     )
                 )
+
 
             extension = filename.rsplit(
                 ".",
@@ -2162,6 +2264,10 @@ def add_review(product_id):
                 + unique_filename
             )
 
+
+        # -------------------------------------------------
+        # INSERT REVIEW
+        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -2206,14 +2312,21 @@ def add_review(product_id):
             )
         )
 
+
     except Exception as error:
 
         if connection:
 
             try:
                 connection.rollback()
+
             except Exception:
                 pass
+
+
+        # -------------------------------------------------
+        # REMOVE UPLOADED FILE IF DATABASE INSERT FAILED
+        # -------------------------------------------------
 
         if saved_review_file:
 
@@ -2230,10 +2343,15 @@ def add_review(product_id):
             except Exception:
                 pass
 
-        print(
-            "REVIEW ERROR:",
-            repr(error)
-        )
+
+        print()
+        print("!" * 60)
+        print("GLAMORA AR - REVIEW ERROR")
+        print("ERROR TYPE:", type(error).__name__)
+        print("ERROR:", repr(error))
+        print("!" * 60)
+        print()
+
 
         flash(
             "Unable to submit review.",
@@ -2290,6 +2408,7 @@ def add_to_cart(product_id):
         connection = get_db_connection()
 
         if connection is None:
+
             raise RuntimeError(
                 "Database connection failed."
             )
@@ -2363,6 +2482,11 @@ def add_to_cart(product_id):
                 )
             )
 
+
+        # -------------------------------------------------
+        # CHECK EXISTING CART ITEM
+        # -------------------------------------------------
+
         cursor.execute(
             """
             SELECT
@@ -2379,7 +2503,9 @@ def add_to_cart(product_id):
             )
         )
 
-        existing_item = cursor.fetchone()
+        existing_item = (
+            cursor.fetchone()
+        )
 
         if existing_item:
 
@@ -2449,6 +2575,7 @@ def add_to_cart(product_id):
 
             try:
                 connection.rollback()
+
             except Exception:
                 pass
 
@@ -2512,6 +2639,7 @@ def buy_now(product_id):
         connection = get_db_connection()
 
         if connection is None:
+
             raise RuntimeError(
                 "Database connection failed."
             )
@@ -2585,6 +2713,11 @@ def buy_now(product_id):
                 )
             )
 
+
+        # -------------------------------------------------
+        # CHECK EXISTING CART ITEM
+        # -------------------------------------------------
+
         cursor.execute(
             """
             SELECT
@@ -2601,7 +2734,9 @@ def buy_now(product_id):
             )
         )
 
-        existing_item = cursor.fetchone()
+        existing_item = (
+            cursor.fetchone()
+        )
 
         if existing_item:
 
@@ -2663,6 +2798,7 @@ def buy_now(product_id):
 
             try:
                 connection.rollback()
+
             except Exception:
                 pass
 
@@ -2739,10 +2875,6 @@ def cart():
                 "Cart database connection failed."
             )
 
-        print(
-            "CART DATABASE CONNECTION: OK"
-        )
-
         cursor = connection.cursor(
             dictionary=True
         )
@@ -2770,16 +2902,16 @@ def cart():
             len(cart_rows)
         )
 
-        print(
-            "CART ROWS:",
-            cart_rows
-        )
-
         cart_items = []
 
         subtotal = Decimal(
             "0.00"
         )
+
+
+        # -------------------------------------------------
+        # LOAD CART ITEMS
+        # -------------------------------------------------
 
         for cart_row in cart_rows:
 
@@ -2806,12 +2938,6 @@ def cart():
             if quantity <= 0:
                 continue
 
-            print(
-                "LOADING PRODUCT:",
-                product_id,
-                "| QUANTITY:",
-                quantity
-            )
 
             cursor.execute(
                 """
@@ -2839,13 +2965,12 @@ def cart():
             product = cursor.fetchone()
 
             if not product:
-
-                print(
-                    "PRODUCT NOT FOUND FOR CART ITEM:",
-                    product_id
-                )
-
                 continue
+
+
+            # -------------------------------------------------
+            # PRODUCT IMAGE
+            # -------------------------------------------------
 
             image_url = None
 
@@ -2886,6 +3011,11 @@ def cart():
 
                 image_url = None
 
+
+            # -------------------------------------------------
+            # PRICE
+            # -------------------------------------------------
+
             try:
 
                 price = Decimal(
@@ -2907,9 +3037,15 @@ def cart():
                     "0.00"
                 )
 
+
             line_total = (
                 price * quantity
             )
+
+
+            # -------------------------------------------------
+            # CART ITEM
+            # -------------------------------------------------
 
             item = {
 
@@ -2991,16 +3127,10 @@ def cart():
 
             subtotal += line_total
 
-            print(
-                "CART PRODUCT:",
-                item["name"],
-                "| PRICE:",
-                format_npr(price),
-                "| QUANTITY:",
-                quantity,
-                "| TOTAL:",
-                format_npr(line_total)
-            )
+
+        # -------------------------------------------------
+        # TOTAL ITEMS
+        # -------------------------------------------------
 
         total_items = sum(
             int(
@@ -3012,7 +3142,7 @@ def cart():
             for item in cart_items
         )
 
-        print()
+
         print(
             "FINAL CART ITEM COUNT:",
             len(cart_items)
@@ -3025,13 +3155,17 @@ def cart():
 
         print(
             "SUBTOTAL:",
-            format_npr(subtotal)
+            format_npr(
+                subtotal
+            )
         )
 
         print(
             "=" * 70
         )
+
         print()
+
 
         return render_template(
             "cart.html",
@@ -3049,6 +3183,7 @@ def cart():
 
             try:
                 connection.rollback()
+
             except Exception:
                 pass
 
@@ -3138,32 +3273,12 @@ def remove_from_cart(cart_item_id):
 
     try:
 
-        print()
-        print("=" * 70)
-        print("GLAMORA AR - REMOVE FROM CART")
-        print("=" * 70)
-
-        print(
-            "USER ID:",
-            user_id
-        )
-
-        print(
-            "CART ITEM ID:",
-            cart_item_id
-        )
-
         connection = get_db_connection()
 
         if connection is None:
 
-            flash(
-                "Unable to connect to the database.",
-                "error"
-            )
-
-            return redirect(
-                url_for("cart")
+            raise RuntimeError(
+                "Database connection failed."
             )
 
         cursor = connection.cursor(
@@ -3186,10 +3301,6 @@ def remove_from_cart(cart_item_id):
 
         if cursor.rowcount > 0:
 
-            print(
-                "CART ITEM REMOVED: YES"
-            )
-
             flash(
                 "Product removed from your bag.",
                 "success"
@@ -3197,19 +3308,10 @@ def remove_from_cart(cart_item_id):
 
         else:
 
-            print(
-                "CART ITEM REMOVED: NO"
-            )
-
             flash(
                 "Bag item not found.",
                 "error"
             )
-
-        print(
-            "=" * 70
-        )
-        print()
 
         return redirect(
             url_for("cart")
@@ -3221,41 +3323,14 @@ def remove_from_cart(cart_item_id):
 
             try:
                 connection.rollback()
+
             except Exception:
                 pass
 
-        print()
-        print("!" * 70)
-        print("GLAMORA AR - REMOVE FROM CART ERROR")
-        print("!" * 70)
-
         print(
-            "USER ID:",
-            user_id
-        )
-
-        print(
-            "CART ITEM ID:",
-            cart_item_id
-        )
-
-        print(
-            "ERROR TYPE:",
-            type(error).__name__
-        )
-
-        print(
-            "ERROR:",
-            str(error)
-        )
-
-        print(
-            "ERROR REPR:",
+            "REMOVE FROM CART ERROR:",
             repr(error)
         )
-
-        print("!" * 70)
-        print()
 
         flash(
             "Unable to remove the product from your bag.",
@@ -3284,9 +3359,7 @@ def remove_from_cart(cart_item_id):
 )
 def admin_login():
 
-    if session.get(
-        "admin_id"
-    ):
+    if session.get("admin_id"):
 
         return redirect(
             url_for(
@@ -3325,6 +3398,7 @@ def admin_login():
             connection = get_db_connection()
 
             if connection is None:
+
                 raise RuntimeError(
                     "Database connection failed."
                 )
@@ -3341,7 +3415,7 @@ def admin_login():
                     email,
                     password_hash
                 FROM admins
-                WHERE email = %s
+                WHERE LOWER(email) = %s
                 LIMIT 1
                 """,
                 (email,)
@@ -3397,9 +3471,17 @@ def admin_login():
                     "admin/login.html"
                 )
 
-            session["admin_id"] = admin["id"]
-            session["admin_name"] = admin["name"]
-            session["admin_email"] = admin["email"]
+            session["admin_id"] = (
+                admin["id"]
+            )
+
+            session["admin_name"] = (
+                admin["name"]
+            )
+
+            session["admin_email"] = (
+                admin["email"]
+            )
 
             return redirect(
                 url_for(
@@ -3483,6 +3565,7 @@ def admin_dashboard():
         connection = get_db_connection()
 
         if connection is None:
+
             raise RuntimeError(
                 "Database connection failed."
             )
@@ -3509,6 +3592,7 @@ def admin_dashboard():
             ) or 0
         )
 
+
         cursor.execute(
             """
             SELECT COUNT(*) AS total
@@ -3527,6 +3611,7 @@ def admin_dashboard():
             ) or 0
         )
 
+
         cursor.execute(
             """
             SELECT COUNT(*) AS total
@@ -3544,6 +3629,7 @@ def admin_dashboard():
                 0
             ) or 0
         )
+
 
         cursor.execute(
             """
@@ -3564,6 +3650,7 @@ def admin_dashboard():
             ) or 0
         )
 
+
         cursor.execute(
             """
             SELECT
@@ -3577,7 +3664,8 @@ def admin_dashboard():
                 c.name AS category_name,
 
                 (
-                    SELECT pi.image_url
+                    SELECT
+                        pi.image_url
                     FROM product_images pi
                     WHERE pi.product_id = p.id
                     ORDER BY
@@ -3602,6 +3690,7 @@ def admin_dashboard():
             cursor.fetchall() or []
         )
 
+
         for product in recent_products:
 
             try:
@@ -3624,6 +3713,7 @@ def admin_dashboard():
                 product["price"] = Decimal(
                     "0.00"
                 )
+
 
         return render_template(
             "admin/dashboard.html",
@@ -3684,6 +3774,7 @@ def admin_products():
         connection = get_db_connection()
 
         if connection is None:
+
             raise RuntimeError(
                 "Database connection failed."
             )
@@ -3710,7 +3801,8 @@ def admin_products():
                 c.name AS category_name,
 
                 (
-                    SELECT pi.image_url
+                    SELECT
+                        pi.image_url
                     FROM product_images pi
                     WHERE pi.product_id = p.id
                     ORDER BY
@@ -3786,6 +3878,11 @@ def admin_add_product():
     connection = None
     cursor = None
 
+
+    # =====================================================
+    # POST — ADD PRODUCT
+    # =====================================================
+
     if request.method == "POST":
 
         try:
@@ -3834,6 +3931,11 @@ def admin_add_product():
                 "is_available"
             )
 
+
+            # -------------------------------------------------
+            # NAME
+            # -------------------------------------------------
+
             if not name:
 
                 flash(
@@ -3846,6 +3948,11 @@ def admin_add_product():
                         "admin_add_product"
                     )
                 )
+
+
+            # -------------------------------------------------
+            # PRICE
+            # -------------------------------------------------
 
             try:
 
@@ -3877,6 +3984,11 @@ def admin_add_product():
                     )
                 )
 
+
+            # -------------------------------------------------
+            # STOCK
+            # -------------------------------------------------
+
             try:
 
                 stock = int(
@@ -3902,6 +4014,11 @@ def admin_add_product():
                     )
                 )
 
+
+            # -------------------------------------------------
+            # CATEGORY
+            # -------------------------------------------------
+
             try:
 
                 category_id = int(
@@ -3915,11 +4032,21 @@ def admin_add_product():
 
                 category_id = None
 
+
+            # -------------------------------------------------
+            # AVAILABILITY
+            # -------------------------------------------------
+
             is_available = (
                 1
                 if is_available_value
                 else 0
             )
+
+
+            # -------------------------------------------------
+            # PRODUCT TYPE
+            # -------------------------------------------------
 
             normalized_type = (
                 normalize_product_type(
@@ -3927,15 +4054,26 @@ def admin_add_product():
                 )
             )
 
+
+            # -------------------------------------------------
+            # IMAGE FILES
+            # -------------------------------------------------
+
             image_files = (
                 request.files.getlist(
                     "images"
                 )
             )
 
+
+            # -------------------------------------------------
+            # DATABASE
+            # -------------------------------------------------
+
             connection = get_db_connection()
 
             if connection is None:
+
                 raise RuntimeError(
                     "Database connection failed."
                 )
@@ -3943,6 +4081,11 @@ def admin_add_product():
             cursor = connection.cursor(
                 dictionary=True
             )
+
+
+            # -------------------------------------------------
+            # INSERT PRODUCT
+            # -------------------------------------------------
 
             cursor.execute(
                 """
@@ -3986,6 +4129,11 @@ def admin_add_product():
                 cursor.lastrowid
             )
 
+
+            # -------------------------------------------------
+            # SAVE IMAGES
+            # -------------------------------------------------
+
             valid_images = []
 
             for image_file in image_files:
@@ -3996,6 +4144,7 @@ def admin_add_product():
                 if not image_file.filename:
                     continue
 
+
                 filename = secure_filename(
                     image_file.filename
                 )
@@ -4004,6 +4153,7 @@ def admin_add_product():
                     filename
                 ):
                     continue
+
 
                 image_file.seek(
                     0,
@@ -4020,6 +4170,7 @@ def admin_add_product():
 
                 if file_size > MAX_IMAGE_SIZE:
                     continue
+
 
                 extension = filename.rsplit(
                     ".",
@@ -4042,6 +4193,9 @@ def admin_add_product():
                     file_path
                 )
 
+
+                # IMPORTANT:
+                # Stored relative to /static/
                 image_url = (
                     "uploads/products/"
                     + unique_filename
@@ -4050,6 +4204,11 @@ def admin_add_product():
                 valid_images.append(
                     image_url
                 )
+
+
+            # -------------------------------------------------
+            # INSERT PRODUCT IMAGES
+            # -------------------------------------------------
 
             for index, image_url in enumerate(
                 valid_images
@@ -4081,7 +4240,31 @@ def admin_add_product():
                     )
                 )
 
+
+            # -------------------------------------------------
+            # COMMIT
+            # -------------------------------------------------
+
             connection.commit()
+
+            print()
+            print("=" * 60)
+            print("PRODUCT ADDED SUCCESSFULLY")
+            print(
+                "PRODUCT ID:",
+                product_id
+            )
+            print(
+                "PRODUCT NAME:",
+                name
+            )
+            print(
+                "IMAGE COUNT:",
+                len(valid_images)
+            )
+            print("=" * 60)
+            print()
+
 
             flash(
                 "Product added successfully.",
@@ -4094,22 +4277,32 @@ def admin_add_product():
                 )
             )
 
+
         except Exception as error:
 
             if connection:
 
                 try:
                     connection.rollback()
+
                 except Exception:
                     pass
+
 
             print()
             print("!" * 60)
             print("ADMIN ADD PRODUCT ERROR")
-            print("ERROR TYPE:", type(error).__name__)
-            print("ERROR:", repr(error))
+            print(
+                "ERROR TYPE:",
+                type(error).__name__
+            )
+            print(
+                "ERROR:",
+                repr(error)
+            )
             print("!" * 60)
             print()
+
 
             flash(
                 "Unable to add product. Please check the server console.",
@@ -4131,7 +4324,7 @@ def admin_add_product():
 
 
     # =====================================================
-    # GET CATEGORIES
+    # GET — PRODUCT FORM
     # =====================================================
 
     try:
@@ -4139,6 +4332,7 @@ def admin_add_product():
         connection = get_db_connection()
 
         if connection is None:
+
             raise RuntimeError(
                 "Database connection failed."
             )
@@ -4202,4 +4396,3 @@ if __name__ == "__main__":
         port=5000,
         debug=True
     )
-
