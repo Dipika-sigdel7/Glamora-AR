@@ -7,11 +7,17 @@
 
     <title>Glamora AR — Admin Dashboard</title>
 
+    <!-- =====================================================
+         ADMIN COMMON CSS
+         ===================================================== -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/admin.css') }}"
     />
 
+    <!-- =====================================================
+         DASHBOARD CSS
+         ===================================================== -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/dashboard.css') }}"
@@ -19,14 +25,28 @@
   </head>
 
   <body class="admin-page">
-    <aside class="admin-sidebar">
-      <div class="admin-sidebar-logo">
-        <a href="{{ url_for('index') }}"> GLAMORA <span>AR</span> </a>
 
-        <small> ADMIN PANEL </small>
+    <!-- =====================================================
+         ADMIN SIDEBAR
+         ===================================================== -->
+    <aside class="admin-sidebar">
+
+      <div class="admin-sidebar-logo">
+
+        <a href="{{ url_for('index') }}">
+          GLAMORA <span>AR</span>
+        </a>
+
+        <small>ADMIN PANEL</small>
+
       </div>
 
+
+      <!-- =================================================
+           ADMIN NAVIGATION
+           ================================================= -->
       <nav class="admin-navigation">
+
         <a
           href="{{ url_for('admin_dashboard') }}"
           class="admin-nav-item active"
@@ -35,196 +55,408 @@
           <span>Dashboard</span>
         </a>
 
-        <a href="{{ url_for('admin_products') }}" class="admin-nav-item">
+
+        <a
+          href="{{ url_for('admin_products') }}"
+          class="admin-nav-item"
+        >
           <span>✦</span>
           <span>Products</span>
         </a>
 
-        <a href="{{ url_for('admin_add_product') }}" class="admin-nav-item">
+
+        <a
+          href="{{ url_for('admin_add_product') }}"
+          class="admin-nav-item"
+        >
           <span>＋</span>
           <span>Add Product</span>
         </a>
 
-        <a href="{{ url_for('index') }}" class="admin-nav-item">
+
+        <a
+          href="{{ url_for('index') }}"
+          class="admin-nav-item"
+        >
           <span>↗</span>
           <span>View Website</span>
         </a>
+
       </nav>
 
+
+      <!-- =================================================
+           SIDEBAR BOTTOM
+           ================================================= -->
       <div class="admin-sidebar-bottom">
+
         <div class="admin-user-mini">
+
           <div class="admin-avatar">
             {{ session.get('admin_name', 'Admin')[0]|upper }}
           </div>
 
           <div>
-            <strong> {{ session.get('admin_name', 'Admin') }} </strong>
 
-            <small> Administrator </small>
+            <strong>
+              {{ session.get('admin_name', 'Admin') }}
+            </strong>
+
+            <small>
+              Administrator
+            </small>
+
           </div>
+
         </div>
 
-        <a href="{{ url_for('admin_logout') }}" class="admin-logout">
+
+        <a
+          href="{{ url_for('admin_logout') }}"
+          class="admin-logout"
+        >
           Logout
         </a>
+
       </div>
+
     </aside>
 
-    <main class="admin-main">
-      <header class="admin-topbar">
-        <div>
-          <p class="admin-eyebrow">GLAMORA AR</p>
 
-          <h1>Dashboard</h1>
+    <!-- =====================================================
+         MAIN DASHBOARD
+         ===================================================== -->
+    <main class="admin-main">
+
+      <!-- ===================================================
+           TOP HEADER
+           =================================================== -->
+      <header class="admin-topbar">
+
+        <div>
+
+          <p class="admin-eyebrow">
+            GLAMORA AR
+          </p>
+
+          <h1>
+            Dashboard
+          </h1>
 
           <p class="admin-welcome">
-            Welcome back, {{ session.get('admin_name', 'Admin') }}.
+            Welcome back,
+            {{ session.get('admin_name', 'Admin') }}.
           </p>
+
         </div>
+
 
         <a
           href="{{ url_for('admin_add_product') }}"
           class="admin-primary-button"
         >
-          + Add Product
+          <span>+</span>
+          <span>Add Product</span>
         </a>
+
       </header>
 
+
+      <!-- ===================================================
+           DASHBOARD STATISTICS
+           =================================================== -->
       <section class="admin-stats">
+
+        <!-- Total Products -->
         <div class="admin-stat-card">
-          <div class="stat-icon">✦</div>
+
+          <div class="stat-icon">
+            ✦
+          </div>
 
           <div>
-            <span> Total Products </span>
 
-            <strong> {{ total_products }} </strong>
+            <span>
+              Total Products
+            </span>
+
+            <strong>
+              {{ total_products }}
+            </strong>
+
           </div>
+
         </div>
 
+
+        <!-- Categories -->
         <div class="admin-stat-card">
-          <div class="stat-icon">◈</div>
+
+          <div class="stat-icon">
+            ◈
+          </div>
 
           <div>
-            <span> Categories </span>
 
-            <strong> {{ total_categories }} </strong>
+            <span>
+              Categories
+            </span>
+
+            <strong>
+              {{ total_categories }}
+            </strong>
+
           </div>
+
         </div>
 
+
+        <!-- Users -->
         <div class="admin-stat-card">
-          <div class="stat-icon">♡</div>
+
+          <div class="stat-icon">
+            ♡
+          </div>
 
           <div>
-            <span> Users </span>
 
-            <strong> {{ total_users }} </strong>
+            <span>
+              Users
+            </span>
+
+            <strong>
+              {{ total_users }}
+            </strong>
+
           </div>
+
         </div>
 
+
+        <!-- Available Products -->
         <div class="admin-stat-card">
-          <div class="stat-icon">◎</div>
+
+          <div class="stat-icon">
+            ◎
+          </div>
 
           <div>
-            <span> Available Products </span>
 
-            <strong> {{ available_products }} </strong>
+            <span>
+              Available Products
+            </span>
+
+            <strong>
+              {{ available_products }}
+            </strong>
+
           </div>
+
         </div>
+
       </section>
 
-      <section class="admin-content-card">
-        <div class="admin-section-header">
-          <div>
-            <p class="admin-eyebrow">CATALOG</p>
 
-            <h2>Recent Products</h2>
+      <!-- ===================================================
+           RECENT PRODUCTS
+           =================================================== -->
+      <section class="admin-content-card">
+
+        <div class="admin-section-header">
+
+          <div>
+
+            <p class="admin-eyebrow">
+              CATALOG
+            </p>
+
+            <h2>
+              Recent Products
+            </h2>
+
           </div>
 
-          <a href="{{ url_for('admin_products') }}" class="admin-text-link">
+
+          <a
+            href="{{ url_for('admin_products') }}"
+            class="admin-text-link"
+          >
             View All →
           </a>
+
         </div>
 
+
+        <!-- =================================================
+             PRODUCTS AVAILABLE
+             ================================================= -->
         {% if products %}
 
         <div class="admin-product-table">
+
+          <!-- TABLE HEADER -->
           <div class="admin-table-head">
-            <span> Product </span>
 
-            <span> Category </span>
+            <span>
+              Product
+            </span>
 
-            <span> Price </span>
+            <span>
+              Category
+            </span>
 
-            <span> Stock </span>
+            <span>
+              Price
+            </span>
 
-            <span> Status </span>
+            <span>
+              Stock
+            </span>
+
+            <span>
+              Status
+            </span>
+
           </div>
 
+
+          <!-- PRODUCT ROWS -->
           {% for product in products %}
 
           <div class="admin-table-row">
+
+            <!-- PRODUCT -->
             <div class="admin-product-name">
+
               {% if product.image_url %}
 
-              <img src="{{ product.image_url }}" alt="{{ product.name }}" />
+              <img
+                src="{{ product.image_url }}"
+                alt="{{ product.name }}"
+              />
 
               {% else %}
 
-              <div class="admin-product-placeholder">✦</div>
+              <div class="admin-product-placeholder">
+                ✦
+              </div>
 
               {% endif %}
+
 
               <div>
-                <strong> {{ product.name }} </strong>
 
-                <small> #{{ product.id }} </small>
+                <strong>
+                  {{ product.name }}
+                </strong>
+
+                <small>
+                  #{{ product.id }}
+                </small>
+
               </div>
+
             </div>
 
-            <span> {{ product.category_name or 'Uncategorized' }} </span>
 
-            <span> ${{ "%.2f"|format(product.price) }} </span>
-
-            <span> {{ product.stock }} </span>
-
+            <!-- CATEGORY -->
             <span>
-              {% if product.is_available %}
+              {{ product.category_name or 'Uncategorized' }}
+            </span>
 
-              <span class="status available"> Available </span>
+
+            <!-- PRICE -->
+            <span>
+
+              {% if format_npr is defined %}
+
+                {{ format_npr(product.price) }}
 
               {% else %}
 
-              <span class="status unavailable"> Unavailable </span>
+                Rs. {{ "%.2f"|format(product.price) }}
 
               {% endif %}
+
             </span>
+
+
+            <!-- STOCK -->
+            <span>
+              {{ product.stock }}
+            </span>
+
+
+            <!-- STATUS -->
+            <span>
+
+              {% if product.is_available %}
+
+              <span class="status available">
+                Available
+              </span>
+
+              {% else %}
+
+              <span class="status unavailable">
+                Unavailable
+              </span>
+
+              {% endif %}
+
+            </span>
+
           </div>
 
           {% endfor %}
+
         </div>
 
+
+        <!-- =================================================
+             NO PRODUCTS
+             ================================================= -->
         {% else %}
 
         <div class="admin-empty-state">
-          <div class="empty-icon">✦</div>
 
-          <h3>No products yet</h3>
+          <div class="empty-icon">
+            ✦
+          </div>
+
+          <h3>
+            No products yet
+          </h3>
 
           <p>
-            Add your first beauty product to start building the Glamora AR
-            catalog.
+            Add your first beauty product to start building
+            the Glamora AR catalog.
           </p>
+
 
           <a
             href="{{ url_for('admin_add_product') }}"
             class="admin-primary-button"
           >
-            + Add Your First Product
+            <span>+</span>
+            <span>Add Your First Product</span>
           </a>
+
         </div>
 
         {% endif %}
+
       </section>
+
     </main>
+
+
+    <!-- =====================================================
+         DASHBOARD JAVASCRIPT
+         ===================================================== -->
+    <script
+      src="{{ url_for('static', filename='js/dashboard.js') }}"
+    ></script>
+
   </body>
 </html>
