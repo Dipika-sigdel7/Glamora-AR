@@ -4385,6 +4385,157 @@ def admin_add_product():
         )
 
 
+
+
+# =========================================================
+# ADMIN - DELETE PRODUCT
+# =========================================================
+
+@app.route("/admin/products/delete/<int:product_id>", methods=["POST"])
+def admin_delete_product(product_id):
+
+    if not admin_required():
+        return redirect(url_for("admin_login"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        # -------------------------------------------------
+        # Check whether product exists
+        # -------------------------------------------------
+        cursor.execute(
+            """
+            SELECT id, name
+            FROM products
+            WHERE id = %s
+            LIMIT 1
+            """,
+            (product_id,)
+        )
+
+        product = cursor.fetchone()
+
+        if not product:
+            flash("Product not found.", "error")
+            return redirect(url_for("admin_products"))
+
+        # -------------------------------------------------
+        # Get product image paths before deleting records
+        # -------------------------------------------------
+        cursor.execute(
+            """
+            SELECT image_url
+            FROM product_images
+            WHERE product_id = %s
+            """,
+            (product_id,)
+        )
+
+        product_images = cursor.fetchall()
+
+        # -------------------------------------------------
+        # Delete cart items
+        # -------------------------------------------------
+        cursor.execute(
+            """
+            DELETE FROM cart_items
+            WHERE product_id = %s
+            """,
+            (product_id,)
+        )
+
+        # -------------------------------------------------
+        # Delete product reviews
+        # -------------------------------------------------
+        cursor.execute(
+            """
+            DELETE FROM product_reviews
+            WHERE product_id = %s
+            """,
+            (product_id,)
+        )
+
+        # -------------------------------------------------
+        # Delete product images from database
+        # -------------------------------------------------
+        cursor.execute(
+            """
+            DELETE FROM product_images
+            WHERE product_id = %s
+            """,
+            (product_id,)
+        )
+
+        # -------------------------------------------------
+        # Delete product
+        # -------------------------------------------------
+        cursor.execute(
+            """
+            DELETE FROM products
+            WHERE id = %s
+            """,
+            (product_id,)
+        )
+
+        connection.commit()
+
+        # -------------------------------------------------
+        # Delete physical image files
+        # -------------------------------------------------
+        for image in product_images:
+
+            image_url = image.get("image_url")
+
+            if not image_url:
+                continue
+
+            # Database stores paths such as:
+            # uploads/products/abc123.jpg
+            image_path = os.path.join(
+                app.static_folder,
+                image_url.replace("/", os.sep)
+            )
+
+            try:
+                if os.path.isfile(image_path):
+                    os.remove(image_path)
+            except OSError:
+                # Database deletion has already succeeded.
+                # Do not fail the request because a file
+                # could not be removed.
+                pass
+
+        flash(
+            f'Product "{product["name"]}" deleted successfully.',
+            "success"
+        )
+
+        return redirect(url_for("admin_products"))
+
+    except Exception as e:
+
+        if connection:
+            try:
+                connection.rollback()
+            except Exception:
+                pass
+
+        print("ADMIN DELETE PRODUCT ERROR:", repr(e))
+
+        flash(
+            "Unable to delete the product. Please check the Flask terminal.",
+            "error"
+        )
+
+        return redirect(url_for("admin_products"))
+
+    finally:
+        safe_close(cursor, connection)
+
 # =========================================================
 # RUN APPLICATION
 # =========================================================
