@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
@@ -11,16 +12,38 @@
 
     <title>Glamora AR — Add Product</title>
 
+
+    <!-- =====================================================
+         ADMIN COMMON CSS
+         ===================================================== -->
+
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/admin.css') }}"
     >
 
+
+    <!-- =====================================================
+         ADD PRODUCT CSS
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/add-product.css') }}"
+    >
+
 </head>
+
 
 <body class="admin-page">
 
+
+    <!-- =====================================================
+         ADMIN SIDEBAR
+         ===================================================== -->
+
     <aside class="admin-sidebar">
+
 
         <div class="admin-sidebar-logo">
 
@@ -34,49 +57,88 @@
 
         </div>
 
+
+        <!-- =================================================
+             NAVIGATION
+             ================================================= -->
+
         <nav class="admin-navigation">
+
 
             <a
                 href="{{ url_for('admin_dashboard') }}"
                 class="admin-nav-item"
             >
+
                 <span>⌂</span>
-                <span>Dashboard</span>
+
+                <span>
+                    Dashboard
+                </span>
+
             </a>
+
 
             <a
                 href="{{ url_for('admin_products') }}"
                 class="admin-nav-item"
             >
+
                 <span>✦</span>
-                <span>Products</span>
+
+                <span>
+                    Products
+                </span>
+
             </a>
+
 
             <a
                 href="{{ url_for('admin_add_product') }}"
                 class="admin-nav-item active"
             >
+
                 <span>＋</span>
-                <span>Add Product</span>
+
+                <span>
+                    Add Product
+                </span>
+
             </a>
+
 
             <a
                 href="{{ url_for('home') }}"
                 class="admin-nav-item"
             >
+
                 <span>↗</span>
-                <span>View Website</span>
+
+                <span>
+                    View Website
+                </span>
+
             </a>
 
         </nav>
 
+
+        <!-- =================================================
+             SIDEBAR BOTTOM
+             ================================================= -->
+
         <div class="admin-sidebar-bottom">
+
 
             <div class="admin-user-mini">
 
+
                 <div class="admin-avatar">
+
                     {{ admin_name[0]|upper }}
+
                 </div>
+
 
                 <div>
 
@@ -90,7 +152,9 @@
 
                 </div>
 
+
             </div>
+
 
             <a
                 href="{{ url_for('admin_logout') }}"
@@ -99,14 +163,26 @@
                 Logout
             </a>
 
+
         </div>
 
     </aside>
 
 
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
     <main class="admin-main">
 
+
+        <!-- =================================================
+             PAGE HEADER
+             ================================================= -->
+
         <header class="admin-topbar">
+
 
             <div>
 
@@ -114,9 +190,11 @@
                     CATALOG
                 </p>
 
+
                 <h1>
                     Add Product
                 </h1>
+
 
                 <p class="admin-welcome">
                     Add a new beauty product to the Glamora AR catalog.
@@ -124,8 +202,14 @@
 
             </div>
 
+
         </header>
 
+
+
+        <!-- =================================================
+             FLASH MESSAGES
+             ================================================= -->
 
         {% with messages = get_flashed_messages(with_categories=true) %}
 
@@ -148,6 +232,11 @@
         {% endwith %}
 
 
+
+        <!-- =================================================
+             PRODUCT FORM
+             ================================================= -->
+
         <form
             action="{{ url_for('admin_add_product') }}"
             method="POST"
@@ -155,7 +244,13 @@
             class="admin-product-form"
         >
 
+
+            <!-- =============================================
+                 BASIC INFORMATION
+                 ============================================= -->
+
             <section class="admin-content-card">
+
 
                 <div class="admin-section-header">
 
@@ -164,6 +259,7 @@
                         <p class="admin-eyebrow">
                             BASIC INFORMATION
                         </p>
+
 
                         <h2>
                             Product Details
@@ -174,7 +270,11 @@
                 </div>
 
 
+
                 <div class="admin-form-grid">
+
+
+                    <!-- PRODUCT NAME -->
 
                     <div class="admin-form-group full-width">
 
@@ -182,22 +282,28 @@
                             Product Name *
                         </label>
 
+
                         <input
                             type="text"
                             id="name"
                             name="name"
                             placeholder="e.g. Rose Velvet Lipstick"
+                            autocomplete="off"
                             required
                         >
 
                     </div>
 
 
+
+                    <!-- CATEGORY -->
+
                     <div class="admin-form-group">
 
                         <label for="category_id">
                             Category *
                         </label>
+
 
                         <select
                             id="category_id"
@@ -208,6 +314,7 @@
                             <option value="">
                                 Select category
                             </option>
+
 
                             {% for category in categories %}
 
@@ -222,28 +329,37 @@
                     </div>
 
 
+
+                    <!-- PRODUCT TYPE -->
+
                     <div class="admin-form-group">
 
                         <label for="product_type">
                             Product Type *
                         </label>
 
+
                         <input
                             type="text"
                             id="product_type"
                             name="product_type"
                             placeholder="e.g. Liquid Lipstick"
+                            autocomplete="off"
                             required
                         >
 
                     </div>
 
 
+
+                    <!-- PRICE -->
+
                     <div class="admin-form-group">
 
                         <label for="price">
-                            Price *
+                            Price (NPR) *
                         </label>
+
 
                         <input
                             type="number"
@@ -252,11 +368,15 @@
                             min="0"
                             step="0.01"
                             placeholder="0.00"
+                            inputmode="decimal"
                             required
                         >
 
                     </div>
 
+
+
+                    <!-- STOCK -->
 
                     <div class="admin-form-group">
 
@@ -264,17 +384,22 @@
                             Stock *
                         </label>
 
+
                         <input
                             type="number"
                             id="stock"
                             name="stock"
                             min="0"
                             value="0"
+                            inputmode="numeric"
                             required
                         >
 
                     </div>
 
+
+
+                    <!-- SHADE -->
 
                     <div class="admin-form-group">
 
@@ -282,15 +407,20 @@
                             Shade
                         </label>
 
+
                         <input
                             type="text"
                             id="shade"
                             name="shade"
                             placeholder="e.g. Rose Nude"
+                            autocomplete="off"
                         >
 
                     </div>
 
+
+
+                    <!-- COLOR -->
 
                     <div class="admin-form-group">
 
@@ -298,21 +428,27 @@
                             Color
                         </label>
 
+
                         <input
                             type="text"
                             id="color"
                             name="color"
                             placeholder="e.g. #C85F7A"
+                            autocomplete="off"
                         >
 
                     </div>
 
+
+
+                    <!-- DESCRIPTION -->
 
                     <div class="admin-form-group full-width">
 
                         <label for="description">
                             Description
                         </label>
+
 
                         <textarea
                             id="description"
@@ -323,6 +459,9 @@
 
                     </div>
 
+
+
+                    <!-- AVAILABILITY -->
 
                     <div class="admin-form-group full-width">
 
@@ -343,12 +482,19 @@
 
                     </div>
 
+
                 </div>
 
             </section>
 
 
+
+            <!-- =============================================
+                 PRODUCT IMAGES
+                 ============================================= -->
+
             <section class="admin-content-card">
+
 
                 <div class="admin-section-header">
 
@@ -358,12 +504,15 @@
                             PRODUCT MEDIA
                         </p>
 
+
                         <h2>
                             Product Images
                         </h2>
 
+
                         <p>
                             Upload multiple images for this product.
+                            The first image will be used as the primary image.
                         </p>
 
                     </div>
@@ -371,31 +520,43 @@
                 </div>
 
 
+
                 <div class="image-upload-area">
+
+
+                    <!-- UPLOAD BOX -->
 
                     <label
                         for="images"
                         class="image-upload-box"
                     >
 
+
                         <span class="upload-icon">
                             ↑
                         </span>
+
 
                         <strong>
                             Choose Product Images
                         </strong>
 
+
                         <small>
                             JPG, JPEG, PNG, WEBP and GIF — multiple images allowed
                         </small>
+
 
                         <span class="upload-button">
                             Browse Images
                         </span>
 
+
                     </label>
 
+
+
+                    <!-- FILE INPUT -->
 
                     <input
                         type="file"
@@ -407,17 +568,27 @@
                     >
 
 
+
+                    <!-- IMAGE PREVIEW -->
+
                     <div
                         id="imagePreview"
                         class="image-preview-grid"
                     ></div>
+
 
                 </div>
 
             </section>
 
 
+
+            <!-- =============================================
+                 FORM ACTIONS
+                 ============================================= -->
+
             <div class="admin-form-actions">
+
 
                 <a
                     href="{{ url_for('admin_products') }}"
@@ -431,19 +602,29 @@
                     type="submit"
                     class="admin-primary-button"
                 >
-                    Save Product →
+                    <span>Save Product</span>
+                    <span>→</span>
                 </button>
+
 
             </div>
 
+
         </form>
+
 
     </main>
 
 
+
+    <!-- =====================================================
+         ADD PRODUCT JAVASCRIPT
+         ===================================================== -->
+
     <script
-        src="{{ url_for('static', filename='js/admin.js') }}"
+        src="{{ url_for('static', filename='js/add_product.js') }}"
     ></script>
+
 
 </body>
 </html>
