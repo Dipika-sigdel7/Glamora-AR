@@ -2892,6 +2892,33 @@ button {
 }
 
 
+
+
+
+.delete-product-form {
+    display: inline;
+    margin: 0;
+}
+
+.btn-delete {
+    border: none;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    background: #fbe4e8;
+    color: #a74360;
+    transition: 0.2s ease;
+}
+
+.btn-delete:hover {
+    background: #a74360;
+    color: #ffffff;
+}
+
+
 /* =========================================================
    TRY ON
    ========================================================= */
