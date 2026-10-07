@@ -88,10 +88,7 @@
     <section class="admin-stats">
 
 
-      <!-- =================================================
-           TOTAL PRODUCTS
-           CLICKING THIS OPENS ALL PRODUCTS
-           ================================================= -->
+      <!-- TOTAL PRODUCTS -->
 
       <a
         href="{{ url_for('admin_products') }}"
@@ -119,9 +116,7 @@
 
 
 
-      <!-- =================================================
-           CATEGORIES
-           ================================================= -->
+      <!-- CATEGORIES -->
 
       <div class="admin-stat-card">
 
@@ -145,9 +140,7 @@
 
 
 
-      <!-- =================================================
-           USERS
-           ================================================= -->
+      <!-- USERS -->
 
       <div class="admin-stat-card">
 
@@ -171,9 +164,7 @@
 
 
 
-      <!-- =================================================
-           AVAILABLE PRODUCTS
-           ================================================= -->
+      <!-- AVAILABLE PRODUCTS -->
 
       <div class="admin-stat-card">
 
@@ -206,9 +197,7 @@
     <section class="admin-content-card">
 
 
-      <!-- =================================================
-           SECTION HEADER
-           ================================================= -->
+      <!-- SECTION HEADER -->
 
       <div class="admin-section-header">
 
@@ -229,7 +218,7 @@
 
 
       <!-- =================================================
-           PRODUCTS AVAILABLE
+           PRODUCTS
            ================================================= -->
 
       {% if recent_products %}
@@ -241,7 +230,10 @@
              TABLE HEADER
              ================================================= -->
 
-        <div class="admin-table-head">
+        <div
+          class="admin-table-head"
+          style="grid-template-columns: minmax(260px, 2fr) 1fr 1fr 0.7fr 1fr 100px;"
+        >
 
           <span>
             Product
@@ -277,7 +269,10 @@
 
         {% for product in recent_products %}
 
-        <div class="admin-table-row">
+        <div
+          class="admin-table-row"
+          style="grid-template-columns: minmax(260px, 2fr) 1fr 1fr 0.7fr 1fr 100px;"
+        >
 
 
           <!-- =================================================
@@ -383,7 +378,7 @@
 
 
           <!-- =================================================
-               DELETE BUTTON
+               DELETE
                ================================================= -->
 
           <div class="admin-product-action">
@@ -413,15 +408,8 @@
       </div>
 
 
-
       <!-- =================================================
-           NO VIEW ALL BUTTON HERE
-           ================================================= -->
-
-
-
-      <!-- =================================================
-           NO PRODUCTS
+           EMPTY STATE
            ================================================= -->
 
       {% else %}
@@ -446,8 +434,13 @@
           href="{{ url_for('admin_add_product') }}"
           class="admin-primary-button"
         >
+
           <span>+</span>
-          <span>Add Your First Product</span>
+
+          <span>
+            Add Your First Product
+          </span>
+
         </a>
 
       </div>
