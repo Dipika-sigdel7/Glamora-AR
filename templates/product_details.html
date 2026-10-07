@@ -276,13 +276,13 @@
                 {% if product.image_url %}
 
                     <a
-                        href="{{ product.image_url }}"
+                        href="{{ url_for('static', filename=product.image_url) }}"
                         target="_blank"
                         rel="noopener"
                     >
 
                         <img
-                            src="{{ product.image_url }}"
+                            src="{{ url_for('static', filename=product.image_url) }}"
                             alt="{{ product.name }}"
                         >
 
@@ -310,7 +310,7 @@
                     {% for image in images %}
 
                         <a
-                            href="{{ image.image_url }}"
+                            href="{{ url_for('static', filename=image.image_url) }}"
                             target="_blank"
                             rel="noopener"
                             class="thumbnail {% if loop.first %}thumbnail-primary{% endif %}"
@@ -318,7 +318,7 @@
                         >
 
                             <img
-                                src="{{ image.image_url }}"
+                                src="{{ url_for('static', filename=image.image_url) }}"
                                 alt="{{ product.name }} image {{ loop.index }}"
                             >
 
@@ -657,8 +657,10 @@
 
                 {% if session.get("user_id") %}
 
+                    <!-- FIXED: Flask endpoint is add_review -->
+
                     <form
-                        action="{{ url_for('add_product_review', product_id=product.id) }}"
+                        action="{{ url_for('add_review', product_id=product.id) }}"
                         method="POST"
                         enctype="multipart/form-data"
                     >
@@ -849,13 +851,13 @@
                             {% if review.review_image %}
 
                                 <a
-                                    href="{{ review.review_image }}"
+                                    href="{{ url_for('static', filename=review.review_image) }}"
                                     target="_blank"
                                     rel="noopener"
                                 >
 
                                     <img
-                                        src="{{ review.review_image }}"
+                                        src="{{ url_for('static', filename=review.review_image) }}"
                                         alt="Customer review image"
                                         class="review-image"
                                     >
