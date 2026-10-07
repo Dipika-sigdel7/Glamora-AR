@@ -24,109 +24,15 @@
     />
   </head>
 
+
   <body class="admin-page">
-
-    <!-- =====================================================
-         ADMIN SIDEBAR
-         ===================================================== -->
-    <aside class="admin-sidebar">
-
-      <div class="admin-sidebar-logo">
-
-        <a href="{{ url_for('index') }}">
-          GLAMORA <span>AR</span>
-        </a>
-
-        <small>ADMIN PANEL</small>
-
-      </div>
-
-
-      <!-- =================================================
-           ADMIN NAVIGATION
-           ================================================= -->
-      <nav class="admin-navigation">
-
-        <a
-          href="{{ url_for('admin_dashboard') }}"
-          class="admin-nav-item active"
-        >
-          <span>⌂</span>
-          <span>Dashboard</span>
-        </a>
-
-
-        <a
-          href="{{ url_for('admin_products') }}"
-          class="admin-nav-item"
-        >
-          <span>✦</span>
-          <span>Products</span>
-        </a>
-
-
-        <a
-          href="{{ url_for('admin_add_product') }}"
-          class="admin-nav-item"
-        >
-          <span>＋</span>
-          <span>Add Product</span>
-        </a>
-
-
-        <a
-          href="{{ url_for('index') }}"
-          class="admin-nav-item"
-        >
-          <span>↗</span>
-          <span>View Website</span>
-        </a>
-
-      </nav>
-
-
-      <!-- =================================================
-           SIDEBAR BOTTOM
-           ================================================= -->
-      <div class="admin-sidebar-bottom">
-
-        <div class="admin-user-mini">
-
-          <div class="admin-avatar">
-            {{ session.get('admin_name', 'Admin')[0]|upper }}
-          </div>
-
-          <div>
-
-            <strong>
-              {{ session.get('admin_name', 'Admin') }}
-            </strong>
-
-            <small>
-              Administrator
-            </small>
-
-          </div>
-
-        </div>
-
-
-        <a
-          href="{{ url_for('admin_logout') }}"
-          class="admin-logout"
-        >
-          Logout
-        </a>
-
-      </div>
-
-    </aside>
 
 
     <!-- =====================================================
          MAIN DASHBOARD
          ===================================================== -->
     <main class="admin-main">
+
 
       <!-- ===================================================
            TOP HEADER
@@ -166,6 +72,7 @@
            DASHBOARD STATISTICS
            =================================================== -->
       <section class="admin-stats">
+
 
         <!-- Total Products -->
         <div class="admin-stat-card">
@@ -262,6 +169,7 @@
            =================================================== -->
       <section class="admin-content-card">
 
+
         <div class="admin-section-header">
 
           <div>
@@ -294,6 +202,7 @@
 
         <div class="admin-product-table">
 
+
           <!-- TABLE HEADER -->
           <div class="admin-table-head">
 
@@ -324,6 +233,7 @@
           {% for product in products %}
 
           <div class="admin-table-row">
+
 
             <!-- PRODUCT -->
             <div class="admin-product-name">
