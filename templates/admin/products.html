@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 
@@ -72,7 +71,7 @@
          =================================================== -->
 
     <a
-      href="/"
+      href="{{ url_for('index') }}"
       class="logo"
       aria-label="Glamora AR Home"
     >
@@ -94,7 +93,7 @@
       <!-- HOME -->
 
       <a
-        href="/"
+        href="{{ url_for('index') }}"
         class="active"
       >
         Home
@@ -103,21 +102,21 @@
 
       <!-- BEAUTY -->
 
-      <a href="/beauty">
+      <a href="{{ url_for('beauty') }}">
         Beauty
       </a>
 
 
       <!-- ABOUT -->
 
-      <a href="/about">
+      <a href="{{ url_for('about') }}">
         About
       </a>
 
 
       <!-- CONTACT -->
 
-      <a href="/contact">
+      <a href="{{ url_for('contact') }}">
         Contact
       </a>
 
@@ -169,7 +168,7 @@
            ================================================= -->
 
       <a
-        href="/cart"
+        href="{{ url_for('cart') }}"
         class="cart-btn"
         id="cartBtn"
         aria-label="Shopping bag"
@@ -192,25 +191,52 @@
 
 
       <!-- =================================================
-           LOGIN
+           USER LOGIN / PROFILE
            ================================================= -->
 
-      <a
-        href="/login"
-        class="login-btn"
-        id="loginBtn"
-        aria-label="Login to Glamora AR"
-      >
+      {% if is_logged_in %}
 
-        <span class="login-icon">
-          ♙
-        </span>
+        <!-- LOGGED-IN USER -->
 
-        <span>
-          Login
-        </span>
+        <a
+          href="{{ url_for('profile') }}"
+          class="login-btn"
+          id="loginBtn"
+          aria-label="View your profile"
+        >
 
-      </a>
+          <span class="login-icon">
+            ♙
+          </span>
+
+          <span>
+            Profile
+          </span>
+
+        </a>
+
+      {% else %}
+
+        <!-- LOGGED-OUT USER -->
+
+        <a
+          href="{{ url_for('login') }}"
+          class="login-btn"
+          id="loginBtn"
+          aria-label="Login to Glamora AR"
+        >
+
+          <span class="login-icon">
+            ♙
+          </span>
+
+          <span>
+            Login
+          </span>
+
+        </a>
+
+      {% endif %}
 
 
 
@@ -237,7 +263,7 @@
 
   <!-- =====================================================
        MAIN
-       ================================================= -->
+       ===================================================== -->
 
   <main>
 
@@ -329,7 +355,7 @@
           <!-- TRY VIRTUALLY -->
 
           <a
-            href="/beauty#tryon"
+            href="{{ url_for('beauty') }}#tryon"
             class="primary-btn"
           >
 
@@ -350,7 +376,7 @@
           <!-- EXPLORE MAKEUP -->
 
           <a
-            href="/beauty#categories"
+            href="{{ url_for('beauty') }}#categories"
             class="secondary-btn"
           >
 
@@ -630,7 +656,7 @@
 
 
         <a
-          href="/beauty"
+          href="{{ url_for('beauty') }}"
           class="view-all"
         >
 
@@ -719,7 +745,7 @@
                  ================================================= -->
 
             <a
-              href="/beauty#tryon"
+              href="{{ url_for('beauty') }}#tryon"
               class="quick-try"
             >
               Try AR
@@ -781,7 +807,7 @@
 
 
             <a
-              href="/beauty#tryon"
+              href="{{ url_for('beauty') }}#tryon"
               class="quick-try"
             >
               Try AR
@@ -834,7 +860,7 @@
 
 
             <a
-              href="/beauty#tryon"
+              href="{{ url_for('beauty') }}#tryon"
               class="quick-try"
             >
               Try AR
@@ -897,7 +923,7 @@
       <div class="footer-brand">
 
         <a
-          href="/"
+          href="{{ url_for('index') }}"
           class="logo"
           aria-label="Glamora AR Home"
         >
@@ -930,19 +956,19 @@
             EXPLORE
           </span>
 
-          <a href="/">
+          <a href="{{ url_for('index') }}">
             Home
           </a>
 
-          <a href="/beauty">
+          <a href="{{ url_for('beauty') }}">
             Beauty
           </a>
 
-          <a href="/about">
+          <a href="{{ url_for('about') }}">
             About
           </a>
 
-          <a href="/contact">
+          <a href="{{ url_for('contact') }}">
             Contact
           </a>
 
@@ -960,11 +986,11 @@
             GLAMORA AR
           </span>
 
-          <a href="/beauty#tryon">
+          <a href="{{ url_for('beauty') }}#tryon">
             Virtual Try-On
           </a>
 
-          <a href="/beauty#categories">
+          <a href="{{ url_for('beauty') }}#categories">
             Products
           </a>
 
@@ -1034,4 +1060,3 @@
 </body>
 
 </html>
-
