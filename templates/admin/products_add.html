@@ -38,119 +38,6 @@
 <body class="admin-page">
 
 
-
-        <!-- =================================================
-             NAVIGATION
-             ================================================= -->
-
-        <nav class="admin-navigation">
-
-
-            <a
-                href="{{ url_for('admin_dashboard') }}"
-                class="admin-nav-item"
-            >
-
-                <span>⌂</span>
-
-                <span>
-                    Dashboard
-                </span>
-
-            </a>
-
-
-            <a
-                href="{{ url_for('admin_products') }}"
-                class="admin-nav-item"
-            >
-
-                <span>✦</span>
-
-                <span>
-                    Products
-                </span>
-
-            </a>
-
-
-            <a
-                href="{{ url_for('admin_add_product') }}"
-                class="admin-nav-item active"
-            >
-
-                <span>＋</span>
-
-                <span>
-                    Add Product
-                </span>
-
-            </a>
-
-
-            <a
-                href="{{ url_for('home') }}"
-                class="admin-nav-item"
-            >
-
-                <span>↗</span>
-
-                <span>
-                    View Website
-                </span>
-
-            </a>
-
-        </nav>
-
-
-        <!-- =================================================
-             SIDEBAR BOTTOM
-             ================================================= -->
-
-        <div class="admin-sidebar-bottom">
-
-
-            <div class="admin-user-mini">
-
-
-                <div class="admin-avatar">
-
-                    {{ session.get('admin_name', 'Admin')[0]|upper }}
-
-                </div>
-
-
-                <div>
-
-                    <strong>
-                        {{ session.get('admin_name', 'Admin') }}
-                    </strong>
-
-                    <small>
-                        Administrator
-                    </small>
-
-                </div>
-
-
-            </div>
-
-
-            <a
-                href="{{ url_for('admin_logout') }}"
-                class="admin-logout"
-            >
-                Logout
-            </a>
-
-
-        </div>
-
-    </aside>
-
-
-
     <!-- =====================================================
          MAIN CONTENT
          ===================================================== -->
@@ -255,7 +142,9 @@
                 <div class="admin-form-grid">
 
 
-                    <!-- PRODUCT NAME -->
+                    <!-- =====================================
+                         PRODUCT NAME
+                         ===================================== -->
 
                     <div class="admin-form-group full-width">
 
@@ -277,7 +166,9 @@
 
 
 
-                    <!-- CATEGORY -->
+                    <!-- =====================================
+                         CATEGORY
+                         ===================================== -->
 
                     <div class="admin-form-group">
 
@@ -311,7 +202,9 @@
 
 
 
-                    <!-- PRODUCT TYPE -->
+                    <!-- =====================================
+                         PRODUCT TYPE
+                         ===================================== -->
 
                     <div class="admin-form-group">
 
@@ -333,7 +226,9 @@
 
 
 
-                    <!-- PRICE -->
+                    <!-- =====================================
+                         PRICE
+                         ===================================== -->
 
                     <div class="admin-form-group">
 
@@ -357,7 +252,9 @@
 
 
 
-                    <!-- STOCK -->
+                    <!-- =====================================
+                         STOCK
+                         ===================================== -->
 
                     <div class="admin-form-group">
 
@@ -380,7 +277,9 @@
 
 
 
-                    <!-- SHADE -->
+                    <!-- =====================================
+                         SHADE
+                         ===================================== -->
 
                     <div class="admin-form-group">
 
@@ -401,7 +300,9 @@
 
 
 
-                    <!-- COLOR -->
+                    <!-- =====================================
+                         COLOR
+                         ===================================== -->
 
                     <div class="admin-form-group">
 
@@ -422,7 +323,9 @@
 
 
 
-                    <!-- DESCRIPTION -->
+                    <!-- =====================================
+                         DESCRIPTION
+                         ===================================== -->
 
                     <div class="admin-form-group full-width">
 
@@ -442,7 +345,9 @@
 
 
 
-                    <!-- AVAILABILITY -->
+                    <!-- =====================================
+                         AVAILABILITY
+                         ===================================== -->
 
                     <div class="admin-form-group full-width">
 
@@ -505,7 +410,9 @@
                 <div class="image-upload-area">
 
 
-                    <!-- UPLOAD BOX -->
+                    <!-- =====================================
+                         UPLOAD BOX
+                         ===================================== -->
 
                     <label
                         for="images"
@@ -537,7 +444,9 @@
 
 
 
-                    <!-- FILE INPUT -->
+                    <!-- =====================================
+                         FILE INPUT
+                         ===================================== -->
 
                     <input
                         type="file"
@@ -550,7 +459,9 @@
 
 
 
-                    <!-- IMAGE PREVIEW -->
+                    <!-- =====================================
+                         IMAGE PREVIEW
+                         ===================================== -->
 
                     <div
                         id="imagePreview"
@@ -583,8 +494,15 @@
                     type="submit"
                     class="admin-primary-button"
                 >
-                    <span>Save Product</span>
-                    <span>→</span>
+
+                    <span>
+                        Save Product
+                    </span>
+
+                    <span>
+                        →
+                    </span>
+
                 </button>
 
 
@@ -608,4 +526,5 @@
 
 
 </body>
+
 </html>

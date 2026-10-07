@@ -3,7 +3,7 @@
    ADMIN PANEL
    ADD PRODUCT PAGE
    add-product.css
-   PREMIUM LUXURY BEAUTY STYLE
+   SIDEBAR-FREE PREMIUM LUXURY BEAUTY STYLE
    ========================================================= */
 
 
@@ -60,7 +60,11 @@
 
 .admin-page {
 
+    width: 100%;
     min-height: 100vh;
+
+    margin: 0;
+    padding: 0;
 
     color:
         var(--add-text);
@@ -87,6 +91,20 @@
 
 
 /* =========================================================
+   REMOVE SIDEBAR
+   ========================================================= */
+
+.admin-sidebar {
+
+    display: none !important;
+
+    width: 0 !important;
+    min-width: 0 !important;
+
+}
+
+
+/* =========================================================
    MAIN CONTENT
    ========================================================= */
 
@@ -94,7 +112,12 @@
 
     position: relative;
 
+    width: 100%;
+    min-width: 0;
     min-height: 100vh;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 
     padding:
         42px 50px;
@@ -285,7 +308,9 @@
 }
 
 
-/* Success */
+/* =========================================================
+   SUCCESS
+   ========================================================= */
 
 .flash-message.success {
 
@@ -301,7 +326,9 @@
 }
 
 
-/* Error / danger */
+/* =========================================================
+   ERROR / DANGER
+   ========================================================= */
 
 .flash-message.error,
 .flash-message.danger {
@@ -872,7 +899,9 @@
 }
 
 
-/* Upload box hover */
+/* =========================================================
+   UPLOAD BOX HOVER
+   ========================================================= */
 
 .image-upload-box:hover {
 
