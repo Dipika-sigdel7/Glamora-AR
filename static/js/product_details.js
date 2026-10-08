@@ -1,4 +1,3 @@
-
 /* =========================================================
    GLAMORA AR
    PRODUCT DETAILS - VIRTUAL TRY ON
@@ -11,6 +10,7 @@
    CAMERA:
    - ASK USER BEFORE ACCESSING CAMERA
    - FRONT CAMERA IS MIRRORED HORIZONTALLY
+   - UPLOADED IMAGES ARE NOT MIRRORED
    ========================================================= */
 
 (() => {
@@ -119,6 +119,8 @@
 
     let cameraRunning = false;
 
+    let cameraStarting = false;
+
     let cameraFacingMode = "user";
 
     let mediaPipeLoading = false;
@@ -129,18 +131,15 @@
 
     let currentVideoHeight = 0;
 
-    let lastDetectionTime = 0;
-
-    let lastFaceDetected = false;
-
 
     /* =====================================================
        CANVAS
        ===================================================== */
 
-    const ctx = tryOnCanvas
-        ? tryOnCanvas.getContext("2d")
-        : null;
+    const ctx =
+        tryOnCanvas
+            ? tryOnCanvas.getContext("2d")
+            : null;
 
 
     /* =====================================================
@@ -153,7 +152,6 @@
             .trim()
             .toLowerCase()
             .replace(/[_\s-]+/g, "");
-
     }
 
 
@@ -190,27 +188,18 @@
         const colorMap = {
 
             black: "#151015",
-
             burgundy: "#6d1835",
-
             wine: "#72243b",
-
             berry: "#8f3156",
-
             plum: "#71385f",
-
             mauve: "#a65d79",
-
             coral: "#ef766d",
-
+            peach: "#ef9b87",
             orange: "#ed7048",
-
             brown: "#754c3b",
-
             nude: "#c98272",
-
             rose: "#c75c78",
-
+            pink: "#d96c8b",
             red: "#c92d45"
 
         };
@@ -221,7 +210,6 @@
             if (value.includes(key)) {
                 return colorMap[key];
             }
-
         }
 
 
@@ -240,31 +228,58 @@
     function resetPreviewOrientation() {
 
         /*
-         * Front camera = normal selfie mirror.
+         * FRONT CAMERA
+         * Natural selfie-style mirror.
          */
 
         if (tryOnVideo) {
 
-            tryOnVideo.style.transform =
-                "scaleX(-1)";
+            if (cameraFacingMode === "user") {
 
-            tryOnVideo.style.webkitTransform =
-                "scaleX(-1)";
-        }
+                tryOnVideo.style.transform =
+                    "scaleX(-1)";
 
+                tryOnVideo.style.webkitTransform =
+                    "scaleX(-1)";
 
-        if (tryOnCanvas) {
+            } else {
 
-            tryOnCanvas.style.transform =
-                "scaleX(-1)";
+                tryOnVideo.style.transform =
+                    "none";
 
-            tryOnCanvas.style.webkitTransform =
-                "scaleX(-1)";
+                tryOnVideo.style.webkitTransform =
+                    "none";
+            }
         }
 
 
         /*
-         * Uploaded images are NOT mirrored.
+         * Canvas follows the camera preview.
+         */
+
+        if (tryOnCanvas) {
+
+            if (cameraFacingMode === "user") {
+
+                tryOnCanvas.style.transform =
+                    "scaleX(-1)";
+
+                tryOnCanvas.style.webkitTransform =
+                    "scaleX(-1)";
+
+            } else {
+
+                tryOnCanvas.style.transform =
+                    "none";
+
+                tryOnCanvas.style.webkitTransform =
+                    "none";
+            }
+        }
+
+
+        /*
+         * Uploaded images must NEVER be mirrored.
          */
 
         if (tryOnImage) {
@@ -347,10 +362,6 @@
 
     function showCameraPermissionPrompt() {
 
-        /*
-         * Do not create another prompt if one already exists.
-         */
-
         const oldPrompt =
             document.getElementById(
                 "glamoraCameraPermission"
@@ -374,55 +385,38 @@
             "glamoraCameraPermission";
 
 
-        overlay.style.position =
-            "fixed";
-
-        overlay.style.inset =
-            "0";
-
-        overlay.style.zIndex =
-            "999999";
-
-        overlay.style.display =
-            "flex";
-
-        overlay.style.alignItems =
-            "center";
-
-        overlay.style.justifyContent =
-            "center";
-
-        overlay.style.padding =
-            "20px";
-
-        overlay.style.background =
-            "rgba(30, 15, 20, 0.65)";
-
-        overlay.style.backdropFilter =
-            "blur(8px)";
+        Object.assign(
+            overlay.style,
+            {
+                position: "fixed",
+                inset: "0",
+                zIndex: "999999",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "20px",
+                background: "rgba(30, 15, 20, 0.65)",
+                backdropFilter: "blur(8px)"
+            }
+        );
 
 
         const card =
             document.createElement("div");
 
 
-        card.style.width =
-            "min(420px, 100%)";
-
-        card.style.background =
-            "#fff5f7";
-
-        card.style.borderRadius =
-            "24px";
-
-        card.style.padding =
-            "32px 26px";
-
-        card.style.textAlign =
-            "center";
-
-        card.style.boxShadow =
-            "0 25px 70px rgba(164,73,98,.25)";
+        Object.assign(
+            card.style,
+            {
+                width: "min(420px, 100%)",
+                background: "#fff5f7",
+                borderRadius: "24px",
+                padding: "32px 26px",
+                textAlign: "center",
+                boxShadow:
+                    "0 25px 70px rgba(164,73,98,.25)"
+            }
+        );
 
 
         const icon =
@@ -432,11 +426,14 @@
         icon.textContent =
             "📷";
 
-        icon.style.fontSize =
-            "48px";
 
-        icon.style.marginBottom =
-            "14px";
+        Object.assign(
+            icon.style,
+            {
+                fontSize: "48px",
+                marginBottom: "14px"
+            }
+        );
 
 
         const title =
@@ -447,14 +444,15 @@
             "Camera Access Required";
 
 
-        title.style.margin =
-            "0 0 10px";
-
-        title.style.color =
-            "#26191d";
-
-        title.style.fontFamily =
-            "Playfair Display, serif";
+        Object.assign(
+            title.style,
+            {
+                margin: "0 0 10px",
+                color: "#26191d",
+                fontFamily:
+                    "Playfair Display, serif"
+            }
+        );
 
 
         const message =
@@ -465,20 +463,17 @@
             "Glamora AR needs access to your camera to detect your face and show how this product looks on you.";
 
 
-        message.style.margin =
-            "0 auto 22px";
-
-        message.style.maxWidth =
-            "340px";
-
-        message.style.lineHeight =
-            "1.6";
-
-        message.style.color =
-            "#806b72";
-
-        message.style.fontFamily =
-            "DM Sans, sans-serif";
+        Object.assign(
+            message.style,
+            {
+                margin: "0 auto 22px",
+                maxWidth: "340px",
+                lineHeight: "1.6",
+                color: "#806b72",
+                fontFamily:
+                    "DM Sans, sans-serif"
+            }
+        );
 
 
         const allowButton =
@@ -492,32 +487,20 @@
             "Allow Camera Access";
 
 
-        allowButton.style.width =
-            "100%";
-
-        allowButton.style.padding =
-            "14px 20px";
-
-        allowButton.style.border =
-            "0";
-
-        allowButton.style.borderRadius =
-            "999px";
-
-        allowButton.style.background =
-            "#c85f7a";
-
-        allowButton.style.color =
-            "#ffffff";
-
-        allowButton.style.fontWeight =
-            "600";
-
-        allowButton.style.fontSize =
-            "15px";
-
-        allowButton.style.cursor =
-            "pointer";
+        Object.assign(
+            allowButton.style,
+            {
+                width: "100%",
+                padding: "14px 20px",
+                border: "0",
+                borderRadius: "999px",
+                background: "#c85f7a",
+                color: "#ffffff",
+                fontWeight: "600",
+                fontSize: "15px",
+                cursor: "pointer"
+            }
+        );
 
 
         const cancelButton =
@@ -531,36 +514,24 @@
             "Not Now";
 
 
-        cancelButton.style.marginTop =
-            "10px";
-
-        cancelButton.style.width =
-            "100%";
-
-        cancelButton.style.padding =
-            "12px 20px";
-
-        cancelButton.style.border =
-            "0";
-
-        cancelButton.style.background =
-            "transparent";
-
-        cancelButton.style.color =
-            "#806b72";
-
-        cancelButton.style.cursor =
-            "pointer";
+        Object.assign(
+            cancelButton.style,
+            {
+                marginTop: "10px",
+                width: "100%",
+                padding: "12px 20px",
+                border: "0",
+                background: "transparent",
+                color: "#806b72",
+                cursor: "pointer"
+            }
+        );
 
 
         card.appendChild(icon);
-
         card.appendChild(title);
-
         card.appendChild(message);
-
         card.appendChild(allowButton);
-
         card.appendChild(cancelButton);
 
         overlay.appendChild(card);
@@ -634,7 +605,8 @@
         }
 
 
-        mediaPipeLoading = true;
+        mediaPipeLoading =
+            true;
 
 
         try {
@@ -667,6 +639,27 @@
                 );
 
 
+            const options = {
+
+                runningMode: "VIDEO",
+
+                numFaces: 1,
+
+                minFaceDetectionConfidence:
+                    0.35,
+
+                minFacePresenceConfidence:
+                    0.35,
+
+                minTrackingConfidence:
+                    0.35
+            };
+
+
+            /* =================================================
+               TRY GPU FIRST
+               ================================================= */
+
             try {
 
                 faceLandmarker =
@@ -682,31 +675,27 @@
                                     "GPU"
                             },
 
-                            runningMode:
-                                "VIDEO",
-
-                            numFaces:
-                                1,
-
-                            minFaceDetectionConfidence:
-                                0.35,
-
-                            minFacePresenceConfidence:
-                                0.35,
-
-                            minTrackingConfidence:
-                                0.35
+                            ...options
                         }
                     );
+
+
+                console.log(
+                    "[Glamora AR] MediaPipe GPU ready."
+                );
 
 
             } catch (gpuError) {
 
                 console.warn(
-                    "[Glamora AR] GPU failed. Trying CPU.",
+                    "[Glamora AR] GPU failed. Falling back to CPU.",
                     gpuError
                 );
 
+
+                /* =============================================
+                   CPU FALLBACK
+                   ============================================= */
 
                 faceLandmarker =
                     await FaceLandmarker.createFromOptions(
@@ -721,32 +710,19 @@
                                     "CPU"
                             },
 
-                            runningMode:
-                                "VIDEO",
-
-                            numFaces:
-                                1,
-
-                            minFaceDetectionConfidence:
-                                0.35,
-
-                            minFacePresenceConfidence:
-                                0.35,
-
-                            minTrackingConfidence:
-                                0.35
+                            ...options
                         }
                     );
+
+
+                console.log(
+                    "[Glamora AR] MediaPipe CPU ready."
+                );
             }
 
 
             mediaPipeReady =
                 true;
-
-
-            console.log(
-                "[Glamora AR] MediaPipe ready."
-            );
 
 
             return true;
@@ -760,17 +736,17 @@
             );
 
 
-            showError(
-                "Face tracking failed. " +
-                error.message
-            );
-
-
             faceLandmarker =
                 null;
 
             mediaPipeReady =
                 false;
+
+
+            showError(
+                "Face tracking failed. " +
+                (error.message || "")
+            );
 
 
             return false;
@@ -790,6 +766,11 @@
 
     async function startCamera() {
 
+        if (cameraStarting) {
+            return;
+        }
+
+
         if (
             !navigator.mediaDevices ||
             !navigator.mediaDevices.getUserMedia
@@ -803,16 +784,20 @@
         }
 
 
-        stopCamera(false);
-
-        hideError();
-
-        setStatus(
-            "Requesting camera access..."
-        );
+        cameraStarting =
+            true;
 
 
         try {
+
+            stopCamera(false);
+
+            hideError();
+
+            setStatus(
+                "Requesting camera access..."
+            );
+
 
             const constraints = {
 
@@ -846,10 +831,6 @@
                 constraints
             );
 
-
-            /*
-             * This is the actual browser camera permission request.
-             */
 
             mediaStream =
                 await navigator.mediaDevices
@@ -888,42 +869,11 @@
             await tryOnVideo.play();
 
 
-            await new Promise(
-                resolve => {
+            /* =================================================
+               WAIT FOR VIDEO DIMENSIONS
+               ================================================= */
 
-                    if (
-                        tryOnVideo.videoWidth > 0 &&
-                        tryOnVideo.videoHeight > 0
-                    ) {
-
-                        resolve();
-
-                        return;
-                    }
-
-
-                    const checkVideo =
-                        () => {
-
-                            if (
-                                tryOnVideo.videoWidth > 0 &&
-                                tryOnVideo.videoHeight > 0
-                            ) {
-
-                                resolve();
-
-                            } else {
-
-                                requestAnimationFrame(
-                                    checkVideo
-                                );
-                            }
-                        };
-
-
-                    checkVideo();
-                }
-            );
+            await waitForVideo();
 
 
             currentVideoWidth =
@@ -931,6 +881,17 @@
 
             currentVideoHeight =
                 tryOnVideo.videoHeight;
+
+
+            if (
+                !currentVideoWidth ||
+                !currentVideoHeight
+            ) {
+
+                throw new Error(
+                    "Camera video dimensions could not be detected."
+                );
+            }
 
 
             if (tryOnCanvas) {
@@ -943,9 +904,9 @@
             }
 
 
-            /*
-             * CAMERA ORIENTATION FIX
-             */
+            /* =================================================
+               CAMERA ORIENTATION
+               ================================================= */
 
             resetPreviewOrientation();
 
@@ -982,18 +943,28 @@
             }
 
 
-            hideStatus();
+            setStatus(
+                "Loading face tracking..."
+            );
 
 
-            /*
-             * Load MediaPipe after camera starts.
-             */
+            /* =================================================
+               LOAD MEDIAPIPE
+               ================================================= */
 
             const loaded =
                 await loadMediaPipe();
 
 
             if (!loaded) {
+
+                stopCamera(false);
+
+                return;
+            }
+
+
+            if (!cameraRunning) {
                 return;
             }
 
@@ -1001,6 +972,21 @@
             setStatus(
                 "Detecting your face..."
             );
+
+
+            /*
+             * Start exactly one rendering loop.
+             */
+
+            if (animationFrame) {
+
+                cancelAnimationFrame(
+                    animationFrame
+                );
+
+                animationFrame =
+                    null;
+            }
 
 
             renderCameraFrame();
@@ -1082,13 +1068,102 @@
 
                 showError(
                     "Unable to start camera: " +
-                    error.message
+                    (error.message || "Unknown error")
                 );
             }
 
 
             stopCamera(false);
+
+
+        } finally {
+
+            cameraStarting =
+                false;
         }
+    }
+
+
+    /* =====================================================
+       WAIT FOR VIDEO
+       ===================================================== */
+
+    function waitForVideo() {
+
+        return new Promise(
+            (resolve, reject) => {
+
+                if (!tryOnVideo) {
+
+                    reject(
+                        new Error(
+                            "Video element not found."
+                        )
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    tryOnVideo.readyState >= 2 &&
+                    tryOnVideo.videoWidth > 0 &&
+                    tryOnVideo.videoHeight > 0
+                ) {
+
+                    resolve();
+
+                    return;
+                }
+
+
+                let attempts =
+                    0;
+
+                const maxAttempts =
+                    100;
+
+
+                function check() {
+
+                    if (
+                        tryOnVideo.videoWidth > 0 &&
+                        tryOnVideo.videoHeight > 0
+                    ) {
+
+                        resolve();
+
+                        return;
+                    }
+
+
+                    attempts++;
+
+
+                    if (
+                        attempts >=
+                        maxAttempts
+                    ) {
+
+                        reject(
+                            new Error(
+                                "Camera video did not become ready."
+                            )
+                        );
+
+                        return;
+                    }
+
+
+                    requestAnimationFrame(
+                        check
+                    );
+                }
+
+
+                check();
+            }
+        );
     }
 
 
@@ -1120,8 +1195,17 @@
             mediaStream
                 .getTracks()
                 .forEach(
-                    track =>
-                        track.stop()
+                    track => {
+
+                        try {
+                            track.stop();
+                        } catch (error) {
+                            console.warn(
+                                "[Glamora AR] Track stop failed:",
+                                error
+                            );
+                        }
+                    }
                 );
 
             mediaStream =
@@ -1131,7 +1215,18 @@
 
         if (tryOnVideo) {
 
-            tryOnVideo.pause();
+            try {
+
+                tryOnVideo.pause();
+
+            } catch (error) {
+
+                console.warn(
+                    "[Glamora AR] Video pause failed:",
+                    error
+                );
+            }
+
 
             tryOnVideo.srcObject =
                 null;
@@ -1180,15 +1275,29 @@
 
     async function switchCamera() {
 
+        if (cameraStarting) {
+            return;
+        }
+
+
         cameraFacingMode =
             cameraFacingMode === "user"
                 ? "environment"
                 : "user";
 
 
+        console.log(
+            "[Glamora AR] Switching camera:",
+            cameraFacingMode
+        );
+
+
         if (cameraRunning) {
 
             await startCamera();
+        } else {
+
+            resetPreviewOrientation();
         }
     }
 
@@ -1205,6 +1314,9 @@
             !tryOnCanvas ||
             !ctx
         ) {
+
+            animationFrame =
+                null;
 
             return;
         }
@@ -1231,6 +1343,19 @@
         }
 
 
+        if (
+            tryOnCanvas.width !== width ||
+            tryOnCanvas.height !== height
+        ) {
+
+            tryOnCanvas.width =
+                width;
+
+            tryOnCanvas.height =
+                height;
+        }
+
+
         ctx.setTransform(
             1,
             0,
@@ -1241,17 +1366,6 @@
         );
 
 
-        /*
-         * CAMERA ORIENTATION FIX
-         */
-
-        tryOnCanvas.style.transform =
-            "scaleX(-1)";
-
-        tryOnCanvas.style.webkitTransform =
-            "scaleX(-1)";
-
-
         ctx.clearRect(
             0,
             0,
@@ -1259,6 +1373,16 @@
             height
         );
 
+
+        /*
+         * Draw the real camera frame.
+         *
+         * We do NOT flip the canvas pixels here.
+         * The CSS transform handles the visual mirror.
+         *
+         * This keeps MediaPipe landmarks aligned with
+         * the original video coordinate system.
+         */
 
         ctx.drawImage(
             tryOnVideo,
@@ -1293,10 +1417,6 @@
                     result.faceLandmarks.length > 0
                 ) {
 
-                    lastFaceDetected =
-                        true;
-
-
                     setStatus(
                         "Face detected — " +
                         productName +
@@ -1304,22 +1424,14 @@
                     );
 
 
-                    const landmarks =
-                        result.faceLandmarks[0];
-
-
                     drawMakeup(
-                        landmarks,
+                        result.faceLandmarks[0],
                         width,
                         height
                     );
 
 
                 } else {
-
-                    lastFaceDetected =
-                        false;
-
 
                     setStatus(
                         "Move your face into the camera."
@@ -1381,7 +1493,12 @@
 
     function drawPolygon(points) {
 
-        if (!points.length) {
+        if (
+            !ctx ||
+            !points ||
+            !points.length
+        ) {
+
             return;
         }
 
@@ -1578,10 +1695,8 @@
         ctx.globalAlpha =
             0.58;
 
-
         ctx.fillStyle =
             makeupColor;
-
 
         ctx.globalCompositeOperation =
             "multiply";
@@ -1622,10 +1737,8 @@
         ctx.globalAlpha =
             0.28;
 
-
         ctx.fillStyle =
             makeupColor;
-
 
         ctx.globalCompositeOperation =
             "multiply";
@@ -1691,17 +1804,14 @@
         ctx.strokeStyle =
             makeupColor;
 
-
         ctx.lineWidth =
             Math.max(
                 2,
                 width / 300
             );
 
-
         ctx.lineCap =
             "round";
-
 
         ctx.lineJoin =
             "round";
@@ -1755,7 +1865,6 @@
 
 
         drawLine(left);
-
         drawLine(right);
 
 
@@ -1789,13 +1898,11 @@
         ctx.strokeStyle =
             makeupColor;
 
-
         ctx.lineWidth =
             Math.max(
                 2,
                 width / 250
             );
-
 
         ctx.lineCap =
             "round";
@@ -1849,7 +1956,6 @@
 
 
         drawMascaraLine(left);
-
         drawMascaraLine(right);
 
 
@@ -1891,10 +1997,8 @@
         ctx.globalAlpha =
             0.18;
 
-
         ctx.fillStyle =
             makeupColor;
-
 
         ctx.globalCompositeOperation =
             "multiply";
@@ -1985,7 +2089,6 @@
 
         ctx.globalAlpha =
             0.20;
-
 
         ctx.fillStyle =
             makeupColor;
@@ -2080,10 +2183,8 @@
         ctx.globalAlpha =
             0.08;
 
-
         ctx.fillStyle =
             makeupColor;
-
 
         ctx.globalCompositeOperation =
             "multiply";
@@ -2113,6 +2214,19 @@
 
 
         hideError();
+
+
+        if (
+            !file.type ||
+            !file.type.startsWith("image/")
+        ) {
+
+            showError(
+                "Please select a valid image file."
+            );
+
+            return;
+        }
 
 
         const objectURL =
@@ -2148,13 +2262,12 @@
             tryOnImage.src =
                 objectURL;
 
-
             tryOnImage.style.display =
                 "block";
 
 
             /*
-             * Uploaded image is normal.
+             * Uploaded image is NEVER mirrored.
              */
 
             tryOnImage.style.transform =
@@ -2162,27 +2275,50 @@
 
             tryOnImage.style.webkitTransform =
                 "none";
-        }
 
 
-        if (!faceLandmarker) {
+            /*
+             * Wait until image dimensions are available.
+             */
 
-            const loaded =
-                await loadMediaPipe();
+            if (!tryOnImage.complete) {
 
+                await new Promise(
+                    resolve => {
 
-            if (!loaded) {
-                return;
+                        tryOnImage.onload =
+                            resolve;
+
+                        tryOnImage.onerror =
+                            resolve;
+                    }
+                );
             }
         }
 
 
         try {
 
+            if (!faceLandmarker) {
+
+                const loaded =
+                    await loadMediaPipe();
+
+
+                if (!loaded) {
+                    return;
+                }
+            }
+
+
             setStatus(
                 "Detecting face in image..."
             );
 
+
+            /*
+             * MediaPipe IMAGE mode.
+             */
 
             try {
 
@@ -2197,6 +2333,8 @@
                     "[Glamora AR] Could not switch to IMAGE mode:",
                     error
                 );
+
+                throw error;
             }
 
 
@@ -2249,12 +2387,26 @@
                     height;
 
 
+                /*
+                 * Uploaded images are NOT mirrored.
+                 */
+
                 tryOnCanvas.style.transform =
                     "none";
 
                 tryOnCanvas.style.webkitTransform =
                     "none";
             }
+
+
+            ctx.setTransform(
+                1,
+                0,
+                0,
+                1,
+                0,
+                0
+            );
 
 
             ctx.clearRect(
@@ -2265,13 +2417,20 @@
             );
 
 
-            ctx.setTransform(
-                1,
+            /*
+             * Draw the uploaded image first.
+             *
+             * This is important because the canvas
+             * must contain the actual image underneath
+             * the makeup effect.
+             */
+
+            ctx.drawImage(
+                tryOnImage,
                 0,
                 0,
-                1,
-                0,
-                0
+                width,
+                height
             );
 
 
@@ -2300,6 +2459,11 @@
 
         } finally {
 
+            /*
+             * Restore VIDEO mode so the camera
+             * can be started again.
+             */
+
             try {
 
                 await faceLandmarker.setOptions({
@@ -2314,6 +2478,29 @@
                     error
                 );
             }
+
+
+            /*
+             * Release temporary object URL.
+             */
+
+            setTimeout(
+                () => {
+
+                    try {
+                        URL.revokeObjectURL(
+                            objectURL
+                        );
+                    } catch (error) {
+                        console.warn(
+                            "[Glamora AR] Object URL cleanup failed:",
+                            error
+                        );
+                    }
+
+                },
+                1000
+            );
         }
     }
 
@@ -2342,7 +2529,10 @@
         }
 
 
-        tryOnModal.classList.add("show");
+        tryOnModal.classList.add(
+            "show"
+        );
+
 
         tryOnModal.style.display =
             "flex";
@@ -2354,9 +2544,9 @@
         /*
          * IMPORTANT:
          *
-         * Do NOT immediately request the camera.
+         * Do NOT request camera permission immediately.
          *
-         * First ask the user inside Glamora AR.
+         * First show Glamora's permission prompt.
          */
 
         showCameraPermissionPrompt();
@@ -2414,6 +2604,25 @@
 
             tryOnCanvas.style.display =
                 "none";
+
+            if (ctx) {
+
+                ctx.setTransform(
+                    1,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0
+                );
+
+                ctx.clearRect(
+                    0,
+                    0,
+                    tryOnCanvas.width,
+                    tryOnCanvas.height
+                );
+            }
         }
 
 
@@ -2431,9 +2640,19 @@
         }
 
 
+        if (tryOnImageInput) {
+
+            tryOnImageInput.value =
+                "";
+        }
+
+
         hideError();
 
         hideStatus();
+
+
+        resetPreviewOrientation();
     }
 
 
@@ -2463,7 +2682,10 @@
 
         startCameraBtn.addEventListener(
             "click",
-            startCamera
+            async () => {
+
+                await startCamera();
+            }
         );
     }
 
@@ -2472,8 +2694,10 @@
 
         stopCameraBtn.addEventListener(
             "click",
-            () =>
-                stopCamera(true)
+            () => {
+
+                stopCamera(true);
+            }
         );
     }
 
@@ -2482,7 +2706,10 @@
 
         switchCameraBtn.addEventListener(
             "click",
-            switchCamera
+            async () => {
+
+                await switchCamera();
+            }
         );
     }
 
@@ -2580,4 +2807,3 @@
     );
 
 })();
-
