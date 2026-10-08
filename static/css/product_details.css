@@ -114,6 +114,8 @@ body.image-modal-open {
   display: grid;
 
   gap: 20px;
+
+  min-width: 0;
 }
 
 
@@ -150,6 +152,8 @@ body.image-modal-open {
    ========================================================= */
 
 .main-product-image {
+  position: relative;
+
   width: 100%;
 
   height: 600px;
@@ -209,7 +213,7 @@ body.image-modal-open {
 
 
 /* =========================================================
-   THUMBNAILS
+   THUMBNAIL GALLERY
    ========================================================= */
 
 .thumbnail-gallery {
@@ -217,21 +221,33 @@ body.image-modal-open {
 
   flex-direction: row;
 
+  flex-wrap: nowrap;
+
   gap: 12px;
 
   width: 100%;
+
+  max-width: 100%;
 
   overflow-x: auto;
 
   overflow-y: hidden;
 
-  flex-wrap: nowrap;
+  padding: 5px 4px 14px;
 
-  padding: 5px 4px 12px;
+  margin: 0;
 
   scroll-behavior: smooth;
 
   -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
+
+  scrollbar-color: #d9a6b3 #fdecef;
+
+  overscroll-behavior-x: contain;
+
+  touch-action: pan-x;
 }
 
 
@@ -240,7 +256,7 @@ body.image-modal-open {
    ========================================================= */
 
 .thumbnail-gallery::-webkit-scrollbar {
-  height: 6px;
+  height: 7px;
 }
 
 
@@ -263,27 +279,24 @@ body.image-modal-open {
 }
 
 
-/* Firefox */
-
-.thumbnail-gallery {
-  scrollbar-width: thin;
-
-  scrollbar-color: #d9a6b3 #fdecef;
-}
-
-
 /* =========================================================
    THUMBNAIL BUTTON
    ========================================================= */
 
-.thumbnail {
+.thumbnail-gallery .thumbnail {
   flex: 0 0 82px;
+
+  min-width: 82px;
 
   width: 82px;
 
   height: 82px;
 
+  min-height: 82px;
+
   padding: 0;
+
+  margin: 0;
 
   border-radius: 14px;
 
@@ -297,32 +310,47 @@ body.image-modal-open {
 
   cursor: pointer;
 
-  transition: 0.25s ease;
+  box-sizing: border-box;
+
+  appearance: none;
+
+  -webkit-appearance: none;
+
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s ease;
 }
 
 
-.thumbnail:hover {
+.thumbnail-gallery .thumbnail:hover {
   border-color: #c85f7a;
 
   transform: translateY(-2px);
 }
 
 
-.thumbnail:focus-visible {
+.thumbnail-gallery .thumbnail:focus {
+  outline: none;
+}
+
+
+.thumbnail-gallery .thumbnail:focus-visible {
   outline: 2px solid #c85f7a;
 
   outline-offset: 3px;
 }
 
 
-.thumbnail img {
+.thumbnail-gallery .thumbnail img {
+  display: block;
+
   width: 100%;
 
   height: 100%;
 
   object-fit: cover;
 
-  display: block;
+  pointer-events: none;
 }
 
 
@@ -330,8 +358,8 @@ body.image-modal-open {
    ACTIVE THUMBNAIL
    ========================================================= */
 
-.thumbnail-primary,
-.thumbnail-active {
+.thumbnail-gallery .thumbnail-primary,
+.thumbnail-gallery .thumbnail-active {
   border-color: #c85f7a;
 }
 
@@ -386,10 +414,6 @@ body.image-modal-open {
 }
 
 
-/* =========================================================
-   ACTIVE IMAGE POPUP
-   ========================================================= */
-
 .product-image-modal.active {
   opacity: 1;
 
@@ -443,6 +467,10 @@ body.image-modal-open {
 
   box-shadow:
     0 25px 80px rgba(0, 0, 0, 0.45);
+
+  user-select: none;
+
+  -webkit-user-drag: none;
 }
 
 
@@ -501,6 +529,83 @@ body.image-modal-open {
   outline: 2px solid #ffffff;
 
   outline-offset: 3px;
+}
+
+
+/* =========================================================
+   POPUP NAVIGATION BUTTONS
+   ========================================================= */
+
+.product-image-modal-prev,
+.product-image-modal-next {
+  position: fixed;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 48px;
+
+  height: 48px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #ffffff;
+
+  color: #2b1b20;
+
+  font-size: 28px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  z-index: 1000001;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.25);
+
+  transition: 0.25s ease;
+}
+
+
+.product-image-modal-prev {
+  left: 25px;
+}
+
+
+.product-image-modal-next {
+  right: 25px;
+}
+
+
+.product-image-modal-prev:hover,
+.product-image-modal-next:hover {
+  background: #c85f7a;
+
+  color: #ffffff;
+}
+
+
+.product-image-modal-prev:focus-visible,
+.product-image-modal-next:focus-visible {
+  outline: 2px solid #ffffff;
+
+  outline-offset: 3px;
+}
+
+
+.product-image-modal-prev[hidden],
+.product-image-modal-next[hidden] {
+  display: none !important;
 }
 
 
@@ -1306,12 +1411,6 @@ body.image-modal-open {
 
   height: 100%;
 
-  /*
-     IMPORTANT:
-     The video uses cover because it should fill
-     the AR stage.
-  */
-
   object-fit: cover;
 
   display: none;
@@ -1556,15 +1655,6 @@ body.image-modal-open {
 }
 
 
-/*
-   IMPORTANT:
-   product_details.js uses:
-
-   errorBox.classList.add("show")
-
-   Therefore both .show and .active are supported.
-*/
-
 .tryon-error.show,
 .tryon-error.active {
   display: block;
@@ -1726,6 +1816,16 @@ body.image-modal-open {
     min-height: 320px;
   }
 
+
+  .product-image-modal-prev {
+    left: 15px;
+  }
+
+
+  .product-image-modal-next {
+    right: 15px;
+  }
+
 }
 
 
@@ -1754,16 +1854,20 @@ body.image-modal-open {
   .thumbnail-gallery {
     gap: 10px;
 
-    padding-bottom: 10px;
+    padding: 5px 3px 12px;
   }
 
 
-  .thumbnail {
+  .thumbnail-gallery .thumbnail {
     flex: 0 0 68px;
+
+    min-width: 68px;
 
     width: 68px;
 
     height: 68px;
+
+    min-height: 68px;
   }
 
 
@@ -1802,6 +1906,26 @@ body.image-modal-open {
     height: 42px;
 
     font-size: 28px;
+  }
+
+
+  .product-image-modal-prev,
+  .product-image-modal-next {
+    width: 40px;
+
+    height: 40px;
+
+    font-size: 23px;
+  }
+
+
+  .product-image-modal-prev {
+    left: 8px;
+  }
+
+
+  .product-image-modal-next {
+    right: 8px;
   }
 
 
