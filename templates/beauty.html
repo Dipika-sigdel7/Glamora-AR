@@ -178,53 +178,50 @@
             </a>
 
 
-            <!-- =================================================
-                 LOGIN / LOGOUT
-                 ================================================= -->
+<!-- =================================================
+     LOGIN / PROFILE
+     ================================================= -->
 
-            {% if session.get('user_id') %}
+{% if session.get('user_id') %}
 
-                <a
-                    href="{{ url_for('logout') }}"
-                    class="login-btn"
-                    id="loginBtn"
-                    aria-label="Logout from Glamora AR"
-                >
+    <a
+        href="{{ url_for('profile') }}"
+        class="login-btn"
+        id="profileBtn"
+        aria-label="Go to your profile"
+    >
 
-                    <span class="login-icon">
-                        ♙
-                    </span>
+        <span class="login-icon">
+            ♙
+        </span>
 
-                    <span>
-                        Logout
-                    </span>
+        <span>
+            Profile
+        </span>
 
-                </a>
+    </a>
 
-            {% else %}
+{% else %}
 
-                <a
-                    href="{{ url_for('login') }}"
-                    class="login-btn"
-                    id="loginBtn"
-                    aria-label="Login to Glamora AR"
-                >
+    <a
+        href="{{ url_for('login') }}"
+        class="login-btn"
+        id="loginBtn"
+        aria-label="Login to Glamora AR"
+    >
 
-                    <span class="login-icon">
-                        ♙
-                    </span>
+        <span class="login-icon">
+            ♙
+        </span>
 
-                    <span class="login-icon">
-                        ♙
-                    </span>
+        <span>
+            Login
+        </span>
 
-                    <span>
-                        Login
-                    </span>
+    </a>
 
-                </a>
+{% endif %}
 
-            {% endif %}
 
 
             <!-- =================================================
