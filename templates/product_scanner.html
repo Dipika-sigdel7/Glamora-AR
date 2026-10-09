@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Scanner | Glamora AR</title>
+    <style>
+        :root {
+            --pink: #c85f7a;
+            --dark-pink: #a74360;
+            --background: #fff5f7;
+            --text: #2b1b20;
+            --muted: #806b72;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "DM Sans", Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top right, #fdecef, transparent 38%),
+                var(--background);
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 20px clamp(18px, 5vw, 70px);
+            background: rgba(255,255,255,.8);
+            border-bottom: 1px solid #f4dce3;
+        }
+
+        .brand {
+            color: var(--dark-pink);
+            font-family: Georgia, serif;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        header a:last-child {
+            color: var(--dark-pink);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        main {
+            width: min(100% - 32px, 760px);
+            margin: 44px auto;
+        }
+
+        .intro { text-align: center; margin-bottom: 26px; }
+
+        .eyebrow {
+            color: var(--dark-pink);
+            letter-spacing: 3px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-family: Georgia, serif;
+            font-size: clamp(32px, 6vw, 48px);
+            margin: 10px 0;
+        }
+
+        .intro p { color: var(--muted); line-height: 1.6; }
+
+        .scanner-card {
+            background: white;
+            border: 1px solid #f4dce3;
+            border-radius: 24px;
+            padding: clamp(14px, 4vw, 28px);
+            box-shadow: 0 20px 60px rgba(164,73,98,.12);
+        }
+
+        .camera-frame {
+            position: relative;
+            overflow: hidden;
+            border-radius: 17px;
+            background: #281c21;
+            aspect-ratio: 4 / 3;
+            display: grid;
+            place-items: center;
+        }
+
+        video, #preview {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        video.active, #preview.active { display: block; }
+
+        .camera-placeholder {
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            line-height: 1.7;
+        }
+
+        .scan-frame {
+            pointer-events: none;
+            position: absolute;
+            inset: 12%;
+            border: 2px solid rgba(255,255,255,.8);
+            border-radius: 18px;
+            box-shadow: 0 0 0 999px rgba(20,10,15,.12);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 17px;
+        }
+
+        button, .upload-label {
+            flex: 1 1 145px;
+            min-height: 46px;
+            border: 0;
+            border-radius: 999px;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .primary {
+            color: white;
+            background: var(--pink);
+        }
+
+        .primary:hover { background: var(--dark-pink); }
+
+        .secondary, .upload-label {
+            color: var(--dark-pink);
+            background: #fff0f4;
+            border: 1px solid #f3d1dc;
+        }
+
+        button:disabled { opacity: .55; cursor: wait; }
+
+        #imageInput { display: none; }
+
+        #status {
+            color: var(--muted);
+            text-align: center;
+            min-height: 24px;
+            margin: 16px 0 0;
+            line-height: 1.5;
+        }
+
+        .privacy-note {
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.5;
+            margin: 14px 0 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            padding: 18px;
+            background: rgba(35, 18, 25, .62);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.open { display: flex; }
+
+        .modal-card {
+            width: min(100%, 410px);
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            position: relative;
+            text-align: center;
+            box-shadow: 0 25px 80px rgba(0,0,0,.22);
+            animation: popup .22s ease-out;
+        }
+
+        @keyframes popup {
+            from { transform: translateY(12px) scale(.97); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 38px;
+            min-height: 38px;
+            padding: 0;
+            background: #fff0f4;
+            color: var(--dark-pink);
+            font-size: 23px;
+        }
+
+        #matchedImage {
+            width: 100%;
+            height: 210px;
+            object-fit: contain;
+            background: #fff8fa;
+            border-radius: 15px;
+            margin-top: 18px;
+        }
+
+        .found-label {
+            margin: 18px 0 5px;
+            color: var(--dark-pink);
+            font-size: 25px;
+            font-family: Georgia, serif;
+        }
+
+        #matchedName { margin: 8px 0; font-size: 18px; }
+        #matchedPrice { font-weight: 700; margin-bottom: 20px; }
+
+        .details-link {
+            display: block;
+            color: white;
+            background: var(--pink);
+            border-radius: 999px;
+            padding: 14px 18px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .details-link:hover { background: var(--dark-pink); }
+
+        @media (max-width: 480px) {
+            header { padding: 16px; }
+            main { margin: 28px auto; }
+            .camera-frame { aspect-ratio: 3 / 4; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="brand" href="{{ url_for('index') }}">Glamora AR</a>
+        <a href="{{ url_for('beauty') }}">← Beauty Collection</a>
+    </header>
+
+    <main>
+        <section class="intro">
+            <div class="eyebrow">SMART BEAUTY SEARCH</div>
+            <h1>Find Your Product</h1>
+            <p>Scan a cosmetic or upload its photo to search your Glamora AR catalog.</p>
+        </section>
+
+        <section class="scanner-card">
+            <div class="camera-frame">
+                <video id="camera" playsinline muted></video>
+                <img id="preview" alt="Selected product image preview">
+                <div class="camera-placeholder" id="placeholder">
+                    <div style="font-size:42px">⌕</div>
+                    <strong>Your product goes here</strong><br>
+                    Start the camera or upload a photo.
+                </div>
+                <div class="scan-frame"></div>
+            </div>
+
+            <div class="controls">
+                <button type="button" class="primary" id="startCamera">
+                    Start Camera
+                </button>
+                <button type="button" class="secondary" id="captureScan" disabled>
+                    Scan Product
+                </button>
+                <label class="upload-label" for="imageInput">
+                    Upload Image
+                </label>
+                <input id="imageInput" type="file" accept="image/*">
+                <button type="button" class="secondary" id="stopCamera" disabled>
+                    Stop Camera
+                </button>
+            </div>
+
+            <p id="status" role="status" aria-live="polite">
+                Allow camera access when your browser asks.
+            </p>
+            <p class="privacy-note">
+                Your scan is compared with catalog images on this server.
+                Use a clear, well-lit photo of the product packaging.
+            </p>
+        </section>
+    </main>
+
+    <div class="modal" id="matchModal" role="dialog"
+         aria-modal="true" aria-labelledby="foundTitle">
+        <div class="modal-card">
+            <button class="close" id="closeModal" aria-label="Close popup">×</button>
+            <img id="matchedImage" alt="Matched catalog product">
+            <div class="found-label" id="foundTitle">I'm here! 💗</div>
+            <p>We found a possible match in Glamora AR.</p>
+            <h2 id="matchedName"></h2>
+            <div id="matchedPrice"></div>
+            <a class="details-link" id="detailsLink" href="#">
+                View Product Details →
+            </a>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        const video = document.getElementById("camera");
+        const preview = document.getElementById("preview");
+        const placeholder = document.getElementById("placeholder");
+        const startButton = document.getElementById("startCamera");
+        const scanButton = document.getElementById("captureScan");
+        const stopButton = document.getElementById("stopCamera");
+        const imageInput = document.getElementById("imageInput");
+        const status = document.getElementById("status");
+        const modal = document.getElementById("matchModal");
+        const closeModal = document.getElementById("closeModal");
+        const canvas = document.createElement("canvas");
+
+        let stream = null;
+        let busy = false;
+        let requestNumber = 0;
+
+        function setStatus(message) {
+            status.textContent = message;
+        }
+
+        function showVideo() {
+            video.classList.add("active");
+            preview.classList.remove("active");
+            placeholder.style.display = "none";
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+
+            video.pause();
+            video.srcObject = null;
+            video.classList.remove("active");
+            stopButton.disabled = true;
+            scanButton.disabled = true;
+        }
+
+        async function startCamera() {
+            if (!navigator.mediaDevices?.getUserMedia) {
+                setStatus("Camera access is unavailable. Open the site on localhost or HTTPS, or upload an image.");
+                return;
+            }
+
+            stopCamera();
+            setStatus("Requesting camera access…");
+            startButton.disabled = true;
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    audio: false,
+                    video: {
+                        facingMode: { ideal: "environment" },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+
+                video.srcObject = stream;
+                await video.play();
+                showVideo();
+
+                scanButton.disabled = false;
+                stopButton.disabled = false;
+                setStatus("Place the product inside the frame, then tap Scan Product.");
+            } catch (error) {
+                stopCamera();
+
+                const messages = {
+                    NotAllowedError: "Camera permission was denied. Allow camera access in your browser settings.",
+                    NotFoundError: "No camera was found. You can upload a product image instead.",
+                    NotReadableError: "The camera may be in use by another application."
+                };
+
+                setStatus(messages[error.name] || "Unable to start the camera. Try uploading an image.");
+            } finally {
+                startButton.disabled = false;
+            }
+        }
+
+        function openMatch(product) {
+            document.getElementById("matchedImage").src = product.image_url || "";
+            document.getElementById("matchedName").textContent = product.name;
+            document.getElementById("matchedPrice").textContent = product.price;
+            document.getElementById("detailsLink").href = product.details_url;
+
+            modal.classList.add("open");
+            closeModal.focus();
+        }
+
+        async function scanBlob(blob) {
+            if (busy || !blob) return;
+
+            busy = true;
+            scanButton.disabled = true;
+            setStatus("Searching your Glamora AR products…");
+
+            const thisRequest = ++requestNumber;
+            const formData = new FormData();
+            formData.append("image", blob, "product-scan.jpg");
+
+            try {
+                const response = await fetch(
+                    "{{ url_for('match_scanned_product') }}",
+                    { method: "POST", body: formData }
+                );
+
+                const result = await response.json();
+
+                if (thisRequest !== requestNumber) return;
+
+                if (!response.ok) {
+                    throw new Error(result.message || "The scan failed.");
+                }
+
+                if (result.success && result.product) {
+                    setStatus("Product match found!");
+                    openMatch(result.product);
+                } else {
+                    setStatus(result.message || "No confident match found. Try another photo.");
+                }
+            } catch (error) {
+                setStatus(error.message || "Unable to scan right now. Please try again.");
+            } finally {
+                busy = false;
+                scanButton.disabled = !stream;
+            }
+        }
+
+        startButton.addEventListener("click", startCamera);
+
+        stopButton.addEventListener("click", () => {
+            stopCamera();
+            setStatus("Camera stopped.");
+        });
+
+        scanButton.addEventListener("click", () => {
+            if (!stream || !video.videoWidth || busy) return;
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext("2d");
+
+            // Use the unmirrored camera frame for image matching.
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(blob => scanBlob(blob), "image/jpeg", 0.9);
+        });
+
+        imageInput.addEventListener("change", () => {
+            const file = imageInput.files?.[0];
+            if (!file) return;
+
+            if (!file.type.startsWith("image/")) {
+                setStatus("Please choose an image file.");
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                setStatus("The image must be 5 MB or smaller.");
+                imageInput.value = "";
+                return;
+            }
+
+            stopCamera();
+            preview.src = URL.createObjectURL(file);
+            preview.classList.add("active");
+            placeholder.style.display = "none";
+            setStatus("Image selected. Searching the catalog…");
+            scanBlob(file);
+        });
+
+        function closePopup() {
+            modal.classList.remove("open");
+        }
+
+        closeModal.addEventListener("click", closePopup);
+
+        modal.addEventListener("click", event => {
+            if (event.target === modal) closePopup();
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") closePopup();
+        });
+
+        window.addEventListener("pagehide", stopCamera);
+    })();
+    </script>
+</body>
+</html>
