@@ -2728,53 +2728,6 @@ def remove_from_cart(cart_item_id):
         )
 
 
-
-# =========================================================
-# GET FAVORITE PRODUCT IDS FOR CURRENT USER
-# =========================================================
-
-def get_favorite_product_ids(user_id=None):
-    if user_id is None:
-        user_id = session.get("user_id")
-
-    if not user_id:
-        return set()
-
-    connection = None
-    cursor = None
-
-    try:
-        connection = get_db_connection()
-
-        if connection is None:
-            return set()
-
-        cursor = connection.cursor(dictionary=True)
-
-        cursor.execute(
-            """
-            SELECT product_id
-            FROM favorites
-            WHERE user_id = %s
-            """,
-            (user_id,)
-        )
-
-        rows = cursor.fetchall() or []
-
-        return {
-            int(row["product_id"])
-            for row in rows
-        }
-
-    except Exception as error:
-        print("GET FAVORITES ERROR:", repr(error))
-        return set()
-
-    finally:
-        safe_close(cursor, connection)
-
-
 # =========================================================
 # ADMIN LOGIN
 # =========================================================
