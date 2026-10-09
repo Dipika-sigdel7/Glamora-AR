@@ -3950,6 +3950,344 @@ def admin_delete_product(product_id):
 
 
 # =========================================================
+# GLAMORA AR — PRODUCT SCANNER
+# =========================================================
+
+def scanner_image_path(image_url):
+    """Resolve a database image path safely inside static/."""
+
+    if not image_url:
+        return None
+
+    clean_path = str(image_url).replace("\\", "/").strip()
+
+    # Support older database paths.
+    clean_path = re.sub(
+        r"^/?static/",
+        "",
+        clean_path,
+        flags=re.IGNORECASE
+    )
+
+    clean_path = clean_path.lstrip("/")
+
+    static_root = os.path.realpath(app.static_folder)
+    image_path = os.path.realpath(
+        os.path.join(static_root, clean_path)
+    )
+
+    # Prevent paths escaping the static directory.
+    if os.path.commonpath([static_root, image_path]) != static_root:
+        return None
+
+    if os.path.isfile(image_path):
+        return image_path
+
+    return None
+
+
+def scanner_image_url(image_url):
+    """Convert a stored static-relative image path to a browser URL."""
+
+    if not image_url:
+        return None
+
+    clean_path = str(image_url).replace("\\", "/").strip()
+
+    clean_path = re.sub(
+        r"^/?static/",
+        "",
+        clean_path,
+        flags=re.IGNORECASE
+    ).lstrip("/")
+
+    return url_for(
+        "static",
+        filename=clean_path
+    )
+
+
+# ---------------------------------------------------------
+# SCANNER PAGE
+# ---------------------------------------------------------
+
+@app.route("/scanner")
+def product_scanner():
+    return render_template("product_scanner.html")
+
+
+# ---------------------------------------------------------
+# MATCH A SCANNED IMAGE TO A CATALOG PRODUCT
+# ---------------------------------------------------------
+
+@app.route(
+    "/api/product-scanner/match",
+    methods=["POST"]
+)
+def match_scanned_product():
+
+    uploaded_file = request.files.get("image")
+
+    if not uploaded_file or not uploaded_file.filename:
+        return jsonify({
+            "success": False,
+            "message": "Please capture or upload a product image."
+        }), 400
+
+    if not allowed_image(uploaded_file.filename):
+        return jsonify({
+            "success": False,
+            "message": "Please use a JPG, JPEG, PNG, WEBP, or GIF image."
+        }), 400
+
+    uploaded_file.seek(0, os.SEEK_END)
+    file_size = uploaded_file.tell()
+    uploaded_file.seek(0)
+
+    if file_size <= 0 or file_size > MAX_IMAGE_SIZE:
+        return jsonify({
+            "success": False,
+            "message": "The image must be smaller than 5 MB."
+        }), 400
+
+    try:
+        import cv2
+        import numpy as np
+
+    except ImportError:
+        app.logger.exception("Scanner dependencies are missing.")
+        return jsonify({
+            "success": False,
+            "message": (
+                "The scanner is not configured yet. "
+                "Install opencv-python-headless and numpy."
+            )
+        }), 500
+
+    connection = None
+    cursor = None
+
+    try:
+        # Decode the uploaded image.
+        image_bytes = uploaded_file.read()
+
+        scanned_image = cv2.imdecode(
+            np.frombuffer(image_bytes, dtype=np.uint8),
+            cv2.IMREAD_COLOR
+        )
+
+        if scanned_image is None:
+            return jsonify({
+                "success": False,
+                "message": "The uploaded image could not be read."
+            }), 400
+
+        # Resize large images for faster feature matching.
+        height, width = scanned_image.shape[:2]
+        longest_side = max(height, width)
+
+        if longest_side > 1000:
+            scale = 1000 / longest_side
+
+            scanned_image = cv2.resize(
+                scanned_image,
+                (
+                    int(width * scale),
+                    int(height * scale)
+                ),
+                interpolation=cv2.INTER_AREA
+            )
+
+        scanned_gray = cv2.cvtColor(
+            scanned_image,
+            cv2.COLOR_BGR2GRAY
+        )
+
+        orb = cv2.ORB_create(nfeatures=1500)
+
+        scanned_keypoints, scanned_descriptors = (
+            orb.detectAndCompute(scanned_gray, None)
+        )
+
+        if (
+            scanned_descriptors is None
+            or len(scanned_keypoints) < 8
+        ):
+            return jsonify({
+                "success": False,
+                "message": (
+                    "I couldn't identify enough details in that image. "
+                    "Try a clearer photo with the product filling the frame."
+                )
+            }), 200
+
+        # Load images for available products.
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                p.price,
+                p.product_type,
+                p.shade,
+                p.color,
+                pi.image_url
+            FROM products p
+            INNER JOIN product_images pi
+                ON pi.product_id = p.id
+            WHERE p.is_available = 1
+            ORDER BY
+                p.id DESC,
+                pi.is_primary DESC,
+                pi.id ASC
+        """)
+
+        product_images = cursor.fetchall() or []
+
+        if not product_images:
+            return jsonify({
+                "success": False,
+                "message": "There are no available product images to scan yet."
+            }), 200
+
+        matcher = cv2.BFMatcher(cv2.NORM_HAMMING)
+        best_match = None
+        best_score = 0
+
+        # Avoid repeatedly comparing duplicate images for one product.
+        checked_product_ids = set()
+
+        for item in product_images:
+            product_id = item["id"]
+
+            if product_id in checked_product_ids:
+                continue
+
+            checked_product_ids.add(product_id)
+
+            image_path = scanner_image_path(
+                item.get("image_url")
+            )
+
+            if not image_path:
+                continue
+
+            catalog_image = cv2.imread(image_path)
+
+            if catalog_image is None:
+                continue
+
+            catalog_height, catalog_width = catalog_image.shape[:2]
+            catalog_longest_side = max(
+                catalog_height,
+                catalog_width
+            )
+
+            if catalog_longest_side > 1000:
+                scale = 1000 / catalog_longest_side
+
+                catalog_image = cv2.resize(
+                    catalog_image,
+                    (
+                        int(catalog_width * scale),
+                        int(catalog_height * scale)
+                    ),
+                    interpolation=cv2.INTER_AREA
+                )
+
+            catalog_gray = cv2.cvtColor(
+                catalog_image,
+                cv2.COLOR_BGR2GRAY
+            )
+
+            catalog_keypoints, catalog_descriptors = (
+                orb.detectAndCompute(catalog_gray, None)
+            )
+
+            if (
+                catalog_descriptors is None
+                or len(catalog_keypoints) < 8
+            ):
+                continue
+
+            try:
+                pairs = matcher.knnMatch(
+                    scanned_descriptors,
+                    catalog_descriptors,
+                    k=2
+                )
+            except cv2.error:
+                continue
+
+            good_matches = [
+                first
+                for pair in pairs
+                if len(pair) == 2
+                for first, second in [pair]
+                if first.distance < 0.72 * second.distance
+            ]
+
+            score = len(good_matches)
+
+            if score > best_score:
+                best_score = score
+                best_match = item
+
+        # This is a practical threshold, not a probability.
+        if best_match is None or best_score < 12:
+            return jsonify({
+                "success": False,
+                "message": (
+                    "I couldn't find a confident product match. "
+                    "Try another angle or a clearer photo."
+                )
+            }), 200
+
+        return jsonify({
+            "success": True,
+            "message": "I'm here! 💗 I found a possible product match.",
+            "product": {
+                "id": best_match["id"],
+                "name": best_match["name"],
+                "description": best_match.get("description") or "",
+                "price": format_npr(best_match.get("price")),
+                "product_type": best_match.get("product_type") or "",
+                "shade": best_match.get("shade") or "",
+                "color": best_match.get("color") or "",
+                "image_url": scanner_image_url(
+                    best_match.get("image_url")
+                ),
+                "details_url": url_for(
+                    "product_details",
+                    product_id=best_match["id"]
+                )
+            }
+        }), 200
+
+    except Exception:
+        app.logger.exception("Product scanner error.")
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Something went wrong while scanning. "
+                "Please check the Flask terminal."
+            )
+        }), 500
+
+    finally:
+        safe_close(cursor, connection)
+
+
+
+# =========================================================
 # RUN APPLICATION
 # =========================================================
 
