@@ -2,84 +2,48 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Beauty — Glamora AR</title>
 
-
-    <!-- =====================================================
-         GOOGLE FONTS
-         ===================================================== -->
-
+    <!-- Google Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
         rel="stylesheet"
     >
 
-
-    <!-- =====================================================
-         MAIN WEBSITE CSS
-         ===================================================== -->
-
+    <!-- Main Website CSS -->
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}"
     >
 
-
-    <!-- =====================================================
-         BEAUTY PAGE CSS
-         ===================================================== -->
-
+    <!-- Beauty Page CSS -->
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/beauty.css') }}"
     >
-
 </head>
-
 
 <body class="beauty-page">
 
-
-    <!-- =====================================================
-         PRELOADER
-         ===================================================== -->
-
-    <div
-        class="loader"
-        id="loader"
-    >
-
+    <!-- PRELOADER -->
+    <div class="loader" id="loader">
         <div class="loader-content">
-
             <div class="loader-logo">
                 GLAMORA <span>AR</span>
             </div>
 
-            <p>
-                Preparing your beauty experience...
-            </p>
+            <p>Preparing your beauty experience...</p>
 
             <div class="loader-line">
                 <span></span>
             </div>
-
         </div>
-
     </div>
 
-
-    <!-- =====================================================
-         NAVBAR
-         ===================================================== -->
-
+    <!-- NAVBAR -->
     <header class="navbar">
 
         <a
@@ -90,42 +54,29 @@
             GLAMORA <span>AR</span>
         </a>
 
-
         <nav
             class="nav-links"
             id="navLinks"
             aria-label="Main navigation"
         >
-
-            <a href="{{ url_for('index') }}">
-                Home
-            </a>
+            <a href="{{ url_for('index') }}">Home</a>
 
             <a
                 href="{{ url_for('beauty') }}"
                 class="active"
+                aria-current="page"
             >
                 Beauty
             </a>
 
-            <a href="{{ url_for('about') }}">
-                About
-            </a>
+            <a href="{{ url_for('about') }}">About</a>
 
-            <a href="{{ url_for('contact') }}">
-                Contact
-            </a>
-
+            <a href="{{ url_for('contact') }}">Contact</a>
         </nav>
-
 
         <div class="nav-actions">
 
-
-            <!-- =================================================
-                 SEARCH
-                 ================================================= -->
-
+            <!-- SEARCH -->
             <button
                 class="icon-btn"
                 id="searchBtn"
@@ -136,11 +87,7 @@
                 ⌕
             </button>
 
-
-            <!-- =================================================
-                 WISHLIST
-                 ================================================= -->
-
+            <!-- WISHLIST -->
             <button
                 class="icon-btn wishlist-btn"
                 id="wishlistBtn"
@@ -151,11 +98,7 @@
                 ♡
             </button>
 
-
-            <!-- =================================================
-                 SHOPPING BAG
-                 ================================================= -->
-
+            <!-- SHOPPING BAG -->
             <a
                 href="{{ url_for('cart') }}"
                 class="cart-btn"
@@ -163,71 +106,41 @@
                 aria-label="Shopping bag"
                 title="Shopping bag"
             >
+                <span>Bag</span>
 
-                <span>
-                    Bag
-                </span>
-
-                <span
-                    class="cart-count"
-                    id="cartCount"
-                >
+                <span class="cart-count" id="cartCount">
                     {{ bag_count|default(0) }}
                 </span>
-
             </a>
 
+            <!-- LOGIN / PROFILE -->
+            {% if session.get('user_id') %}
 
-<!-- =================================================
-     LOGIN / PROFILE
-     ================================================= -->
+                <a
+                    href="{{ url_for('profile') }}"
+                    class="login-btn"
+                    id="profileBtn"
+                    aria-label="Go to your profile"
+                >
+                    <span class="login-icon">♙</span>
+                    <span>Profile</span>
+                </a>
 
-{% if session.get('user_id') %}
+            {% else %}
 
-    <a
-        href="{{ url_for('profile') }}"
-        class="login-btn"
-        id="profileBtn"
-        aria-label="Go to your profile"
-    >
+                <a
+                    href="{{ url_for('login') }}"
+                    class="login-btn"
+                    id="loginBtn"
+                    aria-label="Login to Glamora AR"
+                >
+                    <span class="login-icon">♙</span>
+                    <span>Login</span>
+                </a>
 
-        <span class="login-icon">
-            ♙
-        </span>
+            {% endif %}
 
-        <span>
-            Profile
-        </span>
-
-    </a>
-
-{% else %}
-
-    <a
-        href="{{ url_for('login') }}"
-        class="login-btn"
-        id="loginBtn"
-        aria-label="Login to Glamora AR"
-    >
-
-        <span class="login-icon">
-            ♙
-        </span>
-
-        <span>
-            Login
-        </span>
-
-    </a>
-
-{% endif %}
-
-
-
-            <!-- =================================================
-                 MENU
-                 ================================================= -->
-
+            <!-- MOBILE MENU -->
             <button
                 class="menu-btn"
                 id="menuBtn"
@@ -240,190 +153,105 @@
             </button>
 
         </div>
-
     </header>
 
-
-    <!-- =====================================================
-         BEAUTY HERO
-         ===================================================== -->
-
-    <section
-        class="beauty-hero"
-        id="beauty-home"
-    >
+    <!-- BEAUTY HERO -->
+    <section class="beauty-hero" id="beauty-home">
 
         <div class="beauty-hero-background">
-
             <div class="beauty-glow beauty-glow-one"></div>
-
             <div class="beauty-glow beauty-glow-two"></div>
-
             <div class="beauty-glow beauty-glow-three"></div>
-
         </div>
-
 
         <div class="beauty-hero-container">
 
             <div class="beauty-hero-content reveal">
 
                 <div class="eyebrow">
-
                     <span class="eyebrow-line"></span>
-
                     BEAUTY COLLECTION
-
                 </div>
 
-
                 <h1>
-
                     Discover
-
-                    <span>
-                        Your Beauty.
-                    </span>
-
+                    <span>Your Beauty.</span>
                 </h1>
 
-
                 <p>
-
                     Explore a world of color, confidence, and creativity.
                     Discover lipsticks, eyeshadows, blush, eyeliner,
                     mascara, foundation, and more to create a look
                     that is uniquely yours.
-
                 </p>
 
             </div>
 
-
             <div class="beauty-hero-visual reveal">
 
                 <div class="beauty-orbit beauty-orbit-one"></div>
-
                 <div class="beauty-orbit beauty-orbit-two"></div>
 
-
                 <div class="beauty-floating-product beauty-lipstick">
-
-                    <div class="beauty-product-icon">
-                        💄
-                    </div>
+                    <div class="beauty-product-icon">💄</div>
 
                     <div>
-
-                        <small>
-                            TRY
-                        </small>
-
-                        <strong>
-                            Lip Color
-                        </strong>
-
+                        <small>TRY</small>
+                        <strong>Lip Color</strong>
                     </div>
-
                 </div>
-
 
                 <div class="beauty-floating-product beauty-blush">
-
-                    <div class="beauty-product-icon">
-                        🌸
-                    </div>
+                    <div class="beauty-product-icon">🌸</div>
 
                     <div>
-
-                        <small>
-                            NEW
-                        </small>
-
-                        <strong>
-                            Rose Blush
-                        </strong>
-
+                        <small>NEW</small>
+                        <strong>Rose Blush</strong>
                     </div>
-
                 </div>
-
 
                 <div class="beauty-face-card">
 
                     <div class="beauty-face-overlay"></div>
 
                     <div class="beauty-face-placeholder">
-
                         <div class="beauty-face-circle">
-
-                            <span>
-                                ✦
-                            </span>
-
+                            <span>✦</span>
                         </div>
 
-                        <p>
-                            Virtual Beauty
-                        </p>
-
+                        <p>Virtual Beauty</p>
                     </div>
-
 
                     <div class="beauty-scan-line"></div>
 
-
                     <div class="beauty-face-label">
-
                         <span class="beauty-status-dot"></span>
-
                         AR READY
-
                     </div>
 
                 </div>
 
             </div>
-
         </div>
 
-
         <div class="scroll-indicator">
-
             <div class="scroll-line"></div>
-
         </div>
 
     </section>
 
-
-    <!-- =====================================================
-         CATEGORIES
-         ===================================================== -->
-
-    <section
-        class="beauty-section"
-        id="categories"
-    >
+    <!-- CATEGORIES -->
+    <section class="beauty-section" id="categories">
 
         <div class="section-heading reveal">
 
             <div>
-
-                <span class="section-label">
-                    EXPLORE BEAUTY
-                </span>
+                <span class="section-label">EXPLORE BEAUTY</span>
 
                 <h2>
-
                     Find your
-
-                    <em>
-                        favorite.
-                    </em>
-
+                    <em>favorite.</em>
                 </h2>
-
             </div>
 
             <p>
@@ -433,314 +261,140 @@
 
         </div>
 
-
         <div class="beauty-category-grid">
-
-
-            <!-- =================================================
-                 ALL
-                 ================================================= -->
 
             <button
                 type="button"
                 class="beauty-category-card active reveal"
                 data-filter="all"
             >
-
-                <div class="category-icon">
-                    ✦
-                </div>
+                <div class="category-icon">✦</div>
 
                 <div class="category-card-content">
-
-                    <span>
-                        01
-                    </span>
-
-                    <h3>
-                        All Beauty
-                    </h3>
-
-                    <p>
-                        Explore everything
-                    </p>
-
+                    <span>01</span>
+                    <h3>All Beauty</h3>
+                    <p>Explore everything</p>
                 </div>
 
-                <div class="category-arrow">
-                    →
-                </div>
-
+                <div class="category-arrow">→</div>
             </button>
-
-
-            <!-- =================================================
-                 LIPSTICK
-                 ================================================= -->
 
             <button
                 type="button"
                 class="beauty-category-card reveal"
                 data-filter="lipstick"
             >
-
-                <div class="category-icon">
-                    💄
-                </div>
+                <div class="category-icon">💄</div>
 
                 <div class="category-card-content">
-
-                    <span>
-                        02
-                    </span>
-
-                    <h3>
-                        Lipsticks
-                    </h3>
-
-                    <p>
-                        Colors made for you
-                    </p>
-
+                    <span>02</span>
+                    <h3>Lipsticks</h3>
+                    <p>Colors made for you</p>
                 </div>
 
-                <div class="category-arrow">
-                    →
-                </div>
-
+                <div class="category-arrow">→</div>
             </button>
-
-
-            <!-- =================================================
-                 EYESHADOW
-                 ================================================= -->
 
             <button
                 type="button"
                 class="beauty-category-card reveal"
                 data-filter="eyeshadow"
             >
-
-                <div class="category-icon">
-                    👁
-                </div>
+                <div class="category-icon">👁</div>
 
                 <div class="category-card-content">
-
-                    <span>
-                        03
-                    </span>
-
-                    <h3>
-                        Eyeshadow
-                    </h3>
-
-                    <p>
-                        Create captivating eyes
-                    </p>
-
+                    <span>03</span>
+                    <h3>Eyeshadow</h3>
+                    <p>Create captivating eyes</p>
                 </div>
 
-                <div class="category-arrow">
-                    →
-                </div>
-
+                <div class="category-arrow">→</div>
             </button>
-
-
-            <!-- =================================================
-                 BLUSH
-                 ================================================= -->
 
             <button
                 type="button"
                 class="beauty-category-card reveal"
                 data-filter="blush"
             >
-
-                <div class="category-icon">
-                    🌸
-                </div>
+                <div class="category-icon">🌸</div>
 
                 <div class="category-card-content">
-
-                    <span>
-                        04
-                    </span>
-
-                    <h3>
-                        Blush
-                    </h3>
-
-                    <p>
-                        A natural rosy glow
-                    </p>
-
+                    <span>04</span>
+                    <h3>Blush</h3>
+                    <p>A natural rosy glow</p>
                 </div>
 
-                <div class="category-arrow">
-                    →
-                </div>
-
+                <div class="category-arrow">→</div>
             </button>
-
-
-            <!-- =================================================
-                 EYELINER
-                 ================================================= -->
 
             <button
                 type="button"
                 class="beauty-category-card reveal"
                 data-filter="eyeliner"
             >
-
-                <div class="category-icon">
-                    ✧
-                </div>
+                <div class="category-icon">✧</div>
 
                 <div class="category-card-content">
-
-                    <span>
-                        05
-                    </span>
-
-                    <h3>
-                        Eyeliner
-                    </h3>
-
-                    <p>
-                        Define your eyes
-                    </p>
-
+                    <span>05</span>
+                    <h3>Eyeliner</h3>
+                    <p>Define your eyes</p>
                 </div>
 
-                <div class="category-arrow">
-                    →
-                </div>
-
+                <div class="category-arrow">→</div>
             </button>
-
-
-            <!-- =================================================
-                 MASCARA
-                 ================================================= -->
 
             <button
                 type="button"
                 class="beauty-category-card reveal"
                 data-filter="mascara"
             >
-
-                <div class="category-icon">
-                    🖤
-                </div>
+                <div class="category-icon">🖤</div>
 
                 <div class="category-card-content">
-
-                    <span>
-                        06
-                    </span>
-
-                    <h3>
-                        Mascara
-                    </h3>
-
-                    <p>
-                        Beautiful lashes
-                    </p>
-
+                    <span>06</span>
+                    <h3>Mascara</h3>
+                    <p>Beautiful lashes</p>
                 </div>
 
-                <div class="category-arrow">
-                    →
-                </div>
-
+                <div class="category-arrow">→</div>
             </button>
-
-
-            <!-- =================================================
-                 FOUNDATION
-                 ================================================= -->
 
             <button
                 type="button"
                 class="beauty-category-card reveal"
                 data-filter="foundation"
             >
-
-                <div class="category-icon">
-                    ✿
-                </div>
+                <div class="category-icon">✿</div>
 
                 <div class="category-card-content">
-
-                    <span>
-                        07
-                    </span>
-
-                    <h3>
-                        Foundation
-                    </h3>
-
-                    <p>
-                        Your perfect base
-                    </p>
-
+                    <span>07</span>
+                    <h3>Foundation</h3>
+                    <p>Your perfect base</p>
                 </div>
 
-                <div class="category-arrow">
-                    →
-                </div>
-
+                <div class="category-arrow">→</div>
             </button>
-
-
-            <!-- =================================================
-                 HIGHLIGHTER
-                 ================================================= -->
 
             <button
                 type="button"
                 class="beauty-category-card reveal"
                 data-filter="highlighter"
             >
-
-                <div class="category-icon">
-                    ✨
-                </div>
+                <div class="category-icon">✨</div>
 
                 <div class="category-card-content">
-
-                    <span>
-                        08
-                    </span>
-
-                    <h3>
-                        Highlighter
-                    </h3>
-
-                    <p>
-                        Glow from within
-                    </p>
-
+                    <span>08</span>
+                    <h3>Highlighter</h3>
+                    <p>Glow from within</p>
                 </div>
 
-                <div class="category-arrow">
-                    →
-                </div>
-
+                <div class="category-arrow">→</div>
             </button>
 
         </div>
-
     </section>
 
-
-    <!-- =====================================================
-         PRODUCTS
-         ===================================================== -->
-
+    <!-- PRODUCTS -->
     <section
         class="beauty-section beauty-products"
         id="products"
@@ -749,21 +403,12 @@
         <div class="section-heading reveal">
 
             <div>
-
-                <span class="section-label">
-                    OUR COLLECTION
-                </span>
+                <span class="section-label">OUR COLLECTION</span>
 
                 <h2>
-
                     Beauty
-
-                    <em>
-                        essentials.
-                    </em>
-
+                    <em>essentials.</em>
                 </h2>
-
             </div>
 
             <p id="selectedCategoryDescription">
@@ -772,28 +417,18 @@
 
         </div>
 
-
         <div
             class="selected-category-heading"
             aria-live="polite"
         >
-
-            <span id="selectedCategoryLabel">
-                ALL BEAUTY
-            </span>
-
+            <span id="selectedCategoryLabel">ALL BEAUTY</span>
         </div>
 
-
-        <div
-            class="beauty-product-grid"
-            id="productGrid"
-        >
+        <div class="beauty-product-grid" id="productGrid">
 
             {% if products %}
 
                 {% for product in products %}
-
 
                     {% set product_type =
                         (product.product_type or 'beauty')
@@ -803,7 +438,6 @@
                         |replace('_', '-')
                     %}
 
-
                     {% set product_category =
                         (product.category_name or '')
                         |lower
@@ -811,11 +445,6 @@
                         |replace(' ', '-')
                         |replace('_', '-')
                     %}
-
-
-                    <!-- =====================================
-                         PRODUCT CARD
-                         ===================================== -->
 
                     <article
                         class="beauty-product-card product-card reveal"
@@ -827,20 +456,16 @@
                         data-category-id="{{ product.category_id or '' }}"
                     >
 
-
-                        <!-- =================================
-                             PRODUCT IMAGE
-                             ================================= -->
-
+                        <!-- PRODUCT IMAGE -->
                         <div class="beauty-product-image">
 
-                            {% if product.image_url %}
+                            <a
+                                href="{{ url_for('product_details', product_id=product.id) }}"
+                                class="product-image-link"
+                                aria-label="View {{ product.name }}"
+                            >
 
-                                <a
-                                    href="{{ url_for('product_details', product_id=product.id) }}"
-                                    class="product-image-link"
-                                    aria-label="View {{ product.name }}"
-                                >
+                                {% if product.image_url %}
 
                                     <img
                                         src="{{ url_for('static', filename=product.image_url) }}"
@@ -849,67 +474,37 @@
                                         loading="lazy"
                                     >
 
-                                </a>
-
-                            {% else %}
-
-                                <a
-                                    href="{{ url_for('product_details', product_id=product.id) }}"
-                                    class="product-image-link"
-                                    aria-label="View {{ product.name }}"
-                                >
+                                {% else %}
 
                                     <div class="product-placeholder">
 
-                                        {% if "lipstick" in product_type %}
-
+                                        {% if 'lipstick' in product_type %}
                                             💄
-
-                                        {% elif "eyeshadow" in product_type %}
-
+                                        {% elif 'eyeshadow' in product_type %}
                                             🎨
-
-                                        {% elif "blush" in product_type %}
-
+                                        {% elif 'blush' in product_type %}
                                             🌸
-
-                                        {% elif "eyeliner" in product_type %}
-
+                                        {% elif 'eyeliner' in product_type %}
                                             ✧
-
-                                        {% elif "mascara" in product_type %}
-
+                                        {% elif 'mascara' in product_type %}
                                             🖤
-
-                                        {% elif "foundation" in product_type %}
-
+                                        {% elif 'foundation' in product_type %}
                                             ✿
-
-                                        {% elif "highlighter" in product_type %}
-
+                                        {% elif 'highlighter' in product_type %}
                                             ✨
-
                                         {% else %}
-
                                             💕
-
                                         {% endif %}
 
                                     </div>
 
-                                </a>
+                                {% endif %}
 
-                            {% endif %}
-
-
-                            <!-- PRODUCT BADGE -->
+                            </a>
 
                             <span class="product-badge">
                                 {{ product.product_type or 'BEAUTY' }}
                             </span>
-
-
-                            <!-- QUICK TRY-ON -->
 
                             <a
                                 href="{{ url_for('product_details', product_id=product.id) }}"
@@ -921,22 +516,14 @@
 
                         </div>
 
-
-                        <!-- =================================
-                             PRODUCT INFORMATION
-                             ================================= -->
-
+                        <!-- PRODUCT INFORMATION -->
                         <div class="beauty-product-info">
-
-
-                            <!-- CATEGORY + STOCK -->
 
                             <div class="product-category-row">
 
                                 <span class="product-category">
                                     {{ product.category_name or 'Beauty' }}
                                 </span>
-
 
                                 {% if product.stock is not none and product.stock|int > 0 %}
 
@@ -954,22 +541,14 @@
 
                             </div>
 
-
-                            <!-- PRODUCT NAME -->
-
                             <h3 class="product-name">
-
                                 <a
                                     href="{{ url_for('product_details', product_id=product.id) }}"
                                     aria-label="View {{ product.name }}"
                                 >
                                     {{ product.name }}
                                 </a>
-
                             </h3>
-
-
-                            <!-- DESCRIPTION -->
 
                             {% if product.description %}
 
@@ -986,81 +565,36 @@
 
                             {% endif %}
 
-
-                            <!-- SHADE -->
-
                             {% if product.shade %}
-
                                 <div class="product-detail">
-
-                                    <span>
-                                        Shade
-                                    </span>
-
-                                    <strong>
-                                        {{ product.shade }}
-                                    </strong>
-
+                                    <span>Shade</span>
+                                    <strong>{{ product.shade }}</strong>
                                 </div>
-
                             {% endif %}
-
-
-                            <!-- COLOR -->
 
                             {% if product.color %}
-
                                 <div class="product-detail">
-
-                                    <span>
-                                        Color
-                                    </span>
-
-                                    <strong>
-                                        {{ product.color }}
-                                    </strong>
-
+                                    <span>Color</span>
+                                    <strong>{{ product.color }}</strong>
                                 </div>
-
                             {% endif %}
 
-
-                            <!-- =================================
-                                 PRICE + BAG
-                                 ================================= -->
-
+                            <!-- PRICE AND ACTIONS -->
                             <div class="product-bottom">
 
-
-                                <!-- PRICE -->
-
                                 <span class="product-price">
-
-                                    Rs  {{ product.price|int }}
-
+                                    Rs. {{ "%.2f"|format(product.price|float) }}
                                 </span>
-
-
-                                <!-- =================================
-                                     ACTION BUTTONS
-                                     ================================= -->
 
                                 <div class="product-action-buttons">
 
-
                                     {% if session.get('user_id') %}
-
-
-                                        <!-- =================================
-                                             LOGGED-IN USER
-                                             ================================= -->
 
                                         <form
                                             action="{{ url_for('add_to_cart', product_id=product.id) }}"
                                             method="POST"
                                             class="add-to-cart-form"
                                         >
-
                                             <button
                                                 type="submit"
                                                 class="add-to-cart-btn"
@@ -1068,36 +602,19 @@
                                                     disabled
                                                 {% endif %}
                                             >
-
-                                                <span class="cart-plus">
-                                                    +
-                                                </span>
+                                                <span class="cart-plus">+</span>
 
                                                 <span class="add-to-bag-text">
-
                                                     {% if product.stock is none or product.stock|int <= 0 %}
-
                                                         Out of Stock
-
                                                     {% else %}
-
                                                         Add to Bag
-
                                                     {% endif %}
-
                                                 </span>
-
                                             </button>
-
                                         </form>
 
-
                                     {% else %}
-
-
-                                        <!-- =================================
-                                             NOT LOGGED-IN USER
-                                             ================================= -->
 
                                         <button
                                             type="button"
@@ -1107,79 +624,43 @@
                                                 disabled
                                             {% endif %}
                                         >
+                                            <span class="cart-plus">+</span>
 
-                                            <span class="cart-plus">
-                                                +
-                                            </span>
-
-                                            <span>
-
+                                            <span class="add-to-bag-text">
                                                 {% if product.stock is none or product.stock|int <= 0 %}
-
                                                     Out of Stock
-
                                                 {% else %}
-
                                                     Add to Bag
-
                                                 {% endif %}
-
                                             </span>
-
                                         </button>
 
                                     {% endif %}
-
-
-                                    <!-- =================================
-                                         VIEW PRODUCT
-                                         ================================= -->
 
                                     <a
                                         href="{{ url_for('product_details', product_id=product.id) }}"
                                         class="product-view-btn"
                                         aria-label="View details for {{ product.name }}"
                                     >
-
-                                        <span>
-                                            View Product
-                                        </span>
-
-                                        <span>
-                                            →
-                                        </span>
-
+                                        <span>View Product</span>
+                                        <span>→</span>
                                     </a>
 
-
                                 </div>
-
                             </div>
 
-
                         </div>
-
                     </article>
 
                 {% endfor %}
 
-
             {% else %}
-
-
-                <!-- =========================================
-                     NO PRODUCTS
-                     ========================================= -->
 
                 <div class="empty-products">
 
-                    <div class="empty-products-icon">
-                        ✦
-                    </div>
+                    <div class="empty-products-icon">✦</div>
 
-                    <h3>
-                        Your beauty collection is waiting.
-                    </h3>
+                    <h3>Your beauty collection is waiting.</h3>
 
                     <p>
                         Products added from the Admin Dashboard
@@ -1197,41 +678,25 @@
 
             {% endif %}
 
-
-            <!-- =============================================
-                 CATEGORY EMPTY STATE
-                 Created/controlled by main.js
-                 ============================================= -->
-
+            <!-- CATEGORY EMPTY STATE -->
             <div
                 class="category-empty-state"
                 style="display: none;"
             >
+                <div class="category-empty-icon">♡</div>
 
-                <div class="category-empty-icon">
-                    ♡
-                </div>
-
-                <h3>
-                    No products in this category yet
-                </h3>
+                <h3>No products in this category yet</h3>
 
                 <p>
                     Products added by the admin
                     will appear here automatically.
                 </p>
-
             </div>
 
         </div>
-
     </section>
 
-
-    <!-- =====================================================
-         TRY ON
-         ===================================================== -->
-
+    <!-- VIRTUAL TRY-ON -->
     <section
         class="beauty-section tryon-section"
         id="tryon"
@@ -1239,169 +704,85 @@
 
         <div class="tryon-container">
 
-
             <div class="tryon-content reveal">
 
-                <span class="section-label">
-                    VIRTUAL BEAUTY
-                </span>
-
+                <span class="section-label">VIRTUAL BEAUTY</span>
 
                 <h2>
-
                     See your
-
-                    <span>
-                        perfect look.
-                    </span>
-
+                    <span>perfect look.</span>
                 </h2>
 
-
                 <p>
-
                     Experience beauty before you buy.
                     Try different shades, styles and products
                     virtually with Glamora AR.
-
                 </p>
-
 
                 <div class="tryon-features">
 
-
                     <div class="tryon-feature">
-
-                        <span>
-                            ✦
-                        </span>
+                        <span>✦</span>
 
                         <div>
-
-                            <strong>
-                                Virtual Try-On
-                            </strong>
-
-                            <p>
-                                See products on your face.
-                            </p>
-
+                            <strong>Virtual Try-On</strong>
+                            <p>See products on your face.</p>
                         </div>
-
                     </div>
 
-
                     <div class="tryon-feature">
-
-                        <span>
-                            ◉
-                        </span>
+                        <span>◉</span>
 
                         <div>
-
-                            <strong>
-                                Easy To Explore
-                            </strong>
-
-                            <p>
-                                Switch between beauty products.
-                            </p>
-
+                            <strong>Easy To Explore</strong>
+                            <p>Switch between beauty products.</p>
                         </div>
-
                     </div>
 
-
                     <div class="tryon-feature">
-
-                        <span>
-                            ♡
-                        </span>
+                        <span>♡</span>
 
                         <div>
-
-                            <strong>
-                                Find Your Style
-                            </strong>
-
-                            <p>
-                                Discover looks made for you.
-                            </p>
-
+                            <strong>Find Your Style</strong>
+                            <p>Discover looks made for you.</p>
                         </div>
-
                     </div>
 
                 </div>
 
-
-                <a
-                    href="#products"
-                    class="primary-btn"
-                >
-
+                <a href="#products" class="primary-btn">
                     Start Exploring
-
-                    <span>
-                        →
-                    </span>
-
+                    <span>→</span>
                 </a>
 
             </div>
 
-
             <div class="tryon-visual reveal">
 
                 <div class="tryon-orbit tryon-orbit-one"></div>
-
                 <div class="tryon-orbit tryon-orbit-two"></div>
-
 
                 <div class="tryon-center-card">
 
-                    <div class="tryon-center-icon">
-                        ✦
-                    </div>
-
-                    <span>
-                        AR
-                    </span>
-
-                    <strong>
-                        BEAUTY
-                    </strong>
-
-                    <small>
-                        EXPERIENCE
-                    </small>
+                    <div class="tryon-center-icon">✦</div>
+                    <span>AR</span>
+                    <strong>BEAUTY</strong>
+                    <small>EXPERIENCE</small>
 
                 </div>
 
-
-                <span class="tryon-sparkle sparkle-one">
-                    ✦
-                </span>
-
-                <span class="tryon-sparkle sparkle-two">
-                    ✧
-                </span>
+                <span class="tryon-sparkle sparkle-one">✦</span>
+                <span class="tryon-sparkle sparkle-two">✧</span>
 
             </div>
 
         </div>
-
     </section>
 
-
-    <!-- =====================================================
-         FOOTER
-         ===================================================== -->
-
+    <!-- FOOTER -->
     <footer class="site-footer">
 
         <div class="footer-container">
-
 
             <div class="footer-brand">
 
@@ -1419,74 +800,57 @@
 
             </div>
 
-
             <div class="footer-column">
 
-                <h4>
-                    Explore
-                </h4>
+                <h4>Explore</h4>
 
-                <a href="{{ url_for('index') }}">
-                    Home
-                </a>
-
-                <a href="{{ url_for('beauty') }}">
-                    Beauty
-                </a>
-
-                <a href="{{ url_for('about') }}">
-                    About
-                </a>
-
-                <a href="{{ url_for('contact') }}">
-                    Contact
-                </a>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('beauty') }}">Beauty</a>
+                <a href="{{ url_for('about') }}">About</a>
+                <a href="{{ url_for('contact') }}">Contact</a>
 
             </div>
 
+            <div class="footer-column">
+
+                <h4>Beauty</h4>
+
+                <a href="#products">Products</a>
+                <a href="#categories">Categories</a>
+                <a href="#tryon">Virtual Try-On</a>
+
+            </div>
 
             <div class="footer-column">
 
-                <h4>
-                    Beauty
-                </h4>
+                <h4>Account</h4>
 
-                <a href="#products">
-                    Products
-                </a>
+                {% if session.get('user_id') %}
 
-                <a href="#categories">
-                    Categories
-                </a>
+                    <a href="{{ url_for('profile') }}">My Profile</a>
+                    <a href="{{ url_for('cart') }}">Shopping Bag</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
 
-                <a href="#tryon">
-                    Virtual Try-On
-                </a>
+                {% else %}
+
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}">Create Account</a>
+
+                {% endif %}
 
             </div>
 
         </div>
-
 
         <div class="footer-bottom">
 
-            <span>
-                © 2026 Glamora AR. All rights reserved.
-            </span>
-
-            <span>
-                Virtual Beauty Experience
-            </span>
+            <span>© 2026 Glamora AR. All rights reserved.</span>
+            <span>Virtual Beauty Experience</span>
 
         </div>
-
     </footer>
 
-
-    <!-- =====================================================
-         LOGIN REQUIRED POPUP
-         ===================================================== -->
-
+    <!-- LOGIN REQUIRED POPUP -->
     <div
         class="login-popup-overlay"
         id="loginPopup"
@@ -1498,9 +862,6 @@
 
         <div class="login-popup">
 
-
-            <!-- CLOSE -->
-
             <button
                 type="button"
                 class="login-popup-close"
@@ -1510,30 +871,14 @@
                 ×
             </button>
 
+            <div class="login-popup-icon">♡</div>
 
-            <!-- ICON -->
-
-            <div class="login-popup-icon">
-                ♡
-            </div>
-
-
-            <!-- TITLE -->
-
-            <h3 id="loginPopupTitle">
-                Please Login
-            </h3>
-
-
-            <!-- MESSAGE -->
+            <h3 id="loginPopupTitle">Please Login</h3>
 
             <p>
                 Please login to your account before adding
                 this product to your shopping bag.
             </p>
-
-
-            <!-- OK -->
 
             <button
                 type="button"
@@ -1544,19 +889,12 @@
             </button>
 
         </div>
-
     </div>
 
-
-    <!-- =====================================================
-         MAIN JAVASCRIPT
-         ===================================================== -->
-
+    <!-- MAIN JAVASCRIPT -->
     <script
         src="{{ url_for('static', filename='js/main.js') }}"
     ></script>
 
-
 </body>
-
 </html>
