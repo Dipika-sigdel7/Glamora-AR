@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Favorites | Glamora AR</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/beauty.css') }}"
+    >
+
+    <style>
+        .favorites-page {
+            min-height: 70vh;
+            padding: 50px 6%;
+            background: #fff5f7;
+        }
+
+        .favorites-heading {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .favorites-heading h1 {
+            margin-bottom: 8px;
+            color: #2b1b20;
+            font-family: "Playfair Display", serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+
+        .favorites-heading p {
+            color: #806b72;
+        }
+
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 24px;
+        }
+
+        .favorite-card {
+            overflow: hidden;
+            border: 1px solid #f3dce3;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 12px 35px rgba(164, 73, 98, .08);
+        }
+
+        .favorite-image {
+            display: block;
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: #fff0f4;
+        }
+
+        .favorite-image-placeholder {
+            display: grid;
+            width: 100%;
+            height: 250px;
+            place-items: center;
+            background: #fff0f4;
+            color: #a74360;
+        }
+
+        .favorite-card-content {
+            padding: 18px;
+        }
+
+        .favorite-card-content h2 {
+            margin: 0 0 8px;
+            color: #2b1b20;
+            font-size: 1.05rem;
+        }
+
+        .favorite-price {
+            margin: 0 0 16px;
+            color: #a74360;
+            font-weight: 700;
+        }
+
+        .favorite-card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .favorite-view-link,
+        .favorite-remove-button,
+        .favorites-empty-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: .9rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .favorite-view-link,
+        .favorites-empty-link {
+            border: 1px solid #c85f7a;
+            background: #c85f7a;
+            color: white;
+        }
+
+        .favorite-remove-button {
+            border: 1px solid #f0c5d0;
+            background: #fff;
+            color: #a74360;
+        }
+
+        .favorite-remove-button:hover {
+            background: #fff0f4;
+        }
+
+        .favorites-empty {
+            padding: 50px 20px;
+            border: 1px dashed #e8b9c7;
+            border-radius: 18px;
+            text-align: center;
+            background: #fff;
+        }
+
+        .favorites-empty .empty-heart {
+            margin-bottom: 10px;
+            color: #c85f7a;
+            font-size: 3rem;
+        }
+
+        .favorites-empty h2 {
+            color: #2b1b20;
+        }
+
+        .favorites-empty p {
+            margin-bottom: 22px;
+            color: #806b72;
+        }
+
+        .favorites-flashes {
+            max-width: 900px;
+            margin: 0 auto 20px;
+        }
+
+        .favorites-flashes p {
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: #fff;
+            color: #2b1b20;
+        }
+
+        @media (max-width: 600px) {
+            .favorites-page {
+                padding: 35px 5%;
+            }
+
+            .favorites-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .favorite-image,
+            .favorite-image-placeholder {
+                height: 175px;
+            }
+
+            .favorite-card-content {
+                padding: 12px;
+            }
+
+            .favorite-card-actions {
+                align-items: stretch;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="favorites-page">
+        <header class="favorites-heading">
+            <h1>My Favorites ♡</h1>
+            <p>Your saved beauty essentials, all in one place.</p>
+        </header>
+
+        <div class="favorites-flashes">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <p class="{{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endwith %}
+        </div>
+
+        {% if products %}
+            <section class="favorites-grid" aria-label="Favorite products">
+                {% for product in products %}
+                    <article class="favorite-card">
+                        {% if product.image_url %}
+                            <img
+                                class="favorite-image"
+                                src="{{ url_for('static', filename=product.image_url) }}"
+                                alt="{{ product.name }}"
+                                loading="lazy"
+                            >
+                        {% else %}
+                            <div class="favorite-image-placeholder">
+                                No image available
+                            </div>
+                        {% endif %}
+
+                        <div class="favorite-card-content">
+                            <h2>{{ product.name }}</h2>
+
+                            <p class="favorite-price">
+                                {{ format_npr(product.price) }}
+                            </p>
+
+                            <div class="favorite-card-actions">
+                                <a
+                                    class="favorite-view-link"
+                                    href="{{ url_for('product_details', product_id=product.id) }}"
+                                >
+                                    View Product
+                                </a>
+
+                                <form
+                                    action="{{ url_for('remove_favorite', product_id=product.id) }}"
+                                    method="POST"
+                                >
+                                    <button
+                                        type="submit"
+                                        class="favorite-remove-button"
+                                        aria-label="Remove {{ product.name }} from Favorites"
+                                    >
+                                        ♥ Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+        {% else %}
+            <section class="favorites-empty">
+                <div class="empty-heart">♡</div>
+                <h2>Your Favorites list is empty</h2>
+                <p>Explore our beauty collection and save products you love.</p>
+
+                <a
+                    class="favorites-empty-link"
+                    href="{{ url_for('beauty') }}"
+                >
+                    Explore Beauty
+                </a>
+            </section>
+        {% endif %}
+    </main>
+</body>
+</html>
+
