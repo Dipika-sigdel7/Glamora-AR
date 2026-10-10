@@ -1406,6 +1406,7 @@ def favorites():
         safe_close(cursor, connection)
 
 
+
 # =========================================================
 # ADD / REMOVE FAVORITE
 # =========================================================
@@ -1417,18 +1418,24 @@ def favorites():
 def toggle_favorite(product_id):
 
     if not session.get("user_id"):
-        flash("Please log in to save your favorite products.", "error")
+        flash(
+            "Please log in to save your favorite products.",
+            "error"
+        )
 
         return redirect(
             url_for(
                 "login",
-                next=url_for("product_details", product_id=product_id)
+                next=url_for(
+                    "product_details",
+                    product_id=product_id
+                )
             )
         )
 
     return_to = request.form.get("return_to", "").strip()
 
-    # Only allow local paths.
+    # Only allow local paths to prevent external redirects.
     if not return_to.startswith("/") or return_to.startswith("//"):
         return_to = url_for(
             "product_details",
@@ -1451,7 +1458,8 @@ def toggle_favorite(product_id):
             """
             SELECT id
             FROM products
-            WHERE id = %s AND is_available = 1
+            WHERE id = %s
+              AND is_available = 1
             LIMIT 1
             """,
             (product_id,)
@@ -1463,15 +1471,18 @@ def toggle_favorite(product_id):
             flash("This product is unavailable.", "error")
             return redirect(return_to)
 
-        # Check whether this product is already a favorite.
+        user_id = session["user_id"]
+
+        # Check whether the product is already a favorite.
         cursor.execute(
             """
             SELECT id
             FROM favorites
-            WHERE user_id = %s AND product_id = %s
+            WHERE user_id = %s
+              AND product_id = %s
             LIMIT 1
             """,
-            (session["user_id"], product_id)
+            (user_id, product_id)
         )
 
         existing = cursor.fetchone()
@@ -1480,9 +1491,10 @@ def toggle_favorite(product_id):
             cursor.execute(
                 """
                 DELETE FROM favorites
-                WHERE user_id = %s AND product_id = %s
+                WHERE user_id = %s
+                  AND product_id = %s
                 """,
-                (session["user_id"], product_id)
+                (user_id, product_id)
             )
 
             message = "Product removed from favorites."
@@ -1493,25 +1505,29 @@ def toggle_favorite(product_id):
                 INSERT INTO favorites (user_id, product_id)
                 VALUES (%s, %s)
                 """,
-                (session["user_id"], product_id)
+                (user_id, product_id)
             )
 
             message = "Product added to favorites."
 
         connection.commit()
-        flash(message, "success")
 
+        flash(message, "success")
         return redirect(return_to)
 
     except Exception as error:
-        if connection:
+        if connection is not None:
             try:
                 connection.rollback()
             except Exception:
                 pass
 
         print("TOGGLE FAVORITE ERROR:", repr(error))
-        flash("Unable to update your favorites.", "error")
+
+        flash(
+            "Unable to update your favorites.",
+            "error"
+        )
 
         return redirect(return_to)
 
@@ -1519,16 +1535,26 @@ def toggle_favorite(product_id):
         safe_close(cursor, connection)
 
 
-
 # =========================================================
 # DISPLAY FAVORITE PRODUCTS
+# IMPORTANT: Define this route only ONCE in app.py.
 # =========================================================
 
-@app.route("/favorites")
+@app.route("/favorites", endpoint="favorites")
 def favorites():
+
     if not session.get("user_id"):
-        flash("Please log in to view your favorite products.", "error")
-        return redirect(url_for("login", next=url_for("favorites")))
+        flash(
+            "Please log in to view your favorite products.",
+            "error"
+        )
+
+        return redirect(
+            url_for(
+                "login",
+                next=url_for("favorites")
+            )
+        )
 
     connection = None
     cursor = None
@@ -1550,7 +1576,9 @@ def favorites():
                     SELECT pi.image_url
                     FROM product_images pi
                     WHERE pi.product_id = p.id
-                    ORDER BY pi.is_primary DESC, pi.id ASC
+                    ORDER BY
+                        pi.is_primary DESC,
+                        pi.id ASC
                     LIMIT 1
                 ) AS image_url
             FROM favorites f
@@ -1567,8 +1595,10 @@ def favorites():
 
         favorite_products = cursor.fetchall()
 
-        # Keep the same product formatting used by the beauty page.
-        favorite_products = prepare_products(favorite_products)
+        # Use the existing product formatting helper.
+        favorite_products = prepare_products(
+            favorite_products
+        )
 
         return render_template(
             "favorites.html",
@@ -1577,12 +1607,20 @@ def favorites():
 
     except Exception as error:
         print("DISPLAY FAVORITES ERROR:", repr(error))
-        flash("Unable to load your favorite products.", "error")
 
-        return render_template("favorites.html", products=[])
+        flash(
+            "Unable to load your favorite products.",
+            "error"
+        )
+
+        return render_template(
+            "favorites.html",
+            products=[]
+        )
 
     finally:
         safe_close(cursor, connection)
+
 
 
 # =========================================================
