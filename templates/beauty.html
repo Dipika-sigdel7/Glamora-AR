@@ -87,16 +87,18 @@
                 ⌕
             </button>
 
-            <!-- WISHLIST -->
-            <button
-                class="icon-btn wishlist-btn"
-                id="wishlistBtn"
-                type="button"
-                aria-label="Wishlist"
-                title="Wishlist"
-            >
-                ♡
-            </button>
+            
+<!-- WISHLIST -->
+<a
+    href="{{ url_for('favorites') }}"
+    class="icon-btn wishlist-btn"
+    id="wishlistBtn"
+    aria-label="View favorites"
+    title="My Favorites"
+>
+    ♡
+</a>
+
 
             <!-- SHOPPING BAG -->
             <a
