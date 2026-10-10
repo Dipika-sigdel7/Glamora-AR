@@ -1328,6 +1328,200 @@ def profile():
     )
 
 
+
+# =========================================================
+# FAVORITES / WISHLIST
+# =========================================================
+
+@app.route("/favorites")
+def favorites():
+
+    if not session.get("user_id"):
+        flash("Please log in to view your favorites.", "error")
+        return redirect(
+            url_for("login", next=url_for("favorites"))
+        )
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                p.price,
+                p.stock,
+                p.shade,
+                p.color,
+                p.product_type,
+                p.is_available,
+                p.category_id,
+                c.name AS category_name,
+                (
+                    SELECT pi.image_url
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id
+                    ORDER BY pi.is_primary DESC, pi.id ASC
+                    LIMIT 1
+                ) AS image_url
+            FROM favorites f
+            INNER JOIN products p
+                ON p.id = f.product_id
+            LEFT JOIN categories c
+                ON c.id = p.category_id
+            WHERE f.user_id = %s
+            ORDER BY f.created_at DESC, f.id DESC
+            """,
+            (session["user_id"],)
+        )
+
+        favorite_products = cursor.fetchall() or []
+        favorite_products = prepare_products(favorite_products)
+
+        return render_template(
+            "favorites.html",
+            favorite_products=favorite_products
+        )
+
+    except Exception as error:
+        print("FAVORITES PAGE ERROR:", repr(error))
+        flash("Unable to load your favorites.", "error")
+
+        return render_template(
+            "favorites.html",
+            favorite_products=[]
+        )
+
+    finally:
+        safe_close(cursor, connection)
+
+
+# =========================================================
+# ADD / REMOVE FAVORITE
+# =========================================================
+
+@app.route(
+    "/favorite/toggle/<int:product_id>",
+    methods=["POST"]
+)
+def toggle_favorite(product_id):
+
+    if not session.get("user_id"):
+        flash("Please log in to save your favorite products.", "error")
+
+        return redirect(
+            url_for(
+                "login",
+                next=url_for("product_details", product_id=product_id)
+            )
+        )
+
+    return_to = request.form.get("return_to", "").strip()
+
+    # Only allow local paths.
+    if not return_to.startswith("/") or return_to.startswith("//"):
+        return_to = url_for(
+            "product_details",
+            product_id=product_id
+        )
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        # Confirm that the product exists and is available.
+        cursor.execute(
+            """
+            SELECT id
+            FROM products
+            WHERE id = %s AND is_available = 1
+            LIMIT 1
+            """,
+            (product_id,)
+        )
+
+        product = cursor.fetchone()
+
+        if not product:
+            flash("This product is unavailable.", "error")
+            return redirect(return_to)
+
+        # Check whether this product is already a favorite.
+        cursor.execute(
+            """
+            SELECT id
+            FROM favorites
+            WHERE user_id = %s AND product_id = %s
+            LIMIT 1
+            """,
+            (session["user_id"], product_id)
+        )
+
+        existing = cursor.fetchone()
+
+        if existing:
+            cursor.execute(
+                """
+                DELETE FROM favorites
+                WHERE user_id = %s AND product_id = %s
+                """,
+                (session["user_id"], product_id)
+            )
+
+            message = "Product removed from favorites."
+
+        else:
+            cursor.execute(
+                """
+                INSERT INTO favorites (user_id, product_id)
+                VALUES (%s, %s)
+                """,
+                (session["user_id"], product_id)
+            )
+
+            message = "Product added to favorites."
+
+        connection.commit()
+        flash(message, "success")
+
+        return redirect(return_to)
+
+    except Exception as error:
+        if connection:
+            try:
+                connection.rollback()
+            except Exception:
+                pass
+
+        print("TOGGLE FAVORITE ERROR:", repr(error))
+        flash("Unable to update your favorites.", "error")
+
+        return redirect(return_to)
+
+    finally:
+        safe_close(cursor, connection)
+
+
+
+
+
 # =========================================================
 # PRODUCT DETAILS
 # =========================================================
