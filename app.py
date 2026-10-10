@@ -2,6 +2,8 @@ import os
 import uuid
 import re
 
+
+from urllib.parse import urlparse
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 
