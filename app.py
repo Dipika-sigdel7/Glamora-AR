@@ -1520,6 +1520,69 @@ def toggle_favorite(product_id):
 
 
 
+# =========================================================
+# DISPLAY FAVORITE PRODUCTS
+# =========================================================
+
+@app.route("/favorites")
+def favorites():
+    if not session.get("user_id"):
+        flash("Please log in to view your favorite products.", "error")
+        return redirect(url_for("login", next=url_for("favorites")))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT
+                p.*,
+                c.name AS category_name,
+                (
+                    SELECT pi.image_url
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id
+                    ORDER BY pi.is_primary DESC, pi.id ASC
+                    LIMIT 1
+                ) AS image_url
+            FROM favorites f
+            INNER JOIN products p
+                ON p.id = f.product_id
+            LEFT JOIN categories c
+                ON c.id = p.category_id
+            WHERE f.user_id = %s
+              AND p.is_available = 1
+            ORDER BY f.created_at DESC
+            """,
+            (session["user_id"],)
+        )
+
+        favorite_products = cursor.fetchall()
+
+        # Keep the same product formatting used by the beauty page.
+        favorite_products = prepare_products(favorite_products)
+
+        return render_template(
+            "favorites.html",
+            products=favorite_products
+        )
+
+    except Exception as error:
+        print("DISPLAY FAVORITES ERROR:", repr(error))
+        flash("Unable to load your favorite products.", "error")
+
+        return render_template("favorites.html", products=[])
+
+    finally:
+        safe_close(cursor, connection)
 
 
 # =========================================================
