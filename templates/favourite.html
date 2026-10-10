@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,30 +6,23 @@
 
     <title>My Favorites | Glamora AR</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/beauty.css') }}"
-    >
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/beauty.css') }}">
+    
     <style>
         .favorites-page {
             min-height: 70vh;
-            padding: 50px 6%;
+            padding: 70px 6%;
             background: #fff5f7;
         }
 
         .favorites-heading {
-            margin-bottom: 32px;
+            margin-bottom: 35px;
             text-align: center;
         }
 
         .favorites-heading h1 {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #2b1b20;
             font-family: "Playfair Display", serif;
             font-size: clamp(2rem, 4vw, 3rem);
@@ -43,100 +35,89 @@
         .favorites-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-            gap: 24px;
+            gap: 25px;
         }
 
         .favorite-card {
             overflow: hidden;
-            border: 1px solid #f3dce3;
+            position: relative;
             border-radius: 16px;
             background: #fff;
-            box-shadow: 0 12px 35px rgba(164, 73, 98, .08);
+            box-shadow: 0 12px 35px rgba(164, 73, 98, 0.10);
         }
 
-        .favorite-image {
+        .favorite-card img {
             display: block;
             width: 100%;
-            height: 250px;
+            height: 260px;
             object-fit: cover;
-            background: #fff0f4;
-        }
-
-        .favorite-image-placeholder {
-            display: grid;
-            width: 100%;
-            height: 250px;
-            place-items: center;
-            background: #fff0f4;
-            color: #a74360;
+            background: #fdecef;
         }
 
         .favorite-card-content {
             padding: 18px;
         }
 
-        .favorite-card-content h2 {
-            margin: 0 0 8px;
+        .favorite-card-content h3 {
+            margin: 0 0 10px;
             color: #2b1b20;
-            font-size: 1.05rem;
         }
 
         .favorite-price {
-            margin: 0 0 16px;
+            margin-bottom: 16px;
             color: #a74360;
             font-weight: 700;
         }
 
-        .favorite-card-actions {
+        .favorite-actions {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
             align-items: center;
+            gap: 10px;
         }
 
-        .favorite-view-link,
-        .favorite-remove-button,
-        .favorites-empty-link {
+        .favorite-view,
+        .favorite-remove {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 40px;
+            min-height: 42px;
             padding: 10px 14px;
-            border-radius: 999px;
-            font-size: .9rem;
+            border-radius: 8px;
+            font: inherit;
             text-decoration: none;
             cursor: pointer;
         }
 
-        .favorite-view-link,
-        .favorites-empty-link {
+        .favorite-view {
+            flex: 1;
             border: 1px solid #c85f7a;
             background: #c85f7a;
-            color: white;
+            color: #fff;
         }
 
-        .favorite-remove-button {
-            border: 1px solid #f0c5d0;
+        .favorite-remove {
+            border: 1px solid #f3b8c6;
             background: #fff;
             color: #a74360;
         }
 
-        .favorite-remove-button:hover {
-            background: #fff0f4;
+        .favorite-remove:hover {
+            background: #fdecef;
         }
 
         .favorites-empty {
-            padding: 50px 20px;
-            border: 1px dashed #e8b9c7;
-            border-radius: 18px;
-            text-align: center;
+            max-width: 550px;
+            margin: 45px auto;
+            padding: 45px 25px;
+            border-radius: 16px;
             background: #fff;
+            text-align: center;
+            box-shadow: 0 12px 35px rgba(164, 73, 98, 0.08);
         }
 
-        .favorites-empty .empty-heart {
-            margin-bottom: 10px;
+        .favorites-empty .heart {
             color: #c85f7a;
-            font-size: 3rem;
+            font-size: 48px;
         }
 
         .favorites-empty h2 {
@@ -144,128 +125,157 @@
         }
 
         .favorites-empty p {
-            margin-bottom: 22px;
+            margin-bottom: 24px;
             color: #806b72;
         }
 
-        .favorites-flashes {
-            max-width: 900px;
-            margin: 0 auto 20px;
+        .favorites-shop {
+            display: inline-block;
+            padding: 12px 22px;
+            border-radius: 8px;
+            background: #c85f7a;
+            color: #fff;
+            text-decoration: none;
         }
 
-        .favorites-flashes p {
-            padding: 12px 16px;
-            border-radius: 10px;
-            background: #fff;
-            color: #2b1b20;
+        .favorite-flash {
+            margin: 0 auto 20px;
+            text-align: center;
+            color: #a74360;
         }
 
         @media (max-width: 600px) {
             .favorites-page {
-                padding: 35px 5%;
+                padding: 45px 5%;
             }
 
             .favorites-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 12px;
+                gap: 14px;
             }
 
-            .favorite-image,
-            .favorite-image-placeholder {
-                height: 175px;
+            .favorite-card img {
+                height: 180px;
             }
 
             .favorite-card-content {
                 padding: 12px;
             }
 
-            .favorite-card-actions {
-                align-items: stretch;
+            .favorite-actions {
                 flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
 </head>
 
 <body>
+
+    <!-- Keep your existing shared navbar here if it is stored in a separate
+         template. Otherwise, add your existing Glamora AR navbar here. -->
+
     <main class="favorites-page">
+
         <header class="favorites-heading">
             <h1>My Favorites ♡</h1>
-            <p>Your saved beauty essentials, all in one place.</p>
+            <p>Your beauty picks, all in one place.</p>
         </header>
 
-        <div class="favorites-flashes">
-            {% with messages = get_flashed_messages(with_categories=true) %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
                 {% for category, message in messages %}
-                    <p class="{{ category }}">{{ message }}</p>
+                    <p class="favorite-flash">{{ message }}</p>
                 {% endfor %}
-            {% endwith %}
-        </div>
+            {% endif %}
+        {% endwith %}
 
         {% if products %}
-            <section class="favorites-grid" aria-label="Favorite products">
+            <div class="favorites-grid">
+
                 {% for product in products %}
                     <article class="favorite-card">
+
                         {% if product.image_url %}
                             <img
-                                class="favorite-image"
-                                src="{{ url_for('static', filename=product.image_url) }}"
+                                src="{{ product.image_url }}"
                                 alt="{{ product.name }}"
                                 loading="lazy"
                             >
                         {% else %}
-                            <div class="favorite-image-placeholder">
-                                No image available
-                            </div>
+                            <img
+                                src="{{ url_for('static', filename='images/product-placeholder.png') }}"
+                                alt="Product image unavailable"
+                                loading="lazy"
+                            >
                         {% endif %}
 
                         <div class="favorite-card-content">
-                            <h2>{{ product.name }}</h2>
+
+                            <h3>{{ product.name }}</h3>
 
                             <p class="favorite-price">
-                                {{ format_npr(product.price) }}
+                                {{ currency_symbol }}{{ format_npr(product.price) }}
                             </p>
 
-                            <div class="favorite-card-actions">
+                            <div class="favorite-actions">
+
                                 <a
-                                    class="favorite-view-link"
+                                    class="favorite-view"
                                     href="{{ url_for('product_details', product_id=product.id) }}"
                                 >
                                     View Product
                                 </a>
 
                                 <form
-                                    action="{{ url_for('remove_favorite', product_id=product.id) }}"
+                                    action="{{ url_for('toggle_favorite', product_id=product.id) }}"
                                     method="POST"
                                 >
+                                    <input
+                                        type="hidden"
+                                        name="return_to"
+                                        value="{{ url_for('favorites') }}"
+                                    >
+
                                     <button
                                         type="submit"
-                                        class="favorite-remove-button"
-                                        aria-label="Remove {{ product.name }} from Favorites"
+                                        class="favorite-remove"
+                                        aria-label="Remove {{ product.name }} from favorites"
+                                        title="Remove from favorites"
                                     >
-                                        ♥ Remove
+                                        ♡ Remove
                                     </button>
                                 </form>
+
                             </div>
                         </div>
+
                     </article>
                 {% endfor %}
-            </section>
+
+            </div>
+
         {% else %}
+
             <section class="favorites-empty">
-                <div class="empty-heart">♡</div>
-                <h2>Your Favorites list is empty</h2>
-                <p>Explore our beauty collection and save products you love.</p>
+                <div class="heart">♡</div>
+                <h2>No favorites yet</h2>
+                <p>
+                    Explore our beauty collection and tap the heart
+                    on products you want to save.
+                </p>
 
                 <a
-                    class="favorites-empty-link"
                     href="{{ url_for('beauty') }}"
+                    class="favorites-shop"
                 >
                     Explore Beauty
                 </a>
             </section>
+
         {% endif %}
+
     </main>
+
 </body>
 </html>
-
