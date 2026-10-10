@@ -4091,6 +4091,53 @@
 }
 
 
+/* =========================================================
+   PRODUCT FAVORITES
+   ========================================================= */
+
+.beauty-product-image {
+    position: relative;
+}
+
+.favorite-form {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 10;
+    margin: 0;
+}
+
+.product-favorite-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid #f3b8c6;
+    border-radius: 50%;
+    background: #fff;
+    color: #c85f7a;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(164, 73, 98, 0.12);
+    transition: 0.25s ease;
+}
+
+.product-favorite-btn:hover {
+    background: #c85f7a;
+    color: #fff;
+    transform: scale(1.08);
+}
+
+.product-favorite-btn:focus-visible {
+    outline: 2px solid #a74360;
+    outline-offset: 3px;
+}
+
+
+
 
 /* =========================================================
    REDUCED MOTION
