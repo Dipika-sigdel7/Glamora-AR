@@ -461,30 +461,29 @@
                         <!-- PRODUCT IMAGE -->
                         <div class="beauty-product-image">
 
-
-                                <!-- FAVORITE BUTTON -->
-    <form
-        action="{{ url_for('toggle_favorite', product_id=product.id) }}"
-        method="POST"
-        class="favorite-form"
+                        
+<!-- FAVORITE BUTTON -->
+<form
+    action="{{ url_for('toggle_favorite', product_id=product.id) }}"
+    method="POST"
+    class="favorite-form"
+>
+    <input
+        type="hidden"
+        name="return_to"
+        value="{{ request.path }}"
     >
-        <input
-            type="hidden"
-            name="return_to"
-            value="{{ request.path }}"
-        >
 
-        <button
-            type="submit"
-            class="product-favorite-btn"
-            aria-label="Add {{ product.name }} to favorites"
-            title="Add to Favorites"
-        >
-            ♡
-        </button>
-    </form>
-
-                            <a
+    <button
+        type="submit"
+        class="product-favorite-btn"
+        aria-label="Add {{ product.name }} to favorites"
+        title="Add to Favorites"
+    >
+        ♡
+    </button>
+</form>
+                 <a
                                 href="{{ url_for('product_details', product_id=product.id) }}"
                                 class="product-image-link"
                                 aria-label="View {{ product.name }}"
