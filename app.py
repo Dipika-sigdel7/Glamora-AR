@@ -1417,30 +1417,62 @@ def favorites():
 )
 def toggle_favorite(product_id):
 
+    # -----------------------------------------------------
+    # REQUIRE LOGIN
+    # -----------------------------------------------------
+
     if not session.get("user_id"):
         flash(
             "Please log in to save your favorite products.",
             "error"
         )
 
-        return redirect(
-            url_for(
-                "login",
-                next=url_for(
-                    "product_details",
-                    product_id=product_id
-                )
+        return_to = (
+            request.form.get("return_to", "").strip()
+            or request.referrer
+            or url_for(
+                "product_details",
+                product_id=product_id
             )
         )
 
-    return_to = request.form.get("return_to", "").strip()
+        parsed = urlparse(return_to)
 
-    # Only allow local paths to prevent external redirects.
-    if not return_to.startswith("/") or return_to.startswith("//"):
-        return_to = url_for(
-            "product_details",
-            product_id=product_id
+        if (
+            not return_to.startswith("/")
+            or return_to.startswith("//")
+            or parsed.scheme
+            or parsed.netloc
+        ):
+            return_to = url_for(
+                "product_details",
+                product_id=product_id
+            )
+
+        return redirect(
+            url_for("login", next=return_to)
         )
+
+    # -----------------------------------------------------
+    # DETERMINE WHERE TO RETURN AFTER TOGGLING
+    # -----------------------------------------------------
+
+    return_to = (
+        request.form.get("return_to", "").strip()
+        or request.referrer
+        or url_for("beauty")
+    )
+
+    parsed = urlparse(return_to)
+
+    # Allow local paths only.
+    if (
+        not return_to.startswith("/")
+        or return_to.startswith("//")
+        or parsed.scheme
+        or parsed.netloc
+    ):
+        return_to = url_for("beauty")
 
     connection = None
     cursor = None
@@ -1449,11 +1481,18 @@ def toggle_favorite(product_id):
         connection = get_db_connection()
 
         if connection is None:
-            raise RuntimeError("Database connection failed.")
+            raise RuntimeError(
+                "Database connection failed."
+            )
 
         cursor = connection.cursor(dictionary=True)
 
-        # Confirm that the product exists and is available.
+        user_id = session["user_id"]
+
+        # -------------------------------------------------
+        # CHECK PRODUCT AVAILABILITY
+        # -------------------------------------------------
+
         cursor.execute(
             """
             SELECT id
@@ -1468,12 +1507,17 @@ def toggle_favorite(product_id):
         product = cursor.fetchone()
 
         if not product:
-            flash("This product is unavailable.", "error")
+            flash(
+                "This product is unavailable.",
+                "error"
+            )
+
             return redirect(return_to)
 
-        user_id = session["user_id"]
+        # -------------------------------------------------
+        # CHECK WHETHER PRODUCT IS ALREADY A FAVORITE
+        # -------------------------------------------------
 
-        # Check whether the product is already a favorite.
         cursor.execute(
             """
             SELECT id
@@ -1487,6 +1531,10 @@ def toggle_favorite(product_id):
 
         existing = cursor.fetchone()
 
+        # -------------------------------------------------
+        # REMOVE FAVORITE
+        # -------------------------------------------------
+
         if existing:
             cursor.execute(
                 """
@@ -1497,32 +1545,53 @@ def toggle_favorite(product_id):
                 (user_id, product_id)
             )
 
-            message = "Product removed from favorites."
+            message = (
+                "Product removed from favorites."
+            )
+
+        # -------------------------------------------------
+        # ADD FAVORITE
+        # -------------------------------------------------
 
         else:
             cursor.execute(
                 """
-                INSERT INTO favorites (user_id, product_id)
+                INSERT INTO favorites (
+                    user_id,
+                    product_id
+                )
                 VALUES (%s, %s)
                 """,
                 (user_id, product_id)
             )
 
-            message = "Product added to favorites."
+            message = (
+                "Product added to favorites."
+            )
+
+        # -------------------------------------------------
+        # SAVE CHANGES
+        # -------------------------------------------------
 
         connection.commit()
 
         flash(message, "success")
+
+        # Return to the page where the heart was clicked.
         return redirect(return_to)
 
     except Exception as error:
+
         if connection is not None:
             try:
                 connection.rollback()
             except Exception:
                 pass
 
-        print("TOGGLE FAVORITE ERROR:", repr(error))
+        print(
+            "TOGGLE FAVORITE ERROR:",
+            repr(error)
+        )
 
         flash(
             "Unable to update your favorites.",
