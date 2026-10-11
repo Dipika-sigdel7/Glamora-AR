@@ -1297,3 +1297,134 @@ window.filterBeautyProducts =
         });
 
     };
+
+
+
+/* =========================================================
+   FAVORITES — AJAX WITHOUT PAGE RELOAD
+   ========================================================= */
+
+function initializeFavorites() {
+    const favoriteForms = document.querySelectorAll(".favorite-form");
+
+    if (!favoriteForms.length) {
+        return;
+    }
+
+    let notification = document.getElementById("favoriteNotification");
+    let notificationTimer;
+
+    if (!notification) {
+        notification = document.createElement("div");
+        notification.id = "favoriteNotification";
+        notification.className = "favorite-notification";
+        notification.setAttribute("role", "status");
+        notification.setAttribute("aria-live", "polite");
+        document.body.appendChild(notification);
+    }
+
+    function showFavoriteMessage(message, isError = false) {
+        notification.textContent = message;
+        notification.classList.toggle("error", isError);
+        notification.classList.add("show");
+
+        clearTimeout(notificationTimer);
+
+        notificationTimer = setTimeout(() => {
+            notification.classList.remove("show");
+        }, 2500);
+    }
+
+    favoriteForms.forEach(form => {
+        // Prevent registering the handler twice.
+        if (form.dataset.favoriteInitialized === "true") {
+            return;
+        }
+
+        form.dataset.favoriteInitialized = "true";
+
+        form.addEventListener("submit", async event => {
+            // This prevents the normal form submission and reload.
+            event.preventDefault();
+
+            const button = form.querySelector(".product-favorite-btn");
+            const heart = form.querySelector(".favorite-heart");
+
+            if (!button || button.disabled) {
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: new FormData(form),
+                    credentials: "same-origin",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Accept": "application/json"
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.login_required && result.login_url) {
+                    showFavoriteMessage(
+                        result.message || "Please log in to save favorites."
+                    );
+
+                    setTimeout(() => {
+                        window.location.href = result.login_url;
+                    }, 800);
+
+                    return;
+                }
+
+                if (!response.ok || !result.success) {
+                    showFavoriteMessage(
+                        result.message || "Unable to update favorites.",
+                        true
+                    );
+                    return;
+                }
+
+                const isFavorite = result.is_favorite;
+
+                if (heart) {
+                    heart.textContent = isFavorite ? "♥" : "♡";
+                } else {
+                    // Supports the original form containing only ♡.
+                    button.textContent = isFavorite ? "♥" : "♡";
+                }
+
+                button.classList.toggle("is-favorite", isFavorite);
+                button.setAttribute("aria-pressed", String(isFavorite));
+                button.title = isFavorite
+                    ? "Remove from Favorites"
+                    : "Add to Favorites";
+
+                showFavoriteMessage(
+                    result.message ||
+                    (isFavorite
+                        ? "Product added to favorites."
+                        : "Product removed from favorites.")
+                );
+
+            } catch (error) {
+                console.error("Favorite request failed:", error);
+
+                showFavoriteMessage(
+                    "Unable to update favorites. Check the browser console.",
+                    true
+                );
+            } finally {
+                button.disabled = false;
+            }
+        });
+    });
+}
+
+// Your main.js already registers DOMContentLoaded above.
+// This listener initializes the favorite buttons on the Beauty page.
+document.addEventListener("DOMContentLoaded", initializeFavorites);
