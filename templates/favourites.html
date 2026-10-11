@@ -462,54 +462,121 @@
 
 <body>
 
-    <!-- NAVBAR -->
 
-    <nav class="favorites-navbar" aria-label="Main navigation">
+<!-- =================================================
+     GLAMORA AR NAVBAR
+     MATCHES BEAUTY PAGE
+     ================================================= -->
 
-        <a class="favorites-logo" href="{{ url_for('index') }}">
-            Glamora AR
+<header class="navbar">
+
+    <!-- LOGO -->
+    <a
+        href="{{ url_for('index') }}"
+        class="logo"
+        aria-label="Glamora AR Home"
+    >
+        GLAMORA <span>AR</span>
+    </a>
+
+    <!-- MAIN NAVIGATION -->
+    <nav
+        class="nav-links"
+        id="navLinks"
+        aria-label="Main navigation"
+    >
+        <a href="{{ url_for('index') }}">Home</a>
+
+        <a href="{{ url_for('beauty') }}">Beauty</a>
+
+        <a href="{{ url_for('about') }}">About</a>
+
+        <a href="{{ url_for('contact') }}">Contact</a>
+    </nav>
+
+    <!-- NAVIGATION ACTIONS -->
+    <div class="nav-actions">
+
+        <!-- SEARCH -->
+        <button
+            class="icon-btn"
+            id="searchBtn"
+            type="button"
+            aria-label="Search"
+            title="Search"
+        >
+            ⌕
+        </button>
+
+        <!-- FAVORITES -->
+        <a
+            href="{{ url_for('favorites') }}"
+            class="icon-btn wishlist-btn active"
+            id="wishlistBtn"
+            aria-label="View favorites"
+            title="My Favorites"
+            aria-current="page"
+        >
+            ♡
         </a>
 
+        <!-- SHOPPING BAG -->
+        <a
+            href="{{ url_for('cart') }}"
+            class="cart-btn"
+            id="cartBtn"
+            aria-label="Shopping bag"
+            title="Shopping bag"
+        >
+            <span>Bag</span>
+
+            <span class="cart-count" id="cartCount">
+                {{ bag_count|default(0) }}
+            </span>
+        </a>
+
+        <!-- PROFILE OR LOGIN -->
+        {% if session.get('user_id') %}
+
+            <a
+                href="{{ url_for('profile') }}"
+                class="login-btn"
+                id="profileBtn"
+                aria-label="Go to your profile"
+            >
+                <span class="login-icon">♙</span>
+                <span>Profile</span>
+            </a>
+
+        {% else %}
+
+            <a
+                href="{{ url_for('login', next=request.path) }}"
+                class="login-btn"
+                id="loginBtn"
+                aria-label="Login to Glamora AR"
+            >
+                <span class="login-icon">♙</span>
+                <span>Login</span>
+            </a>
+
+        {% endif %}
+
+        <!-- MOBILE MENU -->
         <button
-            class="favorites-menu-toggle"
-            id="favoritesMenuToggle"
+            class="menu-btn"
+            id="menuBtn"
             type="button"
-            aria-label="Toggle navigation"
+            aria-label="Open navigation menu"
             aria-expanded="false"
+            aria-controls="navLinks"
         >
             ☰
         </button>
 
-        <div class="favorites-nav-links" id="favoritesNavLinks">
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('beauty') }}">Beauty</a>
-            <a href="{{ url_for('about') }}">About</a>
-            <a href="{{ url_for('contact') }}">Contact</a>
-            <a href="{{ url_for('favorites') }}" class="active">
-                Favorites
-            </a>
-        </div>
+    </div>
 
-        <div class="favorites-nav-actions">
-
-            <a href="{{ url_for('cart') }}">
-                Bag
-                <span class="favorites-bag-count">
-                    {{ bag_count|default(0) }}
-                </span>
-            </a>
-
-            {% if session.get('user_id') %}
-                <a href="{{ url_for('profile') }}">My Profile</a>
-            {% else %}
-                <a href="{{ url_for('login', next=request.path) }}">
-                    Login
-                </a>
-            {% endif %}
-
-        </div>
-
-    </nav>
+</header>
 
     <!-- FAVORITES CONTENT -->
 
