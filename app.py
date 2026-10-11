@@ -1419,55 +1419,24 @@ def favorites():
 )
 def toggle_favorite(product_id):
 
-    # -----------------------------------------------------
-    # REQUIRE LOGIN
-    # -----------------------------------------------------
-
-    if not session.get("user_id"):
-        flash(
-            "Please log in to save your favorite products.",
-            "error"
-        )
-
-        return_to = (
-            request.form.get("return_to", "").strip()
-            or request.referrer
-            or url_for(
-                "product_details",
-                product_id=product_id
-            )
-        )
-
-        parsed = urlparse(return_to)
-
-        if (
-            not return_to.startswith("/")
-            or return_to.startswith("//")
-            or parsed.scheme
-            or parsed.netloc
-        ):
-            return_to = url_for(
-                "product_details",
-                product_id=product_id
-            )
-
-        return redirect(
-            url_for("login", next=return_to)
-        )
+    # Detect AJAX requests from the Beauty page.
+    is_ajax = (
+        request.headers.get("X-Requested-With")
+        == "XMLHttpRequest"
+    )
 
     # -----------------------------------------------------
-    # DETERMINE WHERE TO RETURN AFTER TOGGLING
+    # VALIDATE RETURN URL
     # -----------------------------------------------------
 
     return_to = (
         request.form.get("return_to", "").strip()
-        or request.referrer
         or url_for("beauty")
     )
 
     parsed = urlparse(return_to)
 
-    # Allow local paths only.
+    # Only allow local paths.
     if (
         not return_to.startswith("/")
         or return_to.startswith("//")
@@ -1476,10 +1445,41 @@ def toggle_favorite(product_id):
     ):
         return_to = url_for("beauty")
 
+    # -----------------------------------------------------
+    # REQUIRE LOGIN
+    # -----------------------------------------------------
+
+    if not session.get("user_id"):
+
+        message = (
+            "Please log in to save your favorite products."
+        )
+
+        if is_ajax:
+            return jsonify({
+                "success": False,
+                "message": message,
+                "login_required": True,
+                "login_url": url_for(
+                    "login",
+                    next=return_to
+                )
+            }), 401
+
+        flash(message, "error")
+
+        return redirect(
+            url_for(
+                "login",
+                next=return_to
+            )
+        )
+
     connection = None
     cursor = None
 
     try:
+
         connection = get_db_connection()
 
         if connection is None:
@@ -1487,7 +1487,9 @@ def toggle_favorite(product_id):
                 "Database connection failed."
             )
 
-        cursor = connection.cursor(dictionary=True)
+        cursor = connection.cursor(
+            dictionary=True
+        )
 
         user_id = session["user_id"]
 
@@ -1509,15 +1511,20 @@ def toggle_favorite(product_id):
         product = cursor.fetchone()
 
         if not product:
-            flash(
-                "This product is unavailable.",
-                "error"
-            )
 
+            message = "This product is unavailable."
+
+            if is_ajax:
+                return jsonify({
+                    "success": False,
+                    "message": message
+                }), 404
+
+            flash(message, "error")
             return redirect(return_to)
 
         # -------------------------------------------------
-        # CHECK WHETHER PRODUCT IS ALREADY A FAVORITE
+        # CHECK EXISTING FAVORITE
         # -------------------------------------------------
 
         cursor.execute(
@@ -1538,6 +1545,7 @@ def toggle_favorite(product_id):
         # -------------------------------------------------
 
         if existing:
+
             cursor.execute(
                 """
                 DELETE FROM favorites
@@ -1547,15 +1555,16 @@ def toggle_favorite(product_id):
                 (user_id, product_id)
             )
 
-            message = (
-                "Product removed from favorites."
-            )
+            is_favorite = False
+
+            message = "Product removed from favorites."
 
         # -------------------------------------------------
         # ADD FAVORITE
         # -------------------------------------------------
 
         else:
+
             cursor.execute(
                 """
                 INSERT INTO favorites (
@@ -1567,9 +1576,9 @@ def toggle_favorite(product_id):
                 (user_id, product_id)
             )
 
-            message = (
-                "Product added to favorites."
-            )
+            is_favorite = True
+
+            message = "Product added to favorites."
 
         # -------------------------------------------------
         # SAVE CHANGES
@@ -1577,9 +1586,17 @@ def toggle_favorite(product_id):
 
         connection.commit()
 
+        # AJAX: respond without redirecting or reloading.
+        if is_ajax:
+            return jsonify({
+                "success": True,
+                "is_favorite": is_favorite,
+                "message": message
+            }), 200
+
+        # Normal form submission: preserve old behavior.
         flash(message, "success")
 
-        # Return to the page where the heart was clicked.
         return redirect(return_to)
 
     except Exception as error:
@@ -1595,15 +1612,24 @@ def toggle_favorite(product_id):
             repr(error)
         )
 
-        flash(
-            "Unable to update your favorites.",
-            "error"
-        )
+        message = "Unable to update your favorites."
+
+        if is_ajax:
+            return jsonify({
+                "success": False,
+                "message": message
+            }), 500
+
+        flash(message, "error")
 
         return redirect(return_to)
 
     finally:
-        safe_close(cursor, connection)
+
+        safe_close(
+            cursor,
+            connection
+        )
 
 
 
