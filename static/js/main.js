@@ -1,12 +1,9 @@
+
 /* =========================================================
    GLAMORA AR
    MAIN JAVASCRIPT
-   COMPLETE CORRECTED VERSION
-   ========================================================= */
-
-
-/* =========================================================
-   GLOBAL VARIABLES
+   CORRECTED VERSION
+   Supports Beauty and Favorites pages
    ========================================================= */
 
 let lastLipstickIndex = -1;
@@ -17,41 +14,26 @@ let lastLipstickIndex = -1;
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-
     initializeLoader();
-
     initializeRevealAnimations();
-
     initializeActiveNavigation();
-
     initializeMakeupOptions();
-
     initializeHeroParallax();
-
     initializeMobileMenu();
-
     initializeProductHover();
-
     initializeBeautyCategoryCards();
-
     initializeLoginPopup();
-
     initializeAddToBag();
+    initializeFavorites();
 
     randomizeLipstick();
-
     randomizeEyeliner();
 
-
-    /*
-     * Rotate lipstick appearance every 5 seconds.
-     */
-    setInterval(() => {
-
-        randomizeLipstick();
-
-    }, 5000);
-
+    if (document.querySelector(
+        ".lipstick-visual, .lipstick-card"
+    )) {
+        setInterval(randomizeLipstick, 5000);
+    }
 });
 
 
@@ -60,24 +42,16 @@ document.addEventListener("DOMContentLoaded", () => {
    ========================================================= */
 
 function initializeLoader() {
+    const loader = document.getElementById("loader");
 
-    const loader =
-        document.getElementById("loader");
-
-    if (!loader) {
-        return;
-    }
+    if (!loader) return;
 
     setTimeout(() => {
-
         loader.classList.add("hidden");
 
         setTimeout(() => {
-
             loader.style.display = "none";
-
         }, 500);
-
     }, 1700);
 }
 
@@ -87,64 +61,33 @@ function initializeLoader() {
    ========================================================= */
 
 function initializeRevealAnimations() {
+    const elements = document.querySelectorAll(".reveal");
 
-    const revealElements =
-        document.querySelectorAll(".reveal");
+    if (!elements.length) return;
 
-    if (!revealElements.length) {
-        return;
-    }
-
-
-    /*
-     * Browser does not support IntersectionObserver.
-     * Show everything normally.
-     */
     if (!("IntersectionObserver" in window)) {
-
-        revealElements.forEach(element => {
-
+        elements.forEach(element => {
             element.classList.add("visible");
-
         });
-
         return;
     }
 
+    const observer = new IntersectionObserver(
+        (entries, observerInstance) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
 
-    const observer =
-        new IntersectionObserver(
-            (entries, observerInstance) => {
+                entry.target.classList.add("visible");
+                observerInstance.unobserve(entry.target);
+            });
+        },
+        {
+            threshold: 0.12,
+            rootMargin: "0px 0px -40px 0px"
+        }
+    );
 
-                entries.forEach(entry => {
-
-                    if (!entry.isIntersecting) {
-                        return;
-                    }
-
-                    entry.target.classList.add(
-                        "visible"
-                    );
-
-                    observerInstance.unobserve(
-                        entry.target
-                    );
-
-                });
-
-            },
-            {
-                threshold: 0.12,
-                rootMargin: "0px 0px -40px 0px"
-            }
-        );
-
-
-    revealElements.forEach(element => {
-
-        observer.observe(element);
-
-    });
+    elements.forEach(element => observer.observe(element));
 }
 
 
@@ -153,61 +96,28 @@ function initializeRevealAnimations() {
    ========================================================= */
 
 function initializeActiveNavigation() {
-
     const currentPath =
-        window.location.pathname.replace(
-            /\/+$/,
-            ""
-        ) || "/";
+        window.location.pathname.replace(/\/+$/, "") || "/";
 
+    document.querySelectorAll(".nav-links a").forEach(link => {
+        const href = link.getAttribute("href");
 
-    const navLinks =
-        document.querySelectorAll(
-            ".nav-links a"
-        );
-
-
-    navLinks.forEach(link => {
-
-        const href =
-            link.getAttribute("href");
-
-        if (!href || href.startsWith("#")) {
-            return;
-        }
-
-
-        let linkPath = "";
-
+        if (!href || href.startsWith("#")) return;
 
         try {
+            const linkPath = new URL(
+                href,
+                window.location.origin
+            ).pathname.replace(/\/+$/, "") || "/";
 
-            linkPath =
-                new URL(
-                    href,
-                    window.location.origin
-                ).pathname.replace(
-                    /\/+$/,
-                    ""
-                ) || "/";
-
+            if (linkPath === currentPath) {
+                link.classList.add("active");
+            } else {
+                link.classList.remove("active");
+            }
         } catch (error) {
-
-            return;
-
+            console.warn("Unable to check navigation link:", error);
         }
-
-
-        if (linkPath === currentPath) {
-
-            link.classList.add("active");
-
-        } else {
-
-            link.classList.remove("active");
-
-        }
-
     });
 }
 
@@ -217,38 +127,18 @@ function initializeActiveNavigation() {
    ========================================================= */
 
 function initializeMakeupOptions() {
+    const options = document.querySelectorAll(
+        ".makeup-option, .makeup-card"
+    );
 
-    const makeupOptions =
-        document.querySelectorAll(
-            ".makeup-option, .makeup-card"
-        );
+    options.forEach(option => {
+        option.addEventListener("click", () => {
+            options.forEach(item => {
+                item.classList.remove("active");
+            });
 
-    if (!makeupOptions.length) {
-        return;
-    }
-
-
-    makeupOptions.forEach(option => {
-
-        option.addEventListener(
-            "click",
-            () => {
-
-                makeupOptions.forEach(item => {
-
-                    item.classList.remove(
-                        "active"
-                    );
-
-                });
-
-                option.classList.add(
-                    "active"
-                );
-
-            }
-        );
-
+            option.classList.add("active");
+        });
     });
 }
 
@@ -258,164 +148,123 @@ function initializeMakeupOptions() {
    ========================================================= */
 
 function initializeHeroParallax() {
+    const heroVisual = document.querySelector(
+        ".beauty-hero-visual, .hero-visual"
+    );
 
-    const heroVisual =
-        document.querySelector(
-            ".beauty-hero-visual, .hero-visual"
-        );
-
-    if (!heroVisual) {
-        return;
-    }
-
-
-    /*
-     * Disable parallax on smaller screens.
-     */
-    if (window.innerWidth <= 768) {
-        return;
-    }
-
+    if (!heroVisual || window.innerWidth <= 768) return;
 
     let ticking = false;
 
-
-    function updateHeroParallax() {
-
-        const scrollY =
-            window.scrollY;
-
-
-        const movement =
-            Math.min(
-                scrollY * 0.08,
-                35
-            );
-
-
-        /*
-         * Only move the hero visual.
-         *
-         * Product cards are NOT affected.
-         */
+    function updateParallax() {
         heroVisual.style.transform =
-            `translate3d(0, ${movement}px, 0)`;
-
+            `translate3d(0, ${Math.min(window.scrollY * 0.08, 35)}px, 0)`;
 
         ticking = false;
     }
 
+    window.addEventListener("scroll", () => {
+        if (ticking) return;
 
-    window.addEventListener(
-        "scroll",
-        () => {
-
-            if (!ticking) {
-
-                window.requestAnimationFrame(
-                    updateHeroParallax
-                );
-
-                ticking = true;
-
-            }
-
-        },
-        {
-            passive: true
-        }
-    );
+        window.requestAnimationFrame(updateParallax);
+        ticking = true;
+    }, { passive: true });
 }
 
 
 /* =========================================================
-   MOBILE MENU
+   MOBILE NAVIGATION
+   Supports:
+   1. Beauty page: .nav-links.open
+   2. Favorites page: .mobile-menu.open
    ========================================================= */
 
 function initializeMobileMenu() {
+    const menuButton = document.getElementById("menuBtn");
 
-    const menuButton =
-        document.getElementById(
-            "menuBtn"
-        );
-
-
-    const navLinks =
-        document.querySelector(
-            ".nav-links"
-        );
-
-
-    if (!menuButton || !navLinks) {
+    if (!menuButton || menuButton.dataset.menuInitialized === "true") {
         return;
     }
 
+    const navLinks = document.querySelector(".nav-links");
+    const mobileMenu = document.getElementById("mobileMenu");
 
-    menuButton.setAttribute(
-        "aria-expanded",
-        "false"
-    );
+    // Prefer the dedicated mobile menu when the page has one.
+    const menuPanel = mobileMenu || navLinks;
 
+    if (!menuPanel) return;
 
-    menuButton.addEventListener(
-        "click",
-        () => {
+    menuButton.dataset.menuInitialized = "true";
 
-            navLinks.classList.toggle(
-                "open"
-            );
+    function isMenuOpen() {
+        return menuPanel.classList.contains("open");
+    }
 
-            menuButton.classList.toggle(
-                "active"
-            );
+    function closeMenu() {
+        menuPanel.classList.remove("open");
+        menuButton.classList.remove("active");
+        menuButton.setAttribute("aria-expanded", "false");
+        menuButton.setAttribute(
+            "aria-label",
+            "Open navigation menu"
+        );
 
+        menuButton.textContent = "☰";
+    }
 
-            const isOpen =
-                navLinks.classList.contains(
-                    "open"
-                );
+    function toggleMenu() {
+        const shouldOpen = !isMenuOpen();
 
+        menuPanel.classList.toggle("open", shouldOpen);
+        menuButton.classList.toggle("active", shouldOpen);
+        menuButton.setAttribute(
+            "aria-expanded",
+            String(shouldOpen)
+        );
+        menuButton.setAttribute(
+            "aria-label",
+            shouldOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
+        );
 
-            menuButton.setAttribute(
-                "aria-expanded",
-                isOpen
-                    ? "true"
-                    : "false"
-            );
+        menuButton.textContent = shouldOpen ? "✕" : "☰";
+    }
 
+    menuButton.setAttribute("aria-expanded", "false");
+
+    menuButton.addEventListener("click", event => {
+        event.preventDefault();
+        toggleMenu();
+    });
+
+    menuPanel.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", closeMenu);
+    });
+
+    document.addEventListener("click", event => {
+        if (
+            isMenuOpen() &&
+            !menuPanel.contains(event.target) &&
+            !menuButton.contains(event.target)
+        ) {
+            closeMenu();
         }
-    );
+    });
 
-
-    /*
-     * Close mobile menu after
-     * selecting a navigation link.
-     */
-    navLinks.querySelectorAll("a").forEach(
-        link => {
-
-            link.addEventListener(
-                "click",
-                () => {
-
-                    navLinks.classList.remove(
-                        "open"
-                    );
-
-                    menuButton.classList.remove(
-                        "active"
-                    );
-
-                    menuButton.setAttribute(
-                        "aria-expanded",
-                        "false"
-                    );
-
-                }
-            );
-
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && isMenuOpen()) {
+            closeMenu();
+            menuButton.focus();
         }
-    );
+    });
+
+    // Keep the menu closed if the viewport changes to desktop.
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 750) {
+            closeMenu();
+        }
+    });
 }
 
 
@@ -424,152 +273,56 @@ function initializeMobileMenu() {
    ========================================================= */
 
 function initializeProductHover() {
+    const cards = document.querySelectorAll(
+        ".beauty-product-card, .product-card"
+    );
 
-    const productCards =
-        document.querySelectorAll(
-            ".beauty-product-card, .product-card"
-        );
+    cards.forEach(card => {
+        card.addEventListener("mouseenter", () => {
+            card.classList.add("hovered");
+        });
 
-
-    if (!productCards.length) {
-        return;
-    }
-
-
-    productCards.forEach(card => {
-
-        card.addEventListener(
-            "mouseenter",
-            () => {
-
-                card.classList.add(
-                    "hovered"
-                );
-
-            }
-        );
-
-
-        card.addEventListener(
-            "mouseleave",
-            () => {
-
-                card.classList.remove(
-                    "hovered"
-                );
-
-            }
-        );
-
+        card.addEventListener("mouseleave", () => {
+            card.classList.remove("hovered");
+        });
     });
 }
 
 
 /* =========================================================
    ADD TO BAG
+   Allow normal form submission to Flask.
    ========================================================= */
 
 function initializeAddToBag() {
+    document.querySelectorAll(".add-to-cart-form").forEach(form => {
+        if (form.dataset.cartInitialized === "true") return;
 
-    const addToBagForms =
-        document.querySelectorAll(
-            ".add-to-cart-form"
-        );
+        form.dataset.cartInitialized = "true";
 
+        form.addEventListener("submit", event => {
+            const button = form.querySelector(".add-to-cart-btn");
 
-    if (!addToBagForms.length) {
-        return;
-    }
-
-
-    addToBagForms.forEach(form => {
-
-        form.addEventListener(
-            "submit",
-            event => {
-
-                const button =
-                    form.querySelector(
-                        ".add-to-cart-btn"
-                    );
-
-
-                if (!button) {
-                    return;
-                }
-
-
-                /*
-                 * Prevent multiple clicks while
-                 * Flask is processing the request.
-                 *
-                 * IMPORTANT:
-                 * We do NOT call preventDefault().
-                 *
-                 * The form must be submitted normally
-                 * to Flask.
-                 */
-                if (
-                    button.dataset.submitting === "true"
-                ) {
-
-                    event.preventDefault();
-
-                    return;
-
-                }
-
-
-                button.dataset.submitting =
-                    "true";
-
-
-                button.disabled = true;
-
-
-                button.classList.add(
-                    "adding"
-                );
-
-
-                const text =
-                    button.querySelector(
-                        ".add-to-bag-text"
-                    );
-
-
-                if (text) {
-
-                    text.textContent =
-                        "Adding...";
-
-                } else {
-
-                    /*
-                     * Fallback for existing HTML
-                     * where the text is inside
-                     * the last span.
-                     */
-                    const spans =
-                        button.querySelectorAll(
-                            "span"
-                        );
-
-
-                    if (spans.length) {
-
-                        spans[
-                            spans.length - 1
-                        ].textContent =
-                            "Adding...";
-
-                    }
-
-                }
-
+            if (!button || button.disabled) {
+                event.preventDefault();
+                return;
             }
-        );
 
+            if (button.dataset.submitting === "true") {
+                event.preventDefault();
+                return;
+            }
+
+            button.dataset.submitting = "true";
+            button.disabled = true;
+            button.classList.add("adding");
+
+            const text = button.querySelector(".add-to-bag-text");
+
+            if (text) {
+                text.textContent = "Adding...";
+            }
+        });
     });
 }
 
@@ -579,24 +332,14 @@ function initializeAddToBag() {
    ========================================================= */
 
 function normalizeBeautyCategory(value) {
+    if (!value) return "";
 
-    if (!value) {
-        return "";
-    }
-
-
-    let category =
-        String(value)
-            .toLowerCase()
-            .trim()
-            .replace(
-                /[\s_]+/g,
-                "-"
-            );
-
+    const category = String(value)
+        .toLowerCase()
+        .trim()
+        .replace(/[\s_]+/g, "-");
 
     const aliases = {
-
         "all": "all",
         "all-beauty": "all",
 
@@ -625,37 +368,15 @@ function normalizeBeautyCategory(value) {
         "highlighter": "highlighter",
         "highlighters": "highlighter",
         "highlight": "highlighter"
-
     };
 
+    if (aliases[category]) return aliases[category];
 
-    if (aliases[category]) {
-
-        return aliases[category];
-
-    }
-
-
-    /*
-     * Try singular form.
-     */
     if (category.endsWith("s")) {
+        const singular = category.slice(0, -1);
 
-        const singular =
-            category.slice(
-                0,
-                -1
-            );
-
-
-        if (aliases[singular]) {
-
-            return aliases[singular];
-
-        }
-
+        if (aliases[singular]) return aliases[singular];
     }
-
 
     return category;
 }
@@ -666,331 +387,165 @@ function normalizeBeautyCategory(value) {
    ========================================================= */
 
 function initializeBeautyCategoryCards() {
+    const categoryCards = document.querySelectorAll(
+        ".beauty-category-card"
+    );
 
-    const categoryCards =
-        document.querySelectorAll(
-            ".beauty-category-card"
-        );
+    const productGrid = document.getElementById("productGrid");
 
+    if (!categoryCards.length || !productGrid) return;
 
-    const productGrid =
-        document.getElementById(
-            "productGrid"
-        );
+    const productCards = Array.from(
+        productGrid.querySelectorAll(".beauty-product-card")
+    );
 
-
-    if (
-        !categoryCards.length ||
-        !productGrid
-    ) {
-
-        return;
-
-    }
-
-
-    const productCards =
-        Array.from(
-            productGrid.querySelectorAll(
-                ".beauty-product-card"
-            )
-        );
-
-
-    /*
-     * Create empty category message
-     * if it does not already exist.
-     */
-    let emptyMessage =
-        productGrid.querySelector(
-            ".category-empty-state"
-        );
-
+    let emptyMessage = productGrid.querySelector(
+        ".category-empty-state"
+    );
 
     if (!emptyMessage) {
-
-        emptyMessage =
-            document.createElement(
-                "div"
-            );
-
-
-        emptyMessage.className =
-            "category-empty-state";
-
+        emptyMessage = document.createElement("div");
+        emptyMessage.className = "category-empty-state";
 
         emptyMessage.innerHTML = `
-            <div class="category-empty-icon">
-                ♡
-            </div>
-
-            <h3>
-                No products in this category yet
-            </h3>
-
+            <div class="category-empty-icon">♡</div>
+            <h3>No products in this category yet</h3>
             <p>
-                Products added by the admin
-                will appear here automatically.
+                Products added by the admin will appear here
+                automatically.
             </p>
         `;
 
-
-        emptyMessage.style.display =
-            "none";
-
-
-        productGrid.appendChild(
-            emptyMessage
-        );
-
+        emptyMessage.style.display = "none";
+        productGrid.appendChild(emptyMessage);
     }
 
+    function matchesCategory(product, selectedCategory) {
+        const selected = normalizeBeautyCategory(selectedCategory);
 
-    /* =====================================================
-       CHECK PRODUCT CATEGORY
-       ===================================================== */
+        if (selected === "all") return true;
 
-    function productMatchesCategory(
-        product,
-        selectedCategory
-    ) {
-
-        const selected =
-            normalizeBeautyCategory(
-                selectedCategory
-            );
-
-
-        /*
-         * "All" shows every product.
-         */
-        if (selected === "all") {
-
-            return true;
-
-        }
-
-
-        const productType =
-            normalizeBeautyCategory(
-                product.dataset.productType
-            );
-
-
-        const productCategory =
-            normalizeBeautyCategory(
-                product.dataset.category
-            );
-
-
-        /*
-         * A product can match either:
-         *
-         * product type
-         * OR
-         * database category.
-         */
-        return (
-            productType === selected ||
-            productCategory === selected
+        const type = normalizeBeautyCategory(
+            product.dataset.productType
         );
+
+        const category = normalizeBeautyCategory(
+            product.dataset.category
+        );
+
+        return type === selected || category === selected;
     }
 
-
-    /* =====================================================
-       SHOW SELECTED CATEGORY
-       ===================================================== */
-
-    function showBeautyCategory(
-        selectedCategory,
-        shouldScroll = true
-    ) {
-
-        const selected =
-            normalizeBeautyCategory(
-                selectedCategory
-            );
-
-
-        let visibleProducts = 0;
-
+    function showCategory(selectedCategory, shouldScroll = true) {
+        const selected = normalizeBeautyCategory(selectedCategory);
+        let visibleCount = 0;
 
         productCards.forEach(product => {
+            const matches = matchesCategory(product, selected);
 
-            const matches =
-                productMatchesCategory(
-                    product,
-                    selected
-                );
-
+            product.style.display = matches ? "" : "none";
 
             if (matches) {
-
-                product.style.display =
-                    "";
-
-                visibleProducts++;
-
-                product.classList.add(
-                    "visible"
-                );
-
+                visibleCount++;
+                product.classList.add("visible");
             } else {
-
-                product.style.display =
-                    "none";
-
-                product.classList.remove(
-                    "visible"
-                );
-
+                product.classList.remove("visible");
             }
-
         });
 
+        emptyMessage.style.display =
+            visibleCount === 0 ? "block" : "none";
 
-        /*
-         * Show empty state if no products
-         * match selected category.
-         */
-        if (visibleProducts === 0) {
-
-            emptyMessage.style.display =
-                "block";
-
-        } else {
-
-            emptyMessage.style.display =
-                "none";
-
-        }
-
-
-        /*
-         * Update active category card.
-         */
         categoryCards.forEach(card => {
-
-            const cardCategory =
-                normalizeBeautyCategory(
-                    card.dataset.filter
-                );
-
+            const cardCategory = normalizeBeautyCategory(
+                card.dataset.filter
+            );
 
             card.classList.toggle(
                 "active",
                 cardCategory === selected
             );
-
         });
 
+        const labels = {
+            "all": "ALL BEAUTY",
+            "lipstick": "LIPSTICKS",
+            "eyeshadow": "EYESHADOW",
+            "blush": "BLUSH",
+            "eyeliner": "EYELINER",
+            "mascara": "MASCARA",
+            "foundation": "FOUNDATION",
+            "highlighter": "HIGHLIGHTER"
+        };
 
-        /*
-         * Scroll to products section.
-         */
+        const label = document.getElementById(
+            "selectedCategoryLabel"
+        );
+
+        const description = document.getElementById(
+            "selectedCategoryDescription"
+        );
+
+        if (label) {
+            label.textContent = labels[selected] ||
+                selected.replace(/-/g, " ").toUpperCase();
+        }
+
+        if (description) {
+            description.textContent =
+                selected === "all"
+                    ? "Explore our complete beauty collection."
+                    : `Explore our ${selected.replace(/-/g, " ")} collection.`;
+        }
+
         if (shouldScroll) {
+            const section = document.getElementById("products");
 
-            const productsSection =
-                document.getElementById(
-                    "products"
-                );
-
-
-            if (productsSection) {
-
+            if (section) {
                 setTimeout(() => {
-
-                    productsSection.scrollIntoView({
+                    section.scrollIntoView({
                         behavior: "smooth",
                         block: "start"
                     });
-
                 }, 100);
-
             }
-
         }
-
     }
 
-
-    /* =====================================================
-       CATEGORY CLICK
-       ===================================================== */
-
     categoryCards.forEach(card => {
+        card.addEventListener("click", event => {
+            event.preventDefault();
 
-        card.setAttribute(
-            "role",
-            "button"
-        );
+            if (!card.dataset.filter) return;
 
+            showCategory(card.dataset.filter, true);
+        });
 
-        card.setAttribute(
-            "tabindex",
-            "0"
-        );
-
-
-        card.addEventListener(
-            "click",
-            event => {
-
+        card.addEventListener("keydown", event => {
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
                 event.preventDefault();
-
-
-                const selectedCategory =
-                    card.dataset.filter;
-
-
-                if (!selectedCategory) {
-                    return;
-                }
-
-
-                showBeautyCategory(
-                    selectedCategory,
-                    true
-                );
-
-            }
-        );
-
-
-        /*
-         * Keyboard accessibility.
-         */
-        card.addEventListener(
-            "keydown",
-            event => {
-
-                if (
-                    event.key !== "Enter" &&
-                    event.key !== " "
-                ) {
-
-                    return;
-
-                }
-
-
-                event.preventDefault();
-
                 card.click();
-
             }
-        );
-
+        });
     });
 
+    showCategory("all", false);
 
-    /*
-     * Show all products initially.
-     */
-    showBeautyCategory(
-        "all",
-        false
-    );
+    // Allow other page scripts to filter products.
+    window.filterBeautyProducts = category => {
+        const selected = normalizeBeautyCategory(category);
+
+        const matchingCard = Array.from(categoryCards).find(card => {
+            return normalizeBeautyCategory(card.dataset.filter) === selected;
+        });
+
+        if (matchingCard) {
+            matchingCard.click();
+        }
+    };
 }
 
 
@@ -999,55 +554,26 @@ function initializeBeautyCategoryCards() {
    ========================================================= */
 
 function randomizeLipstick() {
+    const visuals = document.querySelectorAll(
+        ".lipstick-visual, .lipstick-card"
+    );
 
-    const lipstickVisuals =
-        document.querySelectorAll(
-            ".lipstick-visual, .lipstick-card"
-        );
+    if (!visuals.length) return;
 
+    let newIndex = Math.floor(Math.random() * visuals.length);
 
-    if (!lipstickVisuals.length) {
-        return;
-    }
-
-
-    let newIndex =
-        Math.floor(
-            Math.random() *
-            lipstickVisuals.length
-        );
-
-
-    /*
-     * Avoid showing the same lipstick twice
-     * in a row when there are multiple options.
-     */
     if (
-        lipstickVisuals.length > 1 &&
+        visuals.length > 1 &&
         newIndex === lastLipstickIndex
     ) {
-
-        newIndex =
-            (newIndex + 1) %
-            lipstickVisuals.length;
-
+        newIndex = (newIndex + 1) % visuals.length;
     }
 
+    lastLipstickIndex = newIndex;
 
-    lastLipstickIndex =
-        newIndex;
-
-
-    lipstickVisuals.forEach(
-        (visual, index) => {
-
-            visual.classList.toggle(
-                "active",
-                index === newIndex
-            );
-
-        }
-    );
+    visuals.forEach((visual, index) => {
+        visual.classList.toggle("active", index === newIndex);
+    });
 }
 
 
@@ -1056,35 +582,17 @@ function randomizeLipstick() {
    ========================================================= */
 
 function randomizeEyeliner() {
-
-    const eyelinerVisuals =
-        document.querySelectorAll(
-            ".eyeliner-visual, .eyeliner-card"
-        );
-
-
-    if (!eyelinerVisuals.length) {
-        return;
-    }
-
-
-    const randomIndex =
-        Math.floor(
-            Math.random() *
-            eyelinerVisuals.length
-        );
-
-
-    eyelinerVisuals.forEach(
-        (visual, index) => {
-
-            visual.classList.toggle(
-                "active",
-                index === randomIndex
-            );
-
-        }
+    const visuals = document.querySelectorAll(
+        ".eyeliner-visual, .eyeliner-card"
     );
+
+    if (!visuals.length) return;
+
+    const randomIndex = Math.floor(Math.random() * visuals.length);
+
+    visuals.forEach((visual, index) => {
+        visual.classList.toggle("active", index === randomIndex);
+    });
 }
 
 
@@ -1093,225 +601,92 @@ function randomizeEyeliner() {
    ========================================================= */
 
 function initializeLoginPopup() {
+    const popup = document.getElementById("loginPopup");
 
-    const popup =
-        document.getElementById(
-            "loginPopup"
-        );
+    if (!popup) return;
 
-
-    if (!popup) {
-        return;
-    }
-
-
-    /*
-     * Make sure the popup starts hidden.
-     */
     if (
         !popup.hasAttribute("hidden") &&
         !popup.classList.contains("show")
     ) {
-
         popup.hidden = true;
-
     }
 
-
-    /*
-     * Clicking the dark background
-     * closes the popup.
-     */
-    popup.addEventListener(
-        "click",
-        event => {
-
-            if (
-                event.target === popup
-            ) {
-
-                closeLoginPopup();
-
-            }
-
+    popup.addEventListener("click", event => {
+        if (event.target === popup) {
+            closeLoginPopup();
         }
-    );
+    });
 
-
-    /*
-     * ESC closes popup.
-     */
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key === "Escape" &&
-                !popup.hidden
-            ) {
-
-                closeLoginPopup();
-
-            }
-
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && !popup.hidden) {
+            closeLoginPopup();
         }
-    );
-
+    });
 }
 
 
-/* =========================================================
-   SHOW LOGIN POPUP
-   ========================================================= */
-
 function showLoginPopup() {
-
-    const popup =
-        document.getElementById(
-            "loginPopup"
-        );
-
+    const popup = document.getElementById("loginPopup");
 
     if (!popup) {
+        // Fallback when the page does not contain the popup.
+        window.location.href =
+            "/login?next=" +
+            encodeURIComponent(
+                window.location.pathname + window.location.search
+            );
         return;
     }
-
 
     popup.hidden = false;
 
+    document.body.classList.add("login-popup-open");
+    document.body.style.overflow = "hidden";
 
-    document.body.classList.add(
-        "login-popup-open"
-    );
-
-
-    document.body.style.overflow =
-        "hidden";
-
-
-    /*
-     * Focus OK button for accessibility.
-     */
-    const okButton =
-        popup.querySelector(
-            ".login-popup-ok"
-        );
-
+    const okButton = popup.querySelector(".login-popup-ok");
 
     if (okButton) {
-
-        setTimeout(() => {
-
-            okButton.focus();
-
-        }, 50);
-
+        setTimeout(() => okButton.focus(), 50);
     }
-
 }
 
 
-/* =========================================================
-   CLOSE LOGIN POPUP
-   ========================================================= */
-
 function closeLoginPopup() {
+    const popup = document.getElementById("loginPopup");
 
-    const popup =
-        document.getElementById(
-            "loginPopup"
-        );
-
-
-    if (!popup) {
-        return;
-    }
-
+    if (!popup) return;
 
     popup.hidden = true;
 
-
-    document.body.classList.remove(
-        "login-popup-open"
-    );
-
-
-    document.body.style.overflow =
-        "";
-
+    document.body.classList.remove("login-popup-open");
+    document.body.style.overflow = "";
 }
 
-
-/* =========================================================
-   GO TO LOGIN
-   ========================================================= */
 
 function goToLogin() {
+    const next = window.location.pathname + window.location.search;
 
     window.location.href =
-        "/login";
-
+        "/login?next=" + encodeURIComponent(next);
 }
 
 
 /* =========================================================
-   GLOBAL BEAUTY PRODUCT FILTER
-   ========================================================= */
-
-window.filterBeautyProducts =
-    function(category) {
-
-        const categoryCards =
-            document.querySelectorAll(
-                ".beauty-category-card"
-            );
-
-
-        if (!categoryCards.length) {
-            return;
-        }
-
-
-        const selected =
-            normalizeBeautyCategory(
-                category
-            );
-
-
-        categoryCards.forEach(card => {
-
-            const cardCategory =
-                normalizeBeautyCategory(
-                    card.dataset.filter
-                );
-
-
-            if (
-                cardCategory === selected
-            ) {
-
-                card.click();
-
-            }
-
-        });
-
-    };
-
-
-
-/* =========================================================
-   FAVORITES — AJAX WITHOUT PAGE RELOAD
+   FAVORITES AJAX
+   Used by .favorite-form on the Beauty page.
+   Favorites page remove forms continue normal submission.
    ========================================================= */
 
 function initializeFavorites() {
-    const favoriteForms = document.querySelectorAll(".favorite-form");
+    const forms = document.querySelectorAll(".favorite-form");
 
-    if (!favoriteForms.length) {
-        return;
-    }
+    if (!forms.length) return;
 
-    let notification = document.getElementById("favoriteNotification");
+    let notification = document.getElementById(
+        "favoriteNotification"
+    );
+
     let notificationTimer;
 
     if (!notification) {
@@ -1320,6 +695,7 @@ function initializeFavorites() {
         notification.className = "favorite-notification";
         notification.setAttribute("role", "status");
         notification.setAttribute("aria-live", "polite");
+
         document.body.appendChild(notification);
     }
 
@@ -1335,24 +711,21 @@ function initializeFavorites() {
         }, 2500);
     }
 
-    favoriteForms.forEach(form => {
-        // Prevent registering the handler twice.
-        if (form.dataset.favoriteInitialized === "true") {
-            return;
-        }
+    forms.forEach(form => {
+        if (form.dataset.favoriteInitialized === "true") return;
 
         form.dataset.favoriteInitialized = "true";
 
         form.addEventListener("submit", async event => {
-            // This prevents the normal form submission and reload.
             event.preventDefault();
 
-            const button = form.querySelector(".product-favorite-btn");
+            const button = form.querySelector(
+                ".product-favorite-btn"
+            );
+
             const heart = form.querySelector(".favorite-heart");
 
-            if (!button || button.disabled) {
-                return;
-            }
+            if (!button || button.disabled) return;
 
             button.disabled = true;
 
@@ -1367,11 +740,26 @@ function initializeFavorites() {
                     }
                 });
 
+                const contentType =
+                    response.headers.get("content-type") || "";
+
+                if (!contentType.includes("application/json")) {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return;
+                    }
+
+                    throw new Error(
+                        "The server did not return a JSON response."
+                    );
+                }
+
                 const result = await response.json();
 
                 if (result.login_required && result.login_url) {
                     showFavoriteMessage(
-                        result.message || "Please log in to save favorites."
+                        result.message ||
+                        "Please log in to save favorites."
                     );
 
                     setTimeout(() => {
@@ -1383,48 +771,58 @@ function initializeFavorites() {
 
                 if (!response.ok || !result.success) {
                     showFavoriteMessage(
-                        result.message || "Unable to update favorites.",
+                        result.message ||
+                        "Unable to update favorites.",
                         true
                     );
                     return;
                 }
 
-                const isFavorite = result.is_favorite;
+                const isFavorite = Boolean(result.is_favorite);
 
                 if (heart) {
                     heart.textContent = isFavorite ? "♥" : "♡";
                 } else {
-                    // Supports the original form containing only ♡.
                     button.textContent = isFavorite ? "♥" : "♡";
                 }
 
                 button.classList.toggle("is-favorite", isFavorite);
-                button.setAttribute("aria-pressed", String(isFavorite));
+                button.setAttribute(
+                    "aria-pressed",
+                    String(isFavorite)
+                );
+
+                button.setAttribute(
+                    "aria-label",
+                    isFavorite
+                        ? `Remove ${form.closest("[data-product-name]")?.dataset.productName || "product"} from favorites`
+                        : `Add ${form.closest("[data-product-name]")?.dataset.productName || "product"} to favorites`
+                );
+
                 button.title = isFavorite
                     ? "Remove from Favorites"
                     : "Add to Favorites";
 
                 showFavoriteMessage(
                     result.message ||
-                    (isFavorite
-                        ? "Product added to favorites."
-                        : "Product removed from favorites.")
+                    (
+                        isFavorite
+                            ? "Product added to favorites."
+                            : "Product removed from favorites."
+                    )
                 );
 
             } catch (error) {
                 console.error("Favorite request failed:", error);
 
                 showFavoriteMessage(
-                    "Unable to update favorites. Check the browser console.",
+                    "Unable to update favorites. Please try again.",
                     true
                 );
+
             } finally {
                 button.disabled = false;
             }
         });
     });
 }
-
-// Your main.js already registers DOMContentLoaded above.
-// This listener initializes the favorite buttons on the Beauty page.
-document.addEventListener("DOMContentLoaded", initializeFavorites);
