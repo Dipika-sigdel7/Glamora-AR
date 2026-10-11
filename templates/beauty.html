@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 
@@ -43,6 +44,7 @@
         </div>
     </div>
 
+
     <!-- NAVBAR -->
     <header class="navbar">
 
@@ -87,18 +89,16 @@
                 ⌕
             </button>
 
-            
-<!-- WISHLIST -->
-<a
-    href="{{ url_for('favorites') }}"
-    class="icon-btn wishlist-btn"
-    id="wishlistBtn"
-    aria-label="View favorites"
-    title="My Favorites"
->
-    ♡
-</a>
-
+            <!-- WISHLIST / FAVORITES -->
+            <a
+                href="{{ url_for('favorites') }}"
+                class="icon-btn wishlist-btn"
+                id="wishlistBtn"
+                aria-label="View favorites"
+                title="My Favorites"
+            >
+                ♡
+            </a>
 
             <!-- SHOPPING BAG -->
             <a
@@ -131,7 +131,7 @@
             {% else %}
 
                 <a
-                    href="{{ url_for('login') }}"
+                    href="{{ url_for('login', next=request.path) }}"
                     class="login-btn"
                     id="loginBtn"
                     aria-label="Login to Glamora AR"
@@ -156,6 +156,7 @@
 
         </div>
     </header>
+
 
     <!-- BEAUTY HERO -->
     <section class="beauty-hero" id="beauty-home">
@@ -241,6 +242,7 @@
         </div>
 
     </section>
+
 
     <!-- CATEGORIES -->
     <section class="beauty-section" id="categories">
@@ -396,6 +398,7 @@
         </div>
     </section>
 
+
     <!-- PRODUCTS -->
     <section
         class="beauty-section beauty-products"
@@ -448,6 +451,10 @@
                         |replace('_', '-')
                     %}
 
+                    {% set is_favorite =
+                        product.id in (favorite_product_ids|default([]))
+                    %}
+
                     <article
                         class="beauty-product-card product-card reveal"
                         data-product-id="{{ product.id }}"
@@ -461,33 +468,32 @@
                         <!-- PRODUCT IMAGE -->
                         <div class="beauty-product-image">
 
-                        
+                            <!-- FAVORITE BUTTON -->
+                            <form
+                                action="{{ url_for('toggle_favorite', product_id=product.id) }}"
+                                method="POST"
+                                class="favorite-form"
+                                data-product-id="{{ product.id }}"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="return_to"
+                                    value="{{ request.path }}"
+                                >
 
-<!-- FAVORITE BUTTON -->
-<form
-    action="{{ url_for('toggle_favorite', product_id=product.id) }}"
-    method="POST"
-    class="favorite-form"
-    data-product-id="{{ product.id }}"
->
-    <input
-        type="hidden"
-        name="return_to"
-        value="{{ request.path }}"
-    >
+                                <button
+                                    type="submit"
+                                    class="product-favorite-btn{% if is_favorite %} is-favorite{% endif %}"
+                                    aria-label="{% if is_favorite %}Remove {{ product.name }} from favorites{% else %}Add {{ product.name }} to favorites{% endif %}"
+                                    title="{% if is_favorite %}Remove from Favorites{% else %}Add to Favorites{% endif %}"
+                                    aria-pressed="{{ 'true' if is_favorite else 'false' }}"
+                                >
+                                    <span class="favorite-heart">{{ '♥' if is_favorite else '♡' }}</span>
+                                </button>
+                            </form>
 
-    <button
-        type="submit"
-        class="product-favorite-btn"
-        aria-label="Toggle {{ product.name }} favorite"
-        title="Add to Favorites"
-        aria-pressed="false"
-    >
-        <span class="favorite-heart">♡</span>
-    </button>
-</form>
-
-                 <a
+                            <!-- PRODUCT IMAGE LINK -->
+                            <a
                                 href="{{ url_for('product_details', product_id=product.id) }}"
                                 class="product-image-link"
                                 aria-label="View {{ product.name }}"
@@ -534,6 +540,7 @@
                                 {{ product.product_type or 'BEAUTY' }}
                             </span>
 
+                            <!-- QUICK TRY-ON -->
                             <a
                                 href="{{ url_for('product_details', product_id=product.id) }}"
                                 class="quick-try-btn quick-try"
@@ -543,6 +550,7 @@
                             </a>
 
                         </div>
+
 
                         <!-- PRODUCT INFORMATION -->
                         <div class="beauty-product-info">
@@ -594,18 +602,23 @@
                             {% endif %}
 
                             {% if product.shade %}
+
                                 <div class="product-detail">
                                     <span>Shade</span>
                                     <strong>{{ product.shade }}</strong>
                                 </div>
+
                             {% endif %}
 
                             {% if product.color %}
+
                                 <div class="product-detail">
                                     <span>Color</span>
                                     <strong>{{ product.color }}</strong>
                                 </div>
+
                             {% endif %}
+
 
                             <!-- PRICE AND ACTIONS -->
                             <div class="product-bottom">
@@ -706,23 +719,9 @@
 
             {% endif %}
 
-            <!-- CATEGORY EMPTY STATE -->
-            <div
-                class="category-empty-state"
-                style="display: none;"
-            >
-                <div class="category-empty-icon">♡</div>
-
-                <h3>No products in this category yet</h3>
-
-                <p>
-                    Products added by the admin
-                    will appear here automatically.
-                </p>
-            </div>
-
         </div>
     </section>
+
 
     <!-- VIRTUAL TRY-ON -->
     <section
@@ -807,6 +806,7 @@
         </div>
     </section>
 
+
     <!-- FOOTER -->
     <footer class="site-footer">
 
@@ -856,13 +856,15 @@
                 {% if session.get('user_id') %}
 
                     <a href="{{ url_for('profile') }}">My Profile</a>
+                    <a href="{{ url_for('favorites') }}">My Favorites</a>
                     <a href="{{ url_for('cart') }}">Shopping Bag</a>
                     <a href="{{ url_for('logout') }}">Logout</a>
 
                 {% else %}
 
-                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('login', next=request.path) }}">Login</a>
                     <a href="{{ url_for('register') }}">Create Account</a>
+                    <a href="{{ url_for('favorites') }}">My Favorites</a>
 
                 {% endif %}
 
@@ -877,6 +879,7 @@
 
         </div>
     </footer>
+
 
     <!-- LOGIN REQUIRED POPUP -->
     <div
@@ -918,6 +921,10 @@
 
         </div>
     </div>
+
+
+    <!-- FAVORITE AJAX NOTIFICATIONS ARE CREATED BY main.js -->
+
 
     <!-- MAIN JAVASCRIPT -->
     <script
