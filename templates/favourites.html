@@ -7,12 +7,14 @@
 
     <title>My Favorites | Glamora AR</title>
 
+    <!-- SHARED STYLESHEETS -->
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/beauty.css') }}">
 
+    <!-- FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -20,6 +22,10 @@
           rel="stylesheet">
 
     <style>
+        /* =================================================
+           FAVORITES PAGE
+           ================================================= */
+
         * {
             box-sizing: border-box;
         }
@@ -35,82 +41,14 @@
             text-decoration: none;
         }
 
-        /* NAVBAR */
-
-        .favorites-navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 25px;
-            padding: 18px 6%;
-            background: #ffffff;
-            border-bottom: 1px solid #f8e3e9;
+        button,
+        input {
+            font: inherit;
         }
 
-        .favorites-logo {
-            color: #a74360;
-            font-family: "Playfair Display", serif;
-            font-size: 27px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .favorites-nav-links {
-            display: flex;
-            align-items: center;
-            gap: 28px;
-        }
-
-        .favorites-nav-links a {
-            color: #2b1b20;
-            font-size: 14px;
-            transition: color 0.2s ease;
-        }
-
-        .favorites-nav-links a:hover,
-        .favorites-nav-links a.active {
-            color: #c85f7a;
-        }
-
-        .favorites-nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .favorites-nav-actions a {
-            color: #2b1b20;
-            font-size: 14px;
-        }
-
-        .favorites-nav-actions a:hover {
-            color: #a74360;
-        }
-
-        .favorites-bag-count {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 20px;
-            height: 20px;
-            margin-left: 4px;
-            padding: 0 5px;
-            border-radius: 50px;
-            background: #c85f7a;
-            color: #ffffff;
-            font-size: 11px;
-        }
-
-        .favorites-menu-toggle {
-            display: none;
-            border: 0;
-            background: transparent;
-            color: #2b1b20;
-            font-size: 25px;
-            cursor: pointer;
-        }
-
-        /* MAIN */
+        /* =================================================
+           MAIN CONTENT
+           ================================================= */
 
         .favorites-page {
             min-height: 70vh;
@@ -151,7 +89,9 @@
             text-align: center;
         }
 
-        /* PRODUCT GRID */
+        /* =================================================
+           PRODUCT GRID
+           ================================================= */
 
         .favorites-grid {
             display: grid;
@@ -289,7 +229,9 @@
             background: #fdecef;
         }
 
-        /* EMPTY STATE */
+        /* =================================================
+           EMPTY FAVORITES
+           ================================================= */
 
         .favorites-empty {
             max-width: 550px;
@@ -340,7 +282,9 @@
             background: #a74360;
         }
 
-        /* FOOTER */
+        /* =================================================
+           FOOTER
+           ================================================= */
 
         .favorites-footer {
             padding: 28px 6%;
@@ -363,54 +307,13 @@
             color: #f3b8c6;
         }
 
-        /* RESPONSIVE */
-
-        @media (max-width: 900px) {
-            .favorites-navbar {
-                flex-wrap: wrap;
-            }
-
-            .favorites-menu-toggle {
-                display: block;
-            }
-
-            .favorites-nav-links {
-                display: none;
-                order: 3;
-                width: 100%;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 18px;
-                padding: 15px 0;
-            }
-
-            .favorites-nav-links.open {
-                display: flex;
-            }
-
-            .favorites-nav-actions {
-                margin-left: auto;
-            }
-        }
+        /* =================================================
+           RESPONSIVE FAVORITES CONTENT
+           Navbar responsive styling comes from the
+           shared style.css and beauty.css files.
+           ================================================= */
 
         @media (max-width: 600px) {
-            .favorites-navbar {
-                gap: 12px;
-                padding: 16px 5%;
-            }
-
-            .favorites-logo {
-                font-size: 23px;
-            }
-
-            .favorites-nav-actions {
-                gap: 10px;
-            }
-
-            .favorites-nav-actions a {
-                font-size: 12px;
-            }
-
             .favorites-page {
                 padding: 45px 5%;
             }
@@ -462,128 +365,130 @@
 
 <body>
 
+    <!-- =================================================
+         NAVBAR — SAME STRUCTURE AS beauty.html
+         ================================================= -->
 
-<!-- =================================================
-     GLAMORA AR NAVBAR
-     MATCHES BEAUTY PAGE
-     ================================================= -->
+    <header class="navbar">
 
-<header class="navbar">
-
-    <!-- LOGO -->
-    <a
-        href="{{ url_for('index') }}"
-        class="logo"
-        aria-label="Glamora AR Home"
-    >
-        GLAMORA <span>AR</span>
-    </a>
-
-    <!-- MAIN NAVIGATION -->
-    <nav
-        class="nav-links"
-        id="navLinks"
-        aria-label="Main navigation"
-    >
-        <a href="{{ url_for('index') }}">Home</a>
-
-        <a href="{{ url_for('beauty') }}">Beauty</a>
-
-        <a href="{{ url_for('about') }}">About</a>
-
-        <a href="{{ url_for('contact') }}">Contact</a>
-    </nav>
-
-    <!-- NAVIGATION ACTIONS -->
-    <div class="nav-actions">
-
-        <!-- SEARCH -->
-        <button
-            class="icon-btn"
-            id="searchBtn"
-            type="button"
-            aria-label="Search"
-            title="Search"
-        >
-            ⌕
-        </button>
-
-        <!-- FAVORITES -->
+        <!-- LOGO -->
         <a
-            href="{{ url_for('favorites') }}"
-            class="icon-btn wishlist-btn active"
-            id="wishlistBtn"
-            aria-label="View favorites"
-            title="My Favorites"
-            aria-current="page"
+            href="{{ url_for('index') }}"
+            class="logo"
+            aria-label="Glamora AR Home"
         >
-            ♡
+            GLAMORA <span>AR</span>
         </a>
 
-        <!-- SHOPPING BAG -->
-        <a
-            href="{{ url_for('cart') }}"
-            class="cart-btn"
-            id="cartBtn"
-            aria-label="Shopping bag"
-            title="Shopping bag"
+        <!-- MAIN NAVIGATION -->
+        <nav
+            class="nav-links"
+            id="navLinks"
+            aria-label="Main navigation"
         >
-            <span>Bag</span>
+            <a href="{{ url_for('index') }}">Home</a>
 
-            <span class="cart-count" id="cartCount">
-                {{ bag_count|default(0) }}
-            </span>
-        </a>
+            <a href="{{ url_for('beauty') }}">Beauty</a>
 
-        <!-- PROFILE OR LOGIN -->
-        {% if session.get('user_id') %}
+            <a href="{{ url_for('about') }}">About</a>
 
-            <a
-                href="{{ url_for('profile') }}"
-                class="login-btn"
-                id="profileBtn"
-                aria-label="Go to your profile"
+            <a href="{{ url_for('contact') }}">Contact</a>
+        </nav>
+
+        <!-- NAVIGATION ACTIONS -->
+        <div class="nav-actions">
+
+            <!-- SEARCH -->
+            <button
+                class="icon-btn"
+                id="searchBtn"
+                type="button"
+                aria-label="Search"
+                title="Search"
             >
-                <span class="login-icon">♙</span>
-                <span>Profile</span>
+                ⌕
+            </button>
+
+            <!-- FAVORITES -->
+            <a
+                href="{{ url_for('favorites') }}"
+                class="icon-btn wishlist-btn active"
+                id="wishlistBtn"
+                aria-label="View favorites"
+                title="My Favorites"
+                aria-current="page"
+            >
+                ♡
             </a>
 
-        {% else %}
-
+            <!-- SHOPPING BAG -->
             <a
-                href="{{ url_for('login', next=request.path) }}"
-                class="login-btn"
-                id="loginBtn"
-                aria-label="Login to Glamora AR"
+                href="{{ url_for('cart') }}"
+                class="cart-btn"
+                id="cartBtn"
+                aria-label="Shopping bag"
+                title="Shopping bag"
             >
-                <span class="login-icon">♙</span>
-                <span>Login</span>
+                <span>Bag</span>
+
+                <span class="cart-count" id="cartCount">
+                    {{ bag_count|default(0) }}
+                </span>
             </a>
 
-        {% endif %}
+            <!-- PROFILE OR LOGIN -->
+            {% if session.get('user_id') %}
 
-        <!-- MOBILE MENU -->
-        <button
-            class="menu-btn"
-            id="menuBtn"
-            type="button"
-            aria-label="Open navigation menu"
-            aria-expanded="false"
-            aria-controls="navLinks"
-        >
-            ☰
-        </button>
+                <a
+                    href="{{ url_for('profile') }}"
+                    class="login-btn"
+                    id="profileBtn"
+                    aria-label="Go to your profile"
+                >
+                    <span class="login-icon">♙</span>
+                    <span>Profile</span>
+                </a>
 
-    </div>
+            {% else %}
 
-</header>
+                <a
+                    href="{{ url_for('login', next=request.path) }}"
+                    class="login-btn"
+                    id="loginBtn"
+                    aria-label="Login to Glamora AR"
+                >
+                    <span class="login-icon">♙</span>
+                    <span>Login</span>
+                </a>
 
-    <!-- FAVORITES CONTENT -->
+            {% endif %}
+
+            <!-- MOBILE MENU -->
+            <button
+                class="menu-btn"
+                id="menuBtn"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="navLinks"
+            >
+                ☰
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- =================================================
+         FAVORITES CONTENT
+         ================================================= -->
 
     <main class="favorites-page">
 
         <header class="favorites-heading">
-            <div class="favorites-eyebrow">Your beauty wishlist</div>
+            <div class="favorites-eyebrow">
+                Your beauty wishlist
+            </div>
 
             <h1>My Favorites ♡</h1>
 
@@ -591,7 +496,6 @@
         </header>
 
         <!-- FLASH MESSAGES -->
-
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -603,7 +507,6 @@
         {% endwith %}
 
         <!-- FAVORITE PRODUCTS -->
-
         {% if favorite_products %}
 
             <div class="favorites-grid">
@@ -612,6 +515,7 @@
 
                     <article class="favorite-card">
 
+                        <!-- PRODUCT IMAGE -->
                         <a
                             class="favorite-image-link"
                             href="{{ url_for('product_details', product_id=product.id) }}"
@@ -621,17 +525,21 @@
                             {% if product.image_url %}
 
                                 {% if product.image_url.startswith('http://') or product.image_url.startswith('https://') %}
+
                                     <img
                                         src="{{ product.image_url }}"
                                         alt="{{ product.name }}"
                                         loading="lazy"
                                     >
+
                                 {% else %}
+
                                     <img
                                         src="{{ url_for('static', filename=product.image_url.lstrip('/')) }}"
                                         alt="{{ product.name }}"
                                         loading="lazy"
                                     >
+
                                 {% endif %}
 
                             {% else %}
@@ -644,10 +552,11 @@
 
                         </a>
 
+                        <!-- PRODUCT DETAILS -->
                         <div class="favorite-card-content">
 
                             <p class="favorite-category">
-                                {{ product.category_name|default(product.product_type|default('Beauty'), true) }}
+                                {{ product.category_name|default(product.product_type|default('Beauty', true), true) }}
                             </p>
 
                             <h3>{{ product.name }}</h3>
@@ -656,6 +565,7 @@
                                 {{ currency_symbol|default('Rs.') }}{{ format_npr(product.price) }}
                             </p>
 
+                            <!-- PRODUCT ACTIONS -->
                             <div class="favorite-actions">
 
                                 <a
@@ -701,7 +611,6 @@
         {% else %}
 
             <!-- EMPTY FAVORITES -->
-
             <section class="favorites-empty">
 
                 <div class="heart">♡</div>
@@ -727,7 +636,9 @@
 
     </main>
 
-    <!-- FOOTER -->
+    <!-- =================================================
+         FOOTER
+         ================================================= -->
 
     <footer class="favorites-footer">
         <p>
@@ -736,28 +647,44 @@
         </p>
     </footer>
 
+    <!-- =================================================
+         SHARED JAVASCRIPT
+         ================================================= -->
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- MOBILE MENU FALLBACK
+         Runs only if main.js has not already opened the menu.
+         Uses the same IDs as beauty.html. -->
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const menuToggle = document.getElementById(
-                "favoritesMenuToggle"
-            );
+            const menuBtn = document.getElementById("menuBtn");
+            const navLinks = document.getElementById("navLinks");
 
-            const navLinks = document.getElementById(
-                "favoritesNavLinks"
-            );
-
-            if (menuToggle && navLinks) {
-                menuToggle.addEventListener("click", function () {
-                    const isOpen = navLinks.classList.toggle("open");
-
-                    menuToggle.setAttribute(
-                        "aria-expanded",
-                        String(isOpen)
-                    );
-
-                    menuToggle.textContent = isOpen ? "✕" : "☰";
-                });
+            if (!menuBtn || !navLinks) {
+                return;
             }
+
+            // Avoid adding a second handler if main.js
+            // already manages this menu.
+            if (menuBtn.dataset.favoritesMenuReady === "true") {
+                return;
+            }
+
+            menuBtn.dataset.favoritesMenuReady = "true";
+
+            menuBtn.addEventListener("click", function () {
+                const isOpen = navLinks.classList.toggle("open");
+
+                menuBtn.setAttribute("aria-expanded", String(isOpen));
+                menuBtn.setAttribute(
+                    "aria-label",
+                    isOpen ? "Close navigation menu" : "Open navigation menu"
+                );
+
+                menuBtn.textContent = isOpen ? "✕" : "☰";
+            });
         });
     </script>
 
