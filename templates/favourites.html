@@ -426,31 +426,23 @@
     </style>
 </head>
 
-<body class="favorites-page">
+<body>
+
+  <!-- Navbar -->
 
 <header class="navbar">
-
-    <a
-        href="{{ url_for('index') }}"
-        class="logo"
-        aria-label="Glamora AR Home"
-    >
+    <a href="/" class="logo" aria-label="Glamora AR Home">
         GLAMORA <span>AR</span>
     </a>
 
-    <nav
-        class="nav-links"
-        id="navLinks"
-        aria-label="Main navigation"
-    >
-        <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('beauty') }}">Beauty</a>
-        <a href="{{ url_for('about') }}">About</a>
-        <a href="{{ url_for('contact') }}">Contact</a>
+    <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/beauty">Beauty</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
     </nav>
 
     <div class="nav-actions">
-
         <button
             class="icon-btn"
             id="searchBtn"
@@ -467,18 +459,16 @@
             title="Wishlist"
         >♡</button>
 
-        <a
-            href="{{ url_for('cart') }}"
+        <button
             class="cart-btn"
             id="cartBtn"
+            type="button"
             aria-label="Shopping bag"
             title="Shopping bag"
         >
             <span>Bag</span>
-            <span class="cart-count" id="cartCount">
-                {{ bag_count|default(0) }}
-            </span>
-        </a>
+            <span class="cart-count" id="cartCount">{{ bag_count|default(0) }}</span>
+        </button>
 
         {% if is_logged_in %}
         <a
@@ -510,10 +500,9 @@
             aria-expanded="false"
             aria-controls="navLinks"
         >☰</button>
-
     </div>
-
 </header>
+
 
     <!-- =====================================================
          FLASH MESSAGES
