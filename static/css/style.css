@@ -4063,16 +4063,19 @@ footer {
 
 
 /* =========================================================
-   FLOATING PRODUCT SCANNER BUTTON
-   Added without changing existing styles
+   GLAMORA AR — FLOATING PRODUCT SCANNER
+   Fixed on the right side with continuous up/down animation
    ========================================================= */
 
 .floating-scanner-btn {
     position: fixed !important;
-    top: 50%;
-    right: 24px;
-    transform: translateY(-50%);
-    z-index: 9999;
+
+    /* Keep the scanner vertically centered */
+    top: 50% !important;
+    right: 24px !important;
+    bottom: auto !important;
+
+    z-index: 99999;
 
     display: inline-flex;
     align-items: center;
@@ -4092,21 +4095,45 @@ footer {
     font-family: "DM Sans", sans-serif;
     font-size: 14px;
     font-weight: 600;
+
     text-decoration: none !important;
     white-space: nowrap;
 
-    transition: box-shadow 0.3s ease;
+    /* IMPORTANT: Apply the animation directly */
+    transform: translate3d(0, -50%, 0);
+    animation: glamoraScannerFloat 2s ease-in-out infinite !important;
+
+    will-change: transform;
 }
 
+/* Continuous vertical floating */
+@keyframes glamoraScannerFloat {
+    0% {
+        transform: translate3d(0, calc(-50% - 12px), 0);
+    }
+
+    50% {
+        transform: translate3d(0, calc(-50% + 12px), 0);
+    }
+
+    100% {
+        transform: translate3d(0, calc(-50% - 12px), 0);
+    }
+}
+
+/* Hover effect — animation continues */
 .floating-scanner-btn:hover {
     box-shadow: 0 14px 35px rgba(164, 73, 98, 0.45);
 }
 
+/* Scanner icon */
 .floating-scanner-btn .scanner-icon {
+    display: inline-block;
     font-size: 22px;
     line-height: 1;
 }
 
+/* Scanner text */
 .floating-scanner-btn .scanner-text {
     white-space: nowrap;
 }
@@ -4114,12 +4141,35 @@ footer {
 /* Mobile positioning */
 @media (max-width: 576px) {
     .floating-scanner-btn {
-        top: auto;
-        right: 14px;
-        bottom: 90px;
-        transform: none;
+        top: auto !important;
+        right: 14px !important;
+        bottom: 90px !important;
 
         padding: 13px 16px;
         font-size: 12px;
+
+        transform: translate3d(0, 0, 0);
+        animation: glamoraScannerFloatMobile 2s ease-in-out infinite !important;
+    }
+
+    @keyframes glamoraScannerFloatMobile {
+        0%, 100% {
+            transform: translate3d(0, -10px, 0);
+        }
+
+        50% {
+            transform: translate3d(0, 10px, 0);
+        }
+    }
+
+    .floating-scanner-btn .scanner-icon {
+        font-size: 19px;
+    }
+}
+
+/* Disable animation only when reduced motion is requested */
+@media (prefers-reduced-motion: reduce) {
+    .floating-scanner-btn {
+        animation: none !important;
     }
 }
