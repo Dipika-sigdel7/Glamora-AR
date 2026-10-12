@@ -4064,7 +4064,7 @@ footer {
 
 /* =========================================================
    GLAMORA AR — FLOATING SCANNER
-   Moves from top-right to bottom-right and back
+   Moves slowly from top-right to bottom-right and back
    ========================================================= */
 
 .floating-scanner-btn {
@@ -4099,16 +4099,15 @@ footer {
     text-decoration: none !important;
     white-space: nowrap;
 
-    /* Start at the top-right */
     transform: translate3d(0, 0, 0);
 
-    /* Move down and back up */
-    animation: glamoraScannerTravel 4s ease-in-out infinite !important;
+    /* Slower floating animation: 10 seconds per cycle */
+    animation: glamoraScannerTravel 10s ease-in-out infinite !important;
 
     will-change: transform;
 }
 
-/* Travel vertically along the right side */
+/* Slowly travel down and return to the top */
 @keyframes glamoraScannerTravel {
     0% {
         transform: translate3d(0, 0, 0);
@@ -4150,7 +4149,7 @@ footer {
         padding: 13px 16px;
         font-size: 12px;
 
-        animation: glamoraScannerTravelMobile 4s ease-in-out infinite !important;
+        animation: glamoraScannerTravelMobile 10s ease-in-out infinite !important;
     }
 
     .floating-scanner-btn .scanner-icon {
@@ -4169,15 +4168,15 @@ footer {
     }
 }
 
-/* Prevent the global reduced-motion rule from stopping this animation */
+/* Keep the animation active despite the global reduced-motion rule */
 @media (prefers-reduced-motion: reduce) {
     .floating-scanner-btn {
-        animation: glamoraScannerTravel 4s ease-in-out infinite !important;
+        animation: glamoraScannerTravel 10s ease-in-out infinite !important;
     }
 }
 
 @media (max-width: 576px) and (prefers-reduced-motion: reduce) {
     .floating-scanner-btn {
-        animation: glamoraScannerTravelMobile 4s ease-in-out infinite !important;
+        animation: glamoraScannerTravelMobile 10s ease-in-out infinite !important;
     }
 }
