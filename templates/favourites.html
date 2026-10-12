@@ -29,12 +29,6 @@
            Navbar styling is inherited from style.css
            ===================================================== */
 
-        body.favorites-page {
-            min-height: 100vh;
-            background: var(--bg, #fff5f7);
-            color: var(--text, #2b1b20);
-            font-family: "DM Sans", sans-serif;
-        }
 
         .favorites-main {
             width: min(1200px, calc(100% - 48px));
@@ -434,107 +428,92 @@
 
 <body class="favorites-page">
 
-    <!-- =====================================================
-         NAVBAR — MATCHES index.html
-         ===================================================== -->
+<header class="navbar">
 
-    <header class="navbar">
+    <a
+        href="{{ url_for('index') }}"
+        class="logo"
+        aria-label="Glamora AR Home"
+    >
+        GLAMORA <span>AR</span>
+    </a>
+
+    <nav
+        class="nav-links"
+        id="navLinks"
+        aria-label="Main navigation"
+    >
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('beauty') }}">Beauty</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+
+        <button
+            class="icon-btn"
+            id="searchBtn"
+            type="button"
+            aria-label="Search"
+            title="Search"
+        >⌕</button>
+
+        <button
+            class="icon-btn wishlist-btn"
+            id="wishlistBtn"
+            type="button"
+            aria-label="Wishlist"
+            title="Wishlist"
+        >♡</button>
 
         <a
-            href="{{ url_for('index') }}"
-            class="logo"
-            aria-label="Glamora AR Home"
+            href="{{ url_for('cart') }}"
+            class="cart-btn"
+            id="cartBtn"
+            aria-label="Shopping bag"
+            title="Shopping bag"
         >
-            GLAMORA <span>AR</span>
+            <span>Bag</span>
+            <span class="cart-count" id="cartCount">
+                {{ bag_count|default(0) }}
+            </span>
         </a>
 
-        <nav
-            class="nav-links"
-            id="navLinks"
-            aria-label="Main navigation"
+        {% if is_logged_in %}
+        <a
+            href="{{ url_for('profile') }}"
+            class="login-btn"
+            id="loginBtn"
+            aria-label="View your profile"
         >
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('beauty') }}">Beauty</a>
-            <a href="{{ url_for('about') }}">About</a>
-            <a href="{{ url_for('contact') }}">Contact</a>
-        </nav>
+            <span class="login-icon">♙</span>
+            <span>Profile</span>
+        </a>
+        {% else %}
+        <a
+            href="{{ url_for('login') }}"
+            class="login-btn"
+            id="loginBtn"
+            aria-label="Login to Glamora AR"
+        >
+            <span class="login-icon">♙</span>
+            <span>Login</span>
+        </a>
+        {% endif %}
 
-        <div class="nav-actions">
+        <button
+            class="menu-btn"
+            id="menuBtn"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="navLinks"
+        >☰</button>
 
-            <button
-                class="icon-btn"
-                id="searchBtn"
-                type="button"
-                aria-label="Search"
-                title="Search"
-            >
-                ⌕
-            </button>
+    </div>
 
-            <button
-                class="icon-btn wishlist-btn active"
-                id="wishlistBtn"
-                type="button"
-                aria-label="Open wishlist"
-                title="Favorites"
-                aria-current="page"
-            >
-                ♡
-            </button>
-
-            <button
-                class="cart-btn"
-                id="cartBtn"
-                type="button"
-                aria-label="Shopping bag"
-                title="Shopping bag"
-            >
-                <span>Bag</span>
-                <span class="cart-count" id="cartCount">
-                    {{ bag_count|default(0) }}
-                </span>
-            </button>
-
-            {% if is_logged_in %}
-
-                <a
-                    href="{{ url_for('profile') }}"
-                    class="login-btn"
-                    id="loginBtn"
-                    aria-label="View your profile"
-                >
-                    <span class="login-icon">♙</span>
-                    <span>Profile</span>
-                </a>
-
-            {% else %}
-
-                <a
-                    href="{{ url_for('login') }}"
-                    class="login-btn"
-                    id="loginBtn"
-                    aria-label="Login to Glamora AR"
-                >
-                    <span class="login-icon">♙</span>
-                    <span>Login</span>
-                </a>
-
-            {% endif %}
-
-            <button
-                class="menu-btn"
-                id="menuBtn"
-                type="button"
-                aria-label="Open navigation menu"
-                aria-expanded="false"
-                aria-controls="navLinks"
-            >
-                ☰
-            </button>
-
-        </div>
-
-    </header>
+</header>
 
     <!-- =====================================================
          FLASH MESSAGES
