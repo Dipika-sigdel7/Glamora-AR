@@ -4059,3 +4059,67 @@ footer {
     }
 
 }
+
+
+
+/* =========================================================
+   FLOATING PRODUCT SCANNER BUTTON
+   Added without changing existing styles
+   ========================================================= */
+
+.floating-scanner-btn {
+    position: fixed !important;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    z-index: 9999;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 15px 20px;
+
+    background: linear-gradient(135deg, #c85f7a, #a74360);
+    color: #ffffff !important;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50px;
+
+    box-shadow: 0 10px 30px rgba(164, 73, 98, 0.30);
+
+    font-family: "DM Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none !important;
+    white-space: nowrap;
+
+    transition: box-shadow 0.3s ease;
+}
+
+.floating-scanner-btn:hover {
+    box-shadow: 0 14px 35px rgba(164, 73, 98, 0.45);
+}
+
+.floating-scanner-btn .scanner-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.floating-scanner-btn .scanner-text {
+    white-space: nowrap;
+}
+
+/* Mobile positioning */
+@media (max-width: 576px) {
+    .floating-scanner-btn {
+        top: auto;
+        right: 14px;
+        bottom: 90px;
+        transform: none;
+
+        padding: 13px 16px;
+        font-size: 12px;
+    }
+}
