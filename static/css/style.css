@@ -4060,22 +4060,23 @@ footer {
 
 }
 
+
+
 /* =========================================================
-   GLAMORA AR — FLOATING SCANNER
-   Moves slowly from right-center to bottom-right corner
+   GLAMORA AR — FLOATING PRODUCT SCANNER
+   Shared by index.html and beauty.html
    ========================================================= */
 
-.floating-scanner-btn {
+a.floating-scanner-btn {
     position: fixed !important;
-
     top: 50% !important;
     right: 24px !important;
-    bottom: auto !important;
     left: auto !important;
+    bottom: auto !important;
 
     z-index: 999999 !important;
 
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
     gap: 10px;
@@ -4083,12 +4084,12 @@ footer {
     padding: 15px 20px;
 
     background: linear-gradient(135deg, #c85f7a, #a74360);
-    color: #ffffff !important;
+    color: #fff !important;
 
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, .35);
     border-radius: 50px;
 
-    box-shadow: 0 10px 30px rgba(164, 73, 98, 0.30);
+    box-shadow: 0 10px 30px rgba(164, 73, 98, .30);
 
     font-family: "DM Sans", sans-serif;
     font-size: 14px;
@@ -4097,80 +4098,43 @@ footer {
     text-decoration: none !important;
     white-space: nowrap;
 
-    transform: translate3d(0, -50%, 0);
-
-    /* Slow, smooth floating motion */
-    animation: glamoraScannerTravel 18s ease-in-out infinite !important;
-
-    will-change: transform;
+    animation: glamoraScannerFloat 8s ease-in-out infinite alternate !important;
 }
 
-/* Float slowly from right-center toward the bottom-right corner */
-@keyframes glamoraScannerTravel {
-    0%,
-    100% {
-        transform: translate3d(0, -50%, 0);
+/* Move from the center toward the bottom */
+@keyframes glamoraScannerFloat {
+    from {
+        top: 50%;
     }
 
-    50% {
-        transform: translate3d(0, calc(50vh - 100%), 0);
+    to {
+        top: calc(100% - 90px);
     }
 }
 
-.floating-scanner-btn:hover {
-    box-shadow: 0 14px 35px rgba(164, 73, 98, 0.45);
-}
-
-.floating-scanner-btn .scanner-icon {
-    display: inline-block;
+a.floating-scanner-btn .scanner-icon {
     font-size: 22px;
     line-height: 1;
 }
 
-.floating-scanner-btn .scanner-text {
+a.floating-scanner-btn .scanner-text {
     white-space: nowrap;
 }
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
 @media (max-width: 576px) {
-    .floating-scanner-btn {
-        top: 50% !important;
+    a.floating-scanner-btn {
         right: 14px !important;
-        bottom: auto !important;
-
         padding: 13px 16px;
         font-size: 12px;
-
-        animation: glamoraScannerTravelMobile 18s ease-in-out infinite !important;
     }
 
-    .floating-scanner-btn .scanner-icon {
+    a.floating-scanner-btn .scanner-icon {
         font-size: 19px;
-    }
-
-    @keyframes glamoraScannerTravelMobile {
-        0%,
-        100% {
-            transform: translate3d(0, -50%, 0);
-        }
-
-        50% {
-            transform: translate3d(0, calc(50dvh - 100%), 0);
-        }
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .floating-scanner-btn {
-        animation: glamoraScannerTravel 18s ease-in-out infinite !important;
-    }
-}
-
-@media (max-width: 576px) and (prefers-reduced-motion: reduce) {
-    .floating-scanner-btn {
-        animation: glamoraScannerTravelMobile 18s ease-in-out infinite !important;
+    a.floating-scanner-btn {
+        animation: none !important;
     }
 }
