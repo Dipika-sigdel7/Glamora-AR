@@ -4133,8 +4133,9 @@ a.floating-scanner-btn .scanner-text {
     }
 }
 
+
 @media (prefers-reduced-motion: reduce) {
     a.floating-scanner-btn {
-        animation: none !important;
+        animation: glamoraScannerFloat 8s ease-in-out infinite alternate !important;
     }
 }
