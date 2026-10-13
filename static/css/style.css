@@ -4060,17 +4060,15 @@ footer {
 
 }
 
-
-
 /* =========================================================
    GLAMORA AR — FLOATING SCANNER
-   Moves slowly from top-right to bottom-right and back
+   Moves slowly from right-center to bottom-right corner
    ========================================================= */
 
 .floating-scanner-btn {
     position: fixed !important;
 
-    top: 15px !important;
+    top: 50% !important;
     right: 24px !important;
     bottom: auto !important;
     left: auto !important;
@@ -4099,26 +4097,23 @@ footer {
     text-decoration: none !important;
     white-space: nowrap;
 
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, -50%, 0);
 
-    /* Slower floating animation: 10 seconds per cycle */
-    animation: glamoraScannerTravel 10s ease-in-out infinite !important;
+    /* Slow, smooth floating motion */
+    animation: glamoraScannerTravel 18s ease-in-out infinite !important;
 
     will-change: transform;
 }
 
-/* Slowly travel down and return to the top */
+/* Float slowly from right-center toward the bottom-right corner */
 @keyframes glamoraScannerTravel {
-    0% {
-        transform: translate3d(0, 0, 0);
+    0%,
+    100% {
+        transform: translate3d(0, -50%, 0);
     }
 
     50% {
-        transform: translate3d(0, calc(100vh - 100%), 0);
-    }
-
-    100% {
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, calc(50vh - 100%), 0);
     }
 }
 
@@ -4142,14 +4137,14 @@ footer {
 
 @media (max-width: 576px) {
     .floating-scanner-btn {
-        top: 15px !important;
+        top: 50% !important;
         right: 14px !important;
         bottom: auto !important;
 
         padding: 13px 16px;
         font-size: 12px;
 
-        animation: glamoraScannerTravelMobile 10s ease-in-out infinite !important;
+        animation: glamoraScannerTravelMobile 18s ease-in-out infinite !important;
     }
 
     .floating-scanner-btn .scanner-icon {
@@ -4159,24 +4154,23 @@ footer {
     @keyframes glamoraScannerTravelMobile {
         0%,
         100% {
-            transform: translate3d(0, 0, 0);
+            transform: translate3d(0, -50%, 0);
         }
 
         50% {
-            transform: translate3d(0, calc(100dvh - 100%), 0);
+            transform: translate3d(0, calc(50dvh - 100%), 0);
         }
     }
 }
 
-/* Keep the animation active despite the global reduced-motion rule */
 @media (prefers-reduced-motion: reduce) {
     .floating-scanner-btn {
-        animation: glamoraScannerTravel 10s ease-in-out infinite !important;
+        animation: glamoraScannerTravel 18s ease-in-out infinite !important;
     }
 }
 
 @media (max-width: 576px) and (prefers-reduced-motion: reduce) {
     .floating-scanner-btn {
-        animation: glamoraScannerTravelMobile 10s ease-in-out infinite !important;
+        animation: glamoraScannerTravelMobile 18s ease-in-out infinite !important;
     }
 }
