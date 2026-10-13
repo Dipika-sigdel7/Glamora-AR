@@ -4082,13 +4082,11 @@ a.floating-scanner-btn {
     gap: 10px;
 
     padding: 15px 20px;
-
     background: linear-gradient(135deg, #c85f7a, #a74360);
     color: #fff !important;
 
     border: 1px solid rgba(255, 255, 255, .35);
     border-radius: 50px;
-
     box-shadow: 0 10px 30px rgba(164, 73, 98, .30);
 
     font-family: "DM Sans", sans-serif;
@@ -4098,17 +4096,18 @@ a.floating-scanner-btn {
     text-decoration: none !important;
     white-space: nowrap;
 
-    animation: glamoraScannerFloat 8s ease-in-out infinite alternate !important;
+    /* Move down and back up */
+    animation: glamoraScannerFloat 5s ease-in-out infinite alternate !important;
+    will-change: transform;
 }
 
-/* Move from the center toward the bottom */
 @keyframes glamoraScannerFloat {
     from {
-        top: 50%;
+        transform: translateY(-50%);
     }
 
     to {
-        top: calc(100% - 90px);
+        transform: translateY(calc(50vh - 100%));
     }
 }
 
@@ -4133,9 +4132,10 @@ a.floating-scanner-btn .scanner-text {
     }
 }
 
-
+/* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
     a.floating-scanner-btn {
-        animation: glamoraScannerFloat 8s ease-in-out infinite alternate !important;
+        animation: none !important;
+        will-change: auto;
     }
 }
