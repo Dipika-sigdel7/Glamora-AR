@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -23,8 +24,8 @@
 
     <style>
       /* =====================================================
-           BAG PAGE
-           ===================================================== */
+         BAG PAGE
+         ===================================================== */
 
       .bag-page {
         min-height: 100vh;
@@ -299,8 +300,8 @@
       }
 
       /* =====================================================
-           NAVBAR — SEARCH AND FAVORITES ICONS
-           ===================================================== */
+         NAVBAR — SEARCH AND FAVORITES ICONS
+         ===================================================== */
 
       .navbar .wishlist-btn {
         text-decoration: none;
@@ -317,70 +318,87 @@
       }
 
       /* =====================================================
-           FLOATING PRODUCT SCANNER
-           ===================================================== */
+         FLOATING PRODUCT SCANNER
+         Same requested style and animation
+         ===================================================== */
 
-      a.floating-scanner-btn {
+      body a.floating-scanner-btn {
         position: fixed !important;
-        right: 25px !important;
-        bottom: 30px !important;
+
         top: auto !important;
+        right: 24px !important;
+        bottom: 35px !important;
         left: auto !important;
 
-        z-index: 9999;
+        z-index: 1000000 !important;
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         gap: 10px;
 
-        min-height: 54px;
-        padding: 0 22px;
-
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        border-radius: 30px;
+        padding: 15px 20px;
 
         background: linear-gradient(135deg, #c85f7a, #a74360);
-        color: #ffffff;
-        text-decoration: none;
+        color: #fff !important;
 
-        box-shadow: 0 12px 30px rgba(164, 73, 98, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 50px;
 
-        animation: glamoraScannerFloat 3s ease-in-out infinite;
-        transition: box-shadow 0.3s ease;
+        box-shadow: 0 10px 30px rgba(164, 73, 98, 0.30);
+
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+
+        text-decoration: none !important;
+        white-space: nowrap;
+
+        animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
+        will-change: transform;
       }
 
-      a.floating-scanner-btn:hover {
-        color: #ffffff;
-        box-shadow: 0 16px 36px rgba(164, 73, 98, 0.42);
+      body a.floating-scanner-btn:hover {
+        color: #fff !important;
+        box-shadow: 0 14px 35px rgba(164, 73, 98, 0.42);
       }
 
-      .floating-scanner-btn .scanner-icon {
-        font-size: 24px;
+      body a.floating-scanner-btn .scanner-icon {
+        font-size: 22px;
         line-height: 1;
       }
 
-      .floating-scanner-btn .scanner-text {
-        font-family: "DM Sans", sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
+      body a.floating-scanner-btn .scanner-text {
+        white-space: nowrap;
       }
 
       @keyframes glamoraScannerFloat {
-        0%,
-        100% {
+        from {
           transform: translateY(0);
         }
 
-        50% {
-          transform: translateY(-12px);
+        to {
+          transform: translateY(-100px);
+        }
+      }
+
+      /* Mobile */
+      @media (max-width: 576px) {
+        body a.floating-scanner-btn {
+          right: 14px !important;
+          bottom: 20px !important;
+          padding: 13px 16px !important;
+          font-size: 12px;
+        }
+
+        body a.floating-scanner-btn .scanner-icon {
+          font-size: 19px;
         }
       }
 
       /* =====================================================
-           RESPONSIVE DESIGN
-           ===================================================== */
+         RESPONSIVE DESIGN
+         ===================================================== */
 
       @media (max-width: 850px) {
         .bag-layout {
@@ -411,19 +429,6 @@
           grid-column: 2;
           text-align: left;
         }
-
-        a.floating-scanner-btn {
-          right: 16px !important;
-          bottom: 20px !important;
-          min-height: 48px;
-          padding: 0 17px;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        a.floating-scanner-btn {
-          animation: none;
-        }
       }
     </style>
   </head>
@@ -435,16 +440,15 @@
 
     <header class="navbar">
       <!-- Logo -->
-      <a href="{{ url_for('home') }}" class="logo"> GLAMORA <span>AR</span> </a>
+      <a href="{{ url_for('home') }}" class="logo">
+        GLAMORA <span>AR</span>
+      </a>
 
       <!-- Navigation links -->
       <nav class="nav-links" id="navLinks" aria-label="Main navigation">
         <a href="{{ url_for('home') }}">Home</a>
-
         <a href="{{ url_for('beauty') }}">Beauty</a>
-
         <a href="{{ url_for('about') }}">About</a>
-
         <a href="{{ url_for('contact') }}">Contact</a>
       </nav>
 
@@ -509,23 +513,18 @@
           aria-label="Shopping bag, {{ bag_count }} items"
         >
           <span>Bag</span>
-
-          <span class="cart-count" id="cartCount"> {{ bag_count }} </span>
+          <span class="cart-count" id="cartCount">{{ bag_count }}</span>
         </a>
 
         <!-- Login / Profile -->
         {% if is_logged_in %}
-
         <a href="{{ url_for('profile') }}" class="login-btn" id="loginBtn">
           Profile
         </a>
-
         {% else %}
-
         <a href="{{ url_for('login') }}" class="login-btn" id="loginBtn">
           Login
         </a>
-
         {% endif %}
 
         <!-- Mobile navigation toggle -->
@@ -552,8 +551,7 @@
       <div class="bag-container">
         <!-- Heading -->
         <div class="bag-heading">
-          <span class="bag-label"> YOUR SHOPPING BAG </span>
-
+          <span class="bag-label">YOUR SHOPPING BAG</span>
           <h1>Your <em>Bag.</em></h1>
 
           <p>
@@ -563,42 +561,33 @@
         </div>
 
         <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %} {% if
-        messages %}
-
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
         <div class="flash-container">
           {% for category, message in messages %}
-
           <div class="flash-message {{ category }}">{{ message }}</div>
-
           {% endfor %}
         </div>
-
-        {% endif %} {% endwith %}
+        {% endif %}
+        {% endwith %}
 
         <!-- Bag contains products -->
         {% if cart_items %}
-
         <div class="bag-layout">
           <!-- Bag items -->
           <section class="bag-items" aria-label="Bag items">
             {% for item in cart_items %}
-
             <article class="bag-item">
               <!-- Product image -->
               <div class="bag-item-image">
                 {% if item.image_url %}
-
                 <img
                   src="{{ url_for('static', filename=item.image_url) }}"
                   alt="{{ item.name }}"
                   loading="lazy"
                 />
-
                 {% else %}
-
                 <div class="bag-item-placeholder">💄</div>
-
                 {% endif %}
               </div>
 
@@ -606,16 +595,16 @@
               <div class="bag-item-info">
                 <h3>{{ item.name }}</h3>
 
-                <div class="bag-item-price">{{ format_npr(item.price) }}</div>
+                <div class="bag-item-price">
+                  {{ format_npr(item.price) }}
+                </div>
 
                 {% if item.shade %}
-
                 <div class="bag-item-quantity">Shade: {{ item.shade }}</div>
+                {% endif %}
 
-                {% endif %} {% if item.color %}
-
+                {% if item.color %}
                 <div class="bag-item-quantity">Color: {{ item.color }}</div>
-
                 {% endif %}
 
                 <div class="bag-item-quantity">
@@ -625,7 +614,7 @@
 
               <!-- Total and remove -->
               <div class="bag-item-total">
-                <strong> {{ format_npr(item.line_total) }} </strong>
+                <strong>{{ format_npr(item.line_total) }}</strong>
 
                 <form
                   action="{{ url_for('remove_from_cart', cart_item_id=item.cart_item_id) }}"
@@ -635,7 +624,6 @@
                 </form>
               </div>
             </article>
-
             {% endfor %}
           </section>
 
@@ -680,7 +668,6 @@
             Explore Beauty
           </a>
         </section>
-
         {% endif %}
       </div>
     </main>
