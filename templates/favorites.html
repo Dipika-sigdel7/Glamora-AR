@@ -1,773 +1,770 @@
+
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Favorites | Glamora AR</title>
 
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/beauty.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/beauty.css') }}">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
     <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body.favorites-page-body {
-        margin: 0;
-        background: #fff5f7;
-        color: #2b1b20;
-        font-family: "DM Sans", sans-serif;
-      }
-
-      body.favorites-page-body a {
-        text-decoration: none;
-      }
-
-      /* ================= NAVBAR FIX ================= */
-
-      body.favorites-page-body .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        z-index: 10000;
-      }
-
-      body.favorites-page-body .navbar .logo,
-      body.favorites-page-body .navbar .nav-links,
-      body.favorites-page-body .navbar .nav-actions {
-        position: relative;
-        z-index: 10001;
-      }
-
-      body.favorites-page-body .navbar .nav-actions {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      body.favorites-page-body .navbar .icon-btn,
-      body.favorites-page-body .navbar .wishlist-btn,
-      body.favorites-page-body .navbar .cart-btn,
-      body.favorites-page-body .navbar .login-btn,
-      body.favorites-page-body .navbar .menu-btn {
-        position: relative;
-        z-index: 10002;
-        pointer-events: auto;
-        cursor: pointer;
-      }
-
-      body.favorites-page-body .navbar .wishlist-btn {
-        display: grid;
-        place-items: center;
-        flex-shrink: 0;
-      }
-
-      /* Search popover */
-      .favorites-search-panel {
-        position: absolute;
-        top: calc(100% + 12px);
-        right: 0;
-        z-index: 10003;
-        display: none;
-        width: min(340px, 88vw);
-        padding: 14px;
-        border: 1px solid #f3b8c6;
-        border-radius: 12px;
-        background: #ffffff;
-        box-shadow: 0 12px 35px rgba(43, 27, 32, 0.15);
-      }
-
-      .favorites-search-panel.open {
-        display: block;
-      }
-
-      .favorites-search-form {
-        display: flex;
-        gap: 8px;
-      }
-
-      .favorites-search-form input {
-        width: 100%;
-        min-width: 0;
-        padding: 11px;
-        border: 1px solid #f3b8c6;
-        border-radius: 7px;
-        outline: none;
-        font: inherit;
-      }
-
-      .favorites-search-form input:focus {
-        border-color: #c85f7a;
-      }
-
-      .favorites-search-form button {
-        padding: 10px 14px;
-        border: 0;
-        border-radius: 7px;
-        background: #c85f7a;
-        color: #fff;
-        font: inherit;
-        font-weight: 600;
-        cursor: pointer;
-      }
-
-      /* ================= PAGE CONTENT ================= */
-
-      .favorites-page {
-        min-height: 70vh;
-        padding: 120px 6% 70px;
-        background: #fff5f7;
-      }
-
-      .favorites-heading {
-        margin-bottom: 40px;
-        text-align: center;
-      }
-
-      .favorites-eyebrow {
-        margin-bottom: 10px;
-        color: #c85f7a;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-      }
-
-      .favorites-heading h1 {
-        margin: 0 0 12px;
-        color: #2b1b20;
-        font-family: "Playfair Display", serif;
-        font-size: clamp(2rem, 4vw, 3rem);
-      }
-
-      .favorites-heading p {
-        margin: 0;
-        color: #806b72;
-        font-size: 15px;
-      }
-
-      .favorite-flash {
-        margin: 0 auto 20px;
-        color: #a74360;
-        text-align: center;
-      }
-
-      /* ================= PRODUCT GRID ================= */
-
-      .favorites-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-        gap: 25px;
-        max-width: 1400px;
-        margin: 0 auto;
-      }
-
-      .favorite-card {
-        position: relative;
-        overflow: hidden;
-        border: 1px solid #f8e3e9;
-        border-radius: 16px;
-        background: #fff;
-        box-shadow: 0 12px 35px rgba(164, 73, 98, 0.1);
-        transition:
-          transform 0.25s ease,
-          box-shadow 0.25s ease;
-      }
-
-      .favorite-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 18px 42px rgba(164, 73, 98, 0.16);
-      }
-
-      .favorite-image-link {
-        display: block;
-        overflow: hidden;
-        background: #fdecef;
-      }
-
-      .favorite-card img {
-        display: block;
-        width: 100%;
-        height: 260px;
-        object-fit: cover;
-        transition: transform 0.35s ease;
-      }
-
-      .favorite-card:hover img {
-        transform: scale(1.04);
-      }
-
-      .favorite-image-placeholder {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 260px;
-        background: #fdecef;
-        color: #a74360;
-        font-size: 40px;
-      }
-
-      .favorite-card-content {
-        padding: 18px;
-      }
-
-      .favorite-category {
-        margin: 0 0 7px;
-        color: #a74360;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-      }
-
-      .favorite-card-content h3 {
-        margin: 0 0 12px;
-        color: #2b1b20;
-        font-family: "Playfair Display", serif;
-        font-size: 19px;
-        line-height: 1.4;
-      }
-
-      .favorite-price {
-        margin: 0 0 18px;
-        color: #a74360;
-        font-size: 16px;
-        font-weight: 700;
-      }
-
-      .favorite-actions {
-        display: flex;
-        align-items: stretch;
-        gap: 10px;
-      }
-
-      .favorite-view,
-      .favorite-remove {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 42px;
-        padding: 10px 13px;
-        border-radius: 8px;
-        font-family: "DM Sans", sans-serif;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition:
-          background 0.2s ease,
-          color 0.2s ease,
-          border-color 0.2s ease;
-      }
-
-      .favorite-view {
-        flex: 1;
-        border: 1px solid #c85f7a;
-        background: #c85f7a;
-        color: #fff;
-      }
-
-      .favorite-view:hover {
-        border-color: #a74360;
-        background: #a74360;
-      }
-
-      .favorite-remove-form {
-        display: flex;
-        margin: 0;
-      }
-
-      .favorite-remove {
-        border: 1px solid #f3b8c6;
-        background: #fff;
-        color: #a74360;
-      }
-
-      .favorite-remove:hover {
-        border-color: #c85f7a;
-        background: #fdecef;
-      }
-
-      /* ================= EMPTY STATE ================= */
-
-      .favorites-empty {
-        max-width: 550px;
-        margin: 45px auto;
-        padding: 50px 25px;
-        border: 1px solid #f8e3e9;
-        border-radius: 18px;
-        background: #fff;
-        text-align: center;
-        box-shadow: 0 12px 35px rgba(164, 73, 98, 0.08);
-      }
-
-      .favorites-empty .heart {
-        margin-bottom: 12px;
-        color: #c85f7a;
-        font-size: 54px;
-      }
-
-      .favorites-empty h2 {
-        margin: 0 0 12px;
-        color: #2b1b20;
-        font-family: "Playfair Display", serif;
-        font-size: 26px;
-      }
-
-      .favorites-empty p {
-        margin: 0 0 25px;
-        color: #806b72;
-        font-size: 14px;
-        line-height: 1.8;
-      }
-
-      .favorites-shop {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 13px 24px;
-        border: 1px solid #c85f7a;
-        border-radius: 8px;
-        background: #c85f7a;
-        color: #fff;
-        font-size: 14px;
-        font-weight: 600;
-        transition: background 0.2s ease;
-      }
-
-      .favorites-shop:hover {
-        background: #a74360;
-      }
-
-      /* ================= FOOTER ================= */
-
-      .favorites-footer {
-        padding: 28px 6%;
-        background: #2b1b20;
-        color: #fff;
-        text-align: center;
-      }
-
-      .favorites-footer p {
-        margin: 0;
-        color: #f3b8c6;
-        font-size: 13px;
-      }
-
-      .favorites-footer a {
-        color: #fff;
-      }
-
-      .favorites-footer a:hover {
-        color: #f3b8c6;
-      }
-
-      /* ================= RESPONSIVE ================= */
-
-      @media (max-width: 850px) {
-        body.favorites-page-body .navbar .nav-links {
-          display: none;
-          position: absolute;
-          top: 100%;
-          left: 5vw;
-          right: 5vw;
-          z-index: 10001;
-          padding: 25px;
-          flex-direction: column;
-          gap: 20px;
-          background: #fff;
-          box-shadow: 0 12px 35px rgba(43, 27, 32, 0.12);
+        * {
+            box-sizing: border-box;
         }
 
-        body.favorites-page-body .navbar .nav-links.open {
-          display: flex;
+        html {
+            scroll-behavior: smooth;
         }
 
-        body.favorites-page-body .navbar .menu-btn {
-          display: block;
+        body.favorites-page-body {
+            margin: 0;
+            background: #fff5f7;
+            color: #2b1b20;
+            font-family: "DM Sans", sans-serif;
         }
-      }
 
-      @media (max-width: 768px) {
+        body.favorites-page-body a {
+            text-decoration: none;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        body.favorites-page-body header.navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            min-width: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            pointer-events: auto;
+        }
+
+        body.favorites-page-body header.navbar .logo,
+        body.favorites-page-body header.navbar .nav-links,
+        body.favorites-page-body header.navbar .nav-actions {
+            position: relative;
+            pointer-events: auto;
+        }
+
+        body.favorites-page-body header.navbar .logo {
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        body.favorites-page-body header.navbar .nav-links {
+            z-index: 2;
+        }
+
+        body.favorites-page-body header.navbar .nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            flex-shrink: 0;
+            min-width: 0;
+            z-index: 5;
+        }
+
+        body.favorites-page-body header.navbar a,
+        body.favorites-page-body header.navbar button {
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        body.favorites-page-body header.navbar .icon-btn,
+        body.favorites-page-body header.navbar .wishlist-btn,
+        body.favorites-page-body header.navbar .cart-btn,
+        body.favorites-page-body header.navbar .login-btn,
+        body.favorites-page-body header.navbar .menu-btn {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        body.favorites-page-body header.navbar .wishlist-btn {
+            display: inline-grid;
+            place-items: center;
+            min-width: 38px;
+            min-height: 38px;
+            z-index: 10;
+            pointer-events: auto;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        body.favorites-page-body header.navbar .wishlist-btn::before,
+        body.favorites-page-body header.navbar .wishlist-btn::after {
+            pointer-events: none;
+        }
+
+        /* ================= SEARCH PANEL ================= */
+
+        .favorites-search-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .favorites-search-panel {
+            position: absolute;
+            top: calc(100% + 12px);
+            right: 0;
+            z-index: 10003;
+            display: none;
+            width: min(340px, 88vw);
+            padding: 14px;
+            border: 1px solid #f3b8c6;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 12px 35px rgba(43, 27, 32, 0.15);
+        }
+
+        .favorites-search-panel.open {
+            display: block;
+        }
+
+        .favorites-search-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .favorites-search-form input {
+            width: 100%;
+            min-width: 0;
+            padding: 11px;
+            border: 1px solid #f3b8c6;
+            border-radius: 7px;
+            outline: none;
+            font: inherit;
+        }
+
+        .favorites-search-form input:focus {
+            border-color: #c85f7a;
+        }
+
+        .favorites-search-form button {
+            padding: 10px 14px;
+            border: 0;
+            border-radius: 7px;
+            background: #c85f7a;
+            color: #fff;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ================= PAGE CONTENT ================= */
+
         .favorites-page {
-          padding: 105px 5% 45px;
+            min-height: 70vh;
+            padding: 120px 6% 70px;
+            background: #fff5f7;
         }
 
         .favorites-heading {
-          margin-bottom: 28px;
+            margin-bottom: 40px;
+            text-align: center;
         }
+
+        .favorites-eyebrow {
+            margin-bottom: 10px;
+            color: #c85f7a;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .favorites-heading h1 {
+            margin: 0 0 12px;
+            color: #2b1b20;
+            font-family: "Playfair Display", serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+
+        .favorites-heading p {
+            margin: 0;
+            color: #806b72;
+            font-size: 15px;
+        }
+
+        .favorite-flash {
+            margin: 0 auto 20px;
+            color: #a74360;
+            text-align: center;
+        }
+
+        /* ================= PRODUCT GRID ================= */
 
         .favorites-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 14px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .favorite-card img,
+        .favorite-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #f8e3e9;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 12px 35px rgba(164, 73, 98, 0.1);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 42px rgba(164, 73, 98, 0.16);
+        }
+
+        .favorite-image-link {
+            display: block;
+            overflow: hidden;
+            background: #fdecef;
+        }
+
+        .favorite-card img {
+            display: block;
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            transition: transform 0.35s ease;
+        }
+
+        .favorite-card:hover img {
+            transform: scale(1.04);
+        }
+
         .favorite-image-placeholder {
-          height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 260px;
+            background: #fdecef;
+            color: #a74360;
+            font-size: 40px;
         }
 
         .favorite-card-content {
-          padding: 12px;
+            padding: 18px;
+        }
+
+        .favorite-category {
+            margin: 0 0 7px;
+            color: #a74360;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
 
         .favorite-card-content h3 {
-          font-size: 16px;
+            margin: 0 0 12px;
+            color: #2b1b20;
+            font-family: "Playfair Display", serif;
+            font-size: 19px;
+            line-height: 1.4;
         }
 
         .favorite-price {
-          font-size: 14px;
+            margin: 0 0 18px;
+            color: #a74360;
+            font-size: 16px;
+            font-weight: 700;
         }
 
         .favorite-actions {
-          flex-direction: column;
+            display: flex;
+            align-items: stretch;
+            gap: 10px;
         }
 
         .favorite-view,
         .favorite-remove {
-          width: 100%;
-          min-height: 40px;
-          padding: 9px 7px;
-          font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 10px 13px;
+            border-radius: 8px;
+            font-family: "DM Sans", sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .favorite-view {
+            flex: 1;
+            border: 1px solid #c85f7a;
+            background: #c85f7a;
+            color: #fff;
+        }
+
+        .favorite-view:hover {
+            border-color: #a74360;
+            background: #a74360;
         }
 
         .favorite-remove-form {
-          width: 100%;
-        }
-      }
-
-      @media (max-width: 380px) {
-        .favorites-grid {
-          grid-template-columns: 1fr;
+            display: flex;
+            margin: 0;
         }
 
-        .favorite-card img,
-        .favorite-image-placeholder {
-          height: 240px;
+        .favorite-remove {
+            border: 1px solid #f3b8c6;
+            background: #fff;
+            color: #a74360;
         }
 
-        body.favorites-page-body .navbar .nav-actions {
-          gap: 8px;
+        .favorite-remove:hover {
+            border-color: #c85f7a;
+            background: #fdecef;
         }
-      }
 
-      /* FINAL FIX: Make the entire navbar clickable */
-      body.favorites-page-body header.navbar {
-        position: fixed !important;
-        isolation: isolate;
-        z-index: 99999 !important;
-        pointer-events: auto !important;
-      }
+        /* ================= EMPTY STATE ================= */
 
-      body.favorites-page-body header.navbar::before,
-      body.favorites-page-body header.navbar::after {
-        pointer-events: none !important;
-      }
+        .favorites-empty {
+            max-width: 550px;
+            margin: 45px auto;
+            padding: 50px 25px;
+            border: 1px solid #f8e3e9;
+            border-radius: 18px;
+            background: #fff;
+            text-align: center;
+            box-shadow: 0 12px 35px rgba(164, 73, 98, 0.08);
+        }
 
-      body.favorites-page-body header.navbar a,
-      body.favorites-page-body header.navbar button,
-      body.favorites-page-body header.navbar a *,
-      body.favorites-page-body header.navbar button * {
-        pointer-events: auto !important;
-        cursor: pointer;
-      }
+        .favorites-empty .heart {
+            margin-bottom: 12px;
+            color: #c85f7a;
+            font-size: 54px;
+        }
 
-      body.favorites-page-body header.navbar .nav-actions {
-        position: relative;
-        z-index: 99999 !important;
-      }
+        .favorites-empty h2 {
+            margin: 0 0 12px;
+            color: #2b1b20;
+            font-family: "Playfair Display", serif;
+            font-size: 26px;
+        }
 
-      body.favorites-page-body header.navbar .wishlist-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        z-index: 99999 !important;
-        pointer-events: auto !important;
-      }
+        .favorites-empty p {
+            margin: 0 0 25px;
+            color: #806b72;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .favorites-shop {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 24px;
+            border: 1px solid #c85f7a;
+            border-radius: 8px;
+            background: #c85f7a;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .favorites-shop:hover {
+            background: #a74360;
+        }
+
+        /* ================= FOOTER ================= */
+
+        .favorites-footer {
+            padding: 28px 6%;
+            background: #2b1b20;
+            color: #fff;
+            text-align: center;
+        }
+
+        .favorites-footer p {
+            margin: 0;
+            color: #f3b8c6;
+            font-size: 13px;
+        }
+
+        .favorites-footer a {
+            color: #fff;
+        }
+
+        .favorites-footer a:hover {
+            color: #f3b8c6;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 850px) {
+            body.favorites-page-body header.navbar {
+                gap: 10px;
+                padding-left: 4vw;
+                padding-right: 4vw;
+            }
+
+            body.favorites-page-body header.navbar .logo {
+                font-size: 15px;
+            }
+
+            body.favorites-page-body header.navbar .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 5vw;
+                right: 5vw;
+                z-index: 10001;
+                padding: 25px;
+                flex-direction: column;
+                gap: 20px;
+                background: #fff;
+                box-shadow: 0 12px 35px rgba(43, 27, 32, 0.12);
+            }
+
+            body.favorites-page-body header.navbar .nav-links.open {
+                display: flex;
+            }
+
+            body.favorites-page-body header.navbar .menu-btn {
+                display: block;
+            }
+
+            body.favorites-page-body header.navbar .nav-actions {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body.favorites-page-body header.navbar .cart-btn > span:first-child,
+            body.favorites-page-body header.navbar .login-btn > span:not(.login-icon) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .favorites-page {
+                padding: 105px 5% 45px;
+            }
+
+            .favorites-heading {
+                margin-bottom: 28px;
+            }
+
+            .favorites-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 14px;
+            }
+
+            .favorite-card img,
+            .favorite-image-placeholder {
+                height: 180px;
+            }
+
+            .favorite-card-content {
+                padding: 12px;
+            }
+
+            .favorite-card-content h3 {
+                font-size: 16px;
+            }
+
+            .favorite-price {
+                font-size: 14px;
+            }
+
+            .favorite-actions {
+                flex-direction: column;
+            }
+
+            .favorite-view,
+            .favorite-remove {
+                width: 100%;
+                min-height: 40px;
+                padding: 9px 7px;
+                font-size: 12px;
+            }
+
+            .favorite-remove-form {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .favorites-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .favorite-card img,
+            .favorite-image-placeholder {
+                height: 240px;
+            }
+        }
     </style>
-  </head>
+</head>
 
-  <body class="favorites-page-body">
+<body class="favorites-page-body">
+
+    <!-- ================= NAVBAR ================= -->
+
     <header class="navbar">
-      <a href="{{ url_for('index') }}" class="logo">
-        GLAMORA <span>AR</span>
-      </a>
+        <a href="{{ url_for('index') }}" class="logo">
+            GLAMORA <span>AR</span>
+        </a>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('beauty') }}">Beauty</a>
-        <a href="{{ url_for('about') }}">About</a>
-        <a href="{{ url_for('contact') }}">Contact</a>
-      </nav>
+        <nav class="nav-links" id="navLinks">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('beauty') }}">Beauty</a>
+            <a href="{{ url_for('about') }}">About</a>
+            <a href="{{ url_for('contact') }}">Contact</a>
+        </nav>
 
-      <div class="nav-actions">
-        <div class="favorites-search-wrap" style="position: relative">
-          <button
-            class="icon-btn"
-            id="searchBtn"
-            type="button"
-            aria-label="Open search"
-            aria-expanded="false"
-            title="Search"
-          >
-            ⌕
-          </button>
+        <div class="nav-actions">
+            <div class="favorites-search-wrap">
+                <button
+                    class="icon-btn"
+                    id="searchBtn"
+                    type="button"
+                    aria-label="Open search"
+                    aria-expanded="false"
+                    aria-controls="searchPanel"
+                    title="Search"
+                >⌕</button>
 
-          <div class="favorites-search-panel" id="searchPanel">
-            <form
-              class="favorites-search-form"
-              action="{{ url_for('beauty') }}"
-              method="GET"
-            >
-              <input
-                type="search"
-                name="q"
-                placeholder="Search beauty products..."
-                aria-label="Search beauty products"
-              />
-              <button type="submit">Search</button>
-            </form>
-          </div>
+                <div class="favorites-search-panel" id="searchPanel">
+                    <form
+                        class="favorites-search-form"
+                        action="{{ url_for('beauty') }}"
+                        method="GET"
+                    >
+                        <input
+                            type="search"
+                            name="q"
+                            placeholder="Search beauty products..."
+                            aria-label="Search beauty products"
+                        >
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Normal link: clicking the heart navigates to Favorites -->
+            <a
+                href="{{ url_for('favorites') }}"
+                class="icon-btn wishlist-btn"
+                id="wishlistBtn"
+                aria-label="My favorites"
+                title="My favorites"
+            >♡</a>
+
+            <a href="{{ url_for('cart') }}" class="cart-btn" id="cartBtn">
+                <span>Bag</span>
+                <span class="cart-count" id="cartCount">
+                    {{ bag_count|default(0) }}
+                </span>
+            </a>
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('profile') }}" class="login-btn" id="loginBtn">
+                    <span class="login-icon">♙</span>
+                    <span>Profile</span>
+                </a>
+            {% else %}
+                <a
+                    href="{{ url_for('login', next=request.path) }}"
+                    class="login-btn"
+                    id="loginBtn"
+                >
+                    <span class="login-icon">♙</span>
+                    <span>Login</span>
+                </a>
+            {% endif %}
+
+            <button
+                class="menu-btn"
+                id="menuBtn"
+                type="button"
+                aria-label="Toggle navigation"
+                aria-controls="navLinks"
+                aria-expanded="false"
+            >☰</button>
         </div>
-
-        <a
-          href="{{ url_for('favorites') }}"
-          class="icon-btn wishlist-btn"
-          id="wishlistBtn"
-          aria-label="My favorites"
-          title="My favorites"
-          >♡</a
-        >
-
-        <a href="{{ url_for('cart') }}" class="cart-btn" id="cartBtn">
-          <span>Bag</span>
-          <span class="cart-count" id="cartCount">
-            {{ bag_count|default(0) }}
-          </span>
-        </a>
-
-        {% if session.get('user_id') %}
-        <a href="{{ url_for('profile') }}" class="login-btn" id="loginBtn">
-          <span class="login-icon">♙</span>
-          <span>Profile</span>
-        </a>
-        {% else %}
-        <a
-          href="{{ url_for('login', next=request.path) }}"
-          class="login-btn"
-          id="loginBtn"
-        >
-          <span class="login-icon">♙</span>
-          <span>Login</span>
-        </a>
-        {% endif %}
-
-        <button
-          class="menu-btn"
-          id="menuBtn"
-          type="button"
-          aria-label="Toggle navigation"
-          aria-controls="navLinks"
-          aria-expanded="false"
-        >
-          ☰
-        </button>
-      </div>
     </header>
 
+    <!-- ================= FAVORITES CONTENT ================= -->
+
     <main class="favorites-page">
-      <header class="favorites-heading">
-        <div class="favorites-eyebrow">Your beauty wishlist</div>
-        <h1>My Favorites ♡</h1>
-        <p>Your beauty picks, all in one place.</p>
-      </header>
+        <header class="favorites-heading">
+            <div class="favorites-eyebrow">Your beauty wishlist</div>
+            <h1>My Favorites ♡</h1>
+            <p>Your beauty picks, all in one place.</p>
+        </header>
 
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %} {% for category, message in messages %}
-      <p class="favorite-flash">{{ message }}</p>
-      {% endfor %} {% endif %} {% endwith %} {% if favorite_products %}
-      <div class="favorites-grid">
-        {% for product in favorite_products %}
-        <article class="favorite-card">
-          <a
-            class="favorite-image-link"
-            href="{{ url_for('product_details', product_id=product.id) }}"
-            aria-label="View {{ product.name }}"
-          >
-            {% if product.image_url %} {% if
-            product.image_url.startswith('http://') or
-            product.image_url.startswith('https://') %}
-            <img
-              src="{{ product.image_url }}"
-              alt="{{ product.name }}"
-              loading="lazy"
-            />
-            {% else %}
-            <img
-              src="{{ url_for('static', filename=product.image_url.lstrip('/')) }}"
-              alt="{{ product.name }}"
-              loading="lazy"
-            />
-            {% endif %} {% else %}
-            <div class="favorite-image-placeholder">♡</div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="favorite-flash">{{ message }}</p>
+                {% endfor %}
             {% endif %}
-          </a>
+        {% endwith %}
 
-          <div class="favorite-card-content">
-            <p class="favorite-category">
-              {{
-              product.category_name|default(product.product_type|default('Beauty',
-              true), true) }}
-            </p>
+        {% if favorite_products %}
+            <div class="favorites-grid">
+                {% for product in favorite_products %}
+                    <article class="favorite-card">
+                        <a
+                            class="favorite-image-link"
+                            href="{{ url_for('product_details', product_id=product.id) }}"
+                            aria-label="View {{ product.name }}"
+                        >
+                            {% if product.image_url %}
+                                {% if product.image_url.startswith('http://') or product.image_url.startswith('https://') %}
+                                    <img
+                                        src="{{ product.image_url }}"
+                                        alt="{{ product.name }}"
+                                        loading="lazy"
+                                    >
+                                {% else %}
+                                    <img
+                                        src="{{ url_for('static', filename=product.image_url.lstrip('/')) }}"
+                                        alt="{{ product.name }}"
+                                        loading="lazy"
+                                    >
+                                {% endif %}
+                            {% else %}
+                                <div class="favorite-image-placeholder">♡</div>
+                            {% endif %}
+                        </a>
 
-            <h3>{{ product.name }}</h3>
+                        <div class="favorite-card-content">
+                            <p class="favorite-category">
+                                {{ product.category_name|default(product.product_type|default('Beauty', true), true) }}
+                            </p>
 
-            <p class="favorite-price">
-              {{ currency_symbol|default('Rs.') }}{{ format_npr(product.price)
-              }}
-            </p>
+                            <h3>{{ product.name }}</h3>
 
-            <div class="favorite-actions">
-              <a
-                class="favorite-view"
-                href="{{ url_for('product_details', product_id=product.id) }}"
-              >
-                View Product
-              </a>
+                            <p class="favorite-price">
+                                {{ currency_symbol|default('Rs.') }}{{ format_npr(product.price) }}
+                            </p>
 
-              <form
-                class="favorite-remove-form"
-                action="{{ url_for('toggle_favorite', product_id=product.id) }}"
-                method="POST"
-              >
-                <input
-                  type="hidden"
-                  name="return_to"
-                  value="{{ url_for('favorites') }}"
-                />
+                            <div class="favorite-actions">
+                                <a
+                                    class="favorite-view"
+                                    href="{{ url_for('product_details', product_id=product.id) }}"
+                                >View Product</a>
 
-                <button
-                  type="submit"
-                  class="favorite-remove"
-                  aria-label="Remove {{ product.name }} from favorites"
-                  title="Remove from favorites"
-                >
-                  ♡ Remove
-                </button>
-              </form>
+                                <form
+                                    class="favorite-remove-form"
+                                    action="{{ url_for('toggle_favorite', product_id=product.id) }}"
+                                    method="POST"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="return_to"
+                                        value="{{ url_for('favorites') }}"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="favorite-remove"
+                                        aria-label="Remove {{ product.name }} from favorites"
+                                        title="Remove from favorites"
+                                    >♡ Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
             </div>
-          </div>
-        </article>
-        {% endfor %}
-      </div>
-      {% else %}
-      <section class="favorites-empty">
-        <div class="heart">♡</div>
-        <h2>No favorites yet</h2>
-        <p>
-          Explore our beauty collection and tap the heart on products you want
-          to save. Your favorite products will appear here.
-        </p>
-        <a href="{{ url_for('beauty') }}" class="favorites-shop">
-          Explore Beauty
-        </a>
-      </section>
-      {% endif %}
+        {% else %}
+            <section class="favorites-empty">
+                <div class="heart">♡</div>
+                <h2>No favorites yet</h2>
+                <p>
+                    Explore our beauty collection and tap the heart on products
+                    you want to save. Your favorite products will appear here.
+                </p>
+                <a href="{{ url_for('beauty') }}" class="favorites-shop">
+                    Explore Beauty
+                </a>
+            </section>
+        {% endif %}
     </main>
 
+    <!-- ================= FOOTER ================= -->
+
     <footer class="favorites-footer">
-      <p>
-        © {{ current_year|default(2026) }} Glamora AR. Made with ♡ for beauty
-        lovers.
-      </p>
+        <p>
+            © {{ current_year|default(2026) }} Glamora AR. Made with ♡ for beauty lovers.
+        </p>
     </footer>
 
+    <!-- ================= NAVBAR JAVASCRIPT ================= -->
+
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const menuBtn = document.getElementById("menuBtn");
-        const navLinks = document.getElementById("navLinks");
-        const wishlistBtn = document.getElementById("wishlistBtn");
-        const searchBtn = document.getElementById("searchBtn");
-        const searchPanel = document.getElementById("searchPanel");
+        document.addEventListener("DOMContentLoaded", function () {
+            const menuBtn = document.getElementById("menuBtn");
+            const navLinks = document.getElementById("navLinks");
+            const searchBtn = document.getElementById("searchBtn");
+            const searchPanel = document.getElementById("searchPanel");
 
-        // Mobile navigation
-        if (menuBtn && navLinks) {
-          menuBtn.addEventListener("click", function () {
-            const isOpen = navLinks.classList.toggle("open");
-            menuBtn.setAttribute("aria-expanded", String(isOpen));
-            menuBtn.textContent = isOpen ? "✕" : "☰";
-          });
-        }
+            // Mobile navigation
+            if (menuBtn && navLinks) {
+                menuBtn.addEventListener("click", function () {
+                    const isOpen = navLinks.classList.toggle("open");
 
-        // Explicitly navigate when the wishlist heart is clicked.
-        // The href remains functional if JavaScript is disabled.
-        if (wishlistBtn) {
-          wishlistBtn.addEventListener("click", function (event) {
-            if (
-              event.button !== 0 ||
-              event.ctrlKey ||
-              event.metaKey ||
-              event.shiftKey ||
-              event.altKey
-            ) {
-              return;
+                    menuBtn.setAttribute("aria-expanded", String(isOpen));
+                    menuBtn.textContent = isOpen ? "✕" : "☰";
+                });
             }
 
-            window.location.assign(wishlistBtn.href);
-          });
-        }
+            // Search panel
+            if (searchBtn && searchPanel) {
+                searchBtn.addEventListener("click", function (event) {
+                    event.stopPropagation();
 
-        // Search panel
-        if (searchBtn && searchPanel) {
-          searchBtn.addEventListener("click", function (event) {
-            event.stopPropagation();
+                    const isOpen = searchPanel.classList.toggle("open");
+                    searchBtn.setAttribute("aria-expanded", String(isOpen));
 
-            const isOpen = searchPanel.classList.toggle("open");
-            searchBtn.setAttribute("aria-expanded", String(isOpen));
+                    if (isOpen) {
+                        const searchInput = searchPanel.querySelector("input");
 
-            if (isOpen) {
-              const searchInput = searchPanel.querySelector("input");
-              if (searchInput) searchInput.focus();
+                        if (searchInput) {
+                            searchInput.focus();
+                        }
+                    }
+                });
+
+                searchPanel.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                });
+
+                document.addEventListener("click", function () {
+                    searchPanel.classList.remove("open");
+                    searchBtn.setAttribute("aria-expanded", "false");
+                });
+
+                document.addEventListener("keydown", function (event) {
+                    if (event.key === "Escape") {
+                        searchPanel.classList.remove("open");
+                        searchBtn.setAttribute("aria-expanded", "false");
+                    }
+                });
             }
-          });
-
-          searchPanel.addEventListener("click", function (event) {
-            event.stopPropagation();
-          });
-
-          document.addEventListener("click", function () {
-            searchPanel.classList.remove("open");
-            searchBtn.setAttribute("aria-expanded", "false");
-          });
-
-          document.addEventListener("keydown", function (event) {
-            if (event.key === "Escape") {
-              searchPanel.classList.remove("open");
-              searchBtn.setAttribute("aria-expanded", "false");
-            }
-          });
-        }
-      });
+        });
     </script>
-  </body>
+
+</body>
 </html>
