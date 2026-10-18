@@ -3,27 +3,30 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Your Bag — Glamora AR</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
         rel="stylesheet"
     >
 
+    <!-- Shared Website CSS -->
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}"
     >
 
     <style>
+        /* =====================================================
+           BAG PAGE — EXISTING DESIGN
+           ===================================================== */
 
         .bag-page {
             min-height: 100vh;
@@ -297,8 +300,45 @@
             background: #a74360;
         }
 
-        @media (max-width: 850px) {
+        /* =====================================================
+           HOMEPAGE NAVBAR ADDITIONS
+           ===================================================== */
 
+        /* Keep the shared navbar styles from style.css. */
+
+        .navbar .nav-actions .wishlist-btn {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .navbar .nav-actions .wishlist-btn svg {
+            width: 21px;
+            height: 21px;
+            display: block;
+        }
+
+        .navbar .nav-actions .wishlist-btn:hover {
+            color: #c85f7a;
+        }
+
+        .navbar .nav-actions .wishlist-btn:focus-visible,
+        .navbar .nav-actions .icon-btn:focus-visible,
+        .navbar .nav-actions .cart-btn:focus-visible,
+        .navbar .nav-actions .login-btn:focus-visible {
+            outline: 2px solid #c85f7a;
+            outline-offset: 4px;
+        }
+
+        .bag-page a,
+        .bag-page button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* =====================================================
+           RESPONSIVE BAG LAYOUT
+           ===================================================== */
+
+        @media (max-width: 850px) {
             .bag-layout {
                 grid-template-columns: 1fr;
             }
@@ -306,11 +346,9 @@
             .bag-summary {
                 order: -1;
             }
-
         }
 
         @media (max-width: 600px) {
-
             .bag-page {
                 padding: 110px 20px 50px;
             }
@@ -329,77 +367,124 @@
                 grid-column: 2;
                 text-align: left;
             }
-
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
     <!-- =====================================================
-         NAVBAR
+         SHARED GLAMORA AR NAVBAR
          ===================================================== -->
 
     <header class="navbar">
 
-        <a
-            href="{{ url_for('home') }}"
-            class="logo"
-        >
+        <!-- Logo -->
+        <a href="{{ url_for('home') }}" class="logo">
             GLAMORA <span>AR</span>
         </a>
 
+        <!-- Main navigation -->
+        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
 
-        <nav class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
 
-            <a href="{{ url_for('home') }}">
-                Home
-            </a>
+            <a href="{{ url_for('beauty') }}">Beauty</a>
 
-            <a href="{{ url_for('beauty') }}">
-                Beauty
-            </a>
+            <a href="{{ url_for('about') }}">About</a>
 
-            <a href="{{ url_for('about') }}">
-                About
-            </a>
-
-            <a href="{{ url_for('contact') }}">
-                Contact
-            </a>
+            <a href="{{ url_for('contact') }}">Contact</a>
 
         </nav>
 
-
+        <!-- Search, Favorites, Bag and Account -->
         <div class="nav-actions">
 
+            <!-- Search -->
+            <button
+                type="button"
+                class="icon-btn"
+                id="searchBtn"
+                aria-label="Search beauty products"
+                title="Search"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="m20 20-4-4"></path>
+                </svg>
+            </button>
+
+            <!-- Favorites: clickable link to the Favorites page -->
+            <a
+                href="{{ url_for('favorites') }}"
+                class="icon-btn wishlist-btn"
+                id="wishlistBtn"
+                aria-label="My Favorites"
+                title="My Favorites"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path>
+                </svg>
+            </a>
+
+            <!-- Bag -->
             <a
                 href="{{ url_for('cart') }}"
                 class="cart-btn"
-                aria-label="Shopping bag"
+                id="cartBtn"
+                aria-label="Shopping bag, {{ bag_count }} items"
             >
+                <span>Bag</span>
 
-                <span>
-                    Bag
-                </span>
-
-                <span class="cart-count">
+                <span class="cart-count" id="cartCount">
                     {{ bag_count }}
                 </span>
-
             </a>
 
-
+            <!-- Login / Profile -->
             {% if is_logged_in %}
 
                 <a
                     href="{{ url_for('profile') }}"
                     class="login-btn"
+                    id="loginBtn"
                 >
+                    <span class="login-icon" aria-hidden="true">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="19"
+                            height="19"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M5 21a7 7 0 0 1 14 0"></path>
+                        </svg>
+                    </span>
                     Profile
                 </a>
 
@@ -408,40 +493,63 @@
                 <a
                     href="{{ url_for('login') }}"
                     class="login-btn"
+                    id="loginBtn"
                 >
+                    <span class="login-icon" aria-hidden="true">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="19"
+                            height="19"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M5 21a7 7 0 0 1 14 0"></path>
+                        </svg>
+                    </span>
                     Login
                 </a>
 
             {% endif %}
 
-        </div>
+            <!-- Mobile menu button -->
+            <button
+                type="button"
+                class="menu-btn"
+                id="menuBtn"
+                aria-label="Toggle navigation menu"
+                aria-expanded="false"
+                aria-controls="navLinks"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
 
+        </div>
     </header>
 
 
     <!-- =====================================================
-         BAG
+         BAG PAGE
          ===================================================== -->
 
     <main class="bag-page">
 
         <div class="bag-container">
 
-
-            <!-- =================================================
-                 HEADING
-                 ================================================= -->
-
+            <!-- Heading -->
             <div class="bag-heading">
 
                 <span class="bag-label">
                     YOUR SHOPPING BAG
                 </span>
 
-                <h1>
-                    Your
-                    <em>Bag.</em>
-                </h1>
+                <h1>Your <em>Bag.</em></h1>
 
                 <p>
                     Review the beauty products you've selected
@@ -450,11 +558,7 @@
 
             </div>
 
-
-            <!-- =================================================
-                 FLASH MESSAGES
-                 ================================================= -->
-
+            <!-- Flash messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
 
                 {% if messages %}
@@ -476,28 +580,19 @@
             {% endwith %}
 
 
-            <!-- =================================================
-                 CART HAS PRODUCTS
-                 ================================================= -->
-
+            <!-- Bag with products -->
             {% if cart_items %}
 
                 <div class="bag-layout">
 
-
-                    <!-- =================================================
-                         BAG ITEMS
-                         ================================================= -->
-
-                    <section class="bag-items">
+                    <!-- Bag items -->
+                    <section class="bag-items" aria-label="Bag items">
 
                         {% for item in cart_items %}
 
                             <article class="bag-item">
 
-
-                                <!-- IMAGE -->
-
+                                <!-- Product image -->
                                 <div class="bag-item-image">
 
                                     {% if item.image_url %}
@@ -518,121 +613,75 @@
 
                                 </div>
 
-
-                                <!-- PRODUCT INFORMATION -->
-
+                                <!-- Product information -->
                                 <div class="bag-item-info">
 
-                                    <h3>
-                                        {{ item.name }}
-                                    </h3>
-
+                                    <h3>{{ item.name }}</h3>
 
                                     <div class="bag-item-price">
-
                                         {{ format_npr(item.price) }}
-
                                     </div>
 
-
                                     {% if item.shade %}
-
                                         <div class="bag-item-quantity">
                                             Shade: {{ item.shade }}
                                         </div>
-
                                     {% endif %}
 
-
                                     {% if item.color %}
-
                                         <div class="bag-item-quantity">
                                             Color: {{ item.color }}
                                         </div>
-
                                     {% endif %}
 
-
                                     <div class="bag-item-quantity">
-
-                                        Quantity:
-                                        {{ item.quantity }}
-
+                                        Quantity: {{ item.quantity }}
                                     </div>
 
                                 </div>
 
-
-                                <!-- TOTAL -->
-
+                                <!-- Line total and remove -->
                                 <div class="bag-item-total">
 
                                     <strong>
                                         {{ format_npr(item.line_total) }}
                                     </strong>
 
-
                                     <form
                                         action="{{ url_for('remove_from_cart', cart_item_id=item.cart_item_id) }}"
                                         method="POST"
                                     >
-
                                         <button
                                             type="submit"
                                             class="remove-bag-btn"
                                         >
                                             Remove
                                         </button>
-
                                     </form>
 
                                 </div>
-
 
                             </article>
 
                         {% endfor %}
 
-
                     </section>
 
 
-                    <!-- =================================================
-                         SUMMARY
-                         ================================================= -->
-
+                    <!-- Bag summary -->
                     <aside class="bag-summary">
 
-                        <h2>
-                            Bag Summary
-                        </h2>
-
+                        <h2>Bag Summary</h2>
 
                         <div class="summary-row">
-
-                            <span>
-                                Items
-                            </span>
-
-                            <strong>
-                                {{ total_items }}
-                            </strong>
-
+                            <span>Items</span>
+                            <strong>{{ total_items }}</strong>
                         </div>
-
 
                         <div class="summary-row summary-total">
-
-                            <span>
-                                Subtotal
-                            </span>
-
-                            <strong>
-                                {{ format_npr(subtotal) }}
-                            </strong>
-
+                            <span>Subtotal</span>
+                            <strong>{{ format_npr(subtotal) }}</strong>
                         </div>
-
 
                         <button
                             type="button"
@@ -640,7 +689,6 @@
                         >
                             Proceed to Checkout
                         </button>
-
 
                         <a
                             href="{{ url_for('beauty') }}"
@@ -651,26 +699,18 @@
 
                     </aside>
 
-
                 </div>
-
 
             {% else %}
 
-
-                <!-- =================================================
-                     EMPTY BAG
-                     ================================================= -->
-
+                <!-- Empty bag -->
                 <section class="empty-bag">
 
-                    <div class="empty-bag-icon">
+                    <div class="empty-bag-icon" aria-hidden="true">
                         ♡
                     </div>
 
-                    <h2>
-                        Your bag is empty.
-                    </h2>
+                    <h2>Your bag is empty.</h2>
 
                     <p>
                         Discover beautiful products and add your
@@ -686,16 +726,17 @@
 
                 </section>
 
-
             {% endif %}
-
 
         </div>
 
     </main>
 
+    <!-- Shared site JavaScript -->
+    <script
+        src="{{ url_for('static', filename='js/main.js') }}"
+        defer
+    ></script>
 
 </body>
-
 </html>
-
