@@ -4064,15 +4064,16 @@ footer {
 
 /* =========================================================
    GLAMORA AR — FLOATING PRODUCT SCANNER
+   Bottom-right corner animation
    ========================================================= */
 
 body a.floating-scanner-btn {
     position: fixed !important;
 
-    top: 50% !important;
+    top: auto !important;
     right: 24px !important;
+    bottom: 35px !important;
     left: auto !important;
-    bottom: auto !important;
 
     z-index: 1000000 !important;
 
@@ -4098,23 +4099,21 @@ body a.floating-scanner-btn {
     text-decoration: none !important;
     white-space: nowrap;
 
-    /* Center the button vertically */
-    transform: translateY(-50%);
+    transform: translateY(0);
 
-    /* Animate using transform, not top */
     animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
 
     will-change: transform;
 }
 
-/* Float up and down from the right-center of the screen */
+/* Float vertically near the bottom-right corner */
 @keyframes glamoraScannerFloat {
     from {
-        transform: translateY(calc(-50% - 100px));
+        transform: translateY(0);
     }
 
     to {
-        transform: translateY(calc(-50% + 100px));
+        transform: translateY(-100px);
     }
 }
 
@@ -4131,6 +4130,7 @@ body a.floating-scanner-btn .scanner-text {
 @media (max-width: 576px) {
     body a.floating-scanner-btn {
         right: 14px !important;
+        bottom: 20px !important;
         padding: 13px 16px;
         font-size: 12px;
     }
@@ -4140,7 +4140,7 @@ body a.floating-scanner-btn .scanner-text {
     }
 }
 
-/* Keep the animation running even with reduced-motion enabled */
+/* Keep animation running */
 @media (prefers-reduced-motion: reduce) {
     body a.floating-scanner-btn {
         animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
