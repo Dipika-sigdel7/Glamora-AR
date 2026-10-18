@@ -4064,7 +4064,6 @@ footer {
 
 /* =========================================================
    GLAMORA AR — FLOATING PRODUCT SCANNER
-   Shared by index.html and beauty.html
    ========================================================= */
 
 body a.floating-scanner-btn {
@@ -4078,8 +4077,8 @@ body a.floating-scanner-btn {
     z-index: 1000000 !important;
 
     display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
+    align-items: center !important;
+    justify-content: center !important;
     gap: 10px;
 
     padding: 15px 20px;
@@ -4099,20 +4098,23 @@ body a.floating-scanner-btn {
     text-decoration: none !important;
     white-space: nowrap;
 
+    /* Center the button vertically */
     transform: translateY(-50%);
 
-    animation: glamoraScannerFloat 5s ease-in-out infinite alternate !important;
+    /* Animate using transform, not top */
+    animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
 
-    will-change: top;
+    will-change: transform;
 }
 
+/* Float up and down from the right-center of the screen */
 @keyframes glamoraScannerFloat {
     from {
-        top: 50%;
+        transform: translateY(calc(-50% - 100px));
     }
 
     to {
-        top: calc(100% - 60px);
+        transform: translateY(calc(-50% + 100px));
     }
 }
 
@@ -4138,14 +4140,9 @@ body a.floating-scanner-btn .scanner-text {
     }
 }
 
-/* Keep the scanner moving even with reduced-motion enabled */
+/* Keep the animation running even with reduced-motion enabled */
 @media (prefers-reduced-motion: reduce) {
     body a.floating-scanner-btn {
-        animation-name: glamoraScannerFloat !important;
-        animation-duration: 5s !important;
-        animation-timing-function: ease-in-out !important;
-        animation-iteration-count: infinite !important;
-        animation-direction: alternate !important;
-        animation-play-state: running !important;
+        animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
     }
 }
