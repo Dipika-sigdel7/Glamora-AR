@@ -3,24 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>My Favorites | Glamora AR</title>
 
-    <!-- SHARED WEBSITE CSS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
-
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/beauty.css') }}"
     />
 
-    <!-- GOOGLE FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
       rel="stylesheet"
@@ -31,36 +26,118 @@
         box-sizing: border-box;
       }
 
-      body {
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body.favorites-page-body {
         margin: 0;
         background: #fff5f7;
         color: #2b1b20;
         font-family: "DM Sans", sans-serif;
       }
 
-      a {
+      body.favorites-page-body a {
         text-decoration: none;
       }
 
-      /* =========================================
-           SHARED NAVBAR
-           Uses navbar styles from style.css
-           ========================================= */
+      /* ================= NAVBAR FIX ================= */
 
-      body .navbar {
-        z-index: 1000;
+      body.favorites-page-body .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 10000;
       }
 
-      /* Keep the Favorites content below the fixed navbar */
+      body.favorites-page-body .navbar .logo,
+      body.favorites-page-body .navbar .nav-links,
+      body.favorites-page-body .navbar .nav-actions {
+        position: relative;
+        z-index: 10001;
+      }
+
+      body.favorites-page-body .navbar .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      body.favorites-page-body .navbar .icon-btn,
+      body.favorites-page-body .navbar .wishlist-btn,
+      body.favorites-page-body .navbar .cart-btn,
+      body.favorites-page-body .navbar .login-btn,
+      body.favorites-page-body .navbar .menu-btn {
+        position: relative;
+        z-index: 10002;
+        pointer-events: auto;
+        cursor: pointer;
+      }
+
+      body.favorites-page-body .navbar .wishlist-btn {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+
+      /* Search popover */
+      .favorites-search-panel {
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        z-index: 10003;
+        display: none;
+        width: min(340px, 88vw);
+        padding: 14px;
+        border: 1px solid #f3b8c6;
+        border-radius: 12px;
+        background: #ffffff;
+        box-shadow: 0 12px 35px rgba(43, 27, 32, 0.15);
+      }
+
+      .favorites-search-panel.open {
+        display: block;
+      }
+
+      .favorites-search-form {
+        display: flex;
+        gap: 8px;
+      }
+
+      .favorites-search-form input {
+        width: 100%;
+        min-width: 0;
+        padding: 11px;
+        border: 1px solid #f3b8c6;
+        border-radius: 7px;
+        outline: none;
+        font: inherit;
+      }
+
+      .favorites-search-form input:focus {
+        border-color: #c85f7a;
+      }
+
+      .favorites-search-form button {
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 7px;
+        background: #c85f7a;
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* ================= PAGE CONTENT ================= */
+
       .favorites-page {
         min-height: 70vh;
-        padding: 70px 6%;
+        padding: 120px 6% 70px;
         background: #fff5f7;
       }
-
-      /* =========================================
-           FAVORITES HEADING
-           ========================================= */
 
       .favorites-heading {
         margin-bottom: 40px;
@@ -95,9 +172,7 @@
         text-align: center;
       }
 
-      /* =========================================
-           FAVORITES PRODUCT GRID
-           ========================================= */
+      /* ================= PRODUCT GRID ================= */
 
       .favorites-grid {
         display: grid;
@@ -112,7 +187,7 @@
         overflow: hidden;
         border: 1px solid #f8e3e9;
         border-radius: 16px;
-        background: #ffffff;
+        background: #fff;
         box-shadow: 0 12px 35px rgba(164, 73, 98, 0.1);
         transition:
           transform 0.25s ease,
@@ -208,7 +283,7 @@
         flex: 1;
         border: 1px solid #c85f7a;
         background: #c85f7a;
-        color: #ffffff;
+        color: #fff;
       }
 
       .favorite-view:hover {
@@ -223,7 +298,7 @@
 
       .favorite-remove {
         border: 1px solid #f3b8c6;
-        background: #ffffff;
+        background: #fff;
         color: #a74360;
       }
 
@@ -232,9 +307,7 @@
         background: #fdecef;
       }
 
-      /* =========================================
-           EMPTY FAVORITES
-           ========================================= */
+      /* ================= EMPTY STATE ================= */
 
       .favorites-empty {
         max-width: 550px;
@@ -242,7 +315,7 @@
         padding: 50px 25px;
         border: 1px solid #f8e3e9;
         border-radius: 18px;
-        background: #ffffff;
+        background: #fff;
         text-align: center;
         box-shadow: 0 12px 35px rgba(164, 73, 98, 0.08);
       }
@@ -275,7 +348,7 @@
         border: 1px solid #c85f7a;
         border-radius: 8px;
         background: #c85f7a;
-        color: #ffffff;
+        color: #fff;
         font-size: 14px;
         font-weight: 600;
         transition: background 0.2s ease;
@@ -285,14 +358,12 @@
         background: #a74360;
       }
 
-      /* =========================================
-           FOOTER
-           ========================================= */
+      /* ================= FOOTER ================= */
 
       .favorites-footer {
         padding: 28px 6%;
         background: #2b1b20;
-        color: #ffffff;
+        color: #fff;
         text-align: center;
       }
 
@@ -303,21 +374,42 @@
       }
 
       .favorites-footer a {
-        color: #ffffff;
+        color: #fff;
       }
 
       .favorites-footer a:hover {
         color: #f3b8c6;
       }
 
-      /* =========================================
-           RESPONSIVE FAVORITES CONTENT
-           Navbar responsiveness comes from style.css
-           ========================================= */
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 850px) {
+        body.favorites-page-body .navbar .nav-links {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 5vw;
+          right: 5vw;
+          z-index: 10001;
+          padding: 25px;
+          flex-direction: column;
+          gap: 20px;
+          background: #fff;
+          box-shadow: 0 12px 35px rgba(43, 27, 32, 0.12);
+        }
+
+        body.favorites-page-body .navbar .nav-links.open {
+          display: flex;
+        }
+
+        body.favorites-page-body .navbar .menu-btn {
+          display: block;
+        }
+      }
 
       @media (max-width: 768px) {
         .favorites-page {
-          padding: 45px 5%;
+          padding: 105px 5% 45px;
         }
 
         .favorites-heading {
@@ -372,29 +464,50 @@
         .favorite-image-placeholder {
           height: 240px;
         }
+
+        body.favorites-page-body .navbar .nav-actions {
+          gap: 8px;
+        }
       }
 
-      /* Keep the shared navbar fixed and visible */
-      body.favorites-page-body .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 1000;
+      /* FINAL FIX: Make the entire navbar clickable */
+      body.favorites-page-body header.navbar {
+        position: fixed !important;
+        isolation: isolate;
+        z-index: 99999 !important;
+        pointer-events: auto !important;
       }
 
-      /* Prevent content from appearing underneath the navbar */
-      body.favorites-page-body main.favorites-page {
-        padding-top: 120px;
+      body.favorites-page-body header.navbar::before,
+      body.favorites-page-body header.navbar::after {
+        pointer-events: none !important;
+      }
+
+      body.favorites-page-body header.navbar a,
+      body.favorites-page-body header.navbar button,
+      body.favorites-page-body header.navbar a *,
+      body.favorites-page-body header.navbar button * {
+        pointer-events: auto !important;
+        cursor: pointer;
+      }
+
+      body.favorites-page-body header.navbar .nav-actions {
+        position: relative;
+        z-index: 99999 !important;
+      }
+
+      body.favorites-page-body header.navbar .wishlist-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 99999 !important;
+        pointer-events: auto !important;
       }
     </style>
   </head>
 
   <body class="favorites-page-body">
-    <!-- =========================================
-         SHARED WEBSITE NAVBAR
-         ========================================= -->
-
     <header class="navbar">
       <a href="{{ url_for('index') }}" class="logo">
         GLAMORA <span>AR</span>
@@ -408,15 +521,34 @@
       </nav>
 
       <div class="nav-actions">
-        <button
-          class="icon-btn"
-          id="searchBtn"
-          type="button"
-          aria-label="Search"
-          title="Search"
-        >
-          ⌕
-        </button>
+        <div class="favorites-search-wrap" style="position: relative">
+          <button
+            class="icon-btn"
+            id="searchBtn"
+            type="button"
+            aria-label="Open search"
+            aria-expanded="false"
+            title="Search"
+          >
+            ⌕
+          </button>
+
+          <div class="favorites-search-panel" id="searchPanel">
+            <form
+              class="favorites-search-form"
+              action="{{ url_for('beauty') }}"
+              method="GET"
+            >
+              <input
+                type="search"
+                name="q"
+                placeholder="Search beauty products..."
+                aria-label="Search beauty products"
+              />
+              <button type="submit">Search</button>
+            </form>
+          </div>
+        </div>
 
         <a
           href="{{ url_for('favorites') }}"
@@ -463,33 +595,19 @@
       </div>
     </header>
 
-    <!-- =========================================
-         FAVORITES CONTENT
-         ========================================= -->
-
     <main class="favorites-page">
       <header class="favorites-heading">
         <div class="favorites-eyebrow">Your beauty wishlist</div>
-
         <h1>My Favorites ♡</h1>
-
         <p>Your beauty picks, all in one place.</p>
       </header>
-
-      <!-- FLASH MESSAGES -->
 
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
       messages %} {% for category, message in messages %}
       <p class="favorite-flash">{{ message }}</p>
-      {% endfor %} {% endif %} {% endwith %}
-
-      <!-- FAVORITE PRODUCTS -->
-
-      {% if favorite_products %}
-
+      {% endfor %} {% endif %} {% endwith %} {% if favorite_products %}
       <div class="favorites-grid">
         {% for product in favorite_products %}
-
         <article class="favorite-card">
           <a
             class="favorite-image-link"
@@ -499,25 +617,19 @@
             {% if product.image_url %} {% if
             product.image_url.startswith('http://') or
             product.image_url.startswith('https://') %}
-
             <img
               src="{{ product.image_url }}"
               alt="{{ product.name }}"
               loading="lazy"
             />
-
             {% else %}
-
             <img
               src="{{ url_for('static', filename=product.image_url.lstrip('/')) }}"
               alt="{{ product.name }}"
               loading="lazy"
             />
-
             {% endif %} {% else %}
-
             <div class="favorite-image-placeholder">♡</div>
-
             {% endif %}
           </a>
 
@@ -566,35 +678,22 @@
             </div>
           </div>
         </article>
-
         {% endfor %}
       </div>
-
       {% else %}
-
-      <!-- EMPTY FAVORITES -->
-
       <section class="favorites-empty">
         <div class="heart">♡</div>
-
         <h2>No favorites yet</h2>
-
         <p>
           Explore our beauty collection and tap the heart on products you want
           to save. Your favorite products will appear here.
         </p>
-
         <a href="{{ url_for('beauty') }}" class="favorites-shop">
           Explore Beauty
         </a>
       </section>
-
       {% endif %}
     </main>
-
-    <!-- =========================================
-         FOOTER
-         ========================================= -->
 
     <footer class="favorites-footer">
       <p>
@@ -603,22 +702,69 @@
       </p>
     </footer>
 
-    <!-- =========================================
-         MOBILE NAVIGATION
-         ========================================= -->
-
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const menuBtn = document.getElementById("menuBtn");
         const navLinks = document.getElementById("navLinks");
+        const wishlistBtn = document.getElementById("wishlistBtn");
+        const searchBtn = document.getElementById("searchBtn");
+        const searchPanel = document.getElementById("searchPanel");
 
+        // Mobile navigation
         if (menuBtn && navLinks) {
           menuBtn.addEventListener("click", function () {
             const isOpen = navLinks.classList.toggle("open");
-
             menuBtn.setAttribute("aria-expanded", String(isOpen));
-
             menuBtn.textContent = isOpen ? "✕" : "☰";
+          });
+        }
+
+        // Explicitly navigate when the wishlist heart is clicked.
+        // The href remains functional if JavaScript is disabled.
+        if (wishlistBtn) {
+          wishlistBtn.addEventListener("click", function (event) {
+            if (
+              event.button !== 0 ||
+              event.ctrlKey ||
+              event.metaKey ||
+              event.shiftKey ||
+              event.altKey
+            ) {
+              return;
+            }
+
+            window.location.assign(wishlistBtn.href);
+          });
+        }
+
+        // Search panel
+        if (searchBtn && searchPanel) {
+          searchBtn.addEventListener("click", function (event) {
+            event.stopPropagation();
+
+            const isOpen = searchPanel.classList.toggle("open");
+            searchBtn.setAttribute("aria-expanded", String(isOpen));
+
+            if (isOpen) {
+              const searchInput = searchPanel.querySelector("input");
+              if (searchInput) searchInput.focus();
+            }
+          });
+
+          searchPanel.addEventListener("click", function (event) {
+            event.stopPropagation();
+          });
+
+          document.addEventListener("click", function () {
+            searchPanel.classList.remove("open");
+            searchBtn.setAttribute("aria-expanded", "false");
+          });
+
+          document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+              searchPanel.classList.remove("open");
+              searchBtn.setAttribute("aria-expanded", "false");
+            }
           });
         }
       });
