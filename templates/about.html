@@ -40,114 +40,96 @@
       </div>
     </div>
 
-    <!-- =====================================================
-     NAVBAR
-     ===================================================== -->
+<!-- NAVBAR -->
+<header class="navbar">
 
-    <header class="navbar">
-      <a
-        href="{{ url_for('index') }}"
-        class="logo"
-        aria-label="Glamora AR Home"
-      >
+    <!-- LOGO -->
+    <a href="/" class="logo" aria-label="Glamora AR Home">
         GLAMORA <span>AR</span>
-      </a>
+    </a>
 
-      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="{{ url_for('index') }}"> Home </a>
+    <!-- MAIN NAVIGATION -->
+    <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/beauty">Beauty</a>
+        <a href="/about" class="active" aria-current="page">About</a>
+        <a href="/contact">Contact</a>
+    </nav>
 
-        <a href="{{ url_for('beauty') }}"> Beauty </a>
+    <!-- HEADER ACTIONS -->
+    <div class="nav-actions">
 
-        <a href="{{ url_for('about') }}" class="active"> About </a>
-
-        <a href="{{ url_for('contact') }}"> Contact </a>
-      </nav>
-
-      <div class="nav-actions">
         <!-- SEARCH -->
-
         <button
-          class="icon-btn"
-          id="searchBtn"
-          type="button"
-          aria-label="Search"
-          title="Search"
+            class="icon-btn"
+            id="searchBtn"
+            type="button"
+            aria-label="Search"
+            title="Search"
         >
-          ⌕
+            ⌕
         </button>
 
         <!-- WISHLIST -->
-
-        <button
-          class="icon-btn wishlist-btn"
-          id="wishlistBtn"
-          type="button"
-          aria-label="Wishlist"
-          title="Wishlist"
+        <a
+            href="{{ url_for('favorites') }}"
+            class="icon-btn wishlist-btn"
+            id="wishlistBtn"
+            aria-label="My favorites"
+            title="My favorites"
         >
-          ♡
-        </button>
+            ♡
+        </a>
 
         <!-- SHOPPING BAG -->
-
         <a
-          href="{{ url_for('cart') }}"
-          class="cart-btn"
-          id="cartBtn"
-          aria-label="Shopping bag"
-          title="Shopping bag"
+            href="{{ url_for('cart') }}"
+            class="cart-btn"
+            id="cartBtn"
+            aria-label="Shopping bag"
+            title="Shopping bag"
         >
-          <span>Bag</span>
-
-          <span class="cart-count" id="cartCount">
-            {{ bag_count|default(0) }}
-          </span>
+            <span>Bag</span>
+            <span class="cart-count" id="cartCount">{{ bag_count|default(0) }}</span>
         </a>
 
         <!-- LOGIN / PROFILE -->
-
-        {% if session.get('user_id') %}
-
+        {% if is_logged_in %}
         <a
-          href="{{ url_for('profile') }}"
-          class="login-btn"
-          id="profileBtn"
-          aria-label="Go to your profile"
+            href="{{ url_for('profile') }}"
+            class="login-btn"
+            id="loginBtn"
+            aria-label="View your profile"
         >
-          <span class="login-icon">♙</span>
-
-          <span>Profile</span>
+            <span class="login-icon">♙</span>
+            <span>Profile</span>
         </a>
-
         {% else %}
-
         <a
-          href="{{ url_for('login') }}"
-          class="login-btn"
-          id="loginBtn"
-          aria-label="Login to Glamora AR"
+            href="{{ url_for('login', next=request.path) }}"
+            class="login-btn"
+            id="loginBtn"
+            aria-label="Login to Glamora AR"
         >
-          <span class="login-icon">♙</span>
-
-          <span>Login</span>
+            <span class="login-icon">♙</span>
+            <span>Login</span>
         </a>
-
         {% endif %}
 
-        <!-- MENU -->
-
+        <!-- MOBILE MENU -->
         <button
-          class="menu-btn"
-          id="menuBtn"
-          type="button"
-          aria-label="Open navigation menu"
-          aria-expanded="false"
-          aria-controls="navLinks"
+            class="menu-btn"
+            id="menuBtn"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="navLinks"
         >
-          ☰
+            ☰
         </button>
-      </div>
-    </header>
+
+    </div>
+</header>
 
     <!-- =====================================================
      MAIN CONTENT
