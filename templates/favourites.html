@@ -16,19 +16,17 @@
         rel="stylesheet"
     >
 
-    <!-- Main Website CSS -->
+    <!-- Shared Website CSS -->
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}"
     >
 
-    <!-- Favorites Page CSS Only -->
+    <!-- Favorites Page CSS -->
     <style>
         /* =====================================================
            FAVORITES PAGE
-           Navbar styling is inherited from style.css
            ===================================================== */
-
 
         .favorites-main {
             width: min(1200px, calc(100% - 48px));
@@ -36,6 +34,8 @@
             margin: 0 auto;
             padding: 75px 0 100px;
         }
+
+        /* Favorites heading */
 
         .favorites-heading {
             margin-bottom: 42px;
@@ -74,7 +74,7 @@
             line-height: 1.8;
         }
 
-        /* Favorites Grid */
+        /* Favorites grid */
 
         .favorites-grid {
             display: grid;
@@ -150,6 +150,8 @@
             font-size: 20px;
         }
 
+        /* Product information */
+
         .favorite-info {
             padding: 22px;
         }
@@ -191,6 +193,8 @@
             font-size: 18px;
             font-weight: 700;
         }
+
+        /* Product actions */
 
         .favorite-actions {
             display: grid;
@@ -252,7 +256,7 @@
             color: #fff;
         }
 
-        /* Empty Favorites */
+        /* Empty favorites */
 
         .favorites-empty {
             max-width: 580px;
@@ -312,7 +316,7 @@
             background: #a74360;
         }
 
-        /* Flash Messages */
+        /* Flash messages */
 
         .favorites-flashes {
             width: min(1200px, calc(100% - 48px));
@@ -357,7 +361,26 @@
             text-decoration: underline;
         }
 
-        /* Responsive Layout */
+        /* =====================================================
+           NAVBAR — FAVORITES PAGE
+           Uses shared style.css navbar styles
+           ===================================================== */
+
+        body > header.navbar {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .navbar .nav-links a,
+        .navbar .nav-actions a {
+            text-decoration: none;
+        }
+
+        .navbar .wishlist-btn.active {
+            color: var(--accent, #c85f7a);
+        }
+
+        /* Responsive layout */
 
         @media (max-width: 900px) {
             .favorites-grid {
@@ -426,57 +449,79 @@
     </style>
 </head>
 
-<body>
+<body class="favourites-page">
 
-  <!-- Navbar -->
+   
+<!-- =====================================================
+     NAVBAR — MATCHES index.html
+     ===================================================== -->
 
 <header class="navbar">
-    <a href="/" class="logo" aria-label="Glamora AR Home">
+
+    <!-- LOGO -->
+    <a href="{{ url_for('index') }}"
+       class="logo"
+       aria-label="Glamora AR Home">
         GLAMORA <span>AR</span>
     </a>
 
-    <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/beauty">Beauty</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
+    <!-- MAIN NAVIGATION -->
+    <nav class="nav-links"
+         id="navLinks"
+         aria-label="Main navigation">
+
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('beauty') }}">Beauty</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
+
     </nav>
 
+    <!-- HEADER ACTIONS -->
     <div class="nav-actions">
+
+        <!-- SEARCH -->
         <button
             class="icon-btn"
             id="searchBtn"
             type="button"
             aria-label="Search"
-            title="Search"
-        >⌕</button>
+            title="Search">
+            ⌕
+        </button>
 
+        <!-- WISHLIST -->
         <button
             class="icon-btn wishlist-btn"
             id="wishlistBtn"
             type="button"
             aria-label="Wishlist"
-            title="Wishlist"
-        >♡</button>
-
-        <button
-            class="cart-btn"
-            id="cartBtn"
-            type="button"
-            aria-label="Shopping bag"
-            title="Shopping bag"
-        >
-            <span>Bag</span>
-            <span class="cart-count" id="cartCount">{{ bag_count|default(0) }}</span>
+            title="Wishlist">
+            ♡
         </button>
 
+        <!-- SHOPPING BAG -->
+        <a
+            href="{{ url_for('cart') }}"
+            class="cart-btn"
+            id="cartBtn"
+            aria-label="Shopping bag"
+            title="Shopping bag">
+
+            <span>Bag</span>
+            <span class="cart-count" id="cartCount">
+                {{ bag_count|default(0) }}
+            </span>
+        </a>
+
+        <!-- LOGIN / PROFILE -->
         {% if is_logged_in %}
         <a
             href="{{ url_for('profile') }}"
             class="login-btn"
             id="loginBtn"
-            aria-label="View your profile"
-        >
+            aria-label="View your profile">
+
             <span class="login-icon">♙</span>
             <span>Profile</span>
         </a>
@@ -485,24 +530,27 @@
             href="{{ url_for('login') }}"
             class="login-btn"
             id="loginBtn"
-            aria-label="Login to Glamora AR"
-        >
+            aria-label="Login to Glamora AR">
+
             <span class="login-icon">♙</span>
             <span>Login</span>
         </a>
         {% endif %}
 
+        <!-- MOBILE MENU -->
         <button
             class="menu-btn"
             id="menuBtn"
             type="button"
             aria-label="Open navigation menu"
             aria-expanded="false"
-            aria-controls="navLinks"
-        >☰</button>
-    </div>
-</header>
+            aria-controls="navLinks">
+            ☰
+        </button>
 
+    </div>
+
+</header>
 
     <!-- =====================================================
          FLASH MESSAGES
@@ -557,7 +605,7 @@
 
                     <article class="favorite-card">
 
-                        <!-- Product Image -->
+                        <!-- Product image -->
 
                         <a
                             class="favorite-image-link"
@@ -606,7 +654,7 @@
 
                         </a>
 
-                        <!-- Product Information -->
+                        <!-- Product information -->
 
                         <div class="favorite-info">
 
@@ -624,7 +672,7 @@
                                 {{ format_npr(product.price) if format_npr is defined else 'Rs. ' ~ product.price }}
                             </div>
 
-                            <!-- Product Actions -->
+                            <!-- Product actions -->
 
                             <div class="favorite-actions">
 
@@ -671,7 +719,7 @@
 
         {% else %}
 
-            <!-- Empty Favorites State -->
+            <!-- Empty favorites state -->
 
             <section class="favorites-empty">
 
@@ -705,10 +753,12 @@
          ===================================================== -->
 
     <footer class="favorites-footer">
+
         <p>
             © {{ current_year|default(2026) }} Glamora AR.
             Made for the future of beauty ✦
         </p>
+
         <p>
             <a href="{{ url_for('index') }}">Home</a>
             &nbsp;·&nbsp;
@@ -716,9 +766,10 @@
             &nbsp;·&nbsp;
             <a href="{{ url_for('contact') }}">Contact</a>
         </p>
+
     </footer>
 
-    <!-- Main Website JavaScript -->
+    <!-- Shared Website JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 </body>
