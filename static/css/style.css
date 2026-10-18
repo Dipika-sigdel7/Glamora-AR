@@ -4063,14 +4063,12 @@ footer {
 
 
 /* =========================================================
-   GLAMORA AR — FLOATING PRODUCT SCANNER
-   Global: every page
-   Bottom-right corner animation
+   GLAMORA AR — CART PRODUCT SCANNER
+   Same style and animation as the global scanner
    ========================================================= */
 
 body a.floating-scanner-btn {
     position: fixed !important;
-
     top: auto !important;
     right: 24px !important;
     bottom: 35px !important;
@@ -4100,31 +4098,24 @@ body a.floating-scanner-btn {
     text-decoration: none !important;
     white-space: nowrap;
 
-    transform: translateY(0);
-
     animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
-
     will-change: transform;
 }
 
-/* Hover */
 body a.floating-scanner-btn:hover {
     color: #fff !important;
     box-shadow: 0 14px 35px rgba(164, 73, 98, 0.42);
 }
 
-/* Scanner icon */
 body a.floating-scanner-btn .scanner-icon {
     font-size: 22px;
     line-height: 1;
 }
 
-/* Scanner label */
 body a.floating-scanner-btn .scanner-text {
     white-space: nowrap;
 }
 
-/* Float vertically by 100px */
 @keyframes glamoraScannerFloat {
     from {
         transform: translateY(0);
@@ -4135,7 +4126,6 @@ body a.floating-scanner-btn .scanner-text {
     }
 }
 
-/* Mobile */
 @media (max-width: 576px) {
     body a.floating-scanner-btn {
         right: 14px !important;
@@ -4149,10 +4139,8 @@ body a.floating-scanner-btn .scanner-text {
     }
 }
 
-/* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
     body a.floating-scanner-btn {
-        animation: none !important;
-        transform: none;
+        animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
     }
 }
