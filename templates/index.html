@@ -75,16 +75,18 @@
         </a>
 
         <!-- SHOPPING BAG -->
-        <button
+        <a
+          href="{{ url_for('cart') }}"
           class="cart-btn"
           id="cartBtn"
-          type="button"
           aria-label="Shopping bag"
           title="Shopping bag"
         >
           <span>Bag</span>
-          <span class="cart-count" id="cartCount">0</span>
-        </button>
+          <span class="cart-count" id="cartCount">
+             {{ bag_count|default(0) }}
+          </span>
+        </a>
 
         <!-- LOGIN / PROFILE -->
         {% if is_logged_in %}
