@@ -72,238 +72,70 @@ button {
 }
 
 
-
-
 /* =========================================================
-   GLAMORA AR — ELEGANT LUXURY PRELOADER
+   PRELOADER
    ========================================================= */
 
 .loader {
     position: fixed;
     inset: 0;
-    z-index: 99999;
+    z-index: 9999;
 
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(243, 184, 198, 0.16) 0%,
-            transparent 48%
-        ),
-        #fff5f7;
+    gap: 25px;
 
-    opacity: 1;
-    visibility: visible;
+    background: var(--bg);
 
     transition:
-        opacity 0.7s ease,
-        visibility 0.7s ease;
+        opacity 0.6s ease,
+        visibility 0.6s ease;
 }
 
 .loader.hidden {
     opacity: 0;
     visibility: hidden;
-    pointer-events: none;
 }
 
-/* Main loader content */
-.loader-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    text-align: center;
-    gap: 0;
-
-    animation: loaderEntrance 1s ease both;
-}
-
-/* Elegant GLAMORA AR logo */
 .loader-logo {
     font-family: "Playfair Display", serif;
-    font-size: clamp(28px, 4vw, 38px);
-    font-weight: 500;
-    letter-spacing: 7px;
-    line-height: 1.4;
-
-    color: #2b1b20;
-
-    animation: logoReveal 1.2s ease both;
+    font-size: 32px;
+    letter-spacing: 5px;
 }
 
 .loader-logo span {
-    color: #c85f7a;
-    font-style: italic;
-    letter-spacing: 3px;
+    color: var(--accent);
 }
 
-/* Subtle decorative separator */
-.loader-content::before {
-    content: "";
-    display: block;
-
-    width: 34px;
-    height: 1px;
-
-    margin: 23px 0 18px;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        #c85f7a,
-        transparent
-    );
-
-    animation: separatorReveal 1s ease both;
-}
-
-/* Loading message */
-.loader-content p {
-    margin: 0;
-
-    font-family: "DM Sans", sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 2.5px;
-    line-height: 1.8;
-    text-transform: uppercase;
-
-    color: #806b72;
-
-    animation: textReveal 1s ease both;
-}
-
-/* Elegant animated progress line */
 .loader-line {
-    position: relative;
-    width: 160px;
+    width: 180px;
     height: 2px;
 
-    margin-top: 28px;
-
+    background: rgba(36, 27, 29, 0.10);
     overflow: hidden;
-    border-radius: 10px;
-
-    background: rgba(200, 95, 122, 0.15);
 }
 
-.loader-line span {
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    display: block;
-    width: 45%;
+.loader-line div {
+    width: 100%;
     height: 100%;
 
-    border-radius: 10px;
+    background: var(--accent);
 
-    background: linear-gradient(
-        90deg,
-        #e9a8b8,
-        #c85f7a,
-        #e9a8b8
-    );
-
-    animation: elegantLoading 1.6s ease-in-out infinite;
+    animation: loading 1.4s ease-in-out infinite;
 }
 
-/* Animations */
-@keyframes elegantLoading {
+@keyframes loading {
     0% {
-        transform: translateX(-110%);
+        transform: translateX(-100%);
     }
 
     100% {
-        transform: translateX(360%);
+        transform: translateX(100%);
     }
 }
-
-@keyframes loaderEntrance {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes logoReveal {
-    from {
-        opacity: 0;
-        letter-spacing: 11px;
-    }
-
-    to {
-        opacity: 1;
-        letter-spacing: 7px;
-    }
-}
-
-@keyframes separatorReveal {
-    from {
-        opacity: 0;
-        transform: scaleX(0);
-    }
-
-    to {
-        opacity: 1;
-        transform: scaleX(1);
-    }
-}
-
-@keyframes textReveal {
-    from {
-        opacity: 0;
-        transform: translateY(5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Mobile adjustments */
-@media (max-width: 480px) {
-    .loader-logo {
-        font-size: 28px;
-        letter-spacing: 5px;
-    }
-
-    .loader-content p {
-        font-size: 9px;
-        letter-spacing: 1.8px;
-    }
-
-    .loader-line {
-        width: 140px;
-    }
-}
-
-/* Respect reduced-motion preferences */
-@media (prefers-reduced-motion: reduce) {
-    .loader-content,
-    .loader-logo,
-    .loader-content::before,
-    .loader-content p,
-    .loader-line span {
-        animation: none;
-    }
-
-    .loader,
-    .loader.hidden {
-        transition: opacity 0.2s ease;
-    }
-}
-
 
 
 /* =========================================================
@@ -3713,6 +3545,115 @@ footer {
 
 
 /* =========================================================
+   GLAMORA AR — HOMEPAGE FOOTER COMPATIBILITY
+   Supports .site-footer / .footer-container markup while
+   preserving the existing .footer-top / .footer-links styles.
+   ========================================================= */
+
+.site-footer {
+    padding: 70px 7vw 25px;
+    background: var(--text);
+    color: #fff;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(120px, 1fr));
+    gap: 45px;
+    padding-bottom: 55px;
+}
+
+.footer-logo {
+    display: inline-block;
+    color: #fff;
+    font-family: "Playfair Display", serif;
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-decoration: none;
+}
+
+.footer-logo span {
+    color: #df9aaa;
+    font-size: .72em;
+    letter-spacing: 1px;
+}
+
+.footer-brand p {
+    margin-top: 15px;
+    max-width: 260px;
+    color: rgba(255, 255, 255, .62);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.footer-column h4 {
+    margin: 0 0 8px;
+    color: #df9aaa;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.footer-column a {
+    color: rgba(255, 255, 255, .68);
+    font-size: 12px;
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+.footer-column a:hover {
+    color: #fff;
+}
+
+.site-footer .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    color: rgba(255, 255, 255, .48);
+    font-size: 10px;
+}
+
+@media (max-width: 850px) {
+    .footer-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 35px 28px;
+    }
+}
+
+@media (max-width: 576px) {
+    .site-footer {
+        padding: 55px 6vw 22px;
+    }
+
+    .footer-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 30px 20px;
+        padding-bottom: 38px;
+    }
+
+    .footer-container .footer-brand {
+        grid-column: 1 / -1;
+    }
+
+    .site-footer .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+
+/* =========================================================
    BEAUTY PRODUCT ANIMATIONS
    ========================================================= */
 
@@ -4231,8 +4172,8 @@ footer {
 
 
 /* =========================================================
-   GLAMORA AR — CART PRODUCT SCANNER
-   Same style and animation as the global scanner
+   GLAMORA AR — FLOATING PRODUCT SCANNER
+   Fixed at the bottom-right with a gentle, slow float.
    ========================================================= */
 
 body a.floating-scanner-btn {
@@ -4241,7 +4182,6 @@ body a.floating-scanner-btn {
     right: 24px !important;
     bottom: 35px !important;
     left: auto !important;
-
     z-index: 1000000 !important;
 
     display: inline-flex !important;
@@ -4250,32 +4190,34 @@ body a.floating-scanner-btn {
     gap: 10px;
 
     padding: 15px 20px;
-
     background: linear-gradient(135deg, #c85f7a, #a74360);
     color: #fff !important;
-
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, .35);
     border-radius: 50px;
-
-    box-shadow: 0 10px 30px rgba(164, 73, 98, 0.30);
+    box-shadow: 0 10px 30px rgba(164, 73, 98, .30);
 
     font-family: "DM Sans", sans-serif;
     font-size: 14px;
     font-weight: 600;
-
     text-decoration: none !important;
     white-space: nowrap;
 
-    animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
+    animation: glamoraScannerFloat 5s ease-in-out infinite alternate !important;
     will-change: transform;
+}
+
+@keyframes glamoraScannerFloat {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-12px); }
 }
 
 body a.floating-scanner-btn:hover {
     color: #fff !important;
-    box-shadow: 0 14px 35px rgba(164, 73, 98, 0.42);
+    box-shadow: 0 14px 35px rgba(164, 73, 98, .42);
 }
 
 body a.floating-scanner-btn .scanner-icon {
+    display: inline-block;
     font-size: 22px;
     line-height: 1;
 }
@@ -4284,14 +4226,11 @@ body a.floating-scanner-btn .scanner-text {
     white-space: nowrap;
 }
 
-@keyframes glamoraScannerFloat {
-    from {
-        transform: translateY(0);
-    }
-
-    to {
-        transform: translateY(-100px);
-    }
+/* Keep the scanner clear of the preloader while the page loads. */
+body:has(.loader:not(.hidden)) .floating-scanner-btn {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 @media (max-width: 576px) {
@@ -4309,13 +4248,35 @@ body a.floating-scanner-btn .scanner-text {
 
 @media (prefers-reduced-motion: reduce) {
     body a.floating-scanner-btn {
-        animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
+        animation: none !important;
+        will-change: auto;
     }
 }
 
-/* Hide the floating product scanner while loading */
-body:has(.loader:not(.hidden)) .floating-scanner-btn {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+
+/* =========================================================
+   NAVBAR — MOBILE LAYOUT SAFETY
+   ========================================================= */
+@media (max-width: 850px) {
+    .navbar {
+        gap: 12px;
+    }
+
+    .nav-actions {
+        gap: 10px;
+    }
+
+    .nav-links.open {
+        z-index: 100000;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar {
+        padding: 16px 5vw;
+    }
+
+    .nav-actions {
+        gap: 8px;
+    }
 }
