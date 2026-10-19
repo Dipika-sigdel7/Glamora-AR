@@ -569,15 +569,120 @@ def admin_required():
 
 
 # =========================================================
-# HOME PAGE
+# HOME PAGE — LOAD 3 LATEST ADMIN PRODUCTS
 # =========================================================
 
 @app.route("/")
 def index():
 
-    return render_template(
-        "index.html"
-    )
+    connection = None
+    cursor = None
+
+    products = []
+    favorite_product_ids = set()
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        # -------------------------------------------------
+        # LOAD THE 3 NEWEST AVAILABLE PRODUCTS
+        # -------------------------------------------------
+
+        cursor.execute("""
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                p.price,
+                p.stock,
+                p.shade,
+                p.color,
+                p.product_type,
+                p.is_available,
+                p.category_id,
+
+                c.name AS category_name,
+
+                (
+                    SELECT pi.image_url
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id
+                    ORDER BY
+                        pi.is_primary DESC,
+                        pi.id ASC
+                    LIMIT 1
+                ) AS image_url
+
+            FROM products p
+
+            LEFT JOIN categories c
+                ON c.id = p.category_id
+
+            WHERE p.is_available = 1
+
+            ORDER BY p.id DESC
+
+            LIMIT 3
+        """)
+
+        products = cursor.fetchall() or []
+
+        # Normalize product types for the existing product cards.
+        products = prepare_products(products)
+
+        # -------------------------------------------------
+        # LOAD FAVORITES FOR THE LOGGED-IN USER
+        # -------------------------------------------------
+
+        if session.get("user_id"):
+
+            ensure_favorites_table(cursor)
+
+            cursor.execute("""
+                SELECT product_id
+                FROM favorites
+                WHERE user_id = %s
+            """, (session["user_id"],))
+
+            favorite_rows = cursor.fetchall() or []
+
+            favorite_product_ids = {
+                int(row["product_id"])
+                for row in favorite_rows
+            }
+
+        # -------------------------------------------------
+        # RENDER HOMEPAGE
+        # -------------------------------------------------
+
+        return render_template(
+            "index.html",
+            products=products,
+            favorite_product_ids=favorite_product_ids
+        )
+
+    except Exception as error:
+
+        print(
+            "HOMEPAGE PRODUCTS ERROR:",
+            type(error).__name__,
+            str(error)
+        )
+
+        return render_template(
+            "index.html",
+            products=[],
+            favorite_product_ids=set()
+        )
+
+    finally:
+        safe_close(cursor, connection)
+
 
 
 # =========================================================
