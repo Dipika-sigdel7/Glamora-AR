@@ -73,8 +73,9 @@ button {
 
 
 
+
 /* =========================================================
-   PRELOADER — GLAMORA AR
+   GLAMORA AR — ELEGANT LUXURY PRELOADER
    ========================================================= */
 
 .loader {
@@ -83,20 +84,23 @@ button {
     z-index: 99999;
 
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    gap: 18px;
-
-    background: var(--bg);
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(243, 184, 198, 0.16) 0%,
+            transparent 48%
+        ),
+        #fff5f7;
 
     opacity: 1;
     visibility: visible;
 
     transition:
-        opacity 0.6s ease,
-        visibility 0.6s ease;
+        opacity 0.7s ease,
+        visibility 0.7s ease;
 }
 
 .loader.hidden {
@@ -105,68 +109,198 @@ button {
     pointer-events: none;
 }
 
+/* Main loader content */
 .loader-content {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-
-    gap: 18px;
+    justify-content: center;
 
     text-align: center;
+    gap: 0;
+
+    animation: loaderEntrance 1s ease both;
 }
 
+/* Elegant GLAMORA AR logo */
 .loader-logo {
     font-family: "Playfair Display", serif;
-    font-size: 32px;
+    font-size: clamp(28px, 4vw, 38px);
     font-weight: 500;
-    letter-spacing: 5px;
-    color: var(--text);
+    letter-spacing: 7px;
+    line-height: 1.4;
+
+    color: #2b1b20;
+
+    animation: logoReveal 1.2s ease both;
 }
 
 .loader-logo span {
-    color: var(--accent);
+    color: #c85f7a;
+    font-style: italic;
+    letter-spacing: 3px;
 }
 
+/* Subtle decorative separator */
+.loader-content::before {
+    content: "";
+    display: block;
+
+    width: 34px;
+    height: 1px;
+
+    margin: 23px 0 18px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #c85f7a,
+        transparent
+    );
+
+    animation: separatorReveal 1s ease both;
+}
+
+/* Loading message */
 .loader-content p {
     margin: 0;
 
-    color: var(--text-soft);
-
     font-family: "DM Sans", sans-serif;
-    font-size: 12px;
-    font-weight: 400;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    line-height: 1.8;
+    text-transform: uppercase;
 
-    letter-spacing: 1px;
+    color: #806b72;
+
+    animation: textReveal 1s ease both;
 }
 
+/* Elegant animated progress line */
 .loader-line {
-    width: 180px;
+    position: relative;
+    width: 160px;
     height: 2px;
 
-    background: rgba(36, 27, 29, 0.10);
+    margin-top: 28px;
 
     overflow: hidden;
+    border-radius: 10px;
+
+    background: rgba(200, 95, 122, 0.15);
 }
 
 .loader-line span {
-    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
 
-    width: 100%;
+    display: block;
+    width: 45%;
     height: 100%;
 
-    background: var(--accent);
+    border-radius: 10px;
 
-    animation: loading 1.4s ease-in-out infinite;
+    background: linear-gradient(
+        90deg,
+        #e9a8b8,
+        #c85f7a,
+        #e9a8b8
+    );
+
+    animation: elegantLoading 1.6s ease-in-out infinite;
 }
 
-@keyframes loading {
+/* Animations */
+@keyframes elegantLoading {
     0% {
-        transform: translateX(-100%);
+        transform: translateX(-110%);
     }
 
     100% {
-        transform: translateX(100%);
+        transform: translateX(360%);
+    }
+}
+
+@keyframes loaderEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logoReveal {
+    from {
+        opacity: 0;
+        letter-spacing: 11px;
+    }
+
+    to {
+        opacity: 1;
+        letter-spacing: 7px;
+    }
+}
+
+@keyframes separatorReveal {
+    from {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+@keyframes textReveal {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    .loader-logo {
+        font-size: 28px;
+        letter-spacing: 5px;
+    }
+
+    .loader-content p {
+        font-size: 9px;
+        letter-spacing: 1.8px;
+    }
+
+    .loader-line {
+        width: 140px;
+    }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .loader-content,
+    .loader-logo,
+    .loader-content::before,
+    .loader-content p,
+    .loader-line span {
+        animation: none;
+    }
+
+    .loader,
+    .loader.hidden {
+        transition: opacity 0.2s ease;
     }
 }
 
@@ -4177,4 +4311,11 @@ body a.floating-scanner-btn .scanner-text {
     body a.floating-scanner-btn {
         animation: glamoraScannerFloat 3s ease-in-out infinite alternate !important;
     }
+}
+
+/* Hide the floating product scanner while loading */
+body:has(.loader:not(.hidden)) .floating-scanner-btn {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
