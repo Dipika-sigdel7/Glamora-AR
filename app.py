@@ -577,7 +577,6 @@ def admin_required():
 def index():
     connection = None
     cursor = None
-
     products = []
     favorite_product_ids = set()
 
@@ -585,8 +584,7 @@ def index():
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
-        # Get the same available products as the Beauty page,
-        # but display only the latest 3 on the homepage.
+        # Fetch the latest 3 available products, just like the Beauty page.
         cursor.execute("""
             SELECT
                 p.id,
@@ -600,7 +598,6 @@ def index():
                 p.is_available,
                 p.category_id,
                 c.name AS category_name,
-
                 (
                     SELECT pi.image_url
                     FROM product_images AS pi
@@ -608,37 +605,40 @@ def index():
                     ORDER BY pi.is_primary DESC, pi.id ASC
                     LIMIT 1
                 ) AS image_url
-
             FROM products AS p
-
             LEFT JOIN categories AS c
                 ON c.id = p.category_id
-
             WHERE p.is_available = 1
-
             ORDER BY p.id DESC
-
             LIMIT 3
         """)
 
         products = prepare_products(cursor.fetchall() or [])
 
-        # Load the logged-in user's favorites.
+        print("HOMEPAGE PRODUCTS FOUND:", len(products))
+
+        # Load favorites separately so a favorites-table error
+        # does not prevent products from appearing on the homepage.
         user_id = session.get("user_id")
 
         if user_id:
-            ensure_favorites_table(cursor)
+            try:
+                ensure_favorites_table(cursor)
 
-            cursor.execute("""
-                SELECT product_id
-                FROM favorites
-                WHERE user_id = %s
-            """, (user_id,))
+                cursor.execute("""
+                    SELECT product_id
+                    FROM favorites
+                    WHERE user_id = %s
+                """, (user_id,))
 
-            favorite_product_ids = {
-                int(row["product_id"])
-                for row in (cursor.fetchall() or [])
-            }
+                favorite_product_ids = {
+                    int(row["product_id"])
+                    for row in (cursor.fetchall() or [])
+                }
+
+            except Exception as favorite_error:
+                print("HOMEPAGE FAVORITES ERROR:", repr(favorite_error))
+                favorite_product_ids = set()
 
         return render_template(
             "index.html",
@@ -652,11 +652,12 @@ def index():
         return render_template(
             "index.html",
             products=[],
-            favorite_product_ids=set()
+            favorite_product_ids=favorite_product_ids
         )
 
     finally:
         safe_close(cursor, connection)
+
 
 
 
