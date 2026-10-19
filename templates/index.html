@@ -709,11 +709,7 @@
 
     <!-- FLOATING PRODUCT SCANNER -->
     <a
-        {% if 'product_scanner' in current_app.view_functions %}
-            href="{{ url_for('product_scanner') }}"
-        {% else %}
-            href="{{ url_for('beauty') }}"
-        {% endif %}
+        href="{{ url_for('product_scanner') }}"
         class="floating-scanner-btn"
         aria-label="Open Product Scanner"
         title="Product Scanner"
