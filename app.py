@@ -568,92 +568,16 @@ def admin_required():
     )
 
 
-
 # =========================================================
-# HOME PAGE — SHOW 3 LATEST ADMIN PRODUCTS
+# HOME PAGE
 # =========================================================
 
 @app.route("/")
 def index():
 
-    connection = None
-    cursor = None
-
-    try:
-        connection = get_db_connection()
-
-        if connection is None:
-            raise RuntimeError(
-                "Database connection failed."
-            )
-
-        cursor = connection.cursor(
-            dictionary=True
-        )
-
-        cursor.execute(
-            """
-            SELECT
-                p.id,
-                p.name,
-                p.description,
-                p.price,
-                p.stock,
-                p.shade,
-                p.color,
-                p.product_type,
-                p.is_available,
-                p.category_id,
-                c.name AS category_name,
-
-                (
-                    SELECT pi.image_url
-                    FROM product_images pi
-                    WHERE pi.product_id = p.id
-                    ORDER BY
-                        pi.is_primary DESC,
-                        pi.id ASC
-                    LIMIT 1
-                ) AS image_url
-
-            FROM products p
-
-            LEFT JOIN categories c
-                ON c.id = p.category_id
-
-            WHERE p.is_available = 1
-
-            ORDER BY p.id DESC
-
-            LIMIT 3
-            """
-        )
-
-        products = cursor.fetchall() or []
-
-        products = prepare_products(products)
-
-        return render_template(
-            "index.html",
-            products=products
-        )
-
-    except Exception as error:
-
-        app.logger.exception(
-            "HOME PAGE PRODUCTS ERROR"
-        )
-
-        return render_template(
-            "index.html",
-            products=[]
-        )
-
-    finally:
-        safe_close(
-            cursor,
-            connection
-        )
+    return render_template(
+        "index.html"
+    )
 
 
 # =========================================================
@@ -2248,6 +2172,8 @@ def add_review(product_id):
         )
 
 
+
+        
 # =========================================================
 # ADD TO CART
 # =========================================================
@@ -2258,21 +2184,73 @@ def add_review(product_id):
 )
 def add_to_cart(product_id):
 
-    if not session.get("user_id"):
+    is_ajax = (
+        request.headers.get("X-Requested-With")
+        == "XMLHttpRequest"
+    )
+
+    def cart_response(success, message, status=200,
+                      login_url=None, return_to=None):
+
+        if is_ajax:
+            response_data = {
+                "success": success,
+                "message": message,
+                "bag_count": get_bag_count() if success else None
+            }
+
+            if login_url:
+                response_data["login_url"] = login_url
+
+            return jsonify(response_data), status
 
         flash(
-            "Please log in to add products to your bag.",
-            "error"
+            message,
+            "success" if success else "error"
         )
 
-        return redirect(
-            url_for(
-                "login",
-                next=url_for(
-                    "product_details",
-                    product_id=product_id
-                )
-            )
+        if login_url:
+            return redirect(login_url)
+
+        if return_to:
+            return redirect(return_to)
+
+        return redirect(url_for("beauty"))
+
+    # -----------------------------------------------------
+    # RETURN DESTINATION
+    # -----------------------------------------------------
+
+    return_to = request.form.get(
+        "return_to",
+        "/beauty"
+    )
+
+    # Only allow local paths to prevent open redirects.
+    if (
+        not return_to.startswith("/")
+        or return_to.startswith("//")
+        or "\\" in return_to
+    ):
+        return_to = "/beauty"
+
+    # -----------------------------------------------------
+    # LOGIN CHECK
+    # -----------------------------------------------------
+
+    if not session.get("user_id"):
+
+        login_url = url_for(
+            "login",
+            next=return_to
+        )
+
+        return cart_response(
+            False,
+            "Please log in to add products to your bag.",
+            status=401,
+            login_url=login_url,
+            return_to=login_url
         )
 
     connection = None
@@ -2283,7 +2261,6 @@ def add_to_cart(product_id):
         connection = get_db_connection()
 
         if connection is None:
-
             raise RuntimeError(
                 "Database connection failed."
             )
@@ -2291,6 +2268,10 @@ def add_to_cart(product_id):
         cursor = connection.cursor(
             dictionary=True
         )
+
+        # -------------------------------------------------
+        # CHECK PRODUCT
+        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -2311,49 +2292,38 @@ def add_to_cart(product_id):
 
         if not product:
 
-            flash(
+            return cart_response(
+                False,
                 "Product not found.",
-                "error"
-            )
-
-            return redirect(
-                url_for("beauty")
+                status=404,
+                return_to=return_to
             )
 
         if not product.get("is_available"):
 
-            flash(
+            return cart_response(
+                False,
                 "This product is currently unavailable.",
-                "error"
-            )
-
-            return redirect(
-                url_for(
-                    "product_details",
-                    product_id=product_id
-                )
+                status=400,
+                return_to=return_to
             )
 
         stock = int(
-            product.get(
-                "stock",
-                0
-            ) or 0
+            product.get("stock") or 0
         )
 
         if stock <= 0:
 
-            flash(
+            return cart_response(
+                False,
                 "This product is out of stock.",
-                "error"
+                status=400,
+                return_to=return_to
             )
 
-            return redirect(
-                url_for(
-                    "product_details",
-                    product_id=product_id
-                )
-            )
+        # -------------------------------------------------
+        # CHECK EXISTING CART ITEM
+        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -2371,18 +2341,22 @@ def add_to_cart(product_id):
             )
         )
 
-        existing_item = (
-            cursor.fetchone()
-        )
+        existing_item = cursor.fetchone()
 
         if existing_item:
 
             current_quantity = int(
-                existing_item.get(
-                    "quantity",
-                    0
-                ) or 0
+                existing_item.get("quantity") or 0
             )
+
+            if current_quantity >= stock:
+
+                return cart_response(
+                    False,
+                    "You have already added all available stock to your bag.",
+                    status=400,
+                    return_to=return_to
+                )
 
             new_quantity = min(
                 current_quantity + 1,
@@ -2394,14 +2368,20 @@ def add_to_cart(product_id):
                 UPDATE cart_items
                 SET quantity = %s
                 WHERE id = %s
+                  AND user_id = %s
                 """,
                 (
                     new_quantity,
-                    existing_item["id"]
+                    existing_item["id"],
+                    session["user_id"]
                 )
             )
 
         else:
+
+            # ---------------------------------------------
+            # INSERT NEW CART ITEM
+            # ---------------------------------------------
 
             cursor.execute(
                 """
@@ -2410,11 +2390,7 @@ def add_to_cart(product_id):
                     product_id,
                     quantity
                 )
-                VALUES (
-                    %s,
-                    %s,
-                    %s
-                )
+                VALUES (%s, %s, %s)
                 """,
                 (
                     session["user_id"],
@@ -2423,18 +2399,16 @@ def add_to_cart(product_id):
                 )
             )
 
+        # -------------------------------------------------
+        # SAVE CART
+        # -------------------------------------------------
+
         connection.commit()
 
-        flash(
-            "Product added to your bag.",
-            "success"
-        )
-
-        return redirect(
-            url_for(
-                "product_details",
-                product_id=product_id
-            )
+        return cart_response(
+            True,
+            "Product added to your bag!",
+            return_to=return_to
         )
 
     except Exception as error:
@@ -2451,16 +2425,11 @@ def add_to_cart(product_id):
             repr(error)
         )
 
-        flash(
-            "Unable to add product to bag.",
-            "error"
-        )
-
-        return redirect(
-            url_for(
-                "product_details",
-                product_id=product_id
-            )
+        return cart_response(
+            False,
+            "Unable to add product to your bag. Please try again.",
+            status=500,
+            return_to=return_to
         )
 
     finally:
@@ -2469,6 +2438,7 @@ def add_to_cart(product_id):
             cursor,
             connection
         )
+
 
 
 # =========================================================
