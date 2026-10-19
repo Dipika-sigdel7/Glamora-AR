@@ -568,16 +568,92 @@ def admin_required():
     )
 
 
+
 # =========================================================
-# HOME PAGE
+# HOME PAGE — SHOW 3 LATEST ADMIN PRODUCTS
 # =========================================================
 
 @app.route("/")
 def index():
 
-    return render_template(
-        "index.html"
-    )
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError(
+                "Database connection failed."
+            )
+
+        cursor = connection.cursor(
+            dictionary=True
+        )
+
+        cursor.execute(
+            """
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                p.price,
+                p.stock,
+                p.shade,
+                p.color,
+                p.product_type,
+                p.is_available,
+                p.category_id,
+                c.name AS category_name,
+
+                (
+                    SELECT pi.image_url
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id
+                    ORDER BY
+                        pi.is_primary DESC,
+                        pi.id ASC
+                    LIMIT 1
+                ) AS image_url
+
+            FROM products p
+
+            LEFT JOIN categories c
+                ON c.id = p.category_id
+
+            WHERE p.is_available = 1
+
+            ORDER BY p.id DESC
+
+            LIMIT 3
+            """
+        )
+
+        products = cursor.fetchall() or []
+
+        products = prepare_products(products)
+
+        return render_template(
+            "index.html",
+            products=products
+        )
+
+    except Exception as error:
+
+        app.logger.exception(
+            "HOME PAGE PRODUCTS ERROR"
+        )
+
+        return render_template(
+            "index.html",
+            products=[]
+        )
+
+    finally:
+        safe_close(
+            cursor,
+            connection
+        )
 
 
 # =========================================================
