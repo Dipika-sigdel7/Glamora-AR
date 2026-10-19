@@ -534,6 +534,13 @@
                                                 method="POST"
                                                 class="add-to-cart-form"
                                             >
+
+                                                <input
+                                                    type="hidden"
+                                                    name="return_to"
+                                                    value="{{ request.path }}"
+                                                    >
+                                                    
                                                 <button
                                                     type="submit"
                                                     class="add-to-cart-btn"
