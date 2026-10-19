@@ -567,8 +567,10 @@ def admin_required():
         session.get("admin_id")
     )
 
+
+
 # =========================================================
-# HOME PAGE — DISPLAY 3 LATEST ADMIN-ADDED PRODUCTS
+# home Page
 # =========================================================
 
 @app.route("/")
@@ -581,13 +583,10 @@ def index():
 
     try:
         connection = get_db_connection()
-
-        if connection is None:
-            raise RuntimeError("Could not connect to the database.")
-
         cursor = connection.cursor(dictionary=True)
 
-        # Get the three latest available products.
+        # Get the same available products as the Beauty page,
+        # but display only the latest 3 on the homepage.
         cursor.execute("""
             SELECT
                 p.id,
@@ -606,9 +605,7 @@ def index():
                     SELECT pi.image_url
                     FROM product_images AS pi
                     WHERE pi.product_id = p.id
-                    ORDER BY
-                        pi.is_primary DESC,
-                        pi.id ASC
+                    ORDER BY pi.is_primary DESC, pi.id ASC
                     LIMIT 1
                 ) AS image_url
 
@@ -624,10 +621,9 @@ def index():
             LIMIT 3
         """)
 
-        products = cursor.fetchall() or []
-        products = prepare_products(products)
+        products = prepare_products(cursor.fetchall() or [])
 
-        # Get favorites for the currently logged-in user.
+        # Load the logged-in user's favorites.
         user_id = session.get("user_id")
 
         if user_id:
@@ -639,14 +635,10 @@ def index():
                 WHERE user_id = %s
             """, (user_id,))
 
-            favorite_rows = cursor.fetchall() or []
-
             favorite_product_ids = {
                 int(row["product_id"])
-                for row in favorite_rows
+                for row in (cursor.fetchall() or [])
             }
-
-        print("HOMEPAGE PRODUCTS FOUND:", len(products))
 
         return render_template(
             "index.html",
@@ -655,7 +647,7 @@ def index():
         )
 
     except Exception as error:
-        print("HOMEPAGE ERROR:", repr(error))
+        print("HOMEPAGE PRODUCTS ERROR:", repr(error))
 
         return render_template(
             "index.html",

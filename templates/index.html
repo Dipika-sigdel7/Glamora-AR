@@ -280,7 +280,7 @@
             </div>
         </section>
 
-        <!-- HOME PAGE PRODUCTS: BEAUTY PAGE CARD DESIGN -->
+        <!-- HOME PAGE PRODUCTS: LATEST 3 BEAUTY PRODUCTS -->
         <section
             class="beauty-section beauty-products"
             id="products"
@@ -314,7 +314,7 @@
 
                 {% if products %}
 
-                    {% for product in products %}
+                    {% for product in products[:3] %}
 
                         {% set product_type =
                             (product.product_type or 'beauty')
@@ -333,7 +333,8 @@
                         %}
 
                         {% set is_favorite =
-                            product.id in (favorite_product_ids|default([]))
+                            product.id|int in
+                            (favorite_product_ids|default([])|map('int')|list)
                         %}
 
                         <article
@@ -539,8 +540,8 @@
                                                     type="hidden"
                                                     name="return_to"
                                                     value="{{ request.path }}"
-                                                    >
-                                                    
+                                                >
+
                                                 <button
                                                     type="submit"
                                                     class="add-to-cart-btn"
@@ -558,6 +559,7 @@
                                                         {% endif %}
                                                     </span>
                                                 </button>
+
                                             </form>
 
                                         {% else %}
@@ -596,6 +598,7 @@
                                 </div>
 
                             </div>
+
                         </article>
 
                     {% endfor %}
@@ -706,7 +709,11 @@
 
     <!-- FLOATING PRODUCT SCANNER -->
     <a
-        href="{{ url_for('product_scanner') }}"
+        {% if 'product_scanner' in current_app.view_functions %}
+            href="{{ url_for('product_scanner') }}"
+        {% else %}
+            href="{{ url_for('beauty') }}"
+        {% endif %}
         class="floating-scanner-btn"
         aria-label="Open Product Scanner"
         title="Product Scanner"
