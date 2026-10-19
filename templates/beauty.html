@@ -44,111 +44,107 @@
         </div>
     </div>
 
-
-
-<!-- NAVBAR — MATCHES THE HOMEPAGE -->
-<header class="navbar">
-
-    <!-- LOGO -->
-    <a
-        href="{{ url_for('index') }}"
-        class="logo"
-        aria-label="Glamora AR Home"
-    >
-        GLAMORA <span>AR</span>
-    </a>
-
-    <!-- NAVIGATION LINKS -->
-    <nav
-        class="nav-links"
-        id="navLinks"
-        aria-label="Main navigation"
-    >
-        <a href="{{ url_for('index') }}">Home</a>
+    <!-- NAVBAR -->
+    <header class="navbar">
 
         <a
-            href="{{ url_for('beauty') }}"
-            class="active"
-            aria-current="page"
-        >Beauty</a>
-
-        <a href="{{ url_for('about') }}">About</a>
-
-        <a href="{{ url_for('contact') }}">Contact</a>
-    </nav>
-
-    <!-- NAVIGATION ACTIONS -->
-    <div class="nav-actions">
-
-        <!-- SEARCH -->
-        <button
-            class="icon-btn"
-            id="searchBtn"
-            type="button"
-            aria-label="Search"
-            title="Search"
-        >⌕</button>
-
-        <!-- FAVORITES -->
-        <a
-            href="{{ url_for('favorites') }}"
-            class="icon-btn wishlist-btn"
-            id="wishlistBtn"
-            aria-label="View favorites"
-            title="My Favorites"
-        >♡</a>
-
-        <!-- SHOPPING BAG -->
-        <a
-            href="{{ url_for('cart') }}"
-            class="cart-btn"
-            id="cartBtn"
-            aria-label="Shopping bag"
-            title="Shopping bag"
+            href="{{ url_for('index') }}"
+            class="logo"
+            aria-label="Glamora AR Home"
         >
-            <span>Bag</span>
-            <span class="cart-count" id="cartCount">
-                {{ bag_count|default(0) }}
-            </span>
+            GLAMORA <span>AR</span>
         </a>
 
-        <!-- LOGIN / PROFILE -->
-        {% if session.get('user_id') %}
-        <a
-            href="{{ url_for('profile') }}"
-            class="login-btn"
-            id="profileBtn"
-            aria-label="Go to your profile"
+        <nav
+            class="nav-links"
+            id="navLinks"
+            aria-label="Main navigation"
         >
-            <span class="login-icon">♙</span>
-            <span>Profile</span>
-        </a>
-        {% else %}
-        <a
-            href="{{ url_for('login', next=request.path) }}"
-            class="login-btn"
-            id="loginBtn"
-            aria-label="Login to Glamora AR"
-        >
-            <span class="login-icon">♙</span>
-            <span>Login</span>
-        </a>
-        {% endif %}
+            <a href="{{ url_for('index') }}">Home</a>
 
-        <!-- MOBILE MENU -->
-        <button
-            class="menu-btn"
-            id="menuBtn"
-            type="button"
-            aria-label="Open navigation menu"
-            aria-expanded="false"
-            aria-controls="navLinks"
-        >☰</button>
+            <a
+                href="{{ url_for('beauty') }}"
+                class="active"
+                aria-current="page"
+            >Beauty</a>
 
-    </div>
-</header>
+            <a href="{{ url_for('about') }}">About</a>
+            <a href="{{ url_for('contact') }}">Contact</a>
+        </nav>
 
+        <div class="nav-actions">
 
+            <!-- SEARCH -->
+            <button
+                class="icon-btn"
+                id="searchBtn"
+                type="button"
+                aria-label="Search"
+                title="Search"
+            >⌕</button>
+
+            <!-- FAVORITES -->
+            <a
+                href="{{ url_for('favorites') }}"
+                class="icon-btn wishlist-btn"
+                id="wishlistBtn"
+                aria-label="View favorites"
+                title="My Favorites"
+            >♡</a>
+
+            <!-- SHOPPING BAG -->
+            <a
+                href="{{ url_for('cart') }}"
+                class="cart-btn"
+                id="cartBtn"
+                aria-label="Shopping bag"
+                title="Shopping bag"
+            >
+                <span>Bag</span>
+                <span class="cart-count" id="cartCount">
+                    {{ bag_count|default(0) }}
+                </span>
+            </a>
+
+            <!-- LOGIN / PROFILE -->
+            {% if session.get('user_id') %}
+
+            <a
+                href="{{ url_for('profile') }}"
+                class="login-btn"
+                id="profileBtn"
+                aria-label="Go to your profile"
+            >
+                <span class="login-icon">♙</span>
+                <span>Profile</span>
+            </a>
+
+            {% else %}
+
+            <a
+                href="{{ url_for('login', next=request.path) }}"
+                class="login-btn"
+                id="loginBtn"
+                aria-label="Login to Glamora AR"
+            >
+                <span class="login-icon">♙</span>
+                <span>Login</span>
+            </a>
+
+            {% endif %}
+
+            <!-- MOBILE MENU -->
+            <button
+                class="menu-btn"
+                id="menuBtn"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="navLinks"
+            >☰</button>
+
+        </div>
+    </header>
 
     <!-- BEAUTY HERO -->
     <section class="beauty-hero" id="beauty-home">
@@ -234,7 +230,6 @@
         </div>
 
     </section>
-
 
     <!-- CATEGORIES -->
     <section class="beauty-section" id="categories">
@@ -390,7 +385,6 @@
         </div>
     </section>
 
-
     <!-- PRODUCTS -->
     <section
         class="beauty-section beauty-products"
@@ -543,7 +537,6 @@
 
                         </div>
 
-
                         <!-- PRODUCT INFORMATION -->
                         <div class="beauty-product-info">
 
@@ -611,7 +604,6 @@
 
                             {% endif %}
 
-
                             <!-- PRICE AND ACTIONS -->
                             <div class="product-bottom">
 
@@ -623,11 +615,18 @@
 
                                     {% if session.get('user_id') %}
 
+                                        <!-- ADD TO BAG -->
                                         <form
                                             action="{{ url_for('add_to_cart', product_id=product.id) }}"
                                             method="POST"
                                             class="add-to-cart-form"
                                         >
+                                            <input
+                                                type="hidden"
+                                                name="return_to"
+                                                value="{{ request.path }}"
+                                            >
+
                                             <button
                                                 type="submit"
                                                 class="add-to-cart-btn"
@@ -649,6 +648,7 @@
 
                                     {% else %}
 
+                                        <!-- LOGIN REQUIRED -->
                                         <button
                                             type="button"
                                             class="add-to-cart-btn"
@@ -670,6 +670,7 @@
 
                                     {% endif %}
 
+                                    <!-- VIEW PRODUCT IS A SEPARATE ACTION -->
                                     <a
                                         href="{{ url_for('product_details', product_id=product.id) }}"
                                         class="product-view-btn"
@@ -713,7 +714,6 @@
 
         </div>
     </section>
-
 
     <!-- VIRTUAL TRY-ON -->
     <section
@@ -798,7 +798,6 @@
         </div>
     </section>
 
-
     <!-- FOOTER -->
     <footer class="site-footer">
 
@@ -872,9 +871,7 @@
         </div>
     </footer>
 
-
-
-    <!-- FLOATING PRODUCT SCANNER -->
+    <!-- FLOATING PRODUCT SCANNER: SINGLE INSTANCE -->
     <a
         href="{{ url_for('product_scanner') }}"
         class="floating-scanner-btn"
@@ -884,9 +881,6 @@
         <span class="scanner-icon">⌕</span>
         <span class="scanner-text">Product Scanner</span>
     </a>
-
-
-
 
     <!-- LOGIN REQUIRED POPUP -->
     <div
@@ -929,22 +923,6 @@
         </div>
     </div>
 
-
-
-
-<!-- Floating Product Scanner -->
-<a
-    href="{{ url_for('beauty') }}"
-    class="floating-scanner-btn"
-    aria-label="Product Scanner"
-    title="Product Scanner"
->
-    <span class="scanner-icon" aria-hidden="true">⌕</span>
-    <span class="scanner-text">Product Scanner</span>
-</a>
-
-
-    <!-- FAVORITE AJAX NOTIFICATIONS ARE CREATED BY main.js -->
     <!-- MAIN JAVASCRIPT -->
     <script
         src="{{ url_for('static', filename='js/main.js') }}"

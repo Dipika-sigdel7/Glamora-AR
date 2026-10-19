@@ -289,38 +289,152 @@ function initializeProductHover() {
 }
 
 
+
 /* =========================================================
    ADD TO BAG
-   Allow normal form submission to Flask.
+   AJAX submission — stays on the current page
+   Updates button text and navbar bag count
    ========================================================= */
 
 function initializeAddToBag() {
     document.querySelectorAll(".add-to-cart-form").forEach(form => {
+
+        // Prevent duplicate event listeners.
         if (form.dataset.cartInitialized === "true") return;
 
         form.dataset.cartInitialized = "true";
 
-        form.addEventListener("submit", event => {
+        form.addEventListener("submit", async function (event) {
+
+            // Stop normal form submission and page navigation.
+            event.preventDefault();
+
             const button = form.querySelector(".add-to-cart-btn");
+            const text = button?.querySelector(".add-to-bag-text");
 
-            if (!button || button.disabled) {
-                event.preventDefault();
-                return;
+            if (!button || button.disabled) return;
+
+            if (form.dataset.submitting === "true") return;
+
+            // Save the original button label.
+            if (!button.dataset.originalText) {
+                button.dataset.originalText = text
+                    ? text.textContent.trim()
+                    : button.textContent.trim();
             }
 
-            if (button.dataset.submitting === "true") {
-                event.preventDefault();
-                return;
-            }
+            const originalText = button.dataset.originalText;
 
-            button.dataset.submitting = "true";
+            // Show loading state.
+            form.dataset.submitting = "true";
             button.disabled = true;
             button.classList.add("adding");
 
-            const text = button.querySelector(".add-to-bag-text");
-
             if (text) {
                 text.textContent = "Adding...";
+            }
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: new FormData(form),
+                    credentials: "same-origin",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Accept": "application/json"
+                    }
+                });
+
+                // Handle unexpected redirects, such as a login redirect.
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+
+                const contentType =
+                    response.headers.get("content-type") || "";
+
+                if (!contentType.includes("application/json")) {
+                    throw new Error(
+                        "Unexpected server response. Please try again."
+                    );
+                }
+
+                const result = await response.json();
+
+                // Redirect to login if authentication is required.
+                if (result.login_url) {
+                    window.location.href = result.login_url;
+                    return;
+                }
+
+                // Handle stock errors and other failed requests.
+                if (!response.ok || !result.success) {
+                    throw new Error(
+                        result.message ||
+                        "Unable to add this product to your bag."
+                    );
+                }
+
+                // Update the button only after Flask confirms success.
+                if (text) {
+                    text.textContent = "Added to Bag ✓";
+                } else {
+                    button.textContent = "Added to Bag ✓";
+                }
+
+                button.classList.remove("adding");
+                button.classList.add("added-to-bag");
+
+                // Update the navbar bag count.
+                if (result.bag_count !== undefined &&
+                    result.bag_count !== null) {
+
+                    document.querySelectorAll(
+                        ".cart-count, .bag-count, [data-bag-count]"
+                    ).forEach(element => {
+                        element.textContent = result.bag_count;
+                    });
+                }
+
+                // Show success notification if a notification helper exists.
+                if (typeof showNotification === "function") {
+                    showNotification(
+                        result.message || "Product added to your bag!",
+                        "success"
+                    );
+                }
+
+            } catch (error) {
+                console.error("Add to Bag error:", error);
+
+                // Restore the original label on failure.
+                if (text) {
+                    text.textContent = originalText;
+                } else {
+                    button.textContent = originalText;
+                }
+
+                button.classList.remove("added-to-bag");
+
+                if (typeof showNotification === "function") {
+                    showNotification(
+                        error.message ||
+                        "Unable to add product to your bag. Please try again.",
+                        "error"
+                    );
+                } else {
+                    alert(
+                        error.message ||
+                        "Unable to add product to your bag. Please try again."
+                    );
+                }
+
+            } finally {
+                // Restore the button so the user can try again.
+                form.dataset.submitting = "false";
+                button.disabled = false;
+                button.classList.remove("adding");
             }
         });
     });
