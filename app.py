@@ -2522,8 +2522,9 @@ def add_to_cart(product_id):
 
 
 
+
 # =========================================================
-# BUY NOW
+# BUY NOW — GO DIRECTLY TO CHECKOUT
 # =========================================================
 
 @app.route(
@@ -2557,7 +2558,6 @@ def buy_now(product_id):
         connection = get_db_connection()
 
         if connection is None:
-
             raise RuntimeError(
                 "Database connection failed."
             )
@@ -2609,10 +2609,7 @@ def buy_now(product_id):
             )
 
         stock = int(
-            product.get(
-                "stock",
-                0
-            ) or 0
+            product.get("stock") or 0
         )
 
         if stock <= 0:
@@ -2629,88 +2626,16 @@ def buy_now(product_id):
                 )
             )
 
-        cursor.execute(
-            """
-            SELECT
-                id,
-                quantity
-            FROM cart_items
-            WHERE user_id = %s
-              AND product_id = %s
-            LIMIT 1
-            """,
-            (
-                session["user_id"],
-                product_id
-            )
-        )
-
-        existing_item = (
-            cursor.fetchone()
-        )
-
-        if existing_item:
-
-            current_quantity = int(
-                existing_item.get(
-                    "quantity",
-                    0
-                ) or 0
-            )
-
-            new_quantity = min(
-                current_quantity + 1,
-                stock
-            )
-
-            cursor.execute(
-                """
-                UPDATE cart_items
-                SET quantity = %s
-                WHERE id = %s
-                """,
-                (
-                    new_quantity,
-                    existing_item["id"]
-                )
-            )
-
-        else:
-
-            cursor.execute(
-                """
-                INSERT INTO cart_items (
-                    user_id,
-                    product_id,
-                    quantity
-                )
-                VALUES (
-                    %s,
-                    %s,
-                    %s
-                )
-                """,
-                (
-                    session["user_id"],
-                    product_id,
-                    1
-                )
-            )
-
-        connection.commit()
+        # Store the selected product for direct checkout.
+        # This does NOT add anything to cart_items.
+        session["buy_now_product_id"] = product_id
+        session.modified = True
 
         return redirect(
-            url_for("cart")
+            url_for("checkout")
         )
 
     except Exception as error:
-
-        if connection:
-
-            try:
-                connection.rollback()
-            except Exception:
-                pass
 
         print(
             "BUY NOW ERROR:",
