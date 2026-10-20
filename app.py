@@ -4678,6 +4678,7 @@ def seller_register():
         safe_close(cursor, connection)
 
 
+
 # =========================================================
 # ADMIN — VIEW ALL SELLERS
 # =========================================================
@@ -4728,7 +4729,7 @@ def admin_sellers():
         sellers = cursor.fetchall() or []
 
         return render_template(
-            "admin/products.html",
+            "admin/sellers.html",
             sellers=sellers
         )
 
@@ -4741,12 +4742,13 @@ def admin_sellers():
         )
 
         return render_template(
-            "admin/products.html",
+            "admin/sellers.html",
             sellers=[]
         ), 500
 
     finally:
         safe_close(cursor, connection)
+
 
 
 # =========================================================
