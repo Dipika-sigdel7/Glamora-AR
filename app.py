@@ -2527,139 +2527,61 @@ def add_to_cart(product_id):
 # BUY NOW — GO DIRECTLY TO CHECKOUT
 # =========================================================
 
-@app.route(
-    "/buy-now/<int:product_id>",
-    methods=["POST"]
-)
+
+@app.route("/buy-now/<int:product_id>", methods=["POST"])
 def buy_now(product_id):
-
     if not session.get("user_id"):
-
-        flash(
-            "Please log in to continue.",
-            "error"
-        )
-
+        flash("Please log in to continue.", "error")
         return redirect(
-            url_for(
-                "login",
-                next=url_for(
-                    "product_details",
-                    product_id=product_id
-                )
-            )
+            url_for("login", next=url_for("product_details", product_id=product_id))
         )
 
     connection = None
     cursor = None
 
     try:
-
         connection = get_db_connection()
 
         if connection is None:
-            raise RuntimeError(
-                "Database connection failed."
-            )
+            raise RuntimeError("Database connection failed.")
 
-        cursor = connection.cursor(
-            dictionary=True
-        )
+        cursor = connection.cursor(dictionary=True)
 
-        cursor.execute(
-            """
-            SELECT
-                id,
-                name,
-                price,
-                stock,
-                is_available
+        cursor.execute("""
+            SELECT id, name, price, stock, is_available
             FROM products
             WHERE id = %s
             LIMIT 1
-            """,
-            (product_id,)
-        )
+        """, (product_id,))
 
         product = cursor.fetchone()
 
         if not product:
-
-            flash(
-                "Product not found.",
-                "error"
-            )
-
-            return redirect(
-                url_for("beauty")
-            )
+            flash("Product not found.", "error")
+            return redirect(url_for("beauty"))
 
         if not product.get("is_available"):
+            flash("This product is currently unavailable.", "error")
+            return redirect(url_for("product_details", product_id=product_id))
 
-            flash(
-                "This product is currently unavailable.",
-                "error"
-            )
+        if int(product.get("stock") or 0) <= 0:
+            flash("This product is out of stock.", "error")
+            return redirect(url_for("product_details", product_id=product_id))
 
-            return redirect(
-                url_for(
-                    "product_details",
-                    product_id=product_id
-                )
-            )
-
-        stock = int(
-            product.get("stock") or 0
-        )
-
-        if stock <= 0:
-
-            flash(
-                "This product is out of stock.",
-                "error"
-            )
-
-            return redirect(
-                url_for(
-                    "product_details",
-                    product_id=product_id
-                )
-            )
-
-        # Store the selected product for direct checkout.
-        # This does NOT add anything to cart_items.
+        # Save the selected product for direct checkout.
         session["buy_now_product_id"] = product_id
         session.modified = True
 
-        return redirect(
-            url_for("checkout")
-        )
+        return redirect(url_for("checkout"))
 
     except Exception as error:
-
-        print(
-            "BUY NOW ERROR:",
-            repr(error)
-        )
-
-        flash(
-            "Unable to continue with this product.",
-            "error"
-        )
-
-        return redirect(
-            url_for(
-                "product_details",
-                product_id=product_id
-            )
-        )
+        print("BUY NOW ERROR:", repr(error))
+        flash("Unable to open checkout. Please check the Flask terminal.", "error")
+        return redirect(url_for("product_details", product_id=product_id))
 
     finally:
+        safe_close(cursor, connection)
 
-        safe_close(
-            cursor,
-            connection
-        )
 
 
 # =========================================================
