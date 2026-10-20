@@ -1,8 +1,8 @@
+
 <!doctype html>
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -10,359 +10,326 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Glamora AR — All Products</title>
-
-  <!-- =====================================================
-       ADMIN CSS
-       ===================================================== -->
+  <title>Glamora AR — Seller Management</title>
 
   <link
     rel="stylesheet"
     href="{{ url_for('static', filename='css/admin.css') }}"
   >
-
 </head>
-
 
 <body class="admin-page">
 
-
-  <!-- =====================================================
-       MAIN
-       ===================================================== -->
-
   <main class="admin-main">
 
-
-    <!-- ===================================================
-         HEADER
-         =================================================== -->
+    <!-- HEADER -->
 
     <header class="admin-topbar">
-
       <div>
-
         <p class="admin-eyebrow">
           GLAMORA AR
         </p>
 
         <h1>
-          All Products
+          Seller Management
         </h1>
 
         <p class="admin-welcome">
-          Manage all products in your beauty catalog.
+          Review seller registrations and manage seller accounts.
         </p>
-
       </div>
-
-
-      <a
-        href="{{ url_for('admin_add_product') }}"
-        class="admin-primary-button"
-      >
-        <span>+</span>
-        <span>Add Product</span>
-      </a>
-
     </header>
 
-
-
-    <!-- ===================================================
-         PRODUCT COUNT
-         =================================================== -->
+    <!-- SELLER APPLICATIONS -->
 
     <section class="admin-content-card">
 
-
       <div class="admin-section-header">
-
         <div>
-
           <p class="admin-eyebrow">
-            CATALOG
+            SELLER ACCOUNTS
           </p>
 
           <h2>
-            Products
+            Registered Sellers
           </h2>
-
         </div>
-
 
         <strong class="admin-product-count">
-          {{ product_count }} Products
+          {{ sellers|length }} Sellers
         </strong>
-
       </div>
 
+      {% if sellers %}
 
+      <div style="overflow-x: auto; width: 100%;">
 
-      <!-- =================================================
-           PRODUCTS
-           ================================================= -->
+        <table style="
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 1100px;
+          text-align: left;
+        ">
 
-      {% if products %}
+          <thead>
+            <tr style="border-bottom: 1px solid #f3dce3;">
+              <th style="padding: 15px 12px;">Seller ID</th>
+              <th style="padding: 15px 12px;">Shop Details</th>
+              <th style="padding: 15px 12px;">Owner Details</th>
+              <th style="padding: 15px 12px;">Contact</th>
+              <th style="padding: 15px 12px;">Business Address</th>
+              <th style="padding: 15px 12px;">Registration Date</th>
+              <th style="padding: 15px 12px;">Status</th>
+              <th style="padding: 15px 12px;">Admin Actions</th>
+            </tr>
+          </thead>
 
-      <div class="admin-product-table">
+          <tbody>
 
+            {% for seller in sellers %}
 
-        <!-- =================================================
-             TABLE HEADER
-             ================================================= -->
+            <tr style="border-bottom: 1px solid #f3dce3;">
 
-        <div class="admin-table-head">
+              <!-- SELLER ID -->
 
-          <span>
-            Product
-          </span>
+              <td style="padding: 16px 12px;">
+                #{{ seller.id }}
+              </td>
 
-          <span>
-            Category
-          </span>
+              <!-- SHOP DETAILS -->
 
-          <span>
-            Price
-          </span>
+              <td style="padding: 16px 12px; min-width: 170px;">
+                <strong>
+                  {{ seller.shop_name }}
+                </strong>
 
-          <span>
-            Stock
-          </span>
+                <br>
 
-          <span>
-            Status
-          </span>
+                <small>
+                  {{ seller.business_type or 'Beauty & Cosmetics' }}
+                </small>
 
-          <span>
-            Action
-          </span>
+                {% if seller.description %}
+                <br>
+                <small>
+                  {{ seller.description }}
+                </small>
+                {% endif %}
+              </td>
 
-        </div>
+              <!-- OWNER DETAILS -->
 
+              <td style="padding: 16px 12px; min-width: 170px;">
+                <strong>
+                  {{ seller.owner_name or 'Not available' }}
+                </strong>
 
+                <br>
 
-        <!-- =================================================
-             PRODUCT ROWS
-             ================================================= -->
+                <small>
+                  {{ seller.owner_email or 'Not available' }}
+                </small>
+              </td>
+
+              <!-- CONTACT -->
 
-        {% for product in products %}
+              <td style="padding: 16px 12px;">
+                {{ seller.phone or 'Not provided' }}
+              </td>
+
+              <!-- ADDRESS -->
+
+              <td style="padding: 16px 12px; min-width: 180px;">
+                {{ seller.address or 'Not provided' }}
+              </td>
+
+              <!-- REGISTRATION DATE -->
 
-        <div class="admin-table-row">
-
-
-          <!-- =================================================
-               PRODUCT
-               ================================================= -->
-
-          <div class="admin-product-name">
-
-
-            {% if product.image_url %}
-
-            <img
-              src="{{ url_for('static', filename=product.image_url|replace('/static/', '')|replace('//', '/')) }}"
-              alt="{{ product.name }}"
-            >
-
-            {% else %}
-
-            <div class="admin-product-placeholder">
-              ✦
-            </div>
-
-            {% endif %}
-
-
-            <div>
-
-              <strong>
-                {{ product.name }}
-              </strong>
-
-              <small>
-                #{{ product.id }}
-              </small>
-
-            </div>
-
-          </div>
-
-
-
-          <!-- =================================================
-               CATEGORY
-               ================================================= -->
-
-          <span>
-            {{ product.category_name or 'Uncategorized' }}
-          </span>
-
-
-
-          <!-- =================================================
-               PRICE
-               ================================================= -->
-
-          <span>
-
-            {% if format_npr is defined %}
-
-              {{ format_npr(product.price) }}
-
-            {% else %}
-
-              Rs. {{ "%.2f"|format(product.price) }}
-
-            {% endif %}
-
-          </span>
-
-
-
-          <!-- =================================================
-               STOCK
-               ================================================= -->
-
-          <span>
-            {{ product.stock }}
-          </span>
-
-
-
-          <!-- =================================================
-               STATUS
-               ================================================= -->
-
-          <span>
-
-            {% if product.is_available %}
-
-            <span class="status available">
-              Available
-            </span>
-
-            {% else %}
-
-            <span class="status unavailable">
-              Unavailable
-            </span>
-
-            {% endif %}
-
-          </span>
-
-
-
-          <!-- =================================================
-               DELETE / VIEW
-               ================================================= -->
-
-          <div class="admin-product-actions">
-
-
-            <!-- VIEW PRODUCT -->
-
-            <a
-              href="{{ url_for('product_details', product_id=product.id) }}"
-              class="admin-text-link"
-            >
-              View
-            </a>
-
-
-            <!-- DELETE PRODUCT -->
-
-            <form
-              action="{{ url_for('admin_delete_product', product_id=product.id) }}"
-              method="POST"
-              onsubmit="return confirm('Are you sure you want to delete {{ product.name|e }}? This action cannot be undone.');"
-            >
-
-              <button
-                type="submit"
-                class="admin-delete-button"
-              >
-                Delete
-              </button>
-
-            </form>
-
-          </div>
-
-
-        </div>
-
-        {% endfor %}
-
+              <td style="padding: 16px 12px; min-width: 130px;">
+                {% if seller.created_at %}
+                  {{ seller.created_at.strftime('%Y-%m-%d') if seller.created_at.strftime is defined else seller.created_at }}
+                {% else %}
+                  Not available
+                {% endif %}
+              </td>
+
+              <!-- STATUS -->
+
+              <td style="padding: 16px 12px;">
+                {% if seller.status == 'approved' %}
+
+                  <span class="status available">
+                    Approved
+                  </span>
+
+                {% elif seller.status == 'rejected' %}
+
+                  <span class="status unavailable">
+                    Rejected
+                  </span>
+
+                {% elif seller.status == 'suspended' %}
+
+                  <span class="status unavailable">
+                    Suspended
+                  </span>
+
+                {% else %}
+
+                  <span class="status unavailable">
+                    Pending
+                  </span>
+
+                {% endif %}
+
+                {% if seller.admin_note %}
+                <br>
+                <small>
+                  Note: {{ seller.admin_note }}
+                </small>
+                {% endif %}
+              </td>
+
+              <!-- ADMIN ACTIONS -->
+
+              <td style="padding: 16px 12px; min-width: 150px;">
+
+                {% if seller.status != 'approved' %}
+
+                <form
+                  action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}"
+                  method="POST"
+                  style="margin-bottom: 8px;"
+                  onsubmit="return confirm('Approve this seller application?');"
+                >
+                  <input
+                    type="hidden"
+                    name="status"
+                    value="approved"
+                  >
+
+                  <button
+                    type="submit"
+                    class="admin-primary-button"
+                  >
+                    Approve
+                  </button>
+                </form>
+
+                {% endif %}
+
+                {% if seller.status != 'rejected' %}
+
+                <form
+                  action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}"
+                  method="POST"
+                  style="margin-bottom: 8px;"
+                  onsubmit="return confirm('Reject this seller application?');"
+                >
+                  <input
+                    type="hidden"
+                    name="status"
+                    value="rejected"
+                  >
+
+                  <button
+                    type="submit"
+                    class="admin-delete-button"
+                  >
+                    Reject
+                  </button>
+                </form>
+
+                {% endif %}
+
+                {% if seller.status == 'approved' %}
+
+                <form
+                  action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}"
+                  method="POST"
+                  onsubmit="return confirm('Suspend this seller?');"
+                >
+                  <input
+                    type="hidden"
+                    name="status"
+                    value="suspended"
+                  >
+
+                  <button
+                    type="submit"
+                    class="admin-delete-button"
+                  >
+                    Suspend
+                  </button>
+                </form>
+
+                {% elif seller.status == 'suspended' %}
+
+                <form
+                  action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}"
+                  method="POST"
+                  onsubmit="return confirm('Restore this seller account?');"
+                >
+                  <input
+                    type="hidden"
+                    name="status"
+                    value="approved"
+                  >
+
+                  <button
+                    type="submit"
+                    class="admin-primary-button"
+                  >
+                    Restore
+                  </button>
+                </form>
+
+                {% endif %}
+
+              </td>
+
+            </tr>
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
 
       </div>
-
 
       {% else %}
 
-
-      <!-- =================================================
-           EMPTY STATE
-           ================================================= -->
-
       <div class="admin-empty-state">
-
         <div class="empty-icon">
-          ✦
+          ♙
         </div>
 
         <h3>
-          No products yet
+          No seller registrations yet
         </h3>
 
         <p>
-          Add your first beauty product to start building
-          the Glamora AR catalog.
+          Seller applications will appear here when users register their shops.
         </p>
-
-
-        <a
-          href="{{ url_for('admin_add_product') }}"
-          class="admin-primary-button"
-        >
-
-          <span>
-            +
-          </span>
-
-          <span>
-            Add Your First Product
-          </span>
-
-        </a>
-
       </div>
 
       {% endif %}
 
-
     </section>
 
-
-    <!-- ===================================================
-         BACK TO DASHBOARD
-         =================================================== -->
+    <!-- BACK TO DASHBOARD -->
 
     <div class="admin-back-link">
-
       <a
         href="{{ url_for('admin_dashboard') }}"
         class="admin-text-link"
       >
         ← Back to Dashboard
       </a>
-
     </div>
 
-
   </main>
-
 
 </body>
 
