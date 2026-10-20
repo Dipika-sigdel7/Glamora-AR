@@ -1,0 +1,409 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Become a Seller — Glamora AR</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <style>
+        .seller-page {
+            min-height: 100vh;
+            padding: 125px 20px 70px;
+            background: #fff5f7;
+            color: #2b1b20;
+            font-family: "DM Sans", sans-serif;
+        }
+
+        .seller-container {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .seller-heading {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .seller-eyebrow {
+            color: #c85f7a;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+        }
+
+        .seller-heading h1 {
+            margin: 13px 0;
+            font-family: "Playfair Display", serif;
+            font-size: clamp(35px, 6vw, 52px);
+            font-weight: 500;
+        }
+
+        .seller-heading p {
+            max-width: 540px;
+            margin: 0 auto;
+            color: #806b72;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .seller-card {
+            padding: 32px;
+            background: #fff;
+            border: 1px solid #f3dfe5;
+            border-radius: 22px;
+            box-shadow: 0 20px 60px rgba(164, 73, 98, 0.10);
+        }
+
+        .seller-card h2 {
+            margin: 0 0 8px;
+            font-family: "Playfair Display", serif;
+            font-size: 25px;
+            font-weight: 500;
+        }
+
+        .seller-card .intro {
+            margin: 0 0 25px;
+            color: #806b72;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .seller-form {
+            display: grid;
+            gap: 19px;
+        }
+
+        .seller-field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .seller-field label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .seller-field input,
+        .seller-field select,
+        .seller-field textarea {
+            width: 100%;
+            min-height: 48px;
+            padding: 13px 14px;
+            border: 1px solid #eed8df;
+            border-radius: 11px;
+            background: #fffafb;
+            color: #2b1b20;
+            font: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .seller-field textarea {
+            min-height: 105px;
+            resize: vertical;
+        }
+
+        .seller-field input:focus,
+        .seller-field select:focus,
+        .seller-field textarea:focus {
+            border-color: #c85f7a;
+            box-shadow: 0 0 0 4px rgba(200, 95, 122, 0.10);
+        }
+
+        .seller-field small {
+            color: #806b72;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .seller-submit {
+            min-height: 52px;
+            margin-top: 5px;
+            padding: 14px 20px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #c85f7a, #a74360);
+            color: white;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .seller-submit:hover {
+            box-shadow: 0 10px 25px rgba(167, 67, 96, 0.22);
+        }
+
+        .seller-flash {
+            margin-bottom: 18px;
+            padding: 13px 15px;
+            border-radius: 10px;
+            background: #fff0f3;
+            color: #a74360;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .seller-flash.error {
+            background: #fff0f0;
+            color: #b33d4d;
+        }
+
+        .seller-status {
+            margin-top: 22px;
+            padding: 22px;
+            border: 1px solid #f3dfe5;
+            border-radius: 15px;
+            background: #fff8fa;
+        }
+
+        .seller-status p {
+            color: #806b72;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .seller-status strong {
+            color: #a74360;
+            text-transform: capitalize;
+        }
+
+        .seller-back {
+            display: block;
+            margin-top: 22px;
+            color: #a74360;
+            font-size: 13px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .seller-back:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 520px) {
+            .seller-page {
+                padding: 105px 14px 40px;
+            }
+
+            .seller-card {
+                padding: 22px 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="seller-page">
+        <div class="seller-container">
+
+            <header class="seller-heading">
+                <span class="seller-eyebrow">
+                    Glamora AR Marketplace
+                </span>
+
+                <h1>Become a Seller</h1>
+
+                <p>
+                    Bring your beauty products to Glamora AR.
+                    Register your shop and apply to join our beauty marketplace.
+                </p>
+            </header>
+
+            <section class="seller-card">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="seller-flash {{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% if seller %}
+
+                    <h2>Your seller application</h2>
+
+                    <p class="intro">
+                        You have already registered a shop using your account.
+                    </p>
+
+                    <div class="seller-status">
+                        <p>
+                            <strong>Shop:</strong>
+                            {{ seller.shop_name }}
+                        </p>
+
+                        <p>
+                            <strong>Application status:</strong>
+                            {{ seller.status }}
+                        </p>
+
+                        {% if seller.status == 'pending' %}
+                            <p>
+                                Your application is waiting for admin review.
+                                You cannot list products for sale until it is approved.
+                            </p>
+                        {% elif seller.status == 'approved' %}
+                            <p>
+                                Your shop has been approved.
+                                The seller dashboard and product listing workflow
+                                will be available in the next implementation stage.
+                            </p>
+                        {% elif seller.status == 'rejected' %}
+                            <p>
+                                Your application was rejected.
+                                Please contact the marketplace administrator for
+                                further information.
+                            </p>
+                        {% elif seller.status == 'suspended' %}
+                            <p>
+                                Your seller account is currently suspended.
+                                Contact the marketplace administrator for assistance.
+                            </p>
+                        {% endif %}
+
+                        {% if seller.admin_note %}
+                            <p>
+                                <strong>Admin note:</strong>
+                                {{ seller.admin_note }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                {% else %}
+
+                    <h2>Shop information</h2>
+
+                    <p class="intro">
+                        Complete the information below to submit your seller application.
+                        Fields marked with * are required.
+                    </p>
+
+                    <form
+                        class="seller-form"
+                        method="POST"
+                        action="{{ url_for('seller_register') }}"
+                    >
+
+                        <div class="seller-field">
+                            <label for="shop_name">Shop name *</label>
+                            <input
+                                type="text"
+                                id="shop_name"
+                                name="shop_name"
+                                maxlength="150"
+                                placeholder="e.g. Beauty Corner"
+                                required
+                            >
+                        </div>
+
+                        <div class="seller-field">
+                            <label for="business_type">Business category *</label>
+                            <select
+                                id="business_type"
+                                name="business_type"
+                                required
+                            >
+                                <option value="Beauty & Cosmetics">
+                                    Beauty & Cosmetics
+                                </option>
+                                <option value="Skincare">
+                                    Skincare
+                                </option>
+                                <option value="Makeup">
+                                    Makeup
+                                </option>
+                                <option value="Haircare">
+                                    Haircare
+                                </option>
+                                <option value="Beauty Accessories">
+                                    Beauty Accessories
+                                </option>
+                                <option value="Other Beauty Products">
+                                    Other Beauty Products
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="seller-field">
+                            <label for="phone">Contact phone number *</label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                maxlength="30"
+                                autocomplete="tel"
+                                placeholder="Enter your contact number"
+                                required
+                            >
+                        </div>
+
+                        <div class="seller-field">
+                            <label for="address">Shop address *</label>
+                            <textarea
+                                id="address"
+                                name="address"
+                                placeholder="Province, district, city and full address"
+                                autocomplete="street-address"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="seller-field">
+                            <label for="description">
+                                About your shop
+                            </label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                placeholder="Tell customers and our team about your shop and products"
+                            ></textarea>
+                            <small>
+                                Optional. You can provide more details after
+                                your application is submitted.
+                            </small>
+                        </div>
+
+                        <button class="seller-submit" type="submit">
+                            Submit Seller Application →
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+                <a href="{{ url_for('home') }}" class="seller-back">
+                    ← Back to Glamora AR
+                </a>
+
+            </section>
+        </div>
+    </main>
+
+    <script
+        src="{{ url_for('static', filename='js/main.js') }}"
+        defer
+    ></script>
+
+</body>
+</html>
