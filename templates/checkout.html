@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — Glamora AR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <main class="checkout-page">
+        <h1>Checkout</h1>
+        <p>Complete your delivery details for your selected product.</p>
+
+        <section class="checkout-product">
+            {% if product.image_url %}
+                <img
+                    src="{{ url_for('static', filename=product.image_url) }}"
+                    alt="{{ product.name }}"
+                    style="width:120px; height:120px; object-fit:contain;"
+                >
+            {% endif %}
+
+            <h2>{{ product.name }}</h2>
+            <p>Quantity: {{ quantity }}</p>
+            <p>Price: {{ format_npr(product.price) }}</p>
+            <h3>Total: {{ format_npr(total) }}</h3>
+        </section>
+
+        <form action="#" method="POST">
+            <label for="customer_name">Full name</label>
+            <input
+                id="customer_name"
+                name="customer_name"
+                type="text"
+                value="{{ user.name if user else '' }}"
+                required
+            >
+
+            <label for="customer_email">Email address</label>
+            <input
+                id="customer_email"
+                name="customer_email"
+                type="email"
+                value="{{ user.email if user else '' }}"
+                required
+            >
+
+            <label for="phone">Phone number</label>
+            <input
+                id="phone"
+                name="phone"
+                type="tel"
+                required
+            >
+
+            <label for="address">Full delivery address</label>
+            <textarea
+                id="address"
+                name="address"
+                rows="4"
+                required
+            ></textarea>
+
+            <label for="payment_method">Payment method</label>
+            <select id="payment_method" name="payment_method" required>
+                <option value="">Choose payment method</option>
+                <option value="COD">Cash on Delivery</option>
+                <option value="Khalti">Khalti</option>
+                <option value="eSewa">eSewa</option>
+            </select>
+
+            <button type="submit">Confirm Order</button>
+        </form>
+    </main>
+
+</body>
+</html>
