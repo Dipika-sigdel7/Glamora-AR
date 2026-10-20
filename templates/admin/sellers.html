@@ -7,158 +7,684 @@
 
     <title>Seller Management | Glamora AR</title>
 
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        /* =====================================================
+           GLAMORA AR — SELLER MANAGEMENT
+           All page styling is contained in this file.
+           ===================================================== */
+
+        :root {
+            --seller-bg: #fff5f7;
+            --seller-bg-soft: #fdecef;
+            --seller-white: #ffffff;
+            --seller-text: #2b1b20;
+            --seller-muted: #806b72;
+            --seller-primary: #c85f7a;
+            --seller-primary-dark: #a74360;
+            --seller-border: rgba(200, 95, 122, 0.18);
+            --seller-shadow: 0 20px 55px rgba(164, 73, 98, 0.10);
+            --seller-green: #21865b;
+            --seller-red: #c34455;
+            --seller-orange: #b87521;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body.seller-management-page {
+            min-height: 100vh;
+            padding: 38px;
+            background:
+                radial-gradient(ellipse at top left, rgba(243, 184, 198, 0.25), transparent 38%),
+                linear-gradient(135deg, #fff9fa 0%, var(--seller-bg) 55%, #fff0f4 100%);
+            color: var(--seller-text);
+            font-family: "DM Sans", sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .seller-management {
+            width: 100%;
+            max-width: 1450px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+
+        .seller-page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 34px;
+        }
+
+        .seller-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--seller-text);
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .seller-brand-mark {
+            display: grid;
+            width: 44px;
+            height: 44px;
+            place-items: center;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--seller-primary), var(--seller-primary-dark));
+            color: #fff;
+            font-family: "Playfair Display", serif;
+            font-size: 21px;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(167, 67, 96, 0.22);
+        }
+
+        .seller-header-text {
+            margin-bottom: 30px;
+        }
+
+        .seller-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: var(--seller-primary-dark);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .seller-eyebrow::before {
+            width: 25px;
+            height: 2px;
+            background: var(--seller-primary);
+            content: "";
+        }
+
+        .seller-header-text h1 {
+            margin-bottom: 10px;
+            color: var(--seller-text);
+            font-family: "Playfair Display", serif;
+            font-size: clamp(32px, 4vw, 46px);
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .seller-header-text p {
+            max-width: 650px;
+            color: var(--seller-muted);
+            font-size: 15px;
+        }
+
+        /* Summary */
+
+        .seller-summary {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            overflow: hidden;
+            margin-bottom: 28px;
+            padding: 28px 32px;
+            border: 1px solid var(--seller-border);
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: var(--seller-shadow);
+        }
+
+        .seller-summary::after {
+            position: absolute;
+            top: -45px;
+            right: -30px;
+            width: 170px;
+            height: 170px;
+            border: 25px solid rgba(243, 184, 198, 0.17);
+            border-radius: 50%;
+            content: "";
+            pointer-events: none;
+        }
+
+        .seller-summary-label {
+            margin-bottom: 8px;
+            color: var(--seller-muted);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.7px;
+            text-transform: uppercase;
+        }
+
+        .seller-summary h2 {
+            color: var(--seller-text);
+            font-family: "Playfair Display", serif;
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .seller-summary-count {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .seller-count-icon {
+            display: grid;
+            width: 58px;
+            height: 58px;
+            place-items: center;
+            border: 1px solid rgba(200, 95, 122, 0.15);
+            border-radius: 18px;
+            background: var(--seller-bg-soft);
+            color: var(--seller-primary-dark);
+            font-size: 25px;
+        }
+
+        .seller-count-number {
+            color: var(--seller-primary-dark);
+            font-size: 27px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .seller-count-caption {
+            margin-top: 4px;
+            color: var(--seller-muted);
+            font-size: 12px;
+        }
+
+        /* Seller list card */
+
+        .seller-list-section {
+            overflow: hidden;
+            border: 1px solid var(--seller-border);
+            border-radius: 22px;
+            background: var(--seller-white);
+            box-shadow: var(--seller-shadow);
+        }
+
+        .seller-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 25px 30px;
+            border-bottom: 1px solid var(--seller-border);
+        }
+
+        .seller-list-header h2 {
+            color: var(--seller-text);
+            font-family: "Playfair Display", serif;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .seller-list-header p {
+            margin-top: 4px;
+            color: var(--seller-muted);
+            font-size: 13px;
+        }
+
+        .seller-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .seller-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .seller-table thead {
+            background: #fff7f9;
+        }
+
+        .seller-table th {
+            padding: 16px 22px;
+            border-bottom: 1px solid var(--seller-border);
+            color: var(--seller-muted);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .seller-table td {
+            padding: 19px 22px;
+            border-bottom: 1px solid rgba(200, 95, 122, 0.10);
+            color: var(--seller-text);
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .seller-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .seller-table tbody tr:hover {
+            background: #fff9fa;
+        }
+
+        .seller-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .seller-name {
+            font-weight: 700;
+        }
+
+        .seller-email,
+        .seller-secondary {
+            color: var(--seller-muted);
+            overflow-wrap: anywhere;
+        }
+
+        .seller-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 11px;
+            border: 1px solid transparent;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: capitalize;
+            white-space: nowrap;
+        }
+
+        .seller-status::before {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            content: "";
+        }
+
+        .seller-status.pending {
+            border-color: #f4dfbb;
+            background: #fff8e9;
+            color: var(--seller-orange);
+        }
+
+        .seller-status.approved {
+            border-color: #ccebdc;
+            background: #edf9f2;
+            color: var(--seller-green);
+        }
+
+        .seller-status.rejected,
+        .seller-status.suspended {
+            border-color: #f3d2d7;
+            background: #fff0f2;
+            color: var(--seller-red);
+        }
+
+        .seller-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .seller-action-form {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .seller-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 35px;
+            padding: 8px 12px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            font-family: "DM Sans", sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .seller-action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .seller-action-btn.approve {
+            background: #e9f8f0;
+            color: #18764e;
+        }
+
+        .seller-action-btn.approve:hover {
+            box-shadow: 0 5px 12px rgba(33, 134, 91, 0.12);
+        }
+
+        .seller-action-btn.reject {
+            background: #fff0f2;
+            color: #b83249;
+        }
+
+        .seller-action-btn.reject:hover {
+            box-shadow: 0 5px 12px rgba(195, 68, 85, 0.12);
+        }
+
+        /* Empty state */
+
+        .seller-empty-state {
+            display: flex;
+            min-height: 300px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 45px 25px;
+            text-align: center;
+        }
+
+        .seller-empty-icon {
+            display: grid;
+            width: 82px;
+            height: 82px;
+            place-items: center;
+            margin-bottom: 22px;
+            border: 1px solid rgba(200, 95, 122, 0.13);
+            border-radius: 26px;
+            background: linear-gradient(145deg, #fff0f4, #fde3eb);
+            color: var(--seller-primary-dark);
+            font-size: 34px;
+        }
+
+        .seller-empty-state h3 {
+            margin-bottom: 9px;
+            color: var(--seller-text);
+            font-family: "Playfair Display", serif;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .seller-empty-state p {
+            max-width: 420px;
+            color: var(--seller-muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        /* Footer */
+
+        .seller-page-footer {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 28px;
+        }
+
+        .seller-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 12px 17px;
+            border: 1px solid var(--seller-border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.82);
+            color: var(--seller-primary-dark);
+            font-size: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .seller-back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(164, 73, 98, 0.10);
+        }
+
+        /* Responsive */
+
+        @media (max-width: 768px) {
+            body.seller-management-page {
+                padding: 22px 16px;
+            }
+
+            .seller-page-header {
+                margin-bottom: 26px;
+            }
+
+            .seller-header-text {
+                margin-bottom: 23px;
+            }
+
+            .seller-header-text h1 {
+                font-size: 34px;
+            }
+
+            .seller-summary {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 24px;
+            }
+
+            .seller-summary-count {
+                width: 100%;
+            }
+
+            .seller-list-header {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 22px;
+            }
+
+            .seller-table th,
+            .seller-table td {
+                padding: 14px 16px;
+            }
+
+            .seller-empty-state {
+                min-height: 270px;
+                padding: 35px 20px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            body.seller-management-page {
+                padding: 18px 12px;
+            }
+
+            .seller-brand {
+                font-size: 18px;
+            }
+
+            .seller-brand-mark {
+                width: 39px;
+                height: 39px;
+            }
+
+            .seller-header-text h1 {
+                font-size: 30px;
+            }
+
+            .seller-summary h2 {
+                font-size: 23px;
+            }
+
+            .seller-count-number {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 
 <body class="seller-management-page">
-
     <main class="seller-management">
 
+        <!-- Brand -->
         <header class="seller-page-header">
-            <div class="seller-brand">
-                <span class="seller-brand-name">GLAMORA <span>AR</span></span>
-                <span class="seller-brand-caption">ADMINISTRATION</span>
-            </div>
-
-            <div class="seller-header-text">
-                <span class="seller-eyebrow">ADMIN CONTROL PANEL</span>
-                <h1>Seller Management</h1>
-                <p>Review seller registrations and manage seller accounts.</p>
-            </div>
+            <a class="seller-brand" href="{{ url_for('admin_dashboard') }}">
+                <span class="seller-brand-mark">G</span>
+                <span>GLAMORA <span style="color: #c85f7a;">AR</span></span>
+            </a>
         </header>
 
-        <section class="seller-summary">
-            <div class="seller-summary-icon">♙</div>
-
-            <div class="seller-summary-info">
-                <span class="seller-summary-label">SELLER ACCOUNTS</span>
-                <h2>{{ sellers|length }} <span>{{ 'Seller' if sellers|length == 1 else 'Sellers' }}</span></h2>
-                <p>Registered shops on Glamora AR</p>
-            </div>
-
-            <div class="seller-summary-decoration">G</div>
+        <!-- Page heading -->
+        <section class="seller-header-text">
+            <div class="seller-eyebrow">Admin Dashboard</div>
+            <h1>Seller Management</h1>
+            <p>Review seller registrations and manage seller accounts.</p>
         </section>
 
-        <section class="seller-list-section">
-            <div class="seller-section-heading">
-                <div>
-                    <span class="seller-eyebrow">SELLER DIRECTORY</span>
-                    <h2>Registered Sellers</h2>
-                </div>
+        <!-- Seller summary -->
+        <section class="seller-summary">
+            <div>
+                <div class="seller-summary-label">Seller Accounts</div>
+                <h2>Registered Sellers</h2>
+            </div>
 
-                <span class="seller-count">
-                    {{ sellers|length }} total
-                </span>
+            <div class="seller-summary-count">
+                <div class="seller-count-icon" aria-hidden="true">♙</div>
+                <div>
+                    <div class="seller-count-number">{{ sellers|length }}</div>
+                    <div class="seller-count-caption">
+                        {{ 'Seller' if sellers|length == 1 else 'Sellers' }}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seller list -->
+        <section class="seller-list-section">
+            <div class="seller-list-header">
+                <div>
+                    <h2>Seller Accounts</h2>
+                    <p>View and manage seller registration requests.</p>
+                </div>
             </div>
 
             {% if sellers %}
-            <div class="seller-table-wrapper">
-                <table class="seller-table">
-                    <thead>
-                        <tr>
-                            <th>Seller / Shop</th>
-                            <th>Contact</th>
-                            <th>Business Type</th>
-                            <th>Registration Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                <div class="seller-table-wrapper">
+                    <table class="seller-table">
+                        <thead>
+                            <tr>
+                                <th>Seller</th>
+                                <th>Shop Name</th>
+                                <th>Contact</th>
+                                <th>Business Type</th>
+                                <th>Status</th>
+                                <th>Registered</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        {% for seller in sellers %}
-                        <tr>
-                            <td>
-                                <div class="seller-shop-cell">
-                                    <div class="seller-avatar">
-                                        {{ seller.shop_name[0]|upper if seller.shop_name else 'S' }}
-                                    </div>
+                        <tbody>
+                            {% for seller in sellers %}
+                                <tr>
+                                    <td>
+                                        <div class="seller-name">
+                                            {{ seller.name|default(seller.user_name|default('—', true), true) }}
+                                        </div>
+                                        <div class="seller-email">
+                                            {{ seller.email|default(seller.user_email|default('—', true), true) }}
+                                        </div>
+                                    </td>
 
-                                    <div>
-                                        <strong>{{ seller.shop_name }}</strong>
-                                        <span>{{ seller.owner_name or 'Seller' }}</span>
-                                        <small>{{ seller.owner_email or '' }}</small>
-                                    </div>
-                                </div>
-                            </td>
+                                    <td>
+                                        <div class="seller-name">
+                                            {{ seller.shop_name|default('—', true) }}
+                                        </div>
+                                        {% if seller.address|default('', true) %}
+                                            <div class="seller-secondary">
+                                                {{ seller.address }}
+                                            </div>
+                                        {% endif %}
+                                    </td>
 
-                            <td>
-                                <span class="seller-contact">{{ seller.phone }}</span>
-                                <small class="seller-address">{{ seller.address }}</small>
-                            </td>
+                                    <td>
+                                        {{ seller.phone|default('—', true) }}
+                                    </td>
 
-                            <td>{{ seller.business_type or 'Beauty & Cosmetics' }}</td>
+                                    <td>
+                                        {{ seller.business_type|default('—', true) }}
+                                    </td>
 
-                            <td>
-                                {{ seller.created_at.strftime('%d %b %Y') if seller.created_at and seller.created_at.strftime is defined else seller.created_at or '—' }}
-                            </td>
+                                    <td>
+                                        {% set seller_status = seller.status|default('pending', true)|lower %}
+                                        <span class="seller-status {{ seller_status }}">
+                                            {{ seller_status }}
+                                        </span>
+                                    </td>
 
-                            <td>
-                                <span class="seller-status status-{{ seller.status|lower }}">
-                                    {{ seller.status|capitalize }}
-                                </span>
-                            </td>
+                                    <td>
+                                        {{ seller.created_at|default('—', true) }}
+                                    </td>
 
-                            <td>
-                                <div class="seller-actions">
-                                    {% if seller.status == 'pending' %}
-                                    <form method="POST" action="{{ url_for('admin_approve_seller', seller_id=seller.id) }}">
-                                        <button type="submit" class="seller-action-btn approve-btn">Approve</button>
-                                    </form>
+                                    <td>
+                                        <div class="seller-actions">
+                                            {% if seller_status == 'pending' %}
+                                                <form class="seller-action-form"
+                                                      method="POST"
+                                                      action="{{ url_for('admin_approve_seller', seller_id=seller.id) }}">
+                                                    <button class="seller-action-btn approve"
+                                                            type="submit">
+                                                        Approve
+                                                    </button>
+                                                </form>
 
-                                    <form method="POST" action="{{ url_for('admin_reject_seller', seller_id=seller.id) }}">
-                                        <button type="submit" class="seller-action-btn reject-btn">Reject</button>
-                                    </form>
-                                    {% elif seller.status == 'approved' %}
-                                    <form method="POST" action="{{ url_for('admin_reject_seller', seller_id=seller.id) }}">
-                                        <button type="submit" class="seller-action-btn reject-btn">Reject</button>
-                                    </form>
-                                    {% elif seller.status == 'rejected' %}
-                                    <form method="POST" action="{{ url_for('admin_approve_seller', seller_id=seller.id) }}">
-                                        <button type="submit" class="seller-action-btn approve-btn">Approve</button>
-                                    </form>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            {% else %}
-            <div class="seller-empty-state">
-                <div class="seller-empty-icon">
-                    <span>♙</span>
+                                                <form class="seller-action-form"
+                                                      method="POST"
+                                                      action="{{ url_for('admin_reject_seller', seller_id=seller.id) }}">
+                                                    <button class="seller-action-btn reject"
+                                                            type="submit">
+                                                        Reject
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <span class="seller-secondary">No actions</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-
-                <h3>No seller registrations yet</h3>
-
-                <p>
-                    Seller applications will appear here when users
-                    register their shops.
-                </p>
-
-                <span class="seller-empty-note">
-                    Your seller directory is waiting for its first application.
-                </span>
-            </div>
+            {% else %}
+                <div class="seller-empty-state">
+                    <div class="seller-empty-icon" aria-hidden="true">♙</div>
+                    <h3>No seller registrations yet</h3>
+                    <p>
+                        Seller applications will appear here when users register
+                        their shops.
+                    </p>
+                </div>
             {% endif %}
         </section>
 
+        <!-- Back to dashboard -->
         <footer class="seller-page-footer">
-            <a href="{{ url_for('admin_dashboard') }}" class="seller-back-link">
-                <span>←</span> Back to Dashboard
+            <a class="seller-back-link" href="{{ url_for('admin_dashboard') }}">
+                <span aria-hidden="true">←</span>
+                Back to Dashboard
             </a>
-
-            <span class="seller-footer-brand">GLAMORA AR <span>·</span> ADMIN</span>
         </footer>
 
     </main>
-
 </body>
 </html>
