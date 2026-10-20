@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Seller Management | Glamora AR</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+
+<body class="seller-management-page">
+
+    <main class="seller-management">
+
+        <header class="seller-page-header">
+            <div class="seller-brand">
+                <span class="seller-brand-name">GLAMORA <span>AR</span></span>
+                <span class="seller-brand-caption">ADMINISTRATION</span>
+            </div>
+
+            <div class="seller-header-text">
+                <span class="seller-eyebrow">ADMIN CONTROL PANEL</span>
+                <h1>Seller Management</h1>
+                <p>Review seller registrations and manage seller accounts.</p>
+            </div>
+        </header>
+
+        <section class="seller-summary">
+            <div class="seller-summary-icon">♙</div>
+
+            <div class="seller-summary-info">
+                <span class="seller-summary-label">SELLER ACCOUNTS</span>
+                <h2>{{ sellers|length }} <span>{{ 'Seller' if sellers|length == 1 else 'Sellers' }}</span></h2>
+                <p>Registered shops on Glamora AR</p>
+            </div>
+
+            <div class="seller-summary-decoration">G</div>
+        </section>
+
+        <section class="seller-list-section">
+            <div class="seller-section-heading">
+                <div>
+                    <span class="seller-eyebrow">SELLER DIRECTORY</span>
+                    <h2>Registered Sellers</h2>
+                </div>
+
+                <span class="seller-count">
+                    {{ sellers|length }} total
+                </span>
+            </div>
+
+            {% if sellers %}
+            <div class="seller-table-wrapper">
+                <table class="seller-table">
+                    <thead>
+                        <tr>
+                            <th>Seller / Shop</th>
+                            <th>Contact</th>
+                            <th>Business Type</th>
+                            <th>Registration Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for seller in sellers %}
+                        <tr>
+                            <td>
+                                <div class="seller-shop-cell">
+                                    <div class="seller-avatar">
+                                        {{ seller.shop_name[0]|upper if seller.shop_name else 'S' }}
+                                    </div>
+
+                                    <div>
+                                        <strong>{{ seller.shop_name }}</strong>
+                                        <span>{{ seller.owner_name or 'Seller' }}</span>
+                                        <small>{{ seller.owner_email or '' }}</small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="seller-contact">{{ seller.phone }}</span>
+                                <small class="seller-address">{{ seller.address }}</small>
+                            </td>
+
+                            <td>{{ seller.business_type or 'Beauty & Cosmetics' }}</td>
+
+                            <td>
+                                {{ seller.created_at.strftime('%d %b %Y') if seller.created_at and seller.created_at.strftime is defined else seller.created_at or '—' }}
+                            </td>
+
+                            <td>
+                                <span class="seller-status status-{{ seller.status|lower }}">
+                                    {{ seller.status|capitalize }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="seller-actions">
+                                    {% if seller.status == 'pending' %}
+                                    <form method="POST" action="{{ url_for('admin_approve_seller', seller_id=seller.id) }}">
+                                        <button type="submit" class="seller-action-btn approve-btn">Approve</button>
+                                    </form>
+
+                                    <form method="POST" action="{{ url_for('admin_reject_seller', seller_id=seller.id) }}">
+                                        <button type="submit" class="seller-action-btn reject-btn">Reject</button>
+                                    </form>
+                                    {% elif seller.status == 'approved' %}
+                                    <form method="POST" action="{{ url_for('admin_reject_seller', seller_id=seller.id) }}">
+                                        <button type="submit" class="seller-action-btn reject-btn">Reject</button>
+                                    </form>
+                                    {% elif seller.status == 'rejected' %}
+                                    <form method="POST" action="{{ url_for('admin_approve_seller', seller_id=seller.id) }}">
+                                        <button type="submit" class="seller-action-btn approve-btn">Approve</button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+            <div class="seller-empty-state">
+                <div class="seller-empty-icon">
+                    <span>♙</span>
+                </div>
+
+                <h3>No seller registrations yet</h3>
+
+                <p>
+                    Seller applications will appear here when users
+                    register their shops.
+                </p>
+
+                <span class="seller-empty-note">
+                    Your seller directory is waiting for its first application.
+                </span>
+            </div>
+            {% endif %}
+        </section>
+
+        <footer class="seller-page-footer">
+            <a href="{{ url_for('admin_dashboard') }}" class="seller-back-link">
+                <span>←</span> Back to Dashboard
+            </a>
+
+            <span class="seller-footer-brand">GLAMORA AR <span>·</span> ADMIN</span>
+        </footer>
+
+    </main>
+
+</body>
+</html>
