@@ -2584,6 +2584,97 @@ def buy_now(product_id):
 
 
 
+
+# =========================================================
+# CHECKOUT — DIRECT PURCHASE
+# =========================================================
+
+@app.route("/checkout", methods=["GET"])
+def checkout():
+
+    if not session.get("user_id"):
+        flash("Please log in to continue.", "error")
+        return redirect(url_for("login"))
+
+    product_id = session.get("buy_now_product_id")
+
+    if not product_id:
+        flash("Please select a product before checkout.", "error")
+        return redirect(url_for("beauty"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                p.price,
+                p.stock,
+                p.is_available,
+                (
+                    SELECT pi.image_url
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id
+                    ORDER BY pi.is_primary DESC, pi.id ASC
+                    LIMIT 1
+                ) AS image_url
+            FROM products p
+            WHERE p.id = %s
+            LIMIT 1
+        """, (product_id,))
+
+        product = cursor.fetchone()
+
+        if not product:
+            session.pop("buy_now_product_id", None)
+            flash("Product not found.", "error")
+            return redirect(url_for("beauty"))
+
+        if not product.get("is_available"):
+            session.pop("buy_now_product_id", None)
+            flash("This product is currently unavailable.", "error")
+            return redirect(url_for("product_details", product_id=product_id))
+
+        if int(product.get("stock") or 0) <= 0:
+            session.pop("buy_now_product_id", None)
+            flash("This product is out of stock.", "error")
+            return redirect(url_for("product_details", product_id=product_id))
+
+        product["price"] = Decimal(str(product.get("price") or 0))
+
+        user = get_current_user()
+
+        return render_template(
+            "checkout.html",
+            product=product,
+            user=user,
+            quantity=1,
+            subtotal=product["price"],
+            total=product["price"],
+            format_npr=format_npr
+        )
+
+    except Exception as error:
+        print("CHECKOUT PAGE ERROR:", repr(error))
+        flash("Unable to open checkout. Please check the Flask terminal.", "error")
+        return redirect(url_for("product_details", product_id=product_id))
+
+    finally:
+        safe_close(cursor, connection)
+
+
+
+
 # =========================================================
 # CART
 # =========================================================
