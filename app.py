@@ -3286,226 +3286,91 @@ def admin_logout():
 
 
 # =========================================================
-# ADMIN DASHBOARD
+# ADMIN DASHBOARD — SELLER MANAGEMENT
 # =========================================================
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
 
     if not admin_required():
-
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     connection = None
     cursor = None
 
     try:
-
         connection = get_db_connection()
 
         if connection is None:
+            raise RuntimeError("Database connection failed.")
 
-            raise RuntimeError(
-                "Database connection failed."
-            )
+        cursor = connection.cursor(dictionary=True)
 
-        cursor = connection.cursor(
-            dictionary=True
-        )
-
-        # -------------------------------------------------
-        # TOTAL PRODUCTS
-        # -------------------------------------------------
-
-        cursor.execute(
-            """
+        # Total registered sellers
+        cursor.execute("""
             SELECT COUNT(*) AS total
-            FROM products
-            """
+            FROM sellers
+        """)
+        seller_count = int(
+            (cursor.fetchone() or {}).get("total", 0) or 0
         )
 
-        product_result = (
-            cursor.fetchone()
-        )
-
-        product_count = int(
-            product_result.get(
-                "total",
-                0
-            ) or 0
-        )
-
-        # -------------------------------------------------
-        # TOTAL CATEGORIES
-        # -------------------------------------------------
-
-        cursor.execute(
-            """
+        # Applications awaiting approval
+        cursor.execute("""
             SELECT COUNT(*) AS total
-            FROM categories
-            """
+            FROM sellers
+            WHERE status = 'pending'
+        """)
+        pending_seller_count = int(
+            (cursor.fetchone() or {}).get("total", 0) or 0
         )
 
-        category_result = (
-            cursor.fetchone()
-        )
-
-        category_count = int(
-            category_result.get(
-                "total",
-                0
-            ) or 0
-        )
-
-        # -------------------------------------------------
-        # TOTAL USERS
-        # -------------------------------------------------
-
-        cursor.execute(
-            """
+        # Approved sellers
+        cursor.execute("""
             SELECT COUNT(*) AS total
-            FROM users
-            """
+            FROM sellers
+            WHERE status = 'approved'
+        """)
+        approved_seller_count = int(
+            (cursor.fetchone() or {}).get("total", 0) or 0
         )
 
-        user_result = (
-            cursor.fetchone()
-        )
-
-        user_count = int(
-            user_result.get(
-                "total",
-                0
-            ) or 0
-        )
-
-        # -------------------------------------------------
-        # AVAILABLE PRODUCTS
-        # -------------------------------------------------
-
-        cursor.execute(
-            """
+        # Rejected or suspended sellers
+        cursor.execute("""
             SELECT COUNT(*) AS total
-            FROM products
-            WHERE is_available = 1
-            """
+            FROM sellers
+            WHERE status IN ('rejected', 'suspended')
+        """)
+        inactive_seller_count = int(
+            (cursor.fetchone() or {}).get("total", 0) or 0
         )
-
-        available_result = (
-            cursor.fetchone()
-        )
-
-        available_count = int(
-            available_result.get(
-                "total",
-                0
-            ) or 0
-        )
-
-        # -------------------------------------------------
-        # RECENT PRODUCTS
-        # -------------------------------------------------
-
-        cursor.execute(
-            """
-            SELECT
-                p.id,
-                p.name,
-                p.price,
-                p.stock,
-                p.is_available,
-                p.created_at,
-
-                c.name AS category_name,
-
-                (
-                    SELECT
-                        pi.image_url
-                    FROM product_images pi
-                    WHERE pi.product_id = p.id
-                    ORDER BY
-                        pi.is_primary DESC,
-                        pi.id ASC
-                    LIMIT 1
-                ) AS image_url
-
-            FROM products p
-
-            LEFT JOIN categories c
-                ON p.category_id = c.id
-
-            ORDER BY
-                p.id DESC
-
-            LIMIT 10
-            """
-        )
-
-        recent_products = (
-            cursor.fetchall() or []
-        )
-
-        for product in recent_products:
-
-            try:
-
-                product["price"] = Decimal(
-                    str(
-                        product.get(
-                            "price",
-                            0
-                        ) or 0
-                    )
-                )
-
-            except (
-                InvalidOperation,
-                ValueError,
-                TypeError
-            ):
-
-                product["price"] = Decimal(
-                    "0.00"
-                )
 
         return render_template(
             "admin/dashboard.html",
-            product_count=product_count,
-            category_count=category_count,
-            user_count=user_count,
-            available_count=available_count,
-            recent_products=recent_products
+            seller_count=seller_count,
+            pending_seller_count=pending_seller_count,
+            approved_seller_count=approved_seller_count,
+            inactive_seller_count=inactive_seller_count
         )
 
     except Exception as error:
-
-        print(
-            "ADMIN DASHBOARD ERROR:",
-            repr(error)
-        )
+        print("ADMIN SELLER DASHBOARD ERROR:", repr(error))
 
         flash(
-            "Unable to load dashboard.",
+            "Unable to load seller dashboard. Check the Flask terminal.",
             "error"
         )
 
         return render_template(
             "admin/dashboard.html",
-            product_count=0,
-            category_count=0,
-            user_count=0,
-            available_count=0,
-            recent_products=[]
+            seller_count=0,
+            pending_seller_count=0,
+            approved_seller_count=0,
+            inactive_seller_count=0
         )
 
     finally:
-
-        safe_close(
-            cursor,
-            connection
-        )
+        safe_close(cursor, connection)
 
 
 # =========================================================
@@ -4811,6 +4676,10 @@ def seller_register():
 
     finally:
         safe_close(cursor, connection)
+
+
+
+
 
 # =========================================================
 # RUN APPLICATION
