@@ -4678,7 +4678,162 @@ def seller_register():
         safe_close(cursor, connection)
 
 
+# =========================================================
+# ADMIN — VIEW ALL SELLERS
+# =========================================================
 
+@app.route("/admin/sellers")
+def admin_sellers():
+
+    if not admin_required():
+        return redirect(url_for("admin_login"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                s.id,
+                s.user_id,
+                s.shop_name,
+                s.business_type,
+                s.phone,
+                s.address,
+                s.description,
+                s.status,
+                s.admin_note,
+                s.created_at,
+                u.name AS owner_name,
+                u.email AS owner_email
+            FROM sellers AS s
+            INNER JOIN users AS u
+                ON u.id = s.user_id
+            ORDER BY
+                CASE
+                    WHEN s.status = 'pending' THEN 0
+                    ELSE 1
+                END,
+                s.created_at DESC,
+                s.id DESC
+        """)
+
+        sellers = cursor.fetchall() or []
+
+        return render_template(
+            "admin/products.html",
+            sellers=sellers
+        )
+
+    except Exception as error:
+        print("ADMIN SELLERS ERROR:", repr(error))
+
+        flash(
+            "Unable to load seller registrations. Check the Flask terminal.",
+            "error"
+        )
+
+        return render_template(
+            "admin/products.html",
+            sellers=[]
+        ), 500
+
+    finally:
+        safe_close(cursor, connection)
+
+
+# =========================================================
+# ADMIN — UPDATE SELLER STATUS
+# =========================================================
+
+@app.route(
+    "/admin/sellers/<int:seller_id>/status",
+    methods=["POST"]
+)
+def admin_update_seller_status(seller_id):
+
+    if not admin_required():
+        return redirect(url_for("admin_login"))
+
+    new_status = request.form.get(
+        "status", ""
+    ).strip().lower()
+
+    allowed_statuses = {
+        "approved",
+        "rejected",
+        "suspended"
+    }
+
+    if new_status not in allowed_statuses:
+        flash("Invalid seller status.", "error")
+        return redirect(url_for("admin_sellers"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT id, shop_name, status
+            FROM sellers
+            WHERE id = %s
+            LIMIT 1
+        """, (seller_id,))
+
+        seller = cursor.fetchone()
+
+        if not seller:
+            flash("Seller application not found.", "error")
+            return redirect(url_for("admin_sellers"))
+
+        cursor.execute("""
+            UPDATE sellers
+            SET status = %s
+            WHERE id = %s
+        """, (new_status, seller_id))
+
+        connection.commit()
+
+        status_messages = {
+            "approved": "Seller approved successfully.",
+            "rejected": "Seller application rejected.",
+            "suspended": "Seller suspended successfully."
+        }
+
+        flash(status_messages[new_status], "success")
+
+    except Exception as error:
+        if connection:
+            try:
+                connection.rollback()
+            except Exception:
+                pass
+
+        print("SELLER STATUS UPDATE ERROR:", repr(error))
+
+        flash(
+            "Unable to update seller status. Check the Flask terminal.",
+            "error"
+        )
+
+    finally:
+        safe_close(cursor, connection)
+
+    return redirect(url_for("admin_sellers"))
 
 
 # =========================================================
