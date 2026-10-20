@@ -9,23 +9,32 @@
 
     <!-- ================= FONTS ================= -->
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- ================= CSS ================= -->
 
-    <link rel="stylesheet"  href="{{ url_for('static', filename='css/style.css') }}"/>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
   </head>
 
   <body>
     <!-- =====================================================
          PRELOADER
          ===================================================== -->
-
     <div class="loader" id="loader">
-      <div class="loader-logo">GLAMORA <span>AR</span></div>
+      <div class="loader-content">
+        <div class="loader-logo">GLAMORA <span>AR</span></div>
 
-      <div class="loader-line">
-        <div></div>
+        <p>Preparing your beauty experience...</p>
+
+        <div class="loader-line">
+          <span></span>
+        </div>
       </div>
     </div>
 
