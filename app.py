@@ -4658,6 +4658,160 @@ def match_scanned_product():
 
 
 
+
+
+# =========================================================
+# SELLER REGISTRATION
+# =========================================================
+
+@app.route("/seller/register", methods=["GET", "POST"])
+def seller_register():
+
+    # A seller must have an existing Glamora AR account.
+    if not session.get("user_id"):
+        flash("Please log in before registering your shop.", "error")
+        return redirect(
+            url_for(
+                "login",
+                next=url_for("seller_register")
+            )
+        )
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        user_id = int(session["user_id"])
+
+        # Check whether this user already has a seller profile.
+        cursor.execute("""
+            SELECT id, shop_name, status, admin_note, created_at
+            FROM sellers
+            WHERE user_id = %s
+            LIMIT 1
+        """, (user_id,))
+
+        existing_seller = cursor.fetchone()
+
+        if existing_seller:
+            return render_template(
+                "seller/register.html",
+                seller=existing_seller
+            )
+
+        if request.method == "POST":
+
+            shop_name = request.form.get(
+                "shop_name", ""
+            ).strip()
+
+            business_type = request.form.get(
+                "business_type", "Beauty & Cosmetics"
+            ).strip()
+
+            phone = request.form.get(
+                "phone", ""
+            ).strip()
+
+            address = request.form.get(
+                "address", ""
+            ).strip()
+
+            description = request.form.get(
+                "description", ""
+            ).strip()
+
+            # Validate required fields.
+            if not shop_name or not phone or not address:
+                flash(
+                    "Please complete all required fields.",
+                    "error"
+                )
+
+            elif len(shop_name) > 150:
+                flash(
+                    "Shop name must be 150 characters or fewer.",
+                    "error"
+                )
+
+            elif len(phone) > 30:
+                flash(
+                    "Phone number must be 30 characters or fewer.",
+                    "error"
+                )
+
+            elif not business_type:
+                flash(
+                    "Please select your business type.",
+                    "error"
+                )
+
+            else:
+                cursor.execute("""
+                    INSERT INTO sellers (
+                        user_id,
+                        shop_name,
+                        business_type,
+                        phone,
+                        address,
+                        description,
+                        status
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, 'pending')
+                """, (
+                    user_id,
+                    shop_name,
+                    business_type,
+                    phone,
+                    address,
+                    description or None
+                ))
+
+                connection.commit()
+
+                flash(
+                    "Your seller application was submitted. "
+                    "You can start selling after admin approval.",
+                    "success"
+                )
+
+                return redirect(url_for("seller_register"))
+
+        return render_template(
+            "seller/register.html",
+            seller=None
+        )
+
+    except Exception as error:
+        if connection:
+            try:
+                connection.rollback()
+            except Exception:
+                pass
+
+        print("SELLER REGISTRATION ERROR:", repr(error))
+
+        flash(
+            "Unable to process your seller application. "
+            "Please check the Flask terminal.",
+            "error"
+        )
+
+        return render_template(
+            "seller/register.html",
+            seller=None
+        ), 500
+
+    finally:
+        safe_close(cursor, connection)
+
 # =========================================================
 # RUN APPLICATION
 # =========================================================
