@@ -1,78 +1,618 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Checkout — Glamora AR</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* =====================================================
+           GLAMORA AR — CHECKOUT PAGE
+           ===================================================== */
+
+        :root {
+            --checkout-bg: #fff5f7;
+            --checkout-soft: #fdecef;
+            --checkout-text: #2b1b20;
+            --checkout-muted: #806b72;
+            --checkout-pink: #c85f7a;
+            --checkout-dark-pink: #a74360;
+            --checkout-border: rgba(200, 95, 122, 0.18);
+            --checkout-shadow: 0 20px 60px rgba(164, 73, 98, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(
+                    circle at 5% 10%,
+                    rgba(243, 184, 198, 0.25),
+                    transparent 30%
+                ),
+                var(--checkout-bg);
+            color: var(--checkout-text);
+            font-family: "DM Sans", sans-serif;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        .checkout-wrapper {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 55px 0 85px;
+        }
+
+        /* Heading */
+
+        .checkout-heading {
+            text-align: center;
+            margin-bottom: 38px;
+        }
+
+        .checkout-eyebrow {
+            display: inline-block;
+            margin-bottom: 12px;
+            color: var(--checkout-dark-pink);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .checkout-heading h1 {
+            margin: 0;
+            font-family: "Playfair Display", serif;
+            font-size: clamp(34px, 5vw, 48px);
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .checkout-heading p {
+            margin: 12px 0 0;
+            color: var(--checkout-muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* Main layout */
+
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        .checkout-card {
+            min-width: 0;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--checkout-border);
+            border-radius: 22px;
+            box-shadow: var(--checkout-shadow);
+        }
+
+        .checkout-section-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 25px;
+            font-family: "Playfair Display", serif;
+            font-size: 23px;
+            font-weight: 600;
+        }
+
+        .checkout-step {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--checkout-soft);
+            color: var(--checkout-dark-pink);
+            font-family: "DM Sans", sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Form */
+
+        .checkout-form {
+            display: flex;
+            flex-direction: column;
+            gap: 19px;
+        }
+
+        .checkout-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .checkout-field label {
+            color: var(--checkout-text);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .checkout-field input,
+        .checkout-field textarea,
+        .checkout-field select {
+            display: block;
+            width: 100%;
+            min-height: 49px;
+            padding: 13px 15px;
+            color: var(--checkout-text);
+            background: #fffafb;
+            border: 1px solid #eed8df;
+            border-radius: 11px;
+            outline: none;
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .checkout-field textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .checkout-field input::placeholder,
+        .checkout-field textarea::placeholder {
+            color: #aa969d;
+        }
+
+        .checkout-field input:focus,
+        .checkout-field textarea:focus,
+        .checkout-field select:focus {
+            background: #fff;
+            border-color: var(--checkout-pink);
+            box-shadow: 0 0 0 4px rgba(200, 95, 122, 0.10);
+        }
+
+        .checkout-field select {
+            cursor: pointer;
+        }
+
+        .checkout-form-note {
+            margin: 0;
+            color: var(--checkout-muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* Product summary */
+
+        .checkout-product {
+            display: flex;
+            align-items: center;
+            gap: 19px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--checkout-border);
+        }
+
+        .checkout-product-image {
+            display: grid;
+            width: 125px;
+            height: 135px;
+            flex: 0 0 125px;
+            place-items: center;
+            overflow: hidden;
+            background: linear-gradient(145deg, #fff0f4, #fde3eb);
+            border-radius: 15px;
+        }
+
+        .checkout-product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 9px;
+        }
+
+        .checkout-product-info {
+            min-width: 0;
+        }
+
+        .checkout-product-label {
+            margin: 0 0 8px;
+            color: var(--checkout-dark-pink);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .checkout-product-info h3 {
+            margin: 0 0 12px;
+            font-family: "Playfair Display", serif;
+            font-size: 20px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .checkout-product-quantity {
+            display: inline-flex;
+            padding: 7px 11px;
+            color: var(--checkout-muted);
+            background: #fff3f6;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .checkout-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 17px 0;
+            border-bottom: 1px solid var(--checkout-border);
+            font-size: 14px;
+        }
+
+        .checkout-price-row span:first-child {
+            color: var(--checkout-muted);
+        }
+
+        .checkout-price-row strong {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .checkout-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 23px 0 20px;
+        }
+
+        .checkout-total span {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .checkout-total strong {
+            color: var(--checkout-dark-pink);
+            font-family: "Playfair Display", serif;
+            font-size: clamp(22px, 3vw, 27px);
+            text-align: right;
+        }
+
+        /* Submit button */
+
+        .checkout-submit {
+            display: flex;
+            width: 100%;
+            min-height: 54px;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            color: #fff;
+            background: linear-gradient(
+                135deg,
+                var(--checkout-pink),
+                var(--checkout-dark-pink)
+            );
+            border: 0;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(167, 67, 96, 0.22);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .checkout-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(167, 67, 96, 0.30);
+        }
+
+        .checkout-submit:active {
+            transform: translateY(0);
+        }
+
+        .checkout-back {
+            display: block;
+            margin-top: 20px;
+            color: var(--checkout-muted);
+            font-size: 13px;
+            text-align: center;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .checkout-back:hover {
+            color: var(--checkout-dark-pink);
+        }
+
+        .checkout-secure-note {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 18px;
+            color: var(--checkout-muted);
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .checkout-secure-note span {
+            color: var(--checkout-dark-pink);
+            font-size: 15px;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 800px) {
+            .checkout-wrapper {
+                padding-top: 38px;
+            }
+
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-summary {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .checkout-wrapper {
+                width: calc(100% - 24px);
+                padding-top: 30px;
+                padding-bottom: 45px;
+            }
+
+            .checkout-heading {
+                margin-bottom: 25px;
+            }
+
+            .checkout-heading p {
+                max-width: 290px;
+                margin-right: auto;
+                margin-left: auto;
+            }
+
+            .checkout-card {
+                padding: 21px 17px;
+                border-radius: 17px;
+            }
+
+            .checkout-section-heading {
+                font-size: 21px;
+            }
+
+            .checkout-product {
+                align-items: flex-start;
+                gap: 13px;
+            }
+
+            .checkout-product-image {
+                width: 95px;
+                height: 110px;
+                flex-basis: 95px;
+            }
+
+            .checkout-product-info h3 {
+                font-size: 17px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-    <main class="checkout-page">
-        <h1>Checkout</h1>
-        <p>Complete your delivery details for your selected product.</p>
+    <main class="checkout-wrapper">
 
-        <section class="checkout-product">
-            {% if product.image_url %}
-                <img
-                    src="{{ url_for('static', filename=product.image_url) }}"
-                    alt="{{ product.name }}"
-                    style="width:120px; height:120px; object-fit:contain;"
+        <!-- Page heading -->
+        <header class="checkout-heading">
+            <span class="checkout-eyebrow">Glamora AR · Your Beauty Journey</span>
+            <h1>Complete Your Order</h1>
+            <p>Just a few details, and your beauty favourites will be on their way.</p>
+        </header>
+
+        <div class="checkout-layout">
+
+            <!-- Delivery information -->
+            <section class="checkout-card">
+                <h2 class="checkout-section-heading">
+                    <span class="checkout-step">01</span>
+                    Delivery Details
+                </h2>
+
+                <form
+                    class="checkout-form"
+                    action="#"
+                    method="POST"
                 >
-            {% endif %}
+                    <div class="checkout-field">
+                        <label for="customer_name">Full name</label>
+                        <input
+                            id="customer_name"
+                            name="customer_name"
+                            type="text"
+                            placeholder="Enter your full name"
+                            value="{{ user.name if user else '' }}"
+                            autocomplete="name"
+                            required
+                        >
+                    </div>
 
-            <h2>{{ product.name }}</h2>
-            <p>Quantity: {{ quantity }}</p>
-            <p>Price: {{ format_npr(product.price) }}</p>
-            <h3>Total: {{ format_npr(total) }}</h3>
-        </section>
+                    <div class="checkout-field">
+                        <label for="customer_email">Email address</label>
+                        <input
+                            id="customer_email"
+                            name="customer_email"
+                            type="email"
+                            placeholder="you@example.com"
+                            value="{{ user.email if user else '' }}"
+                            autocomplete="email"
+                            required
+                        >
+                    </div>
 
-        <form action="#" method="POST">
-            <label for="customer_name">Full name</label>
-            <input
-                id="customer_name"
-                name="customer_name"
-                type="text"
-                value="{{ user.name if user else '' }}"
-                required
-            >
+                    <div class="checkout-field">
+                        <label for="phone">Phone number</label>
+                        <input
+                            id="phone"
+                            name="phone"
+                            type="tel"
+                            placeholder="Enter your phone number"
+                            autocomplete="tel"
+                            required
+                        >
+                    </div>
 
-            <label for="customer_email">Email address</label>
-            <input
-                id="customer_email"
-                name="customer_email"
-                type="email"
-                value="{{ user.email if user else '' }}"
-                required
-            >
+                    <div class="checkout-field">
+                        <label for="address">Full delivery address</label>
+                        <textarea
+                            id="address"
+                            name="address"
+                            placeholder="Province, district, city, street and house details"
+                            autocomplete="street-address"
+                            required
+                        ></textarea>
+                    </div>
 
-            <label for="phone">Phone number</label>
-            <input
-                id="phone"
-                name="phone"
-                type="tel"
-                required
-            >
+                    <h2 class="checkout-section-heading" style="margin: 10px 0 0;">
+                        <span class="checkout-step">02</span>
+                        Payment Method
+                    </h2>
 
-            <label for="address">Full delivery address</label>
-            <textarea
-                id="address"
-                name="address"
-                rows="4"
-                required
-            ></textarea>
+                    <div class="checkout-field">
+                        <label for="payment_method">Choose how you would like to pay</label>
+                        <select
+                            id="payment_method"
+                            name="payment_method"
+                            required
+                        >
+                            <option value="">Choose payment method</option>
+                            <option value="COD">Cash on Delivery</option>
+                            <option value="Khalti">Khalti</option>
+                            <option value="eSewa">eSewa</option>
+                        </select>
+                    </div>
 
-            <label for="payment_method">Payment method</label>
-            <select id="payment_method" name="payment_method" required>
-                <option value="">Choose payment method</option>
-                <option value="COD">Cash on Delivery</option>
-                <option value="Khalti">Khalti</option>
-                <option value="eSewa">eSewa</option>
-            </select>
+                    <p class="checkout-form-note">
+                        Please check your delivery information before confirming your order.
+                    </p>
 
-            <button type="submit">Confirm Order</button>
-        </form>
+                    <button class="checkout-submit" type="submit">
+                        Confirm Order
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </form>
+
+                <a class="checkout-back"
+                   href="{{ url_for('beauty') }}">
+                    ← Continue exploring beauty products
+                </a>
+            </section>
+
+            <!-- Order summary -->
+            <aside class="checkout-card checkout-summary">
+                <h2 class="checkout-section-heading">
+                    <span class="checkout-step">03</span>
+                    Order Summary
+                </h2>
+
+                <div class="checkout-product">
+                    <div class="checkout-product-image">
+                        {% if product.image_url %}
+                            {% if product.image_url.startswith('http://') or product.image_url.startswith('https://') %}
+                                <img
+                                    src="{{ product.image_url }}"
+                                    alt="{{ product.name }}"
+                                >
+                            {% else %}
+                                <img
+                                    src="{{ url_for('static', filename=product.image_url) }}"
+                                    alt="{{ product.name }}"
+                                >
+                            {% endif %}
+                        {% else %}
+                            <span aria-hidden="true">✿</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="checkout-product-info">
+                        <p class="checkout-product-label">Your selection</p>
+                        <h3>{{ product.name }}</h3>
+                        <span class="checkout-product-quantity">
+                            Quantity: {{ quantity }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="checkout-price-row">
+                    <span>Price per item</span>
+                    <strong>{{ format_npr(product.price) }}</strong>
+                </div>
+
+                <div class="checkout-price-row">
+                    <span>Quantity</span>
+                    <strong>{{ quantity }}</strong>
+                </div>
+
+                <div class="checkout-price-row">
+                    <span>Subtotal</span>
+                    <strong>{{ format_npr(subtotal) }}</strong>
+                </div>
+
+                <div class="checkout-price-row">
+                    <span>Delivery</span>
+                    <strong>To be confirmed</strong>
+                </div>
+
+                <div class="checkout-total">
+                    <span>Total</span>
+                    <strong>{{ format_npr(total) }}</strong>
+                </div>
+
+                <div class="checkout-secure-note">
+                    <span aria-hidden="true">♡</span>
+                    Made for your beauty, delivered with care.
+                </div>
+            </aside>
+
+        </div>
     </main>
 
 </body>
