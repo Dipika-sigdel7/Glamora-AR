@@ -801,6 +801,7 @@ def about():
     )
 
 
+
 # =========================================================
 # CONTACT — SAVE USER AND SELLER MESSAGES
 # =========================================================
@@ -829,10 +830,17 @@ def contact():
             or len(subject) > 200
             or len(message_text) > 10000
         ):
-            flash("One or more fields exceed the allowed length.", "error")
+            flash(
+                "One or more fields exceed the allowed length.",
+                "error"
+            )
             return redirect(url_for("contact"))
 
-        if "@" not in email or email.startswith("@") or email.endswith("@"):
+        if (
+            "@" not in email
+            or email.startswith("@")
+            or email.endswith("@")
+        ):
             flash("Please enter a valid email address.", "error")
             return redirect(url_for("contact"))
 
@@ -854,28 +862,15 @@ def contact():
             user_id = None
             sender_type = "user"
 
-            # Only an account with a seller profile can submit
-            # a message classified as a seller message.
-            if session_user_id:
+            # Get the logged-in user's ID.
+            if session_user_id is not None:
                 try:
                     user_id = int(session_user_id)
                 except (TypeError, ValueError):
                     user_id = None
 
-            if contact_type == "seller":
-                if user_id is None:
-                    flash(
-                        "Please log in with your seller account to send "
-                        "a seller message.",
-                        "error"
-                    )
-                    return redirect(
-                        url_for(
-                            "login",
-                            next=url_for("contact")
-                        )
-                    )
-
+            # Automatically identify a registered seller.
+            if user_id is not None:
                 cursor.execute("""
                     SELECT id
                     FROM sellers
@@ -883,16 +878,35 @@ def contact():
                     LIMIT 1
                 """, (user_id,))
 
-                if not cursor.fetchone():
-                    flash(
-                        "A seller profile is required to send a seller "
-                        "message. You can still contact us as a customer.",
-                        "error"
+                seller_profile = cursor.fetchone()
+
+                if seller_profile:
+                    sender_type = "seller"
+
+            # Require login when a sender selects the seller option.
+            if contact_type == "seller" and user_id is None:
+                flash(
+                    "Please log in with your registered seller account "
+                    "to send a seller message.",
+                    "error"
+                )
+                return redirect(
+                    url_for(
+                        "login",
+                        next=url_for("contact")
                     )
-                    return redirect(url_for("contact"))
+                )
 
-                sender_type = "seller"
+            # Do not allow a customer to send a seller message.
+            if contact_type == "seller" and sender_type != "seller":
+                flash(
+                    "A registered seller profile is required to send "
+                    "a seller message.",
+                    "error"
+                )
+                return redirect(url_for("contact"))
 
+            # Save the message for the admin inbox.
             cursor.execute("""
                 INSERT INTO messages (
                     user_id,
@@ -915,33 +929,33 @@ def contact():
             connection.commit()
 
             flash(
-                "Your message has been sent successfully. "
-                "Thank you for contacting Glamora AR!",
+                "Your message has been sent successfully.",
                 "success"
             )
-
             return redirect(url_for("contact"))
 
-        except Exception:
-            if connection:
+        except Exception as e:
+            if connection is not None:
                 try:
                     connection.rollback()
                 except Exception:
                     pass
 
-            app.logger.exception("CONTACT MESSAGE ERROR")
+            app.logger.exception(
+                "Failed to save contact message: %s", e
+            )
 
             flash(
                 "Unable to send your message right now. Please try again.",
                 "error"
             )
-
             return redirect(url_for("contact"))
 
         finally:
             safe_close(cursor, connection)
 
     return render_template("contact.html")
+
 
 
 # =========================================================
