@@ -3451,51 +3451,115 @@ def admin_dashboard():
 
         cursor = connection.cursor(dictionary=True)
 
-        # Total registered sellers
+        # -----------------------------------------------------
+        # TOTAL REGISTERED SELLERS
+        # -----------------------------------------------------
         cursor.execute("""
             SELECT COUNT(*) AS total
             FROM sellers
         """)
+
         seller_count = int(
             (cursor.fetchone() or {}).get("total", 0) or 0
         )
 
-        # Applications awaiting approval
+        # -----------------------------------------------------
+        # PENDING APPLICATIONS
+        # -----------------------------------------------------
         cursor.execute("""
             SELECT COUNT(*) AS total
             FROM sellers
             WHERE status = 'pending'
         """)
+
         pending_seller_count = int(
             (cursor.fetchone() or {}).get("total", 0) or 0
         )
 
-        # Approved sellers
+        # -----------------------------------------------------
+        # APPROVED SELLERS
+        # -----------------------------------------------------
         cursor.execute("""
             SELECT COUNT(*) AS total
             FROM sellers
             WHERE status = 'approved'
         """)
+
         approved_seller_count = int(
             (cursor.fetchone() or {}).get("total", 0) or 0
         )
 
-        # Rejected or suspended sellers
+        # -----------------------------------------------------
+        # REJECTED OR SUSPENDED SELLERS
+        # -----------------------------------------------------
         cursor.execute("""
             SELECT COUNT(*) AS total
             FROM sellers
             WHERE status IN ('rejected', 'suspended')
         """)
+
         inactive_seller_count = int(
             (cursor.fetchone() or {}).get("total", 0) or 0
         )
 
+        # -----------------------------------------------------
+        # FETCH SELLER APPLICATIONS FOR THE DASHBOARD TABLE
+        # -----------------------------------------------------
+        cursor.execute("""
+            SELECT
+                s.id,
+                s.user_id,
+                s.shop_name,
+                s.business_type,
+                s.phone,
+                s.address,
+                s.description,
+                s.status,
+                s.admin_note,
+                s.created_at,
+                s.updated_at,
+                u.name AS owner_name,
+                u.email AS owner_email
+            FROM sellers AS s
+            INNER JOIN users AS u
+                ON u.id = s.user_id
+            ORDER BY
+                CASE s.status
+                    WHEN 'pending' THEN 1
+                    WHEN 'approved' THEN 2
+                    WHEN 'rejected' THEN 3
+                    WHEN 'suspended' THEN 4
+                    ELSE 5
+                END,
+                s.created_at DESC
+        """)
+
+        sellers = cursor.fetchall() or []
+
+        # -----------------------------------------------------
+        # UNREAD MESSAGES
+        # -----------------------------------------------------
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM messages
+            WHERE is_read = 0
+        """)
+
+        unread_message_count = int(
+            (cursor.fetchone() or {}).get("total", 0) or 0
+        )
+
+        # -----------------------------------------------------
+        # RENDER DASHBOARD
+        # -----------------------------------------------------
         return render_template(
             "admin/dashboard.html",
             seller_count=seller_count,
             pending_seller_count=pending_seller_count,
             approved_seller_count=approved_seller_count,
-            inactive_seller_count=inactive_seller_count
+            inactive_seller_count=inactive_seller_count,
+            sellers=sellers,
+            unread_message_count=unread_message_count
         )
 
     except Exception as error:
@@ -3511,12 +3575,13 @@ def admin_dashboard():
             seller_count=0,
             pending_seller_count=0,
             approved_seller_count=0,
-            inactive_seller_count=0
+            inactive_seller_count=0,
+            sellers=[],
+            unread_message_count=0
         )
 
     finally:
         safe_close(cursor, connection)
-
 
 
 
