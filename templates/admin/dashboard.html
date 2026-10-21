@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 
@@ -90,6 +91,8 @@
 
     </section>
 
+    <!-- SELLER MANAGEMENT -->
+
     <section class="admin-content-card">
 
       <div class="admin-section-header">
@@ -110,6 +113,39 @@
       >
         <span>♙</span>
         <span>View All Sellers</span>
+      </a>
+
+    </section>
+
+    <!-- MESSAGES -->
+
+    <section class="admin-content-card">
+
+      <div class="admin-section-header">
+        <div>
+          <p class="admin-eyebrow">COMMUNICATION</p>
+          <h2>Messages</h2>
+        </div>
+      </div>
+
+      <p>
+        View and manage messages and enquiries received from customers
+        and registered sellers.
+      </p>
+
+      <p>
+        <strong>
+          {{ unread_message_count|default(0) }}
+        </strong>
+        unread message{{ '' if unread_message_count|default(0) == 1 else 's' }}.
+      </p>
+
+      <a
+        href="{{ url_for('admin_messages') }}"
+        class="admin-primary-button"
+      >
+        <span>✉</span>
+        <span>View Messages</span>
       </a>
 
     </section>

@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages — Glamora AR Admin</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/admin.css') }}">
+
+    <style>
+        .messages-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+            color: #2b1b20;
+        }
+
+        .messages-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .messages-eyebrow {
+            color: #a74360;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin: 0 0 8px;
+        }
+
+        .messages-header h1 {
+            margin: 0 0 8px;
+            font-family: "Playfair Display", Georgia, serif;
+            font-size: clamp(28px, 4vw, 40px);
+        }
+
+        .messages-subtitle {
+            color: #806b72;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .messages-nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .messages-nav a,
+        .message-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .messages-nav a {
+            color: #a74360;
+            background: #fff0f4;
+            border: 1px solid #f3d5df;
+        }
+
+        .messages-summary {
+            margin-bottom: 22px;
+            padding: 18px 20px;
+            border: 1px solid #f0dce2;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(164, 73, 98, .06);
+        }
+
+        .messages-summary strong {
+            font-size: 24px;
+            color: #a74360;
+        }
+
+        .messages-summary span {
+            margin-left: 8px;
+            color: #806b72;
+        }
+
+        .messages-list {
+            display: grid;
+            gap: 18px;
+        }
+
+        .message-card {
+            min-width: 0;
+            padding: 22px;
+            border: 1px solid #f0dce2;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(164, 73, 98, .06);
+        }
+
+        .message-card.unread {
+            border-left: 5px solid #c85f7a;
+            background: #fffafd;
+        }
+
+        .message-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .message-subject {
+            margin: 0 0 8px;
+            font-size: 19px;
+            overflow-wrap: anywhere;
+        }
+
+        .message-meta {
+            margin: 0;
+            color: #806b72;
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        .message-meta a {
+            color: #a74360;
+        }
+
+        .message-badges {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .message-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: #fff0f4;
+            color: #a74360;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .message-badge.read {
+            background: #f1f1f1;
+            color: #66575d;
+        }
+
+        .message-body {
+            margin: 0;
+            padding: 16px;
+            border-radius: 10px;
+            background: #fff5f7;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .message-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .message-action {
+            border: 0;
+            color: #fff;
+            background: linear-gradient(135deg, #c85f7a, #a74360);
+        }
+
+        .message-empty {
+            padding: 55px 24px;
+            border: 1px dashed #e8c7d1;
+            border-radius: 16px;
+            text-align: center;
+            background: #fff;
+        }
+
+        .message-empty h2 {
+            margin-top: 0;
+            font-family: "Playfair Display", Georgia, serif;
+        }
+
+        .message-empty p {
+            margin-bottom: 0;
+            color: #806b72;
+        }
+
+        .message-flash {
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: #fff0f4;
+            color: #8c3651;
+        }
+
+        @media (max-width: 600px) {
+            .messages-page {
+                padding: 22px 14px;
+            }
+
+            .message-card {
+                padding: 16px;
+            }
+
+            .message-top {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body class="admin-page">
+    <main class="messages-page">
+
+        <header class="messages-header">
+            <div>
+                <p class="messages-eyebrow">GLAMORA AR</p>
+                <h1>Messages Inbox</h1>
+                <p class="messages-subtitle">
+                    Read and manage messages sent by customers and sellers.
+                </p>
+            </div>
+
+            <nav class="messages-nav" aria-label="Admin navigation">
+                <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('admin_sellers') }}">Sellers</a>
+                <a href="{{ url_for('admin_logout') }}">Logout</a>
+            </nav>
+        </header>
+
+        {% with notices = get_flashed_messages(with_categories=true) %}
+            {% for category, notice in notices %}
+                <div class="message-flash" role="status">
+                    {{ notice }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <section class="messages-summary">
+            <strong>{{ unread_count }}</strong>
+            <span>unread message{{ '' if unread_count == 1 else 's' }}</span>
+        </section>
+
+        {% if messages %}
+            <section class="messages-list" aria-label="Received messages">
+
+                {% for item in messages %}
+                    <article class="message-card {{ 'unread' if not item.is_read else '' }}">
+
+                        <div class="message-top">
+                            <div>
+                                <h2 class="message-subject">
+                                    {{ item.subject }}
+                                </h2>
+
+                                <p class="message-meta">
+                                    From: <strong>{{ item.sender_name }}</strong><br>
+                                    Email:
+                                    <a href="mailto:{{ item.sender_email }}">
+                                        {{ item.sender_email }}
+                                    </a><br>
+                                    Received:
+                                    {% if item.created_at %}
+                                        {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    {% else %}
+                                        Date unavailable
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="message-badges">
+                                <span class="message-badge">
+                                    {{ 'Seller' if item.sender_type == 'seller' else 'Customer' }}
+                                </span>
+
+                                <span class="message-badge {{ 'read' if item.is_read else '' }}">
+                                    {{ 'Read' if item.is_read else 'Unread' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <p class="message-body">{{ item.message }}</p>
+
+                        {% if not item.is_read %}
+                            <div class="message-footer">
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('admin_mark_message_read', message_id=item.id) }}"
+                                >
+                                    <button class="message-action" type="submit">
+                                        Mark as Read
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+
+                    </article>
+                {% endfor %}
+
+            </section>
+        {% else %}
+            <section class="message-empty">
+                <h2>No messages yet</h2>
+                <p>
+                    Messages submitted through the Glamora AR contact form
+                    will appear here.
+                </p>
+            </section>
+        {% endif %}
+
+    </main>
+</body>
+</html>
