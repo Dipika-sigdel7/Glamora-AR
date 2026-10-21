@@ -599,24 +599,48 @@
 
   </main>
 
-  <script>
-    function showSellerPanel(panelName, button) {
-      document.querySelectorAll('.seller-dashboard-panel').forEach(function (panel) {
-        panel.classList.toggle(
-          'active',
-          panel.id === 'seller-panel-' + panelName
-        );
-      });
+<script>
+  function showSellerPanel(panelName, button) {
+    const targetPanel = document.getElementById(
+      'seller-panel-' + panelName
+    );
 
-      document.querySelectorAll('.seller-dashboard-tab').forEach(function (tab) {
-        const isActive = tab.dataset.sellerPanel === panelName;
+    // Clicking an already-open tab closes the applications section.
+    const shouldClose =
+      targetPanel && targetPanel.classList.contains('active');
 
-        tab.classList.toggle('active', isActive);
-        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    document.querySelectorAll('.seller-dashboard-panel').forEach(
+      function (panel) {
+        panel.classList.remove('active');
+      }
+    );
+
+    document.querySelectorAll('.seller-dashboard-tab').forEach(
+      function (tab) {
+        tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
+      }
+    );
+
+    if (!shouldClose && targetPanel) {
+      targetPanel.classList.add('active');
+
+      const activeTab = document.querySelector(
+        '.seller-dashboard-tab[data-seller-panel="' + panelName + '"]'
+      );
+
+      if (activeTab) {
+        activeTab.classList.add('active');
+        activeTab.setAttribute('aria-selected', 'true');
+      }
+
+      targetPanel.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
       });
     }
-  </script>
-
+  }
+</script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
 </body>
