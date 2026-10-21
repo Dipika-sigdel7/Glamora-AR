@@ -3518,8 +3518,9 @@ def admin_dashboard():
         safe_close(cursor, connection)
 
 
+
 # =========================================================
-# ADMIN — MESSAGES INBOX
+# ADMIN — MESSAGES INBOX: USERS AND SELLERS
 # =========================================================
 
 @app.route("/admin/messages")
@@ -3539,6 +3540,9 @@ def admin_messages():
 
         cursor = connection.cursor(dictionary=True)
 
+        # -------------------------------------------------
+        # FETCH USER MESSAGES
+        # -------------------------------------------------
         cursor.execute("""
             SELECT
                 id,
@@ -3551,28 +3555,81 @@ def admin_messages():
                 is_read,
                 created_at
             FROM messages
-            ORDER BY
-                is_read ASC,
-                created_at DESC,
-                id DESC
+            WHERE sender_type = 'user'
+            ORDER BY created_at DESC, id DESC
+        """)
+
+        user_messages = cursor.fetchall() or []
+
+        # -------------------------------------------------
+        # FETCH SELLER MESSAGES
+        # -------------------------------------------------
+        cursor.execute("""
+            SELECT
+                id,
+                user_id,
+                sender_type,
+                sender_name,
+                sender_email,
+                subject,
+                message,
+                is_read,
+                created_at
+            FROM messages
+            WHERE sender_type = 'seller'
+            ORDER BY created_at DESC, id DESC
+        """)
+
+        seller_messages = cursor.fetchall() or []
+
+        # -------------------------------------------------
+        # FETCH ALL MESSAGES (BACKWARD COMPATIBILITY)
+        # -------------------------------------------------
+        cursor.execute("""
+            SELECT
+                id,
+                user_id,
+                sender_type,
+                sender_name,
+                sender_email,
+                subject,
+                message,
+                is_read,
+                created_at
+            FROM messages
+            ORDER BY created_at DESC, id DESC
         """)
 
         messages = cursor.fetchall() or []
 
+        # -------------------------------------------------
+        # UNREAD COUNTS
+        # -------------------------------------------------
         cursor.execute("""
-            SELECT COUNT(*) AS total
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN sender_type = 'user'
+                    THEN 1 ELSE 0 END) AS unread_users,
+                SUM(CASE WHEN sender_type = 'seller'
+                    THEN 1 ELSE 0 END) AS unread_sellers
             FROM messages
             WHERE is_read = 0
         """)
 
-        unread_count = int(
-            (cursor.fetchone() or {}).get("total", 0) or 0
-        )
+        counts = cursor.fetchone() or {}
+
+        unread_count = int(counts.get("total") or 0)
+        unread_users = int(counts.get("unread_users") or 0)
+        unread_sellers = int(counts.get("unread_sellers") or 0)
 
         return render_template(
             "admin/messages.html",
             messages=messages,
-            unread_count=unread_count
+            user_messages=user_messages,
+            seller_messages=seller_messages,
+            unread_count=unread_count,
+            unread_users=unread_users,
+            unread_sellers=unread_sellers
         )
 
     except Exception:
@@ -3586,7 +3643,11 @@ def admin_messages():
         return render_template(
             "admin/messages.html",
             messages=[],
-            unread_count=0
+            user_messages=[],
+            seller_messages=[],
+            unread_count=0,
+            unread_users=0,
+            unread_sellers=0
         ), 500
 
     finally:
