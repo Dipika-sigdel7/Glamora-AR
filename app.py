@@ -802,15 +802,146 @@ def about():
 
 
 # =========================================================
-# CONTACT
+# CONTACT — SAVE USER AND SELLER MESSAGES
 # =========================================================
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
 
-    return render_template(
-        "contact.html"
-    )
+    if request.method == "POST":
+
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        contact_type = request.form.get(
+            "contact_type", "customer"
+        ).strip().lower()
+        subject = request.form.get("subject", "").strip()
+        message_text = request.form.get("message", "").strip()
+
+        # Validate the submitted fields.
+        if not name or not email or not subject or not message_text:
+            flash("Please complete all required fields.", "error")
+            return redirect(url_for("contact"))
+
+        if (
+            len(name) > 150
+            or len(email) > 254
+            or len(subject) > 200
+            or len(message_text) > 10000
+        ):
+            flash("One or more fields exceed the allowed length.", "error")
+            return redirect(url_for("contact"))
+
+        if "@" not in email or email.startswith("@") or email.endswith("@"):
+            flash("Please enter a valid email address.", "error")
+            return redirect(url_for("contact"))
+
+        if contact_type not in ("customer", "seller"):
+            contact_type = "customer"
+
+        connection = None
+        cursor = None
+
+        try:
+            connection = get_db_connection()
+
+            if connection is None:
+                raise RuntimeError("Database connection failed.")
+
+            cursor = connection.cursor(dictionary=True)
+
+            session_user_id = session.get("user_id")
+            user_id = None
+            sender_type = "user"
+
+            # Only an account with a seller profile can submit
+            # a message classified as a seller message.
+            if session_user_id:
+                try:
+                    user_id = int(session_user_id)
+                except (TypeError, ValueError):
+                    user_id = None
+
+            if contact_type == "seller":
+                if user_id is None:
+                    flash(
+                        "Please log in with your seller account to send "
+                        "a seller message.",
+                        "error"
+                    )
+                    return redirect(
+                        url_for(
+                            "login",
+                            next=url_for("contact")
+                        )
+                    )
+
+                cursor.execute("""
+                    SELECT id
+                    FROM sellers
+                    WHERE user_id = %s
+                    LIMIT 1
+                """, (user_id,))
+
+                if not cursor.fetchone():
+                    flash(
+                        "A seller profile is required to send a seller "
+                        "message. You can still contact us as a customer.",
+                        "error"
+                    )
+                    return redirect(url_for("contact"))
+
+                sender_type = "seller"
+
+            cursor.execute("""
+                INSERT INTO messages (
+                    user_id,
+                    sender_type,
+                    sender_name,
+                    sender_email,
+                    subject,
+                    message
+                )
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (
+                user_id,
+                sender_type,
+                name,
+                email,
+                subject,
+                message_text
+            ))
+
+            connection.commit()
+
+            flash(
+                "Your message has been sent successfully. "
+                "Thank you for contacting Glamora AR!",
+                "success"
+            )
+
+            return redirect(url_for("contact"))
+
+        except Exception:
+            if connection:
+                try:
+                    connection.rollback()
+                except Exception:
+                    pass
+
+            app.logger.exception("CONTACT MESSAGE ERROR")
+
+            flash(
+                "Unable to send your message right now. Please try again.",
+                "error"
+            )
+
+            return redirect(url_for("contact"))
+
+        finally:
+            safe_close(cursor, connection)
+
+    return render_template("contact.html")
 
 
 # =========================================================
