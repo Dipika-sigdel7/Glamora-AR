@@ -3505,6 +3505,136 @@ def admin_dashboard():
 
 
 # =========================================================
+# ADMIN — MESSAGES INBOX
+# =========================================================
+
+@app.route("/admin/messages")
+def admin_messages():
+
+    if not admin_required():
+        return redirect(url_for("admin_login"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                id,
+                user_id,
+                sender_type,
+                sender_name,
+                sender_email,
+                subject,
+                message,
+                is_read,
+                created_at
+            FROM messages
+            ORDER BY
+                is_read ASC,
+                created_at DESC,
+                id DESC
+        """)
+
+        messages = cursor.fetchall() or []
+
+        cursor.execute("""
+            SELECT COUNT(*) AS total
+            FROM messages
+            WHERE is_read = 0
+        """)
+
+        unread_count = int(
+            (cursor.fetchone() or {}).get("total", 0) or 0
+        )
+
+        return render_template(
+            "admin/messages.html",
+            messages=messages,
+            unread_count=unread_count
+        )
+
+    except Exception:
+        app.logger.exception("ADMIN MESSAGES ERROR")
+
+        flash(
+            "Unable to load messages. Check the Flask terminal.",
+            "error"
+        )
+
+        return render_template(
+            "admin/messages.html",
+            messages=[],
+            unread_count=0
+        ), 500
+
+    finally:
+        safe_close(cursor, connection)
+
+
+# =========================================================
+# ADMIN — MARK MESSAGE AS READ
+# =========================================================
+
+@app.route(
+    "/admin/messages/<int:message_id>/read",
+    methods=["POST"]
+)
+def admin_mark_message_read(message_id):
+
+    if not admin_required():
+        return redirect(url_for("admin_login"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            UPDATE messages
+            SET is_read = 1
+            WHERE id = %s
+        """, (message_id,))
+
+        connection.commit()
+
+        if cursor.rowcount:
+            flash("Message marked as read.", "success")
+        else:
+            flash("Message not found.", "error")
+
+    except Exception:
+        if connection:
+            try:
+                connection.rollback()
+            except Exception:
+                pass
+
+        app.logger.exception("MARK MESSAGE READ ERROR")
+
+        flash("Unable to update the message.", "error")
+
+    finally:
+        safe_close(cursor, connection)
+
+    return redirect(url_for("admin_messages"))
+
+
+
+# =========================================================
 # ADMIN PRODUCTS — SHOW ALL PRODUCTS
 # =========================================================
 
