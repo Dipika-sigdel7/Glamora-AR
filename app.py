@@ -3519,6 +3519,7 @@ def admin_dashboard():
 
 
 
+
 # =========================================================
 # ADMIN — MESSAGES INBOX: USERS AND SELLERS
 # =========================================================
@@ -3583,7 +3584,7 @@ def admin_messages():
         seller_messages = cursor.fetchall() or []
 
         # -------------------------------------------------
-        # FETCH ALL MESSAGES (BACKWARD COMPATIBILITY)
+        # FETCH ALL MESSAGES
         # -------------------------------------------------
         cursor.execute("""
             SELECT
@@ -3603,15 +3604,29 @@ def admin_messages():
         messages = cursor.fetchall() or []
 
         # -------------------------------------------------
-        # UNREAD COUNTS
+        # CALCULATE UNREAD COUNTS
         # -------------------------------------------------
         cursor.execute("""
             SELECT
                 COUNT(*) AS total,
-                SUM(CASE WHEN sender_type = 'user'
-                    THEN 1 ELSE 0 END) AS unread_users,
-                SUM(CASE WHEN sender_type = 'seller'
-                    THEN 1 ELSE 0 END) AS unread_sellers
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN sender_type = 'user' THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS unread_users,
+                COALESCE(
+                    SUM(
+                        CASE
+                            WHEN sender_type = 'seller' THEN 1
+                            ELSE 0
+                        END
+                    ),
+                    0
+                ) AS unread_sellers
             FROM messages
             WHERE is_read = 0
         """)
@@ -3622,6 +3637,9 @@ def admin_messages():
         unread_users = int(counts.get("unread_users") or 0)
         unread_sellers = int(counts.get("unread_sellers") or 0)
 
+        # -------------------------------------------------
+        # RENDER MESSAGES PAGE
+        # -------------------------------------------------
         return render_template(
             "admin/messages.html",
             messages=messages,
@@ -3652,6 +3670,7 @@ def admin_messages():
 
     finally:
         safe_close(cursor, connection)
+
 
 
 # =========================================================
