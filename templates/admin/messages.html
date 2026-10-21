@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -72,6 +73,10 @@
         }
 
         .messages-summary {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
             margin-bottom: 22px;
             padding: 18px 20px;
             border: 1px solid #f0dce2;
@@ -86,8 +91,94 @@
         }
 
         .messages-summary span {
-            margin-left: 8px;
             color: #806b72;
+        }
+
+        .message-tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+            padding: 8px;
+            border: 1px solid #f0dce2;
+            border-radius: 14px;
+            background: #fff;
+        }
+
+        .message-tab {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 13px 20px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            background: transparent;
+            color: #806b72;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .message-tab:hover {
+            background: #fff5f7;
+            color: #a74360;
+        }
+
+        .message-tab.active {
+            color: #fff;
+            background: linear-gradient(135deg, #c85f7a, #a74360);
+            box-shadow: 0 6px 16px rgba(167, 67, 96, .18);
+        }
+
+        .tab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+            padding: 0 7px;
+            border-radius: 20px;
+            background: #fff0f4;
+            color: #a74360;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .message-tab.active .tab-count {
+            background: rgba(255, 255, 255, .22);
+            color: #fff;
+        }
+
+        .message-category {
+            display: none;
+        }
+
+        .message-category.active {
+            display: block;
+        }
+
+        .category-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 0 0 18px;
+        }
+
+        .category-heading h2 {
+            margin: 0;
+            font-family: "Playfair Display", Georgia, serif;
+            font-size: 25px;
+        }
+
+        .category-heading p {
+            margin: 5px 0 0;
+            color: #806b72;
+            font-size: 13px;
         }
 
         .messages-list {
@@ -198,6 +289,7 @@
         .message-empty p {
             margin-bottom: 0;
             color: #806b72;
+            line-height: 1.7;
         }
 
         .message-flash {
@@ -219,6 +311,16 @@
 
             .message-top {
                 flex-direction: column;
+            }
+
+            .message-tabs {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .message-tab {
+                padding: 12px 8px;
+                font-size: 13px;
             }
         }
     </style>
@@ -252,77 +354,230 @@
         {% endwith %}
 
         <section class="messages-summary">
-            <strong>{{ unread_count }}</strong>
-            <span>unread message{{ '' if unread_count == 1 else 's' }}</span>
+            <strong>{{ unread_count|default(0) }}</strong>
+            <span>
+                total unread message{{ '' if unread_count|default(0) == 1 else 's' }}
+            </span>
         </section>
 
-        {% if messages %}
-            <section class="messages-list" aria-label="Received messages">
+        <div class="message-tabs" role="tablist" aria-label="Message categories">
+            <button
+                type="button"
+                class="message-tab active"
+                id="usersTab"
+                role="tab"
+                aria-selected="true"
+                aria-controls="usersPanel"
+                onclick="showMessageCategory('users')"
+            >
+                Users
+                <span class="tab-count">
+                    {{ unread_users|default(0) }}
+                </span>
+            </button>
 
-                {% for item in messages %}
-                    <article class="message-card {{ 'unread' if not item.is_read else '' }}">
+            <button
+                type="button"
+                class="message-tab"
+                id="sellersTab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="sellersPanel"
+                onclick="showMessageCategory('sellers')"
+            >
+                Sellers
+                <span class="tab-count">
+                    {{ unread_sellers|default(0) }}
+                </span>
+            </button>
+        </div>
 
-                        <div class="message-top">
-                            <div>
-                                <h2 class="message-subject">
-                                    {{ item.subject }}
-                                </h2>
+        <!-- =========================================
+             USERS MESSAGES
+        ========================================== -->
+        <section
+            class="message-category active"
+            id="usersPanel"
+            role="tabpanel"
+            aria-labelledby="usersTab"
+        >
+            <div class="category-heading">
+                <div>
+                    <h2>User Messages</h2>
+                    <p>Messages sent by customers and regular users.</p>
+                </div>
+            </div>
 
-                                <p class="message-meta">
-                                    From: <strong>{{ item.sender_name }}</strong><br>
-                                    Email:
-                                    <a href="mailto:{{ item.sender_email }}">
-                                        {{ item.sender_email }}
-                                    </a><br>
-                                    Received:
-                                    {% if item.created_at %}
-                                        {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}
-                                    {% else %}
-                                        Date unavailable
-                                    {% endif %}
-                                </p>
+            {% set current_messages = user_messages|default([], true) %}
+
+            {% if current_messages %}
+                <div class="messages-list">
+                    {% for item in current_messages %}
+                        <article class="message-card {{ 'unread' if not item.is_read else '' }}">
+                            <div class="message-top">
+                                <div>
+                                    <h3 class="message-subject">
+                                        {{ item.subject or 'No subject' }}
+                                    </h3>
+
+                                    <p class="message-meta">
+                                        From: <strong>{{ item.sender_name or 'Unknown sender' }}</strong><br>
+
+                                        Email:
+                                        <a href="mailto:{{ item.sender_email }}">
+                                            {{ item.sender_email or 'Not provided' }}
+                                        </a><br>
+
+                                        Received:
+                                        {% if item.created_at %}
+                                            {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                        {% else %}
+                                            Date unavailable
+                                        {% endif %}
+                                    </p>
+                                </div>
+
+                                <div class="message-badges">
+                                    <span class="message-badge">User</span>
+
+                                    <span class="message-badge {{ 'read' if item.is_read else '' }}">
+                                        {{ 'Read' if item.is_read else 'Unread' }}
+                                    </span>
+                                </div>
                             </div>
 
-                            <div class="message-badges">
-                                <span class="message-badge">
-                                    {{ 'Seller' if item.sender_type == 'seller' else 'Customer' }}
-                                </span>
+                            <p class="message-body">{{ item.message }}</p>
 
-                                <span class="message-badge {{ 'read' if item.is_read else '' }}">
-                                    {{ 'Read' if item.is_read else 'Unread' }}
-                                </span>
+                            {% if not item.is_read %}
+                                <div class="message-footer">
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('admin_mark_message_read', message_id=item.id) }}"
+                                    >
+                                        <button class="message-action" type="submit">
+                                            Mark as Read
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="message-empty">
+                    <h2>No user messages yet</h2>
+                    <p>
+                        Messages submitted by users will appear in this category.
+                    </p>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- =========================================
+             SELLERS MESSAGES
+        ========================================== -->
+        <section
+            class="message-category"
+            id="sellersPanel"
+            role="tabpanel"
+            aria-labelledby="sellersTab"
+            hidden
+        >
+            <div class="category-heading">
+                <div>
+                    <h2>Seller Messages</h2>
+                    <p>Messages sent by registered Glamora AR sellers.</p>
+                </div>
+            </div>
+
+            {% set current_messages = seller_messages|default([], true) %}
+
+            {% if current_messages %}
+                <div class="messages-list">
+                    {% for item in current_messages %}
+                        <article class="message-card {{ 'unread' if not item.is_read else '' }}">
+                            <div class="message-top">
+                                <div>
+                                    <h3 class="message-subject">
+                                        {{ item.subject or 'No subject' }}
+                                    </h3>
+
+                                    <p class="message-meta">
+                                        From: <strong>{{ item.sender_name or 'Unknown sender' }}</strong><br>
+
+                                        Email:
+                                        <a href="mailto:{{ item.sender_email }}">
+                                            {{ item.sender_email or 'Not provided' }}
+                                        </a><br>
+
+                                        Received:
+                                        {% if item.created_at %}
+                                            {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                        {% else %}
+                                            Date unavailable
+                                        {% endif %}
+                                    </p>
+                                </div>
+
+                                <div class="message-badges">
+                                    <span class="message-badge">Seller</span>
+
+                                    <span class="message-badge {{ 'read' if item.is_read else '' }}">
+                                        {{ 'Read' if item.is_read else 'Unread' }}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-                        <p class="message-body">{{ item.message }}</p>
+                            <p class="message-body">{{ item.message }}</p>
 
-                        {% if not item.is_read %}
-                            <div class="message-footer">
-                                <form
-                                    method="POST"
-                                    action="{{ url_for('admin_mark_message_read', message_id=item.id) }}"
-                                >
-                                    <button class="message-action" type="submit">
-                                        Mark as Read
-                                    </button>
-                                </form>
-                            </div>
-                        {% endif %}
-
-                    </article>
-                {% endfor %}
-
-            </section>
-        {% else %}
-            <section class="message-empty">
-                <h2>No messages yet</h2>
-                <p>
-                    Messages submitted through the Glamora AR contact form
-                    will appear here.
-                </p>
-            </section>
-        {% endif %}
+                            {% if not item.is_read %}
+                                <div class="message-footer">
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('admin_mark_message_read', message_id=item.id) }}"
+                                    >
+                                        <button class="message-action" type="submit">
+                                            Mark as Read
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="message-empty">
+                    <h2>No seller messages yet</h2>
+                    <p>
+                        Messages sent by registered sellers will appear in this category.
+                    </p>
+                </div>
+            {% endif %}
+        </section>
 
     </main>
+
+    <script>
+        function showMessageCategory(category) {
+            const usersPanel = document.getElementById("usersPanel");
+            const sellersPanel = document.getElementById("sellersPanel");
+            const usersTab = document.getElementById("usersTab");
+            const sellersTab = document.getElementById("sellersTab");
+
+            const showUsers = category === "users";
+
+            usersPanel.classList.toggle("active", showUsers);
+            sellersPanel.classList.toggle("active", !showUsers);
+
+            usersPanel.hidden = !showUsers;
+            sellersPanel.hidden = showUsers;
+
+            usersTab.classList.toggle("active", showUsers);
+            sellersTab.classList.toggle("active", !showUsers);
+
+            usersTab.setAttribute("aria-selected", String(showUsers));
+            sellersTab.setAttribute("aria-selected", String(!showUsers));
+        }
+    </script>
 </body>
 </html>
