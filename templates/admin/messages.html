@@ -6,10 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messages — Glamora AR Admin</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/admin.css') }}"
-    >
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/admin.css') }}">
 
     <style>
         .messages-page {
@@ -253,14 +251,9 @@
             color: #66575d;
         }
 
-        .message-badge.approved {
-            background: #e6f6ed;
+        .message-badge.submitted {
+            background: #e5f6eb;
             color: #247447;
-        }
-
-        .message-badge.rejected {
-            background: #fdebed;
-            color: #a52f42;
         }
 
         .message-body {
@@ -285,7 +278,6 @@
             background: linear-gradient(135deg, #c85f7a, #a74360);
         }
 
-        /* REPLY FORM */
         .reply-form {
             display: grid;
             gap: 12px;
@@ -554,12 +546,22 @@
                                     <span class="message-badge {{ 'read' if item.is_read else '' }}">
                                         {{ 'Read' if item.is_read else 'Unread' }}
                                     </span>
+
+                                    {% if item.invitation_status == 'sent' %}
+                                        <span class="message-badge">
+                                            Application Invited
+                                        </span>
+                                    {% elif item.invitation_status == 'submitted' %}
+                                        <span class="message-badge submitted">
+                                            Application Submitted
+                                        </span>
+                                    {% endif %}
                                 </div>
                             </div>
 
                             <p class="message-body">{{ item.message }}</p>
 
-                            <!-- USER REPLY -->
+                            <!-- USER REPLY + APPLICATION INVITATION -->
                             <form
                                 class="reply-form"
                                 method="POST"
@@ -575,12 +577,35 @@
                                     rows="3"
                                     maxlength="10000"
                                     required
-                                    placeholder="Write a reply to this user..."
+                                    placeholder="Write a reply or invite this user to become a seller..."
                                 >{{ item.reply or '' }}</textarea>
 
-                                <button type="submit" class="reply-btn">
-                                    {{ 'Update Reply' if item.reply else 'Reply' }}
-                                </button>
+                                {% if item.invitation_status == 'sent' %}
+                                    <p class="message-meta">
+                                        An application invitation has been sent.
+                                    </p>
+                                {% elif item.invitation_status == 'submitted' %}
+                                    <p class="message-meta">
+                                        This user has submitted a seller application.
+                                    </p>
+                                {% endif %}
+
+                                <div class="reply-actions">
+                                    <button type="submit" class="reply-btn">
+                                        {{ 'Update Reply' if item.reply else 'Send Reply' }}
+                                    </button>
+
+                                    {% if item.invitation_status != 'submitted' %}
+                                        <button
+                                            type="submit"
+                                            name="send_application"
+                                            value="yes"
+                                            class="reply-btn application-btn"
+                                        >
+                                            Send Reply &amp; Application
+                                        </button>
+                                    {% endif %}
+                                </div>
                             </form>
 
                             {% if item.reply %}
@@ -589,9 +614,7 @@
                                     <p>{{ item.reply }}</p>
 
                                     {% if item.replied_at %}
-                                        <small>
-                                            Replied at: {{ item.replied_at }}
-                                        </small>
+                                        <small>Replied at: {{ item.replied_at }}</small>
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -666,7 +689,6 @@
 
                                 <div class="message-badges">
                                     <span class="message-badge">Seller</span>
-
                                     <span class="message-badge {{ 'read' if item.is_read else '' }}">
                                         {{ 'Read' if item.is_read else 'Unread' }}
                                     </span>
@@ -676,7 +698,7 @@
                                             Application Invited
                                         </span>
                                     {% elif item.invitation_status == 'submitted' %}
-                                        <span class="message-badge approved">
+                                        <span class="message-badge submitted">
                                             Application Submitted
                                         </span>
                                     {% endif %}
@@ -685,7 +707,7 @@
 
                             <p class="message-body">{{ item.message }}</p>
 
-                            <!-- ADMIN REPLY + APPLICATION INVITATION -->
+                            <!-- SELLER REPLY + APPLICATION INVITATION -->
                             <form
                                 class="reply-form"
                                 method="POST"
@@ -704,13 +726,13 @@
                                     placeholder="Write a reply or invite this seller to apply..."
                                 >{{ item.reply or '' }}</textarea>
 
-                                {% if item.invitation_status == 'submitted' %}
+                                {% if item.invitation_status == 'sent' %}
                                     <p class="message-meta">
-                                        This seller has already submitted an application.
+                                        An application invitation has been sent.
                                     </p>
-                                {% elif item.invitation_status == 'sent' %}
+                                {% elif item.invitation_status == 'submitted' %}
                                     <p class="message-meta">
-                                        An application invitation has been sent to this seller.
+                                        This seller has submitted an application.
                                     </p>
                                 {% endif %}
 
@@ -738,9 +760,7 @@
                                     <p>{{ item.reply }}</p>
 
                                     {% if item.replied_at %}
-                                        <small>
-                                            Replied at: {{ item.replied_at }}
-                                        </small>
+                                        <small>Replied at: {{ item.replied_at }}</small>
                                     {% endif %}
                                 </div>
                             {% endif %}
