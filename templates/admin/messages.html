@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messages — Glamora AR Admin</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/admin.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
 
     <style>
         .messages-page {
@@ -251,6 +253,16 @@
             color: #66575d;
         }
 
+        .message-badge.approved {
+            background: #e6f6ed;
+            color: #247447;
+        }
+
+        .message-badge.rejected {
+            background: #fdebed;
+            color: #a52f42;
+        }
+
         .message-body {
             margin: 0;
             padding: 16px;
@@ -309,6 +321,12 @@
             box-shadow: 0 0 0 3px rgba(200, 95, 122, .12);
         }
 
+        .reply-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
         .reply-btn {
             justify-self: start;
             display: inline-flex;
@@ -329,6 +347,14 @@
         .reply-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 16px rgba(167, 67, 96, .2);
+        }
+
+        .application-btn {
+            background: linear-gradient(135deg, #8e4761, #6f2945);
+        }
+
+        .application-btn:hover {
+            box-shadow: 0 6px 16px rgba(111, 41, 69, .22);
         }
 
         .admin-reply {
@@ -407,7 +433,12 @@
                 font-size: 13px;
             }
 
-            .reply-btn {
+            .reply-actions {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .reply-actions .reply-btn {
                 width: 100%;
             }
         }
@@ -476,9 +507,7 @@
             </button>
         </div>
 
-        <!-- =========================================
-             USER MESSAGES
-        ========================================== -->
+        <!-- USER MESSAGES -->
         <section
             class="message-category active"
             id="usersPanel"
@@ -505,7 +534,8 @@
                                     </h3>
 
                                     <p class="message-meta">
-                                        From: <strong>{{ item.sender_name or 'Unknown sender' }}</strong><br>
+                                        From:
+                                        <strong>{{ item.sender_name or 'Unknown sender' }}</strong><br>
                                         Email:
                                         <a href="mailto:{{ item.sender_email }}">
                                             {{ item.sender_email or 'Not provided' }}
@@ -529,7 +559,7 @@
 
                             <p class="message-body">{{ item.message }}</p>
 
-                            <!-- ADMIN REPLY -->
+                            <!-- USER REPLY -->
                             <form
                                 class="reply-form"
                                 method="POST"
@@ -560,7 +590,7 @@
 
                                     {% if item.replied_at %}
                                         <small>
-                                            Replied at: {{ item.replied_at.strftime('%Y-%m-%d %H:%M') if item.replied_at.strftime is defined else item.replied_at }}
+                                            Replied at: {{ item.replied_at }}
                                         </small>
                                     {% endif %}
                                 </div>
@@ -591,9 +621,7 @@
             {% endif %}
         </section>
 
-        <!-- =========================================
-             SELLER MESSAGES
-        ========================================== -->
+        <!-- SELLER MESSAGES -->
         <section
             class="message-category"
             id="sellersPanel"
@@ -621,7 +649,8 @@
                                     </h3>
 
                                     <p class="message-meta">
-                                        From: <strong>{{ item.sender_name or 'Unknown sender' }}</strong><br>
+                                        From:
+                                        <strong>{{ item.sender_name or 'Unknown sender' }}</strong><br>
                                         Email:
                                         <a href="mailto:{{ item.sender_email }}">
                                             {{ item.sender_email or 'Not provided' }}
@@ -637,15 +666,26 @@
 
                                 <div class="message-badges">
                                     <span class="message-badge">Seller</span>
+
                                     <span class="message-badge {{ 'read' if item.is_read else '' }}">
                                         {{ 'Read' if item.is_read else 'Unread' }}
                                     </span>
+
+                                    {% if item.invitation_status == 'sent' %}
+                                        <span class="message-badge">
+                                            Application Invited
+                                        </span>
+                                    {% elif item.invitation_status == 'submitted' %}
+                                        <span class="message-badge approved">
+                                            Application Submitted
+                                        </span>
+                                    {% endif %}
                                 </div>
                             </div>
 
                             <p class="message-body">{{ item.message }}</p>
 
-                            <!-- ADMIN REPLY -->
+                            <!-- ADMIN REPLY + APPLICATION INVITATION -->
                             <form
                                 class="reply-form"
                                 method="POST"
@@ -661,12 +701,35 @@
                                     rows="3"
                                     maxlength="10000"
                                     required
-                                    placeholder="Write a reply to this seller..."
+                                    placeholder="Write a reply or invite this seller to apply..."
                                 >{{ item.reply or '' }}</textarea>
 
-                                <button type="submit" class="reply-btn">
-                                    {{ 'Update Reply' if item.reply else 'Reply' }}
-                                </button>
+                                {% if item.invitation_status == 'submitted' %}
+                                    <p class="message-meta">
+                                        This seller has already submitted an application.
+                                    </p>
+                                {% elif item.invitation_status == 'sent' %}
+                                    <p class="message-meta">
+                                        An application invitation has been sent to this seller.
+                                    </p>
+                                {% endif %}
+
+                                <div class="reply-actions">
+                                    <button type="submit" class="reply-btn">
+                                        {{ 'Update Reply' if item.reply else 'Send Reply' }}
+                                    </button>
+
+                                    {% if item.invitation_status != 'submitted' %}
+                                        <button
+                                            type="submit"
+                                            name="send_application"
+                                            value="yes"
+                                            class="reply-btn application-btn"
+                                        >
+                                            Send Reply &amp; Application
+                                        </button>
+                                    {% endif %}
+                                </div>
                             </form>
 
                             {% if item.reply %}
@@ -676,7 +739,7 @@
 
                                     {% if item.replied_at %}
                                         <small>
-                                            Replied at: {{ item.replied_at.strftime('%Y-%m-%d %H:%M') if item.replied_at.strftime is defined else item.replied_at }}
+                                            Replied at: {{ item.replied_at }}
                                         </small>
                                     {% endif %}
                                 </div>
