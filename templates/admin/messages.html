@@ -273,6 +273,90 @@
             background: linear-gradient(135deg, #c85f7a, #a74360);
         }
 
+        /* REPLY FORM */
+        .reply-form {
+            display: grid;
+            gap: 12px;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #f0dce2;
+        }
+
+        .reply-form label {
+            color: #2b1b20;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .reply-form textarea {
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 100px;
+            padding: 14px;
+            border: 1px solid #ead1da;
+            border-radius: 10px;
+            background: #fffafd;
+            color: #2b1b20;
+            font: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+        }
+
+        .reply-form textarea:focus {
+            border-color: #c85f7a;
+            box-shadow: 0 0 0 3px rgba(200, 95, 122, .12);
+        }
+
+        .reply-btn {
+            justify-self: start;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 20px;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #c85f7a, #a74360);
+            color: #fff;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .reply-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(167, 67, 96, .2);
+        }
+
+        .admin-reply {
+            margin-top: 16px;
+            padding: 16px;
+            border: 1px solid #f0dce2;
+            border-left: 4px solid #c85f7a;
+            border-radius: 10px;
+            background: #fff5f7;
+            overflow-wrap: anywhere;
+        }
+
+        .admin-reply strong {
+            color: #a74360;
+            font-size: 13px;
+        }
+
+        .admin-reply p {
+            margin: 8px 0;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .admin-reply small {
+            color: #806b72;
+            font-size: 12px;
+        }
+
         .message-empty {
             padding: 55px 24px;
             border: 1px dashed #e8c7d1;
@@ -321,6 +405,10 @@
             .message-tab {
                 padding: 12px 8px;
                 font-size: 13px;
+            }
+
+            .reply-btn {
+                width: 100%;
             }
         }
     </style>
@@ -371,9 +459,7 @@
                 onclick="showMessageCategory('users')"
             >
                 Users
-                <span class="tab-count">
-                    {{ unread_users|default(0) }}
-                </span>
+                <span class="tab-count">{{ unread_users|default(0) }}</span>
             </button>
 
             <button
@@ -386,14 +472,12 @@
                 onclick="showMessageCategory('sellers')"
             >
                 Sellers
-                <span class="tab-count">
-                    {{ unread_sellers|default(0) }}
-                </span>
+                <span class="tab-count">{{ unread_sellers|default(0) }}</span>
             </button>
         </div>
 
         <!-- =========================================
-             USERS MESSAGES
+             USER MESSAGES
         ========================================== -->
         <section
             class="message-category active"
@@ -422,12 +506,10 @@
 
                                     <p class="message-meta">
                                         From: <strong>{{ item.sender_name or 'Unknown sender' }}</strong><br>
-
                                         Email:
                                         <a href="mailto:{{ item.sender_email }}">
                                             {{ item.sender_email or 'Not provided' }}
                                         </a><br>
-
                                         Received:
                                         {% if item.created_at %}
                                             {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}
@@ -439,7 +521,6 @@
 
                                 <div class="message-badges">
                                     <span class="message-badge">User</span>
-
                                     <span class="message-badge {{ 'read' if item.is_read else '' }}">
                                         {{ 'Read' if item.is_read else 'Unread' }}
                                     </span>
@@ -447,6 +528,43 @@
                             </div>
 
                             <p class="message-body">{{ item.message }}</p>
+
+                            <!-- ADMIN REPLY -->
+                            <form
+                                class="reply-form"
+                                method="POST"
+                                action="{{ url_for('admin_reply_to_message', message_id=item.id) }}"
+                            >
+                                <label for="reply-user-{{ item.id }}">
+                                    Reply to this user
+                                </label>
+
+                                <textarea
+                                    id="reply-user-{{ item.id }}"
+                                    name="reply"
+                                    rows="3"
+                                    maxlength="10000"
+                                    required
+                                    placeholder="Write a reply to this user..."
+                                >{{ item.reply or '' }}</textarea>
+
+                                <button type="submit" class="reply-btn">
+                                    {{ 'Update Reply' if item.reply else 'Reply' }}
+                                </button>
+                            </form>
+
+                            {% if item.reply %}
+                                <div class="admin-reply">
+                                    <strong>Admin Reply</strong>
+                                    <p>{{ item.reply }}</p>
+
+                                    {% if item.replied_at %}
+                                        <small>
+                                            Replied at: {{ item.replied_at.strftime('%Y-%m-%d %H:%M') if item.replied_at.strftime is defined else item.replied_at }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
 
                             {% if not item.is_read %}
                                 <div class="message-footer">
@@ -474,7 +592,7 @@
         </section>
 
         <!-- =========================================
-             SELLERS MESSAGES
+             SELLER MESSAGES
         ========================================== -->
         <section
             class="message-category"
@@ -504,12 +622,10 @@
 
                                     <p class="message-meta">
                                         From: <strong>{{ item.sender_name or 'Unknown sender' }}</strong><br>
-
                                         Email:
                                         <a href="mailto:{{ item.sender_email }}">
                                             {{ item.sender_email or 'Not provided' }}
                                         </a><br>
-
                                         Received:
                                         {% if item.created_at %}
                                             {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}
@@ -521,7 +637,6 @@
 
                                 <div class="message-badges">
                                     <span class="message-badge">Seller</span>
-
                                     <span class="message-badge {{ 'read' if item.is_read else '' }}">
                                         {{ 'Read' if item.is_read else 'Unread' }}
                                     </span>
@@ -529,6 +644,43 @@
                             </div>
 
                             <p class="message-body">{{ item.message }}</p>
+
+                            <!-- ADMIN REPLY -->
+                            <form
+                                class="reply-form"
+                                method="POST"
+                                action="{{ url_for('admin_reply_to_message', message_id=item.id) }}"
+                            >
+                                <label for="reply-seller-{{ item.id }}">
+                                    Reply to this seller
+                                </label>
+
+                                <textarea
+                                    id="reply-seller-{{ item.id }}"
+                                    name="reply"
+                                    rows="3"
+                                    maxlength="10000"
+                                    required
+                                    placeholder="Write a reply to this seller..."
+                                >{{ item.reply or '' }}</textarea>
+
+                                <button type="submit" class="reply-btn">
+                                    {{ 'Update Reply' if item.reply else 'Reply' }}
+                                </button>
+                            </form>
+
+                            {% if item.reply %}
+                                <div class="admin-reply">
+                                    <strong>Admin Reply</strong>
+                                    <p>{{ item.reply }}</p>
+
+                                    {% if item.replied_at %}
+                                        <small>
+                                            Replied at: {{ item.replied_at.strftime('%Y-%m-%d %H:%M') if item.replied_at.strftime is defined else item.replied_at }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
 
                             {% if not item.is_read %}
                                 <div class="message-footer">
