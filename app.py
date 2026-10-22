@@ -3430,22 +3430,15 @@ def admin_logout():
     )
 
 
-
 # =========================================================
-# ADMIN — REPLY TO SELLER MESSAGE
+# ADMIN DASHBOARD — SELLER APPLICATIONS
 # =========================================================
 
-@app.route("/admin/messages/<int:message_id>/reply", methods=["POST"])
-def admin_reply_to_message(message_id):
+@app.route("/admin/dashboard")
+def admin_dashboard():
 
     if not admin_required():
         return redirect(url_for("admin_login"))
-
-    reply_text = request.form.get("reply", "").strip()
-
-    if not reply_text:
-        flash("Please enter a reply before sending.", "error")
-        return redirect(url_for("admin_messages"))
 
     connection = None
     cursor = None
@@ -3458,41 +3451,97 @@ def admin_reply_to_message(message_id):
 
         cursor = connection.cursor(dictionary=True)
 
+        # Get all seller applications for the dashboard
         cursor.execute("""
-            SELECT id
+            SELECT
+                s.id,
+                s.user_id,
+                s.shop_name,
+                s.business_type,
+                s.phone,
+                s.address,
+                s.description,
+                s.status,
+                s.admin_note,
+                s.created_at,
+                u.name AS owner_name,
+                u.email AS owner_email
+            FROM sellers s
+            INNER JOIN users u ON u.id = s.user_id
+            ORDER BY
+                CASE s.status
+                    WHEN 'pending' THEN 0
+                    WHEN 'approved' THEN 1
+                    WHEN 'rejected' THEN 2
+                    ELSE 3
+                END,
+                s.created_at DESC
+        """)
+
+        sellers = cursor.fetchall() or []
+
+        # Total sellers/applications
+        seller_count = len(sellers)
+
+        # Pending applications
+        pending_seller_count = sum(
+            1 for seller in sellers
+            if seller.get("status") == "pending"
+        )
+
+        # Approved sellers
+        approved_seller_count = sum(
+            1 for seller in sellers
+            if seller.get("status") == "approved"
+        )
+
+        # Rejected or suspended sellers
+        inactive_seller_count = sum(
+            1 for seller in sellers
+            if seller.get("status") in ("rejected", "suspended")
+        )
+
+        # Unread admin messages
+        cursor.execute("""
+            SELECT COUNT(*) AS total
             FROM messages
-            WHERE id = %s
-              AND sender_type = 'seller'
-        """, (message_id,))
+            WHERE is_read = 0
+        """)
 
-        message = cursor.fetchone()
+        unread_message_count = int(
+            (cursor.fetchone() or {}).get("total", 0) or 0
+        )
 
-        if not message:
-            flash("Seller message not found.", "error")
-            return redirect(url_for("admin_messages"))
+        return render_template(
+            "admin/dashboard.html",
+            sellers=sellers,
+            seller_count=seller_count,
+            pending_seller_count=pending_seller_count,
+            approved_seller_count=approved_seller_count,
+            inactive_seller_count=inactive_seller_count,
+            unread_message_count=unread_message_count
+        )
 
-        cursor.execute("""
-            UPDATE messages
-            SET reply = %s,
-                replied_at = NOW()
-            WHERE id = %s
-              AND sender_type = 'seller'
-        """, (reply_text, message_id))
+    except Exception as error:
+        print("ADMIN DASHBOARD ERROR:", repr(error))
 
-        connection.commit()
-        flash("Reply sent successfully.", "success")
+        flash(
+            "Unable to load the admin dashboard. Check the Flask terminal.",
+            "error"
+        )
 
-    except Exception as e:
-        if connection:
-            connection.rollback()
-
-        print("Error replying to seller message:", e)
-        flash("Unable to send the reply. Please try again.", "error")
+        return render_template(
+            "admin/dashboard.html",
+            sellers=[],
+            seller_count=0,
+            pending_seller_count=0,
+            approved_seller_count=0,
+            inactive_seller_count=0,
+            unread_message_count=0
+        )
 
     finally:
         safe_close(cursor, connection)
-
-    return redirect(url_for("admin_messages"))
 
 
 
@@ -3531,7 +3580,9 @@ def admin_messages():
                 subject,
                 message,
                 is_read,
-                created_at
+                created_at,
+                reply,
+                replied_at
             FROM messages
             WHERE sender_type = 'user'
             ORDER BY created_at DESC, id DESC
@@ -3540,7 +3591,7 @@ def admin_messages():
         user_messages = cursor.fetchall() or []
 
         # -------------------------------------------------
-        # FETCH SELLER MESSAGES
+        # FETCH SELLER MESSAGES INCLUDING ADMIN REPLIES
         # -------------------------------------------------
         cursor.execute("""
             SELECT
@@ -3552,7 +3603,9 @@ def admin_messages():
                 subject,
                 message,
                 is_read,
-                created_at
+                created_at,
+                reply,
+                replied_at
             FROM messages
             WHERE sender_type = 'seller'
             ORDER BY created_at DESC, id DESC
@@ -3573,7 +3626,9 @@ def admin_messages():
                 subject,
                 message,
                 is_read,
-                created_at
+                created_at,
+                reply,
+                replied_at
             FROM messages
             ORDER BY created_at DESC, id DESC
         """)
@@ -3649,7 +3704,6 @@ def admin_messages():
         safe_close(cursor, connection)
 
 
-
 # =========================================================
 # ADMIN — MARK MESSAGE AS READ
 # =========================================================
@@ -3680,11 +3734,11 @@ def admin_mark_message_read(message_id):
             WHERE id = %s
         """, (message_id,))
 
-        connection.commit()
-
         if cursor.rowcount:
+            connection.commit()
             flash("Message marked as read.", "success")
         else:
+            connection.rollback()
             flash("Message not found.", "error")
 
     except Exception:
@@ -3697,6 +3751,87 @@ def admin_mark_message_read(message_id):
         app.logger.exception("MARK MESSAGE READ ERROR")
 
         flash("Unable to update the message.", "error")
+
+    finally:
+        safe_close(cursor, connection)
+
+    return redirect(url_for("admin_messages"))
+
+
+# =========================================================
+# ADMIN — REPLY TO SELLER MESSAGE
+# =========================================================
+
+@app.route(
+    "/admin/messages/<int:message_id>/reply",
+    methods=["POST"]
+)
+def admin_reply_to_message(message_id):
+
+    if not admin_required():
+        return redirect(url_for("admin_login"))
+
+    reply_text = request.form.get("reply", "").strip()
+
+    if not reply_text:
+        flash("Please enter a reply before sending.", "error")
+        return redirect(url_for("admin_messages"))
+
+    if len(reply_text) > 10000:
+        flash("Reply cannot exceed 10,000 characters.", "error")
+        return redirect(url_for("admin_messages"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        # Ensure the selected message was sent by a seller.
+        cursor.execute("""
+            SELECT id
+            FROM messages
+            WHERE id = %s
+              AND sender_type = 'seller'
+            LIMIT 1
+        """, (message_id,))
+
+        seller_message = cursor.fetchone()
+
+        if not seller_message:
+            flash("Seller message not found.", "error")
+            return redirect(url_for("admin_messages"))
+
+        # Save or update the admin's reply.
+        cursor.execute("""
+            UPDATE messages
+            SET
+                reply = %s,
+                replied_at = NOW(),
+                is_read = 1
+            WHERE id = %s
+              AND sender_type = 'seller'
+        """, (reply_text, message_id))
+
+        connection.commit()
+
+        flash("Reply saved successfully.", "success")
+
+    except Exception:
+        if connection:
+            try:
+                connection.rollback()
+            except Exception:
+                pass
+
+        app.logger.exception("ADMIN REPLY ERROR")
+
+        flash("Unable to save the reply. Please try again.", "error")
 
     finally:
         safe_close(cursor, connection)
