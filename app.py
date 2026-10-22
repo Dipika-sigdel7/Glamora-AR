@@ -3431,7 +3431,7 @@ def admin_logout():
 
 
 # =========================================================
-# ADMIN DASHBOARD — SELLER MANAGEMENT
+# ADMIN DASHBOARD — SELLER APPLICATIONS
 # =========================================================
 
 @app.route("/admin/dashboard")
@@ -3451,60 +3451,7 @@ def admin_dashboard():
 
         cursor = connection.cursor(dictionary=True)
 
-        # -----------------------------------------------------
-        # TOTAL REGISTERED SELLERS
-        # -----------------------------------------------------
-        cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM sellers
-        """)
-
-        seller_count = int(
-            (cursor.fetchone() or {}).get("total", 0) or 0
-        )
-
-        # -----------------------------------------------------
-        # PENDING APPLICATIONS
-        # -----------------------------------------------------
-        cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM sellers
-            WHERE status = 'pending'
-        """)
-
-        pending_seller_count = int(
-            (cursor.fetchone() or {}).get("total", 0) or 0
-        )
-
-        # -----------------------------------------------------
-        # APPROVED SELLERS
-        # -----------------------------------------------------
-        cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM sellers
-            WHERE status = 'approved'
-        """)
-
-        approved_seller_count = int(
-            (cursor.fetchone() or {}).get("total", 0) or 0
-        )
-
-        # -----------------------------------------------------
-        # REJECTED OR SUSPENDED SELLERS
-        # -----------------------------------------------------
-        cursor.execute("""
-            SELECT COUNT(*) AS total
-            FROM sellers
-            WHERE status IN ('rejected', 'suspended')
-        """)
-
-        inactive_seller_count = int(
-            (cursor.fetchone() or {}).get("total", 0) or 0
-        )
-
-        # -----------------------------------------------------
-        # FETCH SELLER APPLICATIONS FOR THE DASHBOARD TABLE
-        # -----------------------------------------------------
+        # Get all seller applications for the dashboard
         cursor.execute("""
             SELECT
                 s.id,
@@ -3517,28 +3464,44 @@ def admin_dashboard():
                 s.status,
                 s.admin_note,
                 s.created_at,
-                s.updated_at,
                 u.name AS owner_name,
                 u.email AS owner_email
-            FROM sellers AS s
-            INNER JOIN users AS u
-                ON u.id = s.user_id
+            FROM sellers s
+            INNER JOIN users u ON u.id = s.user_id
             ORDER BY
                 CASE s.status
-                    WHEN 'pending' THEN 1
-                    WHEN 'approved' THEN 2
-                    WHEN 'rejected' THEN 3
-                    WHEN 'suspended' THEN 4
-                    ELSE 5
+                    WHEN 'pending' THEN 0
+                    WHEN 'approved' THEN 1
+                    WHEN 'rejected' THEN 2
+                    ELSE 3
                 END,
                 s.created_at DESC
         """)
 
         sellers = cursor.fetchall() or []
 
-        # -----------------------------------------------------
-        # UNREAD MESSAGES
-        # -----------------------------------------------------
+        # Total sellers/applications
+        seller_count = len(sellers)
+
+        # Pending applications
+        pending_seller_count = sum(
+            1 for seller in sellers
+            if seller.get("status") == "pending"
+        )
+
+        # Approved sellers
+        approved_seller_count = sum(
+            1 for seller in sellers
+            if seller.get("status") == "approved"
+        )
+
+        # Rejected or suspended sellers
+        inactive_seller_count = sum(
+            1 for seller in sellers
+            if seller.get("status") in ("rejected", "suspended")
+        )
+
+        # Unread admin messages
         cursor.execute("""
             SELECT COUNT(*) AS total
             FROM messages
@@ -3549,34 +3512,31 @@ def admin_dashboard():
             (cursor.fetchone() or {}).get("total", 0) or 0
         )
 
-        # -----------------------------------------------------
-        # RENDER DASHBOARD
-        # -----------------------------------------------------
         return render_template(
             "admin/dashboard.html",
+            sellers=sellers,
             seller_count=seller_count,
             pending_seller_count=pending_seller_count,
             approved_seller_count=approved_seller_count,
             inactive_seller_count=inactive_seller_count,
-            sellers=sellers,
             unread_message_count=unread_message_count
         )
 
     except Exception as error:
-        print("ADMIN SELLER DASHBOARD ERROR:", repr(error))
+        print("ADMIN DASHBOARD ERROR:", repr(error))
 
         flash(
-            "Unable to load seller dashboard. Check the Flask terminal.",
+            "Unable to load the admin dashboard. Check the Flask terminal.",
             "error"
         )
 
         return render_template(
             "admin/dashboard.html",
+            sellers=[],
             seller_count=0,
             pending_seller_count=0,
             approved_seller_count=0,
             inactive_seller_count=0,
-            sellers=[],
             unread_message_count=0
         )
 
