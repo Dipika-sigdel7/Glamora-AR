@@ -3758,8 +3758,9 @@ def admin_mark_message_read(message_id):
     return redirect(url_for("admin_messages"))
 
 
+
 # =========================================================
-# ADMIN — REPLY TO SELLER MESSAGE
+# ADMIN — REPLY TO SELLER AND SEND APPLICATION INVITATION
 # =========================================================
 
 @app.route(
@@ -3772,6 +3773,7 @@ def admin_reply_to_message(message_id):
         return redirect(url_for("admin_login"))
 
     reply_text = request.form.get("reply", "").strip()
+    send_application = request.form.get("send_application") == "yes"
 
     if not reply_text:
         flash("Please enter a reply before sending.", "error")
@@ -3785,6 +3787,8 @@ def admin_reply_to_message(message_id):
     cursor = None
 
     try:
+        import secrets
+
         connection = get_db_connection()
 
         if connection is None:
@@ -3792,9 +3796,15 @@ def admin_reply_to_message(message_id):
 
         cursor = connection.cursor(dictionary=True)
 
-        # Ensure the selected message was sent by a seller.
+        # Find the original seller message.
         cursor.execute("""
-            SELECT id
+            SELECT
+                id,
+                user_id,
+                sender_name,
+                sender_email,
+                invitation_token,
+                invitation_status
             FROM messages
             WHERE id = %s
               AND sender_type = 'seller'
@@ -3807,20 +3817,53 @@ def admin_reply_to_message(message_id):
             flash("Seller message not found.", "error")
             return redirect(url_for("admin_messages"))
 
-        # Save or update the admin's reply.
+        # Create an invitation token when requested.
+        invitation_token = seller_message.get("invitation_token")
+
+        if send_application:
+            if seller_message.get("invitation_status") == "submitted":
+                flash(
+                    "This seller has already submitted the application.",
+                    "error"
+                )
+                return redirect(url_for("admin_messages"))
+
+            if not invitation_token:
+                invitation_token = secrets.token_urlsafe(32)
+
+            invitation_status = "sent"
+        else:
+            invitation_status = (
+                seller_message.get("invitation_status") or "none"
+            )
+
+        # Save the admin's reply and invitation together.
         cursor.execute("""
             UPDATE messages
             SET
                 reply = %s,
                 replied_at = NOW(),
-                is_read = 1
+                is_read = 1,
+                invitation_token = %s,
+                invitation_status = %s
             WHERE id = %s
               AND sender_type = 'seller'
-        """, (reply_text, message_id))
+        """, (
+            reply_text,
+            invitation_token,
+            invitation_status,
+            message_id
+        ))
 
         connection.commit()
 
-        flash("Reply saved successfully.", "success")
+        if send_application:
+            flash(
+                "Reply saved and seller application invitation created.",
+                "success"
+            )
+        else:
+            flash("Reply sent successfully.", "success")
 
     except Exception:
         if connection:
@@ -3829,14 +3872,14 @@ def admin_reply_to_message(message_id):
             except Exception:
                 pass
 
-        app.logger.exception("ADMIN REPLY ERROR")
-
+        app.logger.exception("ADMIN SELLER REPLY ERROR")
         flash("Unable to save the reply. Please try again.", "error")
 
     finally:
         safe_close(cursor, connection)
 
     return redirect(url_for("admin_messages"))
+
 
 
 
