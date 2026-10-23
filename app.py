@@ -3882,14 +3882,157 @@ def admin_reply_to_message(message_id):
 
 
 
-
-
 # =========================================================
 # ADMIN — VIEW ALL SELLERS / FILTER BY STATUS
 # =========================================================
 
 @app.route("/admin/sellers")
 def admin_sellers():
+
+    # -----------------------------------------------------
+    # ADMIN AUTHENTICATION
+    # -----------------------------------------------------
+    if not admin_required():
+        return redirect(url_for("admin_login"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        # -------------------------------------------------
+        # READ STATUS FILTER
+        # Supported:
+        # all, approved, rejected, suspended, inactive
+        # -------------------------------------------------
+        status = request.args.get(
+            "status", "all"
+        ).strip().lower()
+
+        allowed_statuses = {
+            "all",
+            "approved",
+            "rejected",
+            "suspended",
+            "inactive"
+        }
+
+        if status not in allowed_statuses:
+            status = "all"
+
+        # -------------------------------------------------
+        # BASE QUERY
+        # -------------------------------------------------
+        query = """
+            SELECT
+                s.id,
+                s.user_id,
+                s.shop_name,
+                s.business_type,
+                s.phone,
+                s.address,
+                s.description,
+                s.status,
+                s.admin_note,
+                s.created_at,
+                s.updated_at,
+                u.name AS seller_name,
+                u.email AS seller_email
+            FROM sellers s
+            LEFT JOIN users u
+                ON u.id = s.user_id
+        """
+
+        # -------------------------------------------------
+        # APPLY STATUS FILTER
+        # -------------------------------------------------
+        if status == "inactive":
+            query += """
+                WHERE s.status IN ('rejected', 'suspended')
+            """
+
+        elif status != "all":
+            query += """
+                WHERE s.status = %s
+            """
+
+        query += """
+            ORDER BY s.created_at DESC
+        """
+
+        if status == "inactive":
+            cursor.execute(query)
+
+        elif status != "all":
+            cursor.execute(query, (status,))
+
+        else:
+            cursor.execute(query)
+
+        sellers = cursor.fetchall() or []
+
+        # -------------------------------------------------
+        # TOTAL COUNTS FOR FILTER TABS
+        # -------------------------------------------------
+        cursor.execute("""
+            SELECT
+                COUNT(*) AS total_sellers,
+                COALESCE(SUM(status = 'pending'), 0)
+                    AS pending_count,
+                COALESCE(SUM(status = 'approved'), 0)
+                    AS approved_count,
+                COALESCE(SUM(status = 'rejected'), 0)
+                    AS rejected_count,
+                COALESCE(SUM(status = 'suspended'), 0)
+                    AS suspended_count
+            FROM sellers
+        """)
+
+        counts = cursor.fetchone() or {}
+
+        # -------------------------------------------------
+        # RENDER SELLERS PAGE
+        # -------------------------------------------------
+        return render_template(
+            "admin/sellers.html",
+            sellers=sellers,
+            selected_status=status,
+            seller_count=counts.get("total_sellers", 0),
+            pending_count=counts.get("pending_count", 0),
+            approved_count=counts.get("approved_count", 0),
+            rejected_count=counts.get("rejected_count", 0),
+            suspended_count=counts.get("suspended_count", 0)
+        )
+
+    except Exception:
+        app.logger.exception(
+            "Error loading admin seller list"
+        )
+
+        flash(
+            "Unable to load sellers. Please check the Flask terminal.",
+            "error"
+        )
+
+        return redirect(url_for("admin_dashboard"))
+
+    finally:
+        safe_close(cursor, connection)
+
+
+
+# =========================================================
+# ADMIN — VIEW PENDING SELLER APPLICATIONS
+# =========================================================
+
+@app.route("/admin/applications/pending")
+def admin_pending_applications():
 
     if not admin_required():
         return redirect(url_for("admin_login"))
@@ -3901,75 +4044,52 @@ def admin_sellers():
         connection = get_db_connection()
 
         if connection is None:
-            app.logger.error("Admin sellers: database connection failed.")
-            return redirect(url_for("admin_dashboard"))
+            raise RuntimeError("Database connection failed.")
 
         cursor = connection.cursor(dictionary=True)
 
-        # Read the optional status filter.
-        status = request.args.get("status", "").strip().lower()
+        cursor.execute("""
+            SELECT
+                s.id,
+                s.user_id,
+                s.shop_name,
+                s.business_type,
+                s.phone,
+                s.address,
+                s.description,
+                s.status,
+                s.admin_note,
+                s.created_at,
+                u.name AS seller_name,
+                u.email AS seller_email
+            FROM sellers s
+            LEFT JOIN users u
+                ON u.id = s.user_id
+            WHERE s.status = 'pending'
+            ORDER BY s.created_at DESC
+        """)
 
-        if status not in ("approved", "rejected", "suspended"):
-            status = ""
-
-        # Total Sellers: show every seller.
-        # Approved/Rejected/Suspended: show only the selected status.
-        if status:
-            cursor.execute("""
-                SELECT
-                    s.id,
-                    s.user_id,
-                    s.shop_name,
-                    s.business_type,
-                    s.phone,
-                    s.address,
-                    s.description,
-                    s.status,
-                    s.admin_note,
-                    s.created_at,
-                    u.name AS seller_name,
-                    u.email AS seller_email
-                FROM sellers s
-                LEFT JOIN users u ON u.id = s.user_id
-                WHERE s.status = %s
-                ORDER BY s.created_at DESC
-            """, (status,))
-        else:
-            cursor.execute("""
-                SELECT
-                    s.id,
-                    s.user_id,
-                    s.shop_name,
-                    s.business_type,
-                    s.phone,
-                    s.address,
-                    s.description,
-                    s.status,
-                    s.admin_note,
-                    s.created_at,
-                    u.name AS seller_name,
-                    u.email AS seller_email
-                FROM sellers s
-                LEFT JOIN users u ON u.id = s.user_id
-                ORDER BY s.created_at DESC
-            """)
-
-        sellers = cursor.fetchall()
+        applications = cursor.fetchall() or []
 
         return render_template(
-            "admin/sellers.html",
-            sellers=sellers,
-            selected_status=status
+            "admin/pending_applications.html",
+            applications=applications
         )
 
     except Exception:
-        app.logger.exception("Error loading admin seller list")
+        app.logger.exception(
+            "Error loading pending seller applications"
+        )
+
+        flash(
+            "Unable to load pending applications.",
+            "error"
+        )
+
         return redirect(url_for("admin_dashboard"))
 
     finally:
         safe_close(cursor, connection)
-
-
 
 
 
