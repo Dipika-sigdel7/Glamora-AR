@@ -1,4 +1,4 @@
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -233,62 +233,6 @@
             font-size: 13px;
         }
 
-        /* Status tabs */
-
-        .seller-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 20px 30px;
-            border-bottom: 1px solid var(--seller-border);
-            background: #fffafb;
-        }
-
-        .seller-tab {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 11px 15px;
-            border: 1px solid var(--seller-border);
-            border-radius: 12px;
-            background: #fff;
-            color: var(--seller-muted);
-            font-family: "DM Sans", sans-serif;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .seller-tab:hover {
-            border-color: var(--seller-primary);
-            color: var(--seller-primary-dark);
-        }
-
-        .seller-tab.active {
-            border-color: var(--seller-primary);
-            background: linear-gradient(135deg, var(--seller-primary), var(--seller-primary-dark));
-            color: #fff;
-            box-shadow: 0 6px 16px rgba(167, 67, 96, 0.16);
-        }
-
-        .seller-tab-count {
-            display: inline-grid;
-            min-width: 23px;
-            height: 23px;
-            place-items: center;
-            padding: 0 6px;
-            border-radius: 8px;
-            background: rgba(200, 95, 122, 0.10);
-            color: var(--seller-primary-dark);
-            font-size: 10px;
-        }
-
-        .seller-tab.active .seller-tab-count {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
-
         .seller-table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -499,14 +443,6 @@
             box-shadow: 0 8px 20px rgba(164, 73, 98, 0.10);
         }
 
-        .seller-status-panel {
-            display: none;
-        }
-
-        .seller-status-panel.active {
-            display: block;
-        }
-
         @media (max-width: 768px) {
             body.seller-management-page {
                 padding: 22px 16px;
@@ -538,10 +474,6 @@
                 align-items: flex-start;
                 flex-direction: column;
                 padding: 22px;
-            }
-
-            .seller-tabs {
-                padding: 16px;
             }
 
             .seller-table th,
@@ -580,11 +512,6 @@
             .seller-count-number {
                 font-size: 24px;
             }
-
-            .seller-tab {
-                flex: 1 1 100%;
-                justify-content: space-between;
-            }
         }
     </style>
 </head>
@@ -605,10 +532,6 @@
             <p>Review seller registrations and manage seller accounts.</p>
         </section>
 
-        {% set pending_sellers = sellers|selectattr('status', 'equalto', 'pending')|list %}
-        {% set approved_sellers = sellers|selectattr('status', 'equalto', 'approved')|list %}
-        {% set rejected_sellers = sellers|selectattr('status', 'equalto', 'rejected')|list %}
-
         <section class="seller-summary">
             <div>
                 <div class="seller-summary-label">Seller Accounts</div>
@@ -626,137 +549,132 @@
             </div>
         </section>
 
+        <!-- All sellers are displayed together. No application tabs. -->
         <section class="seller-list-section">
+
             <div class="seller-list-header">
                 <div>
-                    <h2>Seller Applications</h2>
-                    <p>Review pending applications and manage approved or rejected sellers.</p>
+                    <h2>All Registered Sellers</h2>
+                    <p>View every registered seller and manage pending seller accounts.</p>
                 </div>
             </div>
 
-            <div class="seller-tabs" role="tablist" aria-label="Seller application status">
-                <button class="seller-tab active" type="button" role="tab"
-                        aria-selected="true" data-panel="pending"
-                        onclick="showSellerStatus('pending', this)">
-                    Pending Applications
-                    <span class="seller-tab-count">{{ pending_sellers|length }}</span>
-                </button>
+            {% if sellers %}
+                <div class="seller-table-wrapper">
+                    <table class="seller-table">
+                        <thead>
+                            <tr>
+                                <th>Seller</th>
+                                <th>Shop Name</th>
+                                <th>Contact</th>
+                                <th>Business Type</th>
+                                <th>Status</th>
+                                <th>Registered</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
 
-                <button class="seller-tab" type="button" role="tab"
-                        aria-selected="false" data-panel="approved"
-                        onclick="showSellerStatus('approved', this)">
-                    Approved Sellers
-                    <span class="seller-tab-count">{{ approved_sellers|length }}</span>
-                </button>
+                        <tbody>
+                            {% for seller in sellers %}
+                                {% set seller_status = seller.status|default('pending', true)|lower %}
 
-                <button class="seller-tab" type="button" role="tab"
-                        aria-selected="false" data-panel="rejected"
-                        onclick="showSellerStatus('rejected', this)">
-                    Rejected Applications
-                    <span class="seller-tab-count">{{ rejected_sellers|length }}</span>
-                </button>
-            </div>
+                                <tr>
+                                    <td>
+                                        <div class="seller-name">
+                                            {{ seller.seller_name|default(seller.name|default(seller.user_name|default('—', true), true), true) }}
+                                        </div>
 
-            {% for status_key, status_sellers, empty_title, empty_message in [
-                ('pending', pending_sellers, 'No pending applications', 'New seller applications will appear here after a user submits the seller registration form.'),
-                ('approved', approved_sellers, 'No approved sellers yet', 'Seller applications approved by the admin will appear here.'),
-                ('rejected', rejected_sellers, 'No rejected applications', 'Seller applications rejected by the admin will appear here.')
-            ] %}
-                <div class="seller-status-panel {{ 'active' if status_key == 'pending' else '' }}"
-                     id="seller-panel-{{ status_key }}"
-                     role="tabpanel">
+                                        <div class="seller-email">
+                                            {{ seller.seller_email|default(seller.email|default(seller.user_email|default('—', true), true), true) }}
+                                        </div>
+                                    </td>
 
-                    {% if status_sellers %}
-                        <div class="seller-table-wrapper">
-                            <table class="seller-table">
-                                <thead>
-                                    <tr>
-                                        <th>Seller</th>
-                                        <th>Shop Name</th>
-                                        <th>Contact</th>
-                                        <th>Business Type</th>
-                                        <th>Status</th>
-                                        <th>Registered</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
+                                    <td>
+                                        <div class="seller-name">
+                                            {{ seller.shop_name|default('—', true) }}
+                                        </div>
 
-                                <tbody>
-                                    {% for seller in status_sellers %}
-                                        {% set seller_status = seller.status|default('pending', true)|lower %}
-                                        <tr>
-                                            <td>
-                                                <div class="seller-name">
-                                                    {{ seller.name|default(seller.user_name|default('—', true), true) }}
-                                                </div>
-                                                <div class="seller-email">
-                                                    {{ seller.email|default(seller.user_email|default('—', true), true) }}
-                                                </div>
-                                            </td>
+                                        {% if seller.address|default('', true) %}
+                                            <div class="seller-secondary">
+                                                {{ seller.address }}
+                                            </div>
+                                        {% endif %}
+                                    </td>
 
-                                            <td>
-                                                <div class="seller-name">
-                                                    {{ seller.shop_name|default('—', true) }}
-                                                </div>
-                                                {% if seller.address|default('', true) %}
-                                                    <div class="seller-secondary">
-                                                        {{ seller.address }}
-                                                    </div>
-                                                {% endif %}
-                                            </td>
+                                    <td>
+                                        {{ seller.phone|default('—', true) }}
+                                    </td>
 
-                                            <td>{{ seller.phone|default('—', true) }}</td>
-                                            <td>{{ seller.business_type|default('—', true) }}</td>
+                                    <td>
+                                        {{ seller.business_type|default('—', true) }}
+                                    </td>
 
-                                            <td>
-                                                <span class="seller-status {{ seller_status }}">
-                                                    {{ seller_status }}
+                                    <td>
+                                        <span class="seller-status {{ seller_status }}">
+                                            {{ seller_status }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {{ seller.created_at|default('—', true) }}
+                                    </td>
+
+                                    <td>
+                                        <div class="seller-actions">
+                                            {% if seller_status == 'pending' %}
+                                                <form class="seller-action-form"
+                                                      method="POST"
+                                                      action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}">
+
+                                                    <input type="hidden"
+                                                           name="status"
+                                                           value="approved">
+
+                                                    <button class="seller-action-btn approve"
+                                                            type="submit">
+                                                        Approve
+                                                    </button>
+                                                </form>
+
+                                                <form class="seller-action-form"
+                                                      method="POST"
+                                                      action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}">
+
+                                                    <input type="hidden"
+                                                           name="status"
+                                                           value="rejected">
+
+                                                    <button class="seller-action-btn reject"
+                                                            type="submit">
+                                                        Reject
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <span class="seller-secondary">
+                                                    No actions
                                                 </span>
-                                            </td>
-
-                                            <td>{{ seller.created_at|default('—', true) }}</td>
-
-                                            <td>
-                                                <div class="seller-actions">
-                                                    {% if seller_status == 'pending' %}
-                                                        <form class="seller-action-form"
-                                                              method="POST"
-                                                              action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}">
-                                                            <input type="hidden" name="status" value="approved">
-                                                            <button class="seller-action-btn approve"
-                                                                    type="submit">
-                                                                Approve
-                                                            </button>
-                                                        </form>
-
-                                                        <form class="seller-action-form"
-                                                              method="POST"
-                                                              action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}">
-                                                            <input type="hidden" name="status" value="rejected">
-                                                            <button class="seller-action-btn reject"
-                                                                    type="submit">
-                                                                Reject
-                                                            </button>
-                                                        </form>
-                                                    {% else %}
-                                                        <span class="seller-secondary">No actions</span>
-                                                    {% endif %}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="seller-empty-state">
-                            <div class="seller-empty-icon" aria-hidden="true">♙</div>
-                            <h3>{{ empty_title }}</h3>
-                            <p>{{ empty_message }}</p>
-                        </div>
-                    {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-            {% endfor %}
+
+            {% else %}
+                <div class="seller-empty-state">
+                    <div class="seller-empty-icon" aria-hidden="true">♙</div>
+
+                    <h3>No registered sellers yet</h3>
+
+                    <p>
+                        Seller accounts will appear here after users submit
+                        their seller registration forms.
+                    </p>
+                </div>
+            {% endif %}
+
         </section>
 
         <footer class="seller-page-footer">
@@ -767,19 +685,5 @@
         </footer>
 
     </main>
-
-    <script>
-        function showSellerStatus(status, button) {
-            document.querySelectorAll('.seller-status-panel').forEach(function (panel) {
-                panel.classList.toggle('active', panel.id === 'seller-panel-' + status);
-            });
-
-            document.querySelectorAll('.seller-tab').forEach(function (tab) {
-                const isActive = tab === button;
-                tab.classList.toggle('active', isActive);
-                tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
-            });
-        }
-    </script>
 </body>
 </html>
