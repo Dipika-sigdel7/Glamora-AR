@@ -3937,10 +3937,6 @@ def admin_pending_applications():
         app.logger.exception(
             "Unable to load pending seller applications"
         )
-        flash(
-            "Unable to load pending applications.",
-            "error"
-        )
         return redirect(url_for("admin_dashboard"))
 
     finally:
