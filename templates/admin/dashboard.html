@@ -73,6 +73,7 @@
       <a
         href="{{ url_for('admin_sellers') }}"
         class="admin-stat-card admin-stat-card-link"
+        aria-label="View all sellers"
       >
         <div class="stat-icon">♙</div>
 
@@ -86,6 +87,7 @@
       <a
         href="{{ url_for('admin_pending_applications') }}"
         class="admin-stat-card admin-stat-card-link"
+        aria-label="View pending seller applications"
       >
         <div class="stat-icon">◷</div>
 
@@ -97,8 +99,9 @@
 
       <!-- Approved Sellers -->
       <a
-        href="{{ url_for('admin_sellers') }}"
+        href="{{ url_for('admin_sellers', status='approved') }}"
         class="admin-stat-card admin-stat-card-link"
+        aria-label="View approved sellers"
       >
         <div class="stat-icon">✓</div>
 
@@ -108,10 +111,11 @@
         </div>
       </a>
 
-      <!-- Rejected / Suspended -->
+      <!-- Rejected / Suspended Sellers -->
       <a
-        href="{{ url_for('admin_sellers') }}"
+        href="{{ url_for('admin_sellers', status='rejected') }}"
         class="admin-stat-card admin-stat-card-link"
+        aria-label="View rejected sellers"
       >
         <div class="stat-icon">◎</div>
 
