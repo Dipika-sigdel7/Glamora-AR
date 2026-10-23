@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 
@@ -16,6 +17,28 @@
     rel="stylesheet"
     href="{{ url_for('static', filename='css/dashboard.css') }}"
   >
+
+  <style>
+    .admin-stat-card-link {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .admin-stat-card-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(164, 73, 98, .12);
+    }
+
+    .admin-stat-card-link:focus-visible {
+      outline: 3px solid #c85f7a;
+      outline-offset: 4px;
+    }
+  </style>
 </head>
 
 <body class="admin-page">
@@ -46,41 +69,57 @@
     <!-- Seller statistics -->
     <section class="admin-stats">
 
-      <div class="admin-stat-card">
+      <!-- Total Sellers -->
+      <a
+        href="{{ url_for('admin_sellers') }}"
+        class="admin-stat-card admin-stat-card-link"
+      >
         <div class="stat-icon">♙</div>
 
         <div>
           <span>Total Sellers</span>
           <strong>{{ seller_count|default(0) }}</strong>
         </div>
-      </div>
+      </a>
 
-      <div class="admin-stat-card">
+      <!-- Pending Applications -->
+      <a
+        href="{{ url_for('admin_pending_applications') }}"
+        class="admin-stat-card admin-stat-card-link"
+      >
         <div class="stat-icon">◷</div>
 
         <div>
           <span>Pending Applications</span>
           <strong>{{ pending_seller_count|default(0) }}</strong>
         </div>
-      </div>
+      </a>
 
-      <div class="admin-stat-card">
+      <!-- Approved Sellers -->
+      <a
+        href="{{ url_for('admin_sellers') }}"
+        class="admin-stat-card admin-stat-card-link"
+      >
         <div class="stat-icon">✓</div>
 
         <div>
           <span>Approved Sellers</span>
           <strong>{{ approved_seller_count|default(0) }}</strong>
         </div>
-      </div>
+      </a>
 
-      <div class="admin-stat-card">
+      <!-- Rejected / Suspended -->
+      <a
+        href="{{ url_for('admin_sellers') }}"
+        class="admin-stat-card admin-stat-card-link"
+      >
         <div class="stat-icon">◎</div>
 
         <div>
           <span>Rejected / Suspended</span>
           <strong>{{ inactive_seller_count|default(0) }}</strong>
         </div>
-      </div>
+      </a>
 
     </section>
 
