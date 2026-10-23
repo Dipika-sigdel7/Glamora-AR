@@ -3883,7 +3883,6 @@ def admin_reply_to_message(message_id):
 
 
 
-
 # =========================================================
 # ADMIN — VIEW PENDING SELLER APPLICATIONS
 # =========================================================
@@ -3901,7 +3900,8 @@ def admin_pending_applications():
         connection = get_db_connection()
 
         if connection is None:
-            raise RuntimeError("Database connection failed.")
+            app.logger.error("Pending applications: database connection failed.")
+            return redirect(url_for("admin_dashboard"))
 
         cursor = connection.cursor(dictionary=True)
 
@@ -3919,9 +3919,8 @@ def admin_pending_applications():
                 s.created_at,
                 u.name AS seller_name,
                 u.email AS seller_email
-            FROM sellers AS s
-            LEFT JOIN users AS u
-                ON u.id = s.user_id
+            FROM sellers s
+            LEFT JOIN users u ON u.id = s.user_id
             WHERE s.status = 'pending'
             ORDER BY s.created_at DESC
         """)
@@ -3935,12 +3934,13 @@ def admin_pending_applications():
 
     except Exception:
         app.logger.exception(
-            "Unable to load pending seller applications"
+            "Database error while loading pending applications"
         )
         return redirect(url_for("admin_dashboard"))
 
     finally:
         safe_close(cursor, connection)
+
 
 
 # =========================================================
