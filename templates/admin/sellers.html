@@ -7,7 +7,6 @@
 
     <title>Seller Management | Glamora AR</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
@@ -50,6 +49,15 @@
             line-height: 1.6;
         }
 
+        a {
+            color: inherit;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
         .seller-management {
             width: 100%;
             max-width: 1450px;
@@ -79,6 +87,7 @@
             display: grid;
             width: 44px;
             height: 44px;
+            flex-shrink: 0;
             place-items: center;
             border-radius: 14px;
             background: linear-gradient(135deg, var(--seller-primary), var(--seller-primary-dark));
@@ -87,6 +96,10 @@
             font-size: 21px;
             font-weight: 700;
             box-shadow: 0 8px 20px rgba(167, 67, 96, 0.22);
+        }
+
+        .seller-brand-ar {
+            color: var(--seller-primary);
         }
 
         .seller-header-text {
@@ -182,6 +195,7 @@
             display: grid;
             width: 58px;
             height: 58px;
+            flex-shrink: 0;
             place-items: center;
             border: 1px solid rgba(200, 95, 122, 0.15);
             border-radius: 18px;
@@ -283,7 +297,6 @@
             font-weight: 700;
         }
 
-        /* Clickable shop name: opens seller analytics */
         .seller-analytics-link {
             display: inline-flex;
             align-items: center;
@@ -314,6 +327,16 @@
         .seller-secondary {
             color: var(--seller-muted);
             overflow-wrap: anywhere;
+        }
+
+        .seller-email {
+            margin-top: 3px;
+            font-size: 12px;
+        }
+
+        .seller-secondary {
+            margin-top: 4px;
+            font-size: 11px;
         }
 
         .seller-status {
@@ -549,7 +572,7 @@
         <header class="seller-page-header">
             <a class="seller-brand" href="{{ url_for('admin_dashboard') }}">
                 <span class="seller-brand-mark">G</span>
-                <span>GLAMORA <span style="color: #c85f7a;">AR</span></span>
+                <span>GLAMORA <span class="seller-brand-ar">AR</span></span>
             </a>
         </header>
 
@@ -644,7 +667,15 @@
                                     </td>
 
                                     <td>
-                                        {{ seller.created_at|default('—', true) }}
+                                        {% if seller.created_at %}
+                                            {% if seller.created_at.strftime is defined %}
+                                                {{ seller.created_at.strftime('%d %b %Y') }}
+                                            {% else %}
+                                                {{ seller.created_at }}
+                                            {% endif %}
+                                        {% else %}
+                                            —
+                                        {% endif %}
                                     </td>
 
                                     <td>
@@ -653,6 +684,12 @@
                                                 <form class="seller-action-form"
                                                       method="POST"
                                                       action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}">
+
+                                                    {% if csrf_token is defined %}
+                                                        <input type="hidden"
+                                                               name="csrf_token"
+                                                               value="{{ csrf_token() }}">
+                                                    {% endif %}
 
                                                     <input type="hidden"
                                                            name="status"
@@ -667,6 +704,12 @@
                                                 <form class="seller-action-form"
                                                       method="POST"
                                                       action="{{ url_for('admin_update_seller_status', seller_id=seller.id) }}">
+
+                                                    {% if csrf_token is defined %}
+                                                        <input type="hidden"
+                                                               name="csrf_token"
+                                                               value="{{ csrf_token() }}">
+                                                    {% endif %}
 
                                                     <input type="hidden"
                                                            name="status"
