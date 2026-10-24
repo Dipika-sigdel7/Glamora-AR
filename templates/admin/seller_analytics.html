@@ -1,0 +1,702 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ seller.shop_name }} | Seller Analytics — Glamora AR</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --pink: #c85f7a;
+            --pink-dark: #a74360;
+            --pink-light: #fdecef;
+            --page: #fff7f9;
+            --ink: #26191d;
+            --muted: #806b72;
+            --border: rgba(200,95,122,.16);
+            --white: #fff;
+            --shadow: 0 18px 50px rgba(164,73,98,.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--page);
+            color: var(--ink);
+            font-family: "DM Sans", sans-serif;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .topbar {
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 5%;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            font-family: "Playfair Display", serif;
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .brand span { color: var(--pink); }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 11px 16px;
+            background: white;
+            color: var(--pink-dark);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .back-link:hover { background: var(--pink-light); }
+
+        .container {
+            width: min(1440px, 92%);
+            margin: 34px auto 60px;
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            color: var(--pink-dark);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3 {
+            font-family: "Playfair Display", serif;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(29px, 4vw, 42px);
+            overflow-wrap: anywhere;
+        }
+
+        .subtitle {
+            margin: 10px 0 0;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .seller-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 26px;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 14px;
+            border-radius: 30px;
+            padding: 7px 12px;
+            background: var(--pink-light);
+            color: var(--pink-dark);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status.approved { background: #e7f7ed; color: #247342; }
+        .status.pending { background: #fff2d7; color: #8a5a00; }
+        .status.rejected, .status.suspended {
+            background: #fde7e7;
+            color: #a52f3a;
+        }
+
+        .seller-details {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 26px;
+        }
+
+        .detail, .metric, .panel {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .detail { padding: 17px; min-width: 0; }
+
+        .detail-label, .metric-label {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .detail-value {
+            display: block;
+            margin-top: 7px;
+            font-size: 14px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .metric { padding: 22px; min-width: 0; }
+
+        .metric-icon {
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            margin-bottom: 17px;
+            border-radius: 13px;
+            background: var(--pink-light);
+            color: var(--pink-dark);
+            font-size: 19px;
+        }
+
+        .metric-value {
+            display: block;
+            margin-top: 9px;
+            font-size: clamp(19px, 2.5vw, 28px);
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .metric-note {
+            display: block;
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .money-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 26px;
+        }
+
+        .money-card {
+            padding: 24px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: linear-gradient(135deg, #fff, #fff0f4);
+            box-shadow: var(--shadow);
+        }
+
+        .money-card.seller-money {
+            background: linear-gradient(135deg, #fff, #f5edf9);
+        }
+
+        .money-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .money-top h3 {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .percent {
+            border-radius: 30px;
+            padding: 7px 10px;
+            background: white;
+            color: var(--pink-dark);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .money-amount {
+            display: block;
+            margin-top: 17px;
+            font-size: clamp(23px, 3vw, 34px);
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .money-note {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .notice {
+            margin-bottom: 26px;
+            padding: 15px 17px;
+            border: 1px solid #f1d7a4;
+            border-radius: 13px;
+            background: #fff9e9;
+            color: #74551b;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .panel {
+            padding: 23px;
+            margin-bottom: 25px;
+            min-width: 0;
+        }
+
+        .panel-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .panel-heading h2 {
+            margin: 0;
+            font-size: 23px;
+        }
+
+        .panel-heading p {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
+
+        th {
+            padding: 13px 12px;
+            text-align: left;
+            background: #fff6f8;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f5e9ed;
+            font-size: 12px;
+        }
+
+        tbody tr:last-child td { border-bottom: 0; }
+
+        .product-name { font-weight: 700; }
+
+        .muted { color: var(--muted); }
+
+        .empty {
+            padding: 26px 12px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 13px;
+            min-height: 230px;
+            padding: 22px 6px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .bar-column {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 9px;
+            min-width: 0;
+            height: 210px;
+        }
+
+        .bar-value {
+            color: var(--muted);
+            font-size: 10px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .bar {
+            width: min(44px, 80%);
+            min-height: 4px;
+            border-radius: 8px 8px 2px 2px;
+            background: linear-gradient(180deg, #e59aaf, #c85f7a);
+        }
+
+        .bar-label {
+            color: var(--muted);
+            font-size: 10px;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        .chart-empty {
+            width: 100%;
+            padding: 45px 10px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            border-radius: 30px;
+            padding: 5px 9px;
+            background: var(--pink-light);
+            color: var(--pink-dark);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .footer {
+            padding: 18px 0 5px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 11px;
+        }
+
+        @media (max-width: 900px) {
+            .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .seller-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 600px) {
+            .topbar { padding: 14px 4%; }
+            .brand { font-size: 20px; }
+            .back-link { padding: 9px 11px; font-size: 11px; }
+            .container { width: 92%; margin-top: 25px; }
+            .seller-head { flex-direction: column; }
+            .seller-details, .metrics, .money-grid {
+                grid-template-columns: 1fr;
+            }
+            .panel { padding: 16px; }
+            .panel-heading h2 { font-size: 20px; }
+            .chart { gap: 7px; }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="{{ url_for('admin_dashboard') }}">
+            GLAMORA <span>AR</span>
+        </a>
+
+        <a class="back-link" href="{{ url_for('admin_sellers') }}">
+            ← Back to Sellers
+        </a>
+    </header>
+
+    <main class="container">
+        <section class="seller-head">
+            <div>
+                <p class="eyebrow">Seller performance</p>
+                <h1>{{ seller.shop_name }}</h1>
+                <p class="subtitle">
+                    Detailed products, order records and commission reporting.
+                </p>
+
+                <span class="status {{ seller.status|lower }}">
+                    {{ seller.status }}
+                </span>
+            </div>
+        </section>
+
+        <section class="seller-details">
+            <div class="detail">
+                <span class="detail-label">Shop owner</span>
+                <span class="detail-value">{{ seller.seller_name or 'Not provided' }}</span>
+            </div>
+
+            <div class="detail">
+                <span class="detail-label">Email</span>
+                <span class="detail-value">{{ seller.seller_email or 'Not provided' }}</span>
+            </div>
+
+            <div class="detail">
+                <span class="detail-label">Phone</span>
+                <span class="detail-value">{{ seller.phone or 'Not provided' }}</span>
+            </div>
+
+            <div class="detail">
+                <span class="detail-label">Business type</span>
+                <span class="detail-value">{{ seller.business_type or 'Not provided' }}</span>
+            </div>
+
+            <div class="detail">
+                <span class="detail-label">Shop address</span>
+                <span class="detail-value">{{ seller.address or 'Not provided' }}</span>
+            </div>
+
+            <div class="detail">
+                <span class="detail-label">Seller since</span>
+                <span class="detail-value">
+                    {{ seller.created_at.strftime('%d %b %Y') if seller.created_at else 'Not available' }}
+                </span>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <article class="metric">
+                <div class="metric-icon">▣</div>
+                <span class="metric-label">Total products</span>
+                <strong class="metric-value">{{ summary.product_count }}</strong>
+                <span class="metric-note">Products assigned to this seller</span>
+            </article>
+
+            <article class="metric">
+                <div class="metric-icon">✓</div>
+                <span class="metric-label">Available products</span>
+                <strong class="metric-value">{{ summary.available_product_count }}</strong>
+                <span class="metric-note">Currently marked available</span>
+            </article>
+
+            <article class="metric">
+                <div class="metric-icon">↗</div>
+                <span class="metric-label">Eligible recorded orders</span>
+                <strong class="metric-value">{{ summary.eligible_order_count }}</strong>
+                <span class="metric-note">Excludes explicitly cancelled, failed and refunded statuses</span>
+            </article>
+
+            <article class="metric">
+                <div class="metric-icon">◇</div>
+                <span class="metric-label">Items in eligible orders</span>
+                <strong class="metric-value">{{ summary.eligible_items_sold }}</strong>
+                <span class="metric-note">Based on order item quantities</span>
+            </article>
+
+            <article class="metric">
+                <div class="metric-icon">▤</div>
+                <span class="metric-label">Eligible recorded sales</span>
+                <strong class="metric-value">{{ format_npr(summary.eligible_sales) }}</strong>
+                <span class="metric-note">Calculated from this seller's order items</span>
+            </article>
+
+            <article class="metric">
+                <div class="metric-icon">!</div>
+                <span class="metric-label">Low-stock products</span>
+                <strong class="metric-value">{{ summary.low_stock_count }}</strong>
+                <span class="metric-note">Products with 5 or fewer units remaining</span>
+            </article>
+        </section>
+
+        <section class="money-grid">
+            <article class="money-card">
+                <div class="money-top">
+                    <h3>Platform commission</h3>
+                    <span class="percent">10%</span>
+                </div>
+                <strong class="money-amount">
+                    {{ format_npr(summary.platform_commission) }}
+                </strong>
+                <p class="money-note">
+                    Estimated commission from eligible recorded order-item totals.
+                </p>
+            </article>
+
+            <article class="money-card seller-money">
+                <div class="money-top">
+                    <h3>Seller share</h3>
+                    <span class="percent">90%</span>
+                </div>
+                <strong class="money-amount">
+                    {{ format_npr(summary.seller_share) }}
+                </strong>
+                <p class="money-note">
+                    Estimated seller share before any other fees, adjustments or refunds.
+                </p>
+            </article>
+        </section>
+
+        <div class="notice">
+            <strong>Reporting notice:</strong>
+            Commission and seller-share values are estimates based on recorded order items,
+            not confirmed payments or settlement balances. Your checkout code must record
+            orders and define the completed/paid status before these amounts can be treated
+            as actual earnings. Excluded order totals:
+            <strong>{{ format_npr(summary.excluded_sales) }}</strong>.
+        </div>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Monthly sales trend</h2>
+                    <p>Eligible recorded order items grouped by order creation month.</p>
+                </div>
+            </div>
+
+            {% if monthly_sales %}
+                {% set max_sales = monthly_sales|map(attribute='sales')|max %}
+                <div class="chart">
+                    {% for month in monthly_sales %}
+                        <div class="bar-column">
+                            <span class="bar-value">
+                                {{ format_npr(month.sales) }}
+                            </span>
+                            <div
+                                class="bar"
+                                title="{{ month.month }}: {{ format_npr(month.sales) }}"
+                                style="height: {{ ((month.sales / max_sales * 150) if max_sales > 0 else 4)|round|int }}px;"
+                            ></div>
+                            <span class="bar-label">{{ month.month }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="chart-empty">
+                    No eligible order-item records are available for this seller yet.
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Product performance</h2>
+                    <p>Sales and quantities grouped by each seller product.</p>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Units recorded</th>
+                            <th>Recorded sales</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in product_performance %}
+                        <tr>
+                            <td class="product-name">{{ product.product_name }}</td>
+                            <td>{{ format_npr(product.price or 0) }}</td>
+                            <td>{{ product.items_sold }}</td>
+                            <td>{{ format_npr(product.sales_total or 0) }}</td>
+                            <td>{{ product.stock }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="empty">This seller has no products yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Order status breakdown</h2>
+                    <p>Statuses as stored in the orders table.</p>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order status</th>
+                            <th>Number of orders</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in order_statuses %}
+                        <tr>
+                            <td><span class="status-pill">{{ row.order_status }}</span></td>
+                            <td>{{ row.order_count }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="2" class="empty">No orders recorded for this seller yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Seller products</h2>
+                    <p>Inventory currently assigned to this seller.</p>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Type</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Availability</th>
+                            <th>Approval</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td class="product-name">{{ product.name }}</td>
+                            <td>{{ product.product_type or '—' }}</td>
+                            <td>{{ format_npr(product.price or 0) }}</td>
+                            <td>{{ product.stock }}</td>
+                            <td>{{ 'Available' if product.is_available else 'Unavailable' }}</td>
+                            <td>{{ product.approval_status or '—' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="empty">
+                                No products are assigned to this seller.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer class="footer">
+            Glamora AR · Seller analytics · Commission figures are reporting estimates
+        </footer>
+    </main>
+</body>
+</html>
