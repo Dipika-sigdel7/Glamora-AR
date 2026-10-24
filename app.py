@@ -4093,6 +4093,312 @@ def admin_pending_applications():
 
 
 
+
+# =========================================================
+# ADMIN — INDIVIDUAL SELLER ANALYTICS
+# =========================================================
+
+@app.route("/admin/sellers/<int:seller_id>/analytics")
+def admin_seller_analytics(seller_id):
+
+    if not admin_required():
+        return redirect(url_for("admin_login"))
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+
+        if connection is None:
+            raise RuntimeError("Database connection failed.")
+
+        cursor = connection.cursor(dictionary=True)
+
+        # -------------------------------------------------
+        # 1. GET SELLER DETAILS
+        # -------------------------------------------------
+        cursor.execute("""
+            SELECT
+                s.id,
+                s.user_id,
+                s.shop_name,
+                s.business_type,
+                s.phone,
+                s.address,
+                s.description,
+                s.status,
+                s.created_at,
+                s.updated_at,
+                u.name AS seller_name,
+                u.email AS seller_email
+            FROM sellers s
+            LEFT JOIN users u ON u.id = s.user_id
+            WHERE s.id = %s
+            LIMIT 1
+        """, (seller_id,))
+
+        seller = cursor.fetchone()
+
+        if not seller:
+            flash("Seller not found.", "error")
+            return redirect(url_for("admin_sellers"))
+
+        # -------------------------------------------------
+        # 2. GET THIS SELLER'S PRODUCTS
+        # -------------------------------------------------
+        cursor.execute("""
+            SELECT
+                p.id,
+                p.name,
+                p.product_type,
+                p.price,
+                p.stock,
+                p.is_available,
+                p.approval_status,
+                p.created_at,
+                (
+                    SELECT pi.image_url
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id
+                    ORDER BY pi.is_primary DESC, pi.id ASC
+                    LIMIT 1
+                ) AS image_url
+            FROM products p
+            WHERE p.seller_id = %s
+            ORDER BY p.created_at DESC, p.id DESC
+        """, (seller_id,))
+
+        products = cursor.fetchall() or []
+
+        # -------------------------------------------------
+        # 3. PRODUCT SALES AND COMMISSION SUMMARY
+        #
+        # Exclude explicitly cancelled, failed, and refunded
+        # orders from the estimated eligible order-item total.
+        # This is still a reporting estimate, not proof of
+        # payment or delivery.
+        # -------------------------------------------------
+        cursor.execute("""
+            SELECT
+                COUNT(DISTINCT CASE
+                    WHEN LOWER(TRIM(COALESCE(o.status, '')))
+                         NOT IN (
+                             'cancelled', 'canceled',
+                             'refunded', 'failed'
+                         )
+                    THEN o.id
+                    ELSE NULL
+                END) AS eligible_order_count,
+
+                COALESCE(SUM(CASE
+                    WHEN LOWER(TRIM(COALESCE(o.status, '')))
+                         NOT IN (
+                             'cancelled', 'canceled',
+                             'refunded', 'failed'
+                         )
+                    THEN COALESCE(oi.quantity, 0)
+                    ELSE 0
+                END), 0) AS eligible_items_sold,
+
+                COALESCE(SUM(CASE
+                    WHEN LOWER(TRIM(COALESCE(o.status, '')))
+                         NOT IN (
+                             'cancelled', 'canceled',
+                             'refunded', 'failed'
+                         )
+                    THEN COALESCE(
+                        oi.subtotal,
+                        oi.price * oi.quantity,
+                        0
+                    )
+                    ELSE 0
+                END), 0) AS eligible_sales,
+
+                COALESCE(SUM(CASE
+                    WHEN LOWER(TRIM(COALESCE(o.status, '')))
+                         IN (
+                             'cancelled', 'canceled',
+                             'refunded', 'failed'
+                         )
+                    THEN COALESCE(
+                        oi.subtotal,
+                        oi.price * oi.quantity,
+                        0
+                    )
+                    ELSE 0
+                END), 0) AS excluded_sales
+
+            FROM order_items oi
+            INNER JOIN orders o ON o.id = oi.order_id
+            INNER JOIN products p ON p.id = oi.product_id
+            WHERE p.seller_id = %s
+        """, (seller_id,))
+
+        summary = cursor.fetchone() or {}
+
+        eligible_sales = Decimal(
+            str(summary.get("eligible_sales") or 0)
+        )
+
+        # Reporting estimates only; no funds are transferred.
+        platform_commission = (
+            eligible_sales * Decimal("0.10")
+        ).quantize(Decimal("0.01"))
+
+        seller_share = (
+            eligible_sales * Decimal("0.90")
+        ).quantize(Decimal("0.01"))
+
+        summary["eligible_sales"] = eligible_sales
+        summary["platform_commission"] = platform_commission
+        summary["seller_share"] = seller_share
+
+        # -------------------------------------------------
+        # 4. SALES BY MONTH FOR THIS SELLER
+        # -------------------------------------------------
+        cursor.execute("""
+            SELECT
+                DATE_FORMAT(o.created_at, '%Y-%m') AS month_key,
+                COALESCE(SUM(
+                    COALESCE(
+                        oi.subtotal,
+                        oi.price * oi.quantity,
+                        0
+                    )
+                ), 0) AS sales_total,
+                COALESCE(SUM(oi.quantity), 0) AS items_sold
+            FROM order_items oi
+            INNER JOIN orders o ON o.id = oi.order_id
+            INNER JOIN products p ON p.id = oi.product_id
+            WHERE p.seller_id = %s
+              AND LOWER(TRIM(COALESCE(o.status, '')))
+                  NOT IN (
+                      'cancelled', 'canceled',
+                      'refunded', 'failed'
+                  )
+            GROUP BY DATE_FORMAT(o.created_at, '%Y-%m')
+            ORDER BY month_key ASC
+        """, (seller_id,))
+
+        monthly_rows = cursor.fetchall() or []
+
+        # Convert Decimal values to simple chart-friendly values.
+        monthly_sales = []
+        for row in monthly_rows:
+            monthly_sales.append({
+                "month": row.get("month_key") or "Unknown",
+                "sales": float(row.get("sales_total") or 0),
+                "items": int(row.get("items_sold") or 0)
+            })
+
+        # -------------------------------------------------
+        # 5. SALES PER PRODUCT
+        # -------------------------------------------------
+        cursor.execute("""
+            SELECT
+                p.id AS product_id,
+                p.name AS product_name,
+                p.price,
+                p.stock,
+                COALESCE(SUM(CASE
+                    WHEN LOWER(TRIM(COALESCE(o.status, '')))
+                         NOT IN (
+                             'cancelled', 'canceled',
+                             'refunded', 'failed'
+                         )
+                    THEN oi.quantity
+                    ELSE 0
+                END), 0) AS items_sold,
+                COALESCE(SUM(CASE
+                    WHEN LOWER(TRIM(COALESCE(o.status, '')))
+                         NOT IN (
+                             'cancelled', 'canceled',
+                             'refunded', 'failed'
+                         )
+                    THEN COALESCE(
+                        oi.subtotal,
+                        oi.price * oi.quantity,
+                        0
+                    )
+                    ELSE 0
+                END), 0) AS sales_total
+            FROM products p
+            LEFT JOIN order_items oi ON oi.product_id = p.id
+            LEFT JOIN orders o ON o.id = oi.order_id
+            WHERE p.seller_id = %s
+            GROUP BY
+                p.id, p.name, p.price, p.stock
+            ORDER BY sales_total DESC, p.name ASC
+        """, (seller_id,))
+
+        product_performance = cursor.fetchall() or []
+
+        # -------------------------------------------------
+        # 6. ORDER STATUS BREAKDOWN
+        # -------------------------------------------------
+        cursor.execute("""
+            SELECT
+                LOWER(TRIM(COALESCE(o.status, 'unknown')))
+                    AS order_status,
+                COUNT(DISTINCT o.id) AS order_count
+            FROM orders o
+            INNER JOIN order_items oi ON oi.order_id = o.id
+            INNER JOIN products p ON p.id = oi.product_id
+            WHERE p.seller_id = %s
+            GROUP BY LOWER(TRIM(COALESCE(o.status, 'unknown')))
+            ORDER BY order_count DESC
+        """, (seller_id,))
+
+        order_statuses = cursor.fetchall() or []
+
+        # -------------------------------------------------
+        # 7. FINAL METRICS
+        # -------------------------------------------------
+        summary["product_count"] = len(products)
+        summary["available_product_count"] = sum(
+            1 for p in products if p.get("is_available")
+        )
+        summary["low_stock_count"] = sum(
+            1 for p in products
+            if int(p.get("stock") or 0) <= 5
+        )
+
+        summary["eligible_order_count"] = int(
+            summary.get("eligible_order_count") or 0
+        )
+        summary["eligible_items_sold"] = int(
+            summary.get("eligible_items_sold") or 0
+        )
+        summary["excluded_sales"] = Decimal(
+            str(summary.get("excluded_sales") or 0)
+        )
+
+        return render_template(
+            "admin/seller_analytics.html",
+            seller=seller,
+            products=products,
+            summary=summary,
+            monthly_sales=monthly_sales,
+            product_performance=product_performance,
+            order_statuses=order_statuses,
+            format_npr=format_npr
+        )
+
+    except Exception:
+        app.logger.exception("ADMIN SELLER ANALYTICS ERROR")
+
+        flash(
+            "Unable to load seller analytics. "
+            "Please check the Flask terminal.",
+            "error"
+        )
+        return redirect(url_for("admin_sellers"))
+
+    finally:
+        safe_close(cursor, connection)
+
+
 # =========================================================
 # ADMIN PRODUCTS — SHOW ALL PRODUCTS
 # =========================================================
