@@ -283,6 +283,33 @@
             font-weight: 700;
         }
 
+        /* Clickable shop name: opens seller analytics */
+        .seller-analytics-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--seller-primary-dark);
+            font-weight: 800;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .seller-analytics-link:hover {
+            color: var(--seller-primary);
+            text-decoration: underline;
+        }
+
+        .seller-analytics-link:focus-visible {
+            outline: 2px solid var(--seller-primary);
+            outline-offset: 4px;
+            border-radius: 3px;
+        }
+
+        .seller-analytics-link span {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
         .seller-email,
         .seller-secondary {
             color: var(--seller-muted);
@@ -549,13 +576,11 @@
             </div>
         </section>
 
-        <!-- All sellers are displayed together. No application tabs. -->
         <section class="seller-list-section">
-
             <div class="seller-list-header">
                 <div>
                     <h2>All Registered Sellers</h2>
-                    <p>View every registered seller and manage pending seller accounts.</p>
+                    <p>Click a shop name to view that seller's sales analytics.</p>
                 </div>
             </div>
 
@@ -590,9 +615,12 @@
                                     </td>
 
                                     <td>
-                                        <div class="seller-name">
+                                        <a class="seller-analytics-link"
+                                           href="{{ url_for('admin_seller_analytics', seller_id=seller.id) }}"
+                                           title="View sales analytics for {{ seller.shop_name|default('this shop', true) }}">
                                             {{ seller.shop_name|default('—', true) }}
-                                        </div>
+                                            <span aria-hidden="true">↗</span>
+                                        </a>
 
                                         {% if seller.address|default('', true) %}
                                             <div class="seller-secondary">
@@ -674,7 +702,6 @@
                     </p>
                 </div>
             {% endif %}
-
         </section>
 
         <footer class="seller-page-footer">
