@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Seller Application | Glamora AR</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        :root {
+            --pink-bg: #fff5f7;
+            --pink-soft: #fdecef;
+            --pink: #c85f7a;
+            --pink-dark: #a74360;
+            --text: #2b1b20;
+            --muted: #806b72;
+            --border: rgba(200, 95, 122, .20);
+            --shadow: 0 22px 65px rgba(164, 73, 98, .10);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 10% 5%, rgba(243,184,198,.30), transparent 28%),
+                var(--pink-bg);
+            color: var(--text);
+            font-family: "DM Sans", sans-serif;
+        }
+
+        .application-wrapper {
+            width: min(1000px, calc(100% - 36px));
+            margin: 0 auto;
+            padding: 48px 0 80px;
+        }
+
+        .application-heading {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .application-eyebrow {
+            color: var(--pink-dark);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .application-heading h1 {
+            margin: 12px 0;
+            font: 600 clamp(34px, 5vw, 48px)/1.2 "Playfair Display", serif;
+        }
+
+        .application-heading p {
+            max-width: 620px;
+            margin: 0 auto;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .application-card {
+            padding: clamp(22px, 4vw, 42px);
+            background: rgba(255,255,255,.92);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .application-section {
+            margin-bottom: 32px;
+        }
+
+        .application-section:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding-bottom: 16px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-number {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--pink-soft);
+            color: var(--pink-dark);
+            font-weight: 700;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            font: 600 22px "Playfair Display", serif;
+        }
+
+        .section-heading p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .form-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-field label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .required { color: var(--pink-dark); }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px 14px;
+            border: 1px solid #eed8df;
+            border-radius: 11px;
+            outline: none;
+            background: #fffafb;
+            color: var(--text);
+            font: 14px "DM Sans", sans-serif;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .form-field textarea {
+            min-height: 115px;
+            resize: vertical;
+            line-height: 1.7;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            border-color: var(--pink);
+            box-shadow: 0 0 0 4px rgba(200,95,122,.10);
+        }
+
+        .field-help {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .application-notice {
+            display: flex;
+            gap: 12px;
+            padding: 17px;
+            margin-top: 28px;
+            background: #fff4f7;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .application-notice strong { color: var(--text); }
+
+        .application-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .application-button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 48px;
+            padding: 13px 23px;
+            border: 0;
+            border-radius: 11px;
+            font: 700 13px "DM Sans", sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .application-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-button {
+            color: #fff;
+            background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+            box-shadow: 0 9px 22px rgba(167,67,96,.20);
+        }
+
+        .cancel-button {
+            color: var(--text);
+            background: #fff;
+            border: 1px solid var(--border);
+        }
+
+        .application-flashes {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 13px 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            background: #fff;
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 650px) {
+            .application-wrapper {
+                width: min(100% - 24px, 1000px);
+                padding-top: 30px;
+            }
+
+            .form-grid { grid-template-columns: 1fr; }
+            .form-field.full-width { grid-column: auto; }
+            .application-actions { flex-direction: column-reverse; }
+            .application-button { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="application-wrapper">
+
+        <header class="application-heading">
+            <span class="application-eyebrow">Glamora AR Partner Program</span>
+            <h1>Become a Seller</h1>
+            <p>
+                Bring your beauty brand to Glamora AR. Complete the application
+                below so our team can review your business and contact you
+                about becoming a seller.
+            </p>
+        </header>
+
+        <section class="application-card">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="application-flashes">
+                        {% for category, message in messages %}
+                            <div class="flash-message">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST"
+                  action="{{ url_for('seller_application') }}"
+                  id="sellerApplicationForm">
+
+                {# Include this if your Flask application uses Flask-WTF CSRF protection. #}
+                {% if csrf_token is defined %}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% endif %}
+
+                <section class="application-section">
+                    <div class="section-heading">
+                        <span class="section-number">01</span>
+                        <div>
+                            <h2>Applicant Information</h2>
+                            <p>Tell us who will manage the store.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="owner_name">Full Name <span class="required">*</span></label>
+                            <input id="owner_name" name="owner_name" type="text"
+                                   maxlength="150" required autocomplete="name"
+                                   value="{{ application.owner_name if application else (current_user.name if current_user else '') }}">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="owner_email">Email Address <span class="required">*</span></label>
+                            <input id="owner_email" name="owner_email" type="email"
+                                   maxlength="254" required autocomplete="email"
+                                   value="{{ application.owner_email if application else (current_user.email if current_user else '') }}">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="phone">Contact Number <span class="required">*</span></label>
+                            <input id="phone" name="phone" type="tel"
+                                   maxlength="30" required autocomplete="tel"
+                                   placeholder="e.g. 98XXXXXXXX">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="business_type">Business Type <span class="required">*</span></label>
+                            <select id="business_type" name="business_type" required>
+                                <option value="">Select business type</option>
+                                <option value="Beauty & Cosmetics">Beauty &amp; Cosmetics</option>
+                                <option value="Skincare">Skincare</option>
+                                <option value="Makeup">Makeup</option>
+                                <option value="Personal Care">Personal Care</option>
+                                <option value="Beauty Accessories">Beauty Accessories</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="application-section">
+                    <div class="section-heading">
+                        <span class="section-number">02</span>
+                        <div>
+                            <h2>Store Information</h2>
+                            <p>Details customers will associate with your business.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field full-width">
+                            <label for="shop_name">Shop / Brand Name <span class="required">*</span></label>
+                            <input id="shop_name" name="shop_name" type="text"
+                                   maxlength="150" required
+                                   placeholder="Enter your store or brand name">
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="address">Business Address <span class="required">*</span></label>
+                            <textarea id="address" name="address" maxlength="2000"
+                                      required autocomplete="street-address"
+                                      placeholder="Enter your full business address"></textarea>
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="description">About Your Business <span class="required">*</span></label>
+                            <textarea id="description" name="description"
+                                      maxlength="3000" required
+                                      placeholder="Describe your business, products, brand, and experience..."></textarea>
+                            <span class="field-help">
+                                Explain what you sell, your product sourcing, and what makes your store unique.
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="application-section">
+                    <div class="section-heading">
+                        <span class="section-number">03</span>
+                        <div>
+                            <h2>Business Confirmation</h2>
+                            <p>Please confirm before submitting your application.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label>
+                            <input type="checkbox" name="confirm_information"
+                                   value="yes" required
+                                   style="width:16px;min-height:16px;accent-color:#c85f7a;margin-right:8px;">
+                            I confirm that the information provided is accurate.
+                            <span class="required">*</span>
+                        </label>
+                    </div>
+
+                    <div class="application-notice">
+                        <span aria-hidden="true">♡</span>
+                        <div>
+                            <strong>What happens next?</strong><br>
+                            Your application will be sent to the Glamora AR admin
+                            for review. Submitting this form does not guarantee
+                            approval. You will be notified when the decision is made.
+                        </div>
+                    </div>
+                </section>
+
+                <div class="application-actions">
+                    <a class="application-button cancel-button"
+                       href="{{ url_for('contact') }}">Cancel</a>
+
+                    <button class="application-button submit-button" type="submit">
+                        Submit Seller Application&nbsp; →
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
