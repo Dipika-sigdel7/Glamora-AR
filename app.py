@@ -802,6 +802,7 @@ def about():
 
 
 
+
 # =========================================================
 # CONTACT — SAVE USER AND SELLER MESSAGES
 # =========================================================
@@ -819,11 +820,12 @@ def contact():
         subject = request.form.get("subject", "").strip()
         message_text = request.form.get("message", "").strip()
 
-        # Validate the submitted fields.
+        # Validate required fields.
         if not name or not email or not subject or not message_text:
             flash("Please complete all required fields.", "error")
             return redirect(url_for("contact"))
 
+        # Validate field lengths.
         if (
             len(name) > 150
             or len(email) > 254
@@ -836,6 +838,7 @@ def contact():
             )
             return redirect(url_for("contact"))
 
+        # Basic email validation.
         if (
             "@" not in email
             or email.startswith("@")
@@ -844,8 +847,10 @@ def contact():
             flash("Please enter a valid email address.", "error")
             return redirect(url_for("contact"))
 
+        # Accept only supported contact types.
         if contact_type not in ("customer", "seller"):
-            contact_type = "customer"
+            flash("Please select a valid contact type.", "error")
+            return redirect(url_for("contact"))
 
         connection = None
         cursor = None
@@ -858,18 +863,21 @@ def contact():
 
             cursor = connection.cursor(dictionary=True)
 
+            # Identify the logged-in user.
             session_user_id = session.get("user_id")
             user_id = None
-            sender_type = "user"
 
-            # Get the logged-in user's ID.
             if session_user_id is not None:
                 try:
                     user_id = int(session_user_id)
                 except (TypeError, ValueError):
                     user_id = None
 
-            # Automatically identify a registered seller.
+            sender_type = "user"
+
+            # Check whether the logged-in user has a seller profile.
+            seller_profile = None
+
             if user_id is not None:
                 cursor.execute("""
                     SELECT id
@@ -880,31 +888,31 @@ def contact():
 
                 seller_profile = cursor.fetchone()
 
-                if seller_profile:
-                    sender_type = "seller"
+            # A seller message must come from a registered seller.
+            if contact_type == "seller":
 
-            # Require login when a sender selects the seller option.
-            if contact_type == "seller" and user_id is None:
-                flash(
-                    "Please log in with your registered seller account "
-                    "to send a seller message.",
-                    "error"
-                )
-                return redirect(
-                    url_for(
-                        "login",
-                        next=url_for("contact")
+                if user_id is None:
+                    flash(
+                        "Please log in with your registered seller account "
+                        "to send a seller message.",
+                        "error"
                     )
-                )
+                    return redirect(
+                        url_for(
+                            "login",
+                            next=url_for("contact")
+                        )
+                    )
 
-            # Do not allow a customer to send a seller message.
-            if contact_type == "seller" and sender_type != "seller":
-                flash(
-                    "A registered seller profile is required to send "
-                    "a seller message.",
-                    "error"
-                )
-                return redirect(url_for("contact"))
+                if seller_profile is None:
+                    flash(
+                        "A registered seller profile is required to send "
+                        "a seller message.",
+                        "error"
+                    )
+                    return redirect(url_for("contact"))
+
+                sender_type = "seller"
 
             # Save the message for the admin inbox.
             cursor.execute("""
@@ -934,16 +942,14 @@ def contact():
             )
             return redirect(url_for("contact"))
 
-        except Exception as e:
+        except Exception:
             if connection is not None:
                 try:
                     connection.rollback()
                 except Exception:
                     pass
 
-            app.logger.exception(
-                "Failed to save contact message: %s", e
-            )
+            app.logger.exception("Failed to save contact message")
 
             flash(
                 "Unable to send your message right now. Please try again.",
@@ -954,7 +960,9 @@ def contact():
         finally:
             safe_close(cursor, connection)
 
+    # GET request: display the contact page.
     return render_template("contact.html")
+
 
 
 
