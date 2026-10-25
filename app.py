@@ -2739,10 +2739,10 @@ def buy_now(product_id):
 
 
 # =========================================================
-# CHECKOUT — DIRECT PURCHASE
+# CHECKOUT — DIRECT PURCHASE AND ORDER CREATION
 # =========================================================
 
-@app.route("/checkout", methods=["GET"])
+@app.route("/checkout", methods=["GET", "POST"])
 def checkout():
 
     if not session.get("user_id"):
@@ -2766,6 +2766,240 @@ def checkout():
 
         cursor = connection.cursor(dictionary=True)
 
+        # -------------------------------------------------
+        # POST: VALIDATE AND PLACE ORDER
+        # -------------------------------------------------
+        if request.method == "POST":
+
+            customer_name = request.form.get(
+                "customer_name", ""
+            ).strip()
+
+            customer_email = request.form.get(
+                "customer_email", ""
+            ).strip()
+
+            phone = request.form.get(
+                "phone", ""
+            ).strip()
+
+            address = request.form.get(
+                "address", ""
+            ).strip()
+
+            payment_method = request.form.get(
+                "payment_method", ""
+            ).strip()
+
+            allowed_payment_methods = {
+                "COD", "Khalti", "eSewa"
+            }
+
+            if not all([
+                customer_name,
+                customer_email,
+                phone,
+                address,
+                payment_method
+            ]):
+                flash(
+                    "Please complete all delivery and payment fields.",
+                    "error"
+                )
+                return redirect(url_for("checkout"))
+
+            if len(customer_name) > 150:
+                flash("Customer name is too long.", "error")
+                return redirect(url_for("checkout"))
+
+            if len(customer_email) > 150:
+                flash("Email address is too long.", "error")
+                return redirect(url_for("checkout"))
+
+            if len(phone) > 50:
+                flash("Phone number is too long.", "error")
+                return redirect(url_for("checkout"))
+
+            if payment_method not in allowed_payment_methods:
+                flash("Please select a valid payment method.", "error")
+                return redirect(url_for("checkout"))
+
+            # Lock the product row so two simultaneous purchases
+            # cannot both sell the last unit of stock.
+            cursor.execute("""
+                SELECT
+                    id,
+                    name,
+                    price,
+                    stock,
+                    is_available,
+                    seller_id
+                FROM products
+                WHERE id = %s
+                FOR UPDATE
+            """, (product_id,))
+
+            product = cursor.fetchone()
+
+            if not product:
+                connection.rollback()
+                flash("Product not found.", "error")
+                return redirect(url_for("beauty"))
+
+            if not product.get("is_available"):
+                connection.rollback()
+                flash("This product is unavailable.", "error")
+                return redirect(
+                    url_for(
+                        "product_details",
+                        product_id=product_id
+                    )
+                )
+
+            if int(product.get("stock") or 0) < 1:
+                connection.rollback()
+                flash("This product is out of stock.", "error")
+                return redirect(
+                    url_for(
+                        "product_details",
+                        product_id=product_id
+                    )
+                )
+
+            price = Decimal(str(product["price"]))
+            price = price.quantize(Decimal("0.01"))
+
+            quantity = 1
+            subtotal = (price * quantity).quantize(
+                Decimal("0.01")
+            )
+
+            # Create the order.
+            # Status remains pending until your order-management
+            # workflow updates it.
+            cursor.execute("""
+                INSERT INTO orders (
+                    user_id,
+                    total_amount,
+                    status,
+                    customer_name,
+                    customer_email,
+                    phone,
+                    address,
+                    payment_method
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                session["user_id"],
+                subtotal,
+                "pending",
+                customer_name,
+                customer_email,
+                phone,
+                address,
+                payment_method
+            ))
+
+            order_id = cursor.lastrowid
+
+            # Save the purchased product.
+            cursor.execute("""
+                INSERT INTO order_items (
+                    order_id,
+                    product_id,
+                    product_name,
+                    price,
+                    quantity,
+                    subtotal
+                )
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (
+                order_id,
+                product["id"],
+                product["name"],
+                price,
+                quantity,
+                subtotal
+            ))
+
+            order_item_id = cursor.lastrowid
+
+            # Reduce inventory only after the order item is saved.
+            cursor.execute("""
+                UPDATE products
+                SET stock = stock - %s
+                WHERE id = %s
+                  AND stock >= %s
+                  AND is_available = 1
+            """, (
+                quantity,
+                product["id"],
+                quantity
+            ))
+
+            if cursor.rowcount != 1:
+                raise RuntimeError(
+                    "Product stock changed during checkout."
+                )
+
+            # -------------------------------------------------
+            # RECORD 10% PLATFORM COMMISSION
+            # -------------------------------------------------
+            seller_id = product.get("seller_id")
+
+            if seller_id is not None:
+                commission_rate = Decimal("10.00")
+
+                commission_amount = (
+                    subtotal * Decimal("0.10")
+                ).quantize(Decimal("0.01"))
+
+                seller_amount = (
+                    subtotal - commission_amount
+                ).quantize(Decimal("0.01"))
+
+                cursor.execute("""
+                    INSERT INTO seller_commissions (
+                        order_id,
+                        order_item_id,
+                        seller_id,
+                        product_id,
+                        gross_amount,
+                        commission_rate,
+                        commission_amount,
+                        seller_amount,
+                        status
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (
+                    order_id,
+                    order_item_id,
+                    seller_id,
+                    product["id"],
+                    subtotal,
+                    commission_rate,
+                    commission_amount,
+                    seller_amount,
+                    "pending"
+                ))
+
+            # Order, order item, inventory update and commission
+            # are committed together.
+            connection.commit()
+
+            session.pop("buy_now_product_id", None)
+            session.modified = True
+
+            flash(
+                f"Your order #{order_id} has been placed successfully.",
+                "success"
+            )
+
+            return redirect(url_for("beauty"))
+
+        # -------------------------------------------------
+        # GET: DISPLAY CHECKOUT PAGE
+        # -------------------------------------------------
         cursor.execute("""
             SELECT
                 p.id,
@@ -2796,14 +3030,26 @@ def checkout():
         if not product.get("is_available"):
             session.pop("buy_now_product_id", None)
             flash("This product is currently unavailable.", "error")
-            return redirect(url_for("product_details", product_id=product_id))
+            return redirect(
+                url_for(
+                    "product_details",
+                    product_id=product_id
+                )
+            )
 
         if int(product.get("stock") or 0) <= 0:
             session.pop("buy_now_product_id", None)
             flash("This product is out of stock.", "error")
-            return redirect(url_for("product_details", product_id=product_id))
+            return redirect(
+                url_for(
+                    "product_details",
+                    product_id=product_id
+                )
+            )
 
-        product["price"] = Decimal(str(product.get("price") or 0))
+        product["price"] = Decimal(
+            str(product.get("price") or 0)
+        )
 
         user = get_current_user()
 
@@ -2818,9 +3064,17 @@ def checkout():
         )
 
     except Exception as error:
-        print("CHECKOUT PAGE ERROR:", repr(error))
-        flash("Unable to open checkout. Please check the Flask terminal.", "error")
-        return redirect(url_for("product_details", product_id=product_id))
+        if connection is not None:
+            connection.rollback()
+
+        app.logger.exception("CHECKOUT / ORDER CREATION ERROR")
+
+        flash(
+            "Unable to place your order. Please check the Flask terminal.",
+            "error"
+        )
+
+        return redirect(url_for("beauty"))
 
     finally:
         safe_close(cursor, connection)
