@@ -1,324 +1,366 @@
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Contact Glamora AR</title>
 
     <!-- FONTS -->
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
     <!-- CSS -->
     <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-  </head>
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
 
-  <body>
+<body>
+
     <!-- PRELOADER -->
     <div class="loader" id="loader">
-      <div class="loader-content">
-        <div class="loader-logo">GLAMORA <span>AR</span></div>
-        <p>Preparing your beauty experience...</p>
-        <div class="loader-line">
-          <span></span>
+        <div class="loader-content">
+            <div class="loader-logo">GLAMORA <span>AR</span></div>
+            <p>Preparing your beauty experience...</p>
+            <div class="loader-line">
+                <span></span>
+            </div>
         </div>
-      </div>
     </div>
 
     <!-- NAVBAR -->
     <header class="navbar">
-      <a
-        href="{{ url_for('index') }}"
-        class="logo"
-        aria-label="Glamora AR Home"
-      >
-        GLAMORA <span>AR</span>
-      </a>
-
-      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('beauty') }}">Beauty</a>
-        <a href="{{ url_for('about') }}">About</a>
-        <a href="{{ url_for('contact') }}" class="active" aria-current="page">
-          Contact
-        </a>
-      </nav>
-
-      <div class="nav-actions">
-        <button
-          class="icon-btn"
-          id="searchBtn"
-          type="button"
-          aria-label="Search"
-          title="Search"
-        >
-          ⌕
-        </button>
-
-        <button
-          class="icon-btn wishlist-btn"
-          id="wishlistBtn"
-          type="button"
-          aria-label="Wishlist"
-          title="Wishlist"
-        >
-          ♡
-        </button>
-
         <a
-          href="{{ url_for('cart') }}"
-          class="cart-btn"
-          id="cartBtn"
-          aria-label="Shopping bag"
-          title="Shopping bag"
+            href="{{ url_for('index') }}"
+            class="logo"
+            aria-label="Glamora AR Home"
         >
-          <span>Bag</span>
-          <span class="cart-count" id="cartCount">
-            {{ bag_count|default(0) }}
-          </span>
+            GLAMORA <span>AR</span>
         </a>
 
-        {% if session.get('user_id') %}
-        <a
-          href="{{ url_for('profile') }}"
-          class="login-btn"
-          id="profileBtn"
-          aria-label="Go to your profile"
-        >
-          <span class="login-icon">♙</span>
-          <span>Profile</span>
-        </a>
-        {% else %}
-        <a
-          href="{{ url_for('login') }}"
-          class="login-btn"
-          id="loginBtn"
-          aria-label="Login to Glamora AR"
-        >
-          <span class="login-icon">♙</span>
-          <span>Login</span>
-        </a>
-        {% endif %}
+        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('beauty') }}">Beauty</a>
+            <a href="{{ url_for('about') }}">About</a>
+            <a
+                href="{{ url_for('contact') }}"
+                class="active"
+                aria-current="page"
+            >
+                Contact
+            </a>
+        </nav>
 
-        <button
-          class="menu-btn"
-          id="menuBtn"
-          type="button"
-          aria-label="Open navigation menu"
-          aria-expanded="false"
-          aria-controls="navLinks"
-        >
-          ☰
-        </button>
-      </div>
+        <div class="nav-actions">
+            <button
+                class="icon-btn"
+                id="searchBtn"
+                type="button"
+                aria-label="Search"
+                title="Search"
+            >⌕</button>
+
+            <button
+                class="icon-btn wishlist-btn"
+                id="wishlistBtn"
+                type="button"
+                aria-label="Wishlist"
+                title="Wishlist"
+            >♡</button>
+
+            <a
+                href="{{ url_for('cart') }}"
+                class="cart-btn"
+                id="cartBtn"
+                aria-label="Shopping bag"
+                title="Shopping bag"
+            >
+                <span>Bag</span>
+                <span class="cart-count" id="cartCount">
+                    {{ bag_count|default(0) }}
+                </span>
+            </a>
+
+            {% if session.get('user_id') %}
+                <a
+                    href="{{ url_for('profile') }}"
+                    class="login-btn"
+                    id="profileBtn"
+                    aria-label="Go to your profile"
+                >
+                    <span class="login-icon">♙</span>
+                    <span>Profile</span>
+                </a>
+            {% else %}
+                <a
+                    href="{{ url_for('login') }}"
+                    class="login-btn"
+                    id="loginBtn"
+                    aria-label="Login to Glamora AR"
+                >
+                    <span class="login-icon">♙</span>
+                    <span>Login</span>
+                </a>
+            {% endif %}
+
+            <button
+                class="menu-btn"
+                id="menuBtn"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="navLinks"
+            >☰</button>
+        </div>
     </header>
 
     <!-- CONTACT HERO -->
     <section class="inner-hero contact-hero">
-      <div class="inner-hero-content reveal">
-        <span class="section-label">GET IN TOUCH</span>
+        <div class="inner-hero-content reveal">
+            <span class="section-label">GET IN TOUCH</span>
 
-        <h1>
-          Let's create
-          <em>beauty together.</em>
-        </h1>
+            <h1>
+                Let's create
+                <em>beauty together.</em>
+            </h1>
 
-        <p>
-          Have a question about Glamora AR, virtual try-on, our beauty
-          products, or your seller account? We'd love to hear from you.
-        </p>
-      </div>
+            <p>
+                Have a question about Glamora AR, virtual try-on, our beauty
+                products, or your seller account? We'd love to hear from you.
+            </p>
+        </div>
     </section>
 
     <!-- CONTACT CONTENT -->
     <main>
-      <section class="contact-section contact-page">
-        <div class="contact-container">
-          <!-- CONTACT INFORMATION -->
-          <div class="contact-content reveal">
-            <span class="section-label">CONTACT GLAMORA</span>
+        <section class="contact-section contact-page">
+            <div class="contact-container">
 
-            <h2>We would love to hear from <em>you.</em></h2>
+                <!-- CONTACT INFORMATION -->
+                <div class="contact-content reveal">
+                    <span class="section-label">CONTACT GLAMORA</span>
 
-            <p>
-              Whether you have a question, feedback, a seller registration
-              request, or need help managing your shop, send us a message.
-            </p>
+                    <h2>We would love to hear from <em>you.</em></h2>
 
-            <div class="contact-details">
-              <div class="contact-detail">
-                <span class="detail-icon">✉</span>
-                <div>
-                  <small>EMAIL</small>
-                  <strong>hello@glamoraar.com</strong>
+                    <p>
+                        Whether you have a question, feedback, a seller
+                        registration request, or need help managing your shop,
+                        send us a message.
+                    </p>
+
+                    <div class="contact-details">
+                        <div class="contact-detail">
+                            <span class="detail-icon">✉</span>
+                            <div>
+                                <small>EMAIL</small>
+                                <strong>hello@glamoraar.com</strong>
+                            </div>
+                        </div>
+
+                        <div class="contact-detail">
+                            <span class="detail-icon">◉</span>
+                            <div>
+                                <small>VIRTUAL BEAUTY</small>
+                                <strong>Available worldwide</strong>
+                            </div>
+                        </div>
+
+                        <div class="contact-detail">
+                            <span class="detail-icon">✦</span>
+                            <div>
+                                <small>RESPONSE TIME</small>
+                                <strong>Within 24–48 hours</strong>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
 
-              <div class="contact-detail">
-                <span class="detail-icon">◉</span>
-                <div>
-                  <small>VIRTUAL BEAUTY</small>
-                  <strong>Available worldwide</strong>
-                </div>
-              </div>
+                <!-- CONTACT FORM -->
+                <div class="contact-form-wrapper reveal">
 
-              <div class="contact-detail">
-                <span class="detail-icon">✦</span>
-                <div>
-                  <small>RESPONSE TIME</small>
-                  <strong>Within 24–48 hours</strong>
+                    <form
+                        class="contact-form"
+                        id="contactForm"
+                        method="POST"
+                        action="{{ url_for('contact') }}"
+                    >
+
+                        <!-- NAME AND EMAIL -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactName">Name</label>
+
+                                <input
+                                    type="text"
+                                    id="contactName"
+                                    name="name"
+                                    placeholder="Your name"
+                                    autocomplete="name"
+                                    value="{{ session.get('user_name', '') }}"
+                                    maxlength="150"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contactEmail">Email</label>
+
+                                <input
+                                    type="email"
+                                    id="contactEmail"
+                                    name="email"
+                                    placeholder="your@email.com"
+                                    autocomplete="email"
+                                    value="{{ session.get('user_email', '') }}"
+                                    maxlength="254"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- CONTACT TYPE -->
+                        <div class="form-group">
+                            <label for="contactType">
+                                What can we help you with?
+                            </label>
+
+                            <select
+                                id="contactType"
+                                name="contact_type"
+                                required
+                            >
+                                <option
+                                    value="customer"
+                                    {% if not seller_account %}selected{% endif %}
+                                >
+                                    Customer — General Enquiry
+                                </option>
+
+                                <option
+                                    value="seller"
+                                    {% if seller_account %}selected{% endif %}
+                                >
+                                    Seller — Contact Admin
+                                </option>
+                            </select>
+
+                            {% if not session.get('user_id') %}
+                                <small>
+                                    Log in with your seller account to send a
+                                    seller enquiry.
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <!-- SUBJECT -->
+                        <div class="form-group">
+                            <label for="contactSubject">Subject</label>
+
+                            <input
+                                type="text"
+                                id="contactSubject"
+                                name="subject"
+                                placeholder="How can we help?"
+                                maxlength="200"
+                                required
+                            >
+                        </div>
+
+                        <!-- MESSAGE -->
+                        <div class="form-group">
+                            <label for="contactMessage">Message</label>
+
+                            <textarea
+                                id="contactMessage"
+                                name="message"
+                                rows="7"
+                                maxlength="10000"
+                                placeholder="Write your message or seller request..."
+                                required
+                            ></textarea>
+                        </div>
+
+                        <!-- SUBMIT -->
+                        <button
+                            type="submit"
+                            class="contact-submit"
+                            id="contactSubmit"
+                        >
+                            Send Message
+                            <span aria-hidden="true">→</span>
+                        </button>
+
+                        <!-- FORM STATUS -->
+                        <p
+                            class="form-status"
+                            id="formStatus"
+                            role="status"
+                            aria-live="polite"
+                        ></p>
+
+                    </form>
                 </div>
-              </div>
             </div>
-          </div>
-
-          <!-- CONTACT FORM -->
-          <div class="contact-form-wrapper reveal">
-            <form
-              class="contact-form"
-              id="contactForm"
-              method="POST"
-              action="{{ url_for('contact') }}"
-            >
-              <!-- NAME + EMAIL -->
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="contactName">Name</label>
-                  <input
-                    type="text"
-                    id="contactName"
-                    name="name"
-                    placeholder="Your name"
-                    autocomplete="name"
-                    value="{{ session.get('user_name', '') }}"
-                    required
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="contactEmail">Email</label>
-                  <input
-                    type="email"
-                    id="contactEmail"
-                    name="email"
-                    placeholder="your@email.com"
-                    autocomplete="email"
-                    value="{{ session.get('user_email', '') }}"
-                    required
-                  />
-                </div>
-              </div>
-
-              <!-- CONTACT TYPE: NEW -->
-              <div class="form-group">
-                <label for="contactType">What can we help you with?</label>
-
-                <select id="contactType" name="contact_type" required>
-                  <option value="customer" selected>
-                    Customer — General Enquiry
-                  </option>
-                  <option value="seller">
-                    Seller — Contact Admin
-                  </option>
-                </select>
-              </div>
-
-              <!-- SUBJECT -->
-              <div class="form-group">
-                <label for="contactSubject">Subject</label>
-                <input
-                  type="text"
-                  id="contactSubject"
-                  name="subject"
-                  placeholder="How can we help?"
-                  required
-                />
-              </div>
-
-              <!-- MESSAGE -->
-              <div class="form-group">
-                <label for="contactMessage">Message</label>
-                <textarea
-                  id="contactMessage"
-                  name="message"
-                  rows="7"
-                  placeholder="Write your message or seller request..."
-                  required
-                ></textarea>
-              </div>
-
-              <!-- SUBMIT -->
-              <button type="submit" class="contact-submit">
-                Send Message
-                <span>→</span>
-              </button>
-
-              <!-- FORM STATUS -->
-              <p
-                class="form-status"
-                id="formStatus"
-                role="status"
-                aria-live="polite"
-              ></p>
-            </form>
-          </div>
-        </div>
-      </section>
+        </section>
     </main>
 
     <!-- FOOTER -->
     <footer class="site-footer">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <a href="{{ url_for('index') }}" class="logo">
-            GLAMORA <span>AR</span>
-          </a>
-          <p>Beauty technology designed for everyone.</p>
+        <div class="footer-top">
+
+            <div class="footer-brand">
+                <a href="{{ url_for('index') }}" class="logo">
+                    GLAMORA <span>AR</span>
+                </a>
+
+                <p>Beauty technology designed for everyone.</p>
+            </div>
+
+            <div class="footer-links">
+
+                <div>
+                    <span>EXPLORE</span>
+                    <a href="{{ url_for('beauty') }}">Beauty</a>
+                    <a href="{{ url_for('about') }}#tryon">Virtual Try-On</a>
+                    <a href="{{ url_for('beauty') }}#products">Products</a>
+                </div>
+
+                <div>
+                    <span>COMPANY</span>
+                    <a href="{{ url_for('index') }}">Home</a>
+                    <a href="{{ url_for('about') }}">About</a>
+                    <a href="{{ url_for('contact') }}">Contact</a>
+                </div>
+
+                <div>
+                    <span>ACCOUNT</span>
+
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('profile') }}">My Profile</a>
+                        <a href="{{ url_for('cart') }}">Shopping Bag</a>
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}">Login</a>
+                        <a href="{{ url_for('register') }}">Create Account</a>
+                    {% endif %}
+                </div>
+
+            </div>
         </div>
 
-        <div class="footer-links">
-          <div>
-            <span>EXPLORE</span>
-            <a href="{{ url_for('beauty') }}">Beauty</a>
-            <a href="{{ url_for('about') }}#tryon">Virtual Try-On</a>
-            <a href="{{ url_for('beauty') }}#products">Products</a>
-          </div>
-
-          <div>
-            <span>COMPANY</span>
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('about') }}">About</a>
-            <a href="{{ url_for('contact') }}">Contact</a>
-          </div>
-
-          <div>
-            <span>ACCOUNT</span>
-            {% if session.get('user_id') %}
-            <a href="{{ url_for('profile') }}">My Profile</a>
-            <a href="{{ url_for('cart') }}">Shopping Bag</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-            {% else %}
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('register') }}">Create Account</a>
-            {% endif %}
-          </div>
+        <div class="footer-bottom">
+            <span>© 2026 Glamora AR. All rights reserved.</span>
+            <span>Made for the future of beauty ✦</span>
         </div>
-      </div>
-
-      <div class="footer-bottom">
-        <span>© 2026 Glamora AR. All rights reserved.</span>
-        <span>Made for the future of beauty ✦</span>
-      </div>
     </footer>
 
     <!-- MAIN JAVASCRIPT -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-  </body>
+
+</body>
 </html>
