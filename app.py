@@ -803,6 +803,7 @@ def about():
 
 
 
+
 # =========================================================
 # CONTACT — SAVE USER AND SELLER MESSAGES
 # =========================================================
@@ -875,26 +876,13 @@ def contact():
 
             sender_type = "user"
 
-            # Check whether the logged-in user has a seller profile.
-            seller_profile = None
-
-            if user_id is not None:
-                cursor.execute("""
-                    SELECT id
-                    FROM sellers
-                    WHERE user_id = %s
-                    LIMIT 1
-                """, (user_id,))
-
-                seller_profile = cursor.fetchone()
-
-            # A seller message must come from a registered seller.
+            # A seller inquiry can be sent by any logged-in user.
+            # An existing seller profile is not required.
             if contact_type == "seller":
 
                 if user_id is None:
                     flash(
-                        "Please log in with your registered seller account "
-                        "to send a seller message.",
+                        "Please log in before sending a seller inquiry.",
                         "error"
                     )
                     return redirect(
@@ -904,17 +892,9 @@ def contact():
                         )
                     )
 
-                if seller_profile is None:
-                    flash(
-                        "A registered seller profile is required to send "
-                        "a seller message.",
-                        "error"
-                    )
-                    return redirect(url_for("contact"))
-
                 sender_type = "seller"
 
-            # Save the message for the admin inbox.
+            # Save the message for the correct admin inbox tab.
             cursor.execute("""
                 INSERT INTO messages (
                     user_id,
